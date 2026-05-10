@@ -1,6 +1,6 @@
 {
   "name": "@polumeyv/ui",
-  "version": "0.0.43",
+  "version": "0.0.46",
   "description": "Svelte 5 UI component library with Tailwind CSS",
   "publishConfig": {
     "access": "public",
@@ -320,10 +320,6 @@
       "svelte": "./dist/booking/utils.js",
       "default": "./dist/booking/utils.js"
     },
-    "./booking/server": {
-      "types": "./dist/booking/server.d.ts",
-      "import": "./dist/booking/server.js"
-    },
     "./styles": "./dist/assets/layout.css",
     "./fonts": "./dist/assets/fonts.css"
   },
@@ -352,7 +348,7 @@
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^7.0.1",
-    "@polumeyv/lib": "^0.3.0",
+    "@polumeyv/lib": "^0.4.0",
     "@internationalized/date": "^3.12.0",
     "effect": "^3.21.0",
     "@sveltejs/kit": "^2.57.0",

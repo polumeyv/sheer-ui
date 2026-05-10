@@ -5,7 +5,7 @@
 		title = 'Reminder',
 		message = 'You have an upcoming appointment',
 		time = 'now',
-		icon
+		icon,
 	}: {
 		title?: string;
 		message?: string;
