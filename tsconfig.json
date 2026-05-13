@@ -10,7 +10,8 @@
 		"skipLibCheck": true,
 		"module": "esnext",
 		"target": "esnext",
-		"strict": true
+		"strict": true,
+		"declarationMap": true
 	},
 	"include": ["src/lib"],
 	"exclude": ["dist"]
