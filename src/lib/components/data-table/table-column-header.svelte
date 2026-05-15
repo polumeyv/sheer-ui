@@ -17,6 +17,12 @@
 	</div>
 {:else}
 	<div class="flex items-center" {...restProps}>
+		{#snippet item(onclick: () => void, Icon: typeof ArrowUpIcon, label: string)}
+			<DropdownMenu.Item {onclick}>
+				<Icon class="text-muted-foreground/70 me-2 size-3.5" />
+				{label}
+			</DropdownMenu.Item>
+		{/snippet}
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
@@ -35,19 +41,10 @@
 				{/snippet}
 			</DropdownMenu.Trigger>
 			<DropdownMenu.Content align="start">
-				<DropdownMenu.Item onclick={() => column.toggleSorting(false)}>
-					<ArrowUpIcon class="text-muted-foreground/70 me-2 size-3.5" />
-					Asc
-				</DropdownMenu.Item>
-				<DropdownMenu.Item onclick={() => column.toggleSorting(true)}>
-					<ArrowDownIcon class="text-muted-foreground/70 me-2 size-3.5" />
-					Desc
-				</DropdownMenu.Item>
+				{@render item(() => column.toggleSorting(false), ArrowUpIcon, 'Asc')}
+				{@render item(() => column.toggleSorting(true), ArrowDownIcon, 'Desc')}
 				<DropdownMenu.Separator />
-				<DropdownMenu.Item onclick={() => column.toggleVisibility(false)}>
-					<EyeOffIcon class="text-muted-foreground/70 me-2 size-3.5" />
-					Hide
-				</DropdownMenu.Item>
+				{@render item(() => column.toggleVisibility(false), EyeOffIcon, 'Hide')}
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 	</div>

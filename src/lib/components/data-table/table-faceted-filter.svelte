@@ -76,12 +76,7 @@
 								const filterValues = Array.from(selectedValues);
 								column?.setFilterValue(filterValues.length ? filterValues : undefined);
 							}}>
-							<div
-								class="me-2 flex size-4 items-center justify-center rounded-sm border border-primary"
-								class:bg-primary={isSelected}
-								class:text-primary-foreground={isSelected}
-								class:opacity-50={!isSelected}
-								class:[&_svg]:invisible={!isSelected}>
+							<div class={['me-2 flex size-4 items-center justify-center rounded-sm border border-primary', isSelected ? 'bg-primary text-primary-foreground' : 'opacity-50 [&_svg]:invisible']}>
 								<CheckIcon class="size-4" />
 							</div>
 							{#if option.icon}

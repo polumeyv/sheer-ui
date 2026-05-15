@@ -38,23 +38,17 @@
 			<div class="flex w-25 items-center justify-center text-sm font-medium">
 				Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
 			</div>
+			{#snippet navBtn(onclick: () => void, disabled: boolean, label: string, Icon: typeof ChevronLeftIcon, lgOnly = false)}
+				<Button variant="outline" class={['size-8 p-0', lgOnly && 'hidden lg:flex']} {onclick} {disabled}>
+					<span class="sr-only">{label}</span>
+					<Icon />
+				</Button>
+			{/snippet}
 			<div class="flex items-center space-x-2">
-				<Button variant="outline" class="hidden size-8 p-0 lg:flex" onclick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
-					<span class="sr-only">Go to first page</span>
-					<ChevronsLeftIcon />
-				</Button>
-				<Button variant="outline" class="size-8 p-0" onclick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-					<span class="sr-only">Go to previous page</span>
-					<ChevronLeftIcon />
-				</Button>
-				<Button variant="outline" class="size-8 p-0" onclick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-					<span class="sr-only">Go to next page</span>
-					<ChevronRightIcon />
-				</Button>
-				<Button variant="outline" class="hidden size-8 p-0 lg:flex" onclick={() => table.setPageIndex(table.getPageCount() - 1)} disabled={!table.getCanNextPage()}>
-					<span class="sr-only">Go to last page</span>
-					<ChevronsRightIcon />
-				</Button>
+				{@render navBtn(() => table.setPageIndex(0), !table.getCanPreviousPage(), 'Go to first page', ChevronsLeftIcon, true)}
+				{@render navBtn(() => table.previousPage(), !table.getCanPreviousPage(), 'Go to previous page', ChevronLeftIcon)}
+				{@render navBtn(() => table.nextPage(), !table.getCanNextPage(), 'Go to next page', ChevronRightIcon)}
+				{@render navBtn(() => table.setPageIndex(table.getPageCount() - 1), !table.getCanNextPage(), 'Go to last page', ChevronsRightIcon, true)}
 			</div>
 		</div>
 	{/if}

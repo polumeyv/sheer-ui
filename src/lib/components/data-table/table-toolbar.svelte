@@ -38,14 +38,13 @@
 			class="h-8 w-37.5 lg:w-62.5" />
 	{/if}
 	<div class="flex items-center space-x-2">
-		{#if filters}
-			{#each filters as filter (filter.column)}
-				{@const col = table.getColumn(filter.column)}
-				{#if col}
-					<DataTableFacetedFilter {disabled} column={col} title={filter.title} options={filter.options} />
-				{/if}
-			{/each}
-		{/if}
+		{#each filters as filter (filter.column)}
+			{@const col = table.getColumn(filter.column)}
+			{#if col}
+				<DataTableFacetedFilter {disabled} column={col} title={filter.title} options={filter.options} />
+			{/if}
+		{/each}
+
 		{#if isFiltered}
 			<Button variant="ghost" {disabled} onclick={() => table.resetColumnFilters()} class="h-8 px-2 lg:px-3">
 				Reset
