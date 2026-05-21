@@ -12,7 +12,7 @@ export {
 	type DateValue,
 } from '@internationalized/date';
 
-import { parseTime, formatTimeDisplay } from '../utils.js';
+import { parseTime, formatTimeDisplay } from '@polumeyv/lib/booking/utils';
 
 /**
  * Time Utilities

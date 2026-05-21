@@ -319,11 +319,6 @@
       "types": "./dist/booking/time-picker/index.d.ts",
       "svelte": "./dist/booking/time-picker/index.js"
     },
-    "./booking/utils": {
-      "types": "./dist/booking/utils.d.ts",
-      "svelte": "./dist/booking/utils.js",
-      "default": "./dist/booking/utils.js"
-    },
     "./styles": "./dist/assets/layout.css",
     "./fonts": "./dist/assets/fonts.css"
   },
