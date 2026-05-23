@@ -37,5 +37,3 @@ export {
 	//
 	Root as Calendar,
 };
-
-export * from './utils.js';

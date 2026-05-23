@@ -4,8 +4,7 @@
 	import { buttonVariants } from '../../components/button/index.js';
 	import * as Select from '../../components/select/index.js';
 	import * as Popover from '../../components/popover/index.js';
-	import { formatTimeDisplay, parseTime } from '@polumeyv/lib/booking/utils';
-	import { generateTimeSlots, isTimeInRange, compareTime, getTimeDuration, formatDuration, type TimeSlot, type TimeRange, b_HOURS, EXTENDED_HOURS } from '../calendar/utils.js';
+	import { formatTimeDisplay, generateTimeSlots, isTimeInRange, compareTime, getTimeDuration, formatDuration, type TimeSlot, type TimeRange, b_HOURS, EXTENDED_HOURS } from '@polumeyv/lib/booking/utils';
 
 	type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';
 

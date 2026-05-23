@@ -3,8 +3,7 @@
 	import { cn } from '../../utils.js';
 	import { buttonVariants } from '../../components/button/index.js';
 	import * as Select from '../../components/select/index.js';
-	import { formatTimeDisplay, parseTime } from '@polumeyv/lib/booking/utils';
-	import { generateTimeSlots, isTimeInRange, type TimeSlot, b_HOURS, EXTENDED_HOURS } from '../calendar/utils.js';
+	import { formatTimeDisplay, compareTime, generateTimeSlots, isTimeInRange, type TimeSlot, b_HOURS, EXTENDED_HOURS } from '@polumeyv/lib/booking/utils';
 
 	type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';
 
@@ -73,22 +72,10 @@
 			// Check min/max constraints
 			if (minTime && maxTime) {
 				if (!isTimeInRange(slot.value, minTime, maxTime)) return false;
-			} else if (minTime) {
-				const parsed = parseTime(slot.value);
-				const parsedMin = parseTime(minTime);
-				if (parsed && parsedMin) {
-					const slotMinutes = parsed.hour * 60 + parsed.minute;
-					const minMinutes = parsedMin.hour * 60 + parsedMin.minute;
-					if (slotMinutes < minMinutes) return false;
-				}
-			} else if (maxTime) {
-				const parsed = parseTime(slot.value);
-				const parsedMax = parseTime(maxTime);
-				if (parsed && parsedMax) {
-					const slotMinutes = parsed.hour * 60 + parsed.minute;
-					const maxMinutes = parsedMax.hour * 60 + parsedMax.minute;
-					if (slotMinutes > maxMinutes) return false;
-				}
+			} else if (minTime && compareTime(slot.value, minTime) < 0) {
+				return false;
+			} else if (maxTime && compareTime(slot.value, maxTime) > 0) {
+				return false;
 			}
 
 			// Check custom disabled function

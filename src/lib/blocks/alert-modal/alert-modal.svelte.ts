@@ -10,7 +10,8 @@ export interface AlertModalOptions {
 	variant?: AlertModalVariant;
 	/** If set, user must type this text to enable the action button */
 	confirmText?: string;
-	onConfirm: () => Promise<void> | void;
+	/** Action handler. Omit for a plain acknowledgement dialog — confirming just closes it. */
+	onConfirm?: () => Promise<void> | void;
 	/** Optional snippet for custom body content between description and footer */
 	content?: Snippet;
 }
@@ -18,7 +19,7 @@ export interface AlertModalOptions {
 const VARIANT_DEFAULTS: Record<AlertModalVariant, string> = {
 	destructive: 'Remove',
 	warning: 'Continue',
-	default: 'Confirm',
+	default: 'OK',
 };
 
 export class AlertModalState {
@@ -56,7 +57,7 @@ export class AlertModalState {
 		if (!this.options || !this.canConfirm) return;
 		this.loading = true;
 		try {
-			await this.options.onConfirm();
+			await this.options.onConfirm?.();
 			this.close();
 		} catch {
 			this.loading = false;
