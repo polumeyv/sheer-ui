@@ -87,13 +87,13 @@
 			overlay 0.15s allow-discrete;
 	}
 
-	:global(.native-select::picker(select):popover-open) {
+	:global(.native-select:open::picker(select)) {
 		opacity: 1;
 		transform: translateY(0);
 	}
 
 	@starting-style {
-		:global(.native-select::picker(select):popover-open) {
+		:global(.native-select:open::picker(select)) {
 			opacity: 0;
 			transform: translateY(-0.5rem);
 		}
