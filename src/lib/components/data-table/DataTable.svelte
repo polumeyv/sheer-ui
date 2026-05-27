@@ -35,7 +35,18 @@
 		onRowClick?: (row: TData) => void;
 	};
 
-	let { data, columns, loading = false, searchColumn = 'clientName', searchPlaceholder = 'Search...', disabled = false, toolbar, actions, empty, onRowClick }: DataTableProps<TData, TValue> = $props();
+	let {
+		data,
+		columns,
+		loading = false,
+		searchColumn = 'clientName',
+		searchPlaceholder = 'Search...',
+		disabled = false,
+		toolbar,
+		actions,
+		empty,
+		onRowClick,
+	}: DataTableProps<TData, TValue> = $props();
 
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
 	let sorting = $state<SortingState>([]);
@@ -148,7 +159,7 @@
 			{@render actions({ selectedRows, disabled: isDisabled })}
 		{/if}
 	</div>
-	<div class="rounded-md {loading ? '' : 'border'}">
+	<div class="rounded-sm {loading ? '' : 'border'}">
 		{#if loading}
 			<Skeleton class="h-53 w-full bg-muted/50" />
 		{:else if empty && data.length === 0}

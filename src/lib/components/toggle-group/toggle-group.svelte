@@ -1,35 +1,35 @@
 <script lang="ts" module>
-import { getContext, setContext } from 'svelte';
-import type { VariantProps } from 'tailwind-variants';
-import { toggleVariants } from '../toggle';
+	import { getContext, setContext } from 'svelte';
+	import type { VariantProps } from 'tailwind-variants';
+	import { toggleVariants } from '../toggle';
 
-type ToggleVariants = VariantProps<typeof toggleVariants>;
+	type ToggleVariants = VariantProps<typeof toggleVariants>;
 
-interface ToggleGroupContext extends ToggleVariants {
-	spacing?: number;
-}
+	interface ToggleGroupContext extends ToggleVariants {
+		spacing?: number;
+	}
 
-export function setToggleGroupCtx(props: ToggleGroupContext) {
-	setContext('toggleGroup', props);
-}
+	export function setToggleGroupCtx(props: ToggleGroupContext) {
+		setContext('toggleGroup', props);
+	}
 
-export function getToggleGroupCtx() {
-	return getContext<Required<ToggleGroupContext>>('toggleGroup');
-}
+	export function getToggleGroupCtx() {
+		return getContext<Required<ToggleGroupContext>>('toggleGroup');
+	}
 </script>
 
 <script lang="ts">
-	import { untrack } from "svelte";
-	import { ToggleGroup as ToggleGroupPrimitive } from "bits-ui";
-	import { cn } from "../../utils.js";
+	import { untrack } from 'svelte';
+	import { ToggleGroup as ToggleGroupPrimitive } from 'bits-ui';
+	import { cn } from '../../utils.js';
 
 	let {
 		ref = $bindable(null),
 		value = $bindable(),
 		class: className,
-		size = "default",
+		size = 'default',
 		spacing = 0,
-		variant = "default",
+		variant = 'default',
 		...restProps
 	}: ToggleGroupPrimitive.RootProps & ToggleVariants & { spacing?: number } = $props();
 
@@ -49,9 +49,5 @@ get along, so we shut typescript up by casting `value` to `never`.
 	data-size={size}
 	data-spacing={spacing}
 	style={`--gap: ${spacing}`}
-	class={cn(
-		"group/toggle-group flex w-fit items-center gap-[--spacing(var(--gap))] rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs",
-		className
-	)}
-	{...restProps}
-/>
+	class={cn('group/toggle-group flex w-fit items-center gap-[--spacing(var(--gap))] rounded-sm data-[spacing=default]:data-[variant=outline]:shadow-xs', className)}
+	{...restProps} />

@@ -3,7 +3,14 @@
 	import type { HTMLSelectAttributes } from 'svelte/elements';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 
-	let { ref = $bindable(null), value = $bindable<string>(), class: className, children, placeholder, ...restProps }: WithElementRef<HTMLSelectAttributes> & { placeholder?: string } = $props();
+	let {
+		ref = $bindable(null),
+		value = $bindable<string>(),
+		class: className,
+		children,
+		placeholder,
+		...restProps
+	}: WithElementRef<HTMLSelectAttributes> & { placeholder?: string } = $props();
 </script>
 
 <select
@@ -13,7 +20,7 @@
 	class={cn(
 		'native-select',
 		'flex w-fit items-center justify-between gap-2',
-		'h-9 rounded-md border border-input bg-transparent',
+		'h-9 rounded-sm border border-input bg-transparent',
 		'text-sm whitespace-nowrap shadow-xs',
 		'outline-none select-none',
 		'transition-[color,box-shadow]',

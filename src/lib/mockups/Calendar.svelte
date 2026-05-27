@@ -32,11 +32,11 @@
 	<div class="p-4 [--cell-size:--spacing(8)]">
 		<!-- Nav -->
 		<div class="relative flex items-center justify-center">
-			<button class="absolute left-0 inline-flex size-(--cell-size) items-center justify-center rounded-md text-muted-foreground">
+			<button class="absolute left-0 inline-flex size-(--cell-size) items-center justify-center rounded-sm text-muted-foreground">
 				<ChevronLeft class="size-4" />
 			</button>
 			<span class="text-sm font-medium">{month} {year}</span>
-			<button class="absolute right-0 inline-flex size-(--cell-size) items-center justify-center rounded-md text-muted-foreground">
+			<button class="absolute right-0 inline-flex size-(--cell-size) items-center justify-center rounded-sm text-muted-foreground">
 				<ChevronRight class="size-4" />
 			</button>
 		</div>
@@ -61,7 +61,7 @@
 						<div class="relative size-(--cell-size) p-0 text-center text-sm">
 							{#if num}
 								<div
-									class="flex size-(--cell-size) items-center justify-center rounded-md font-normal select-none
+									class="flex size-(--cell-size) items-center justify-center rounded-sm font-normal select-none
 									{isSelected ? 'bg-primary text-primary-foreground' : isToday ? 'bg-accent text-accent-foreground' : 'text-foreground'}">
 									{num}
 								</div>

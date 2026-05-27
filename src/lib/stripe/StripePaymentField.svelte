@@ -4,7 +4,7 @@
 	import { toastError } from '@polumeyv/ui/sonner';
 	import { Spinner } from '@polumeyv/ui/spinner';
 	import { loadStripe } from '@stripe/stripe-js';
-	import { untrack } from 'svelte';
+	import { onMount } from 'svelte';
 	import type { PaymentMethod } from '@polumeyv/lib/public/types';
 
 	let {
@@ -37,7 +37,7 @@
 	let loading = $state(true);
 	let paymentDiv: HTMLDivElement;
 
-	$effect(() => untrack(() => {
+	onMount(() => {
 		let paymentEl: { unmount(): void } | null = null;
 		Promise.all([createSetupIntent(), loadStripe(stripeKey)])
 			.then(([{ clientSecret, customerSessionClientSecret }, s]) => {
@@ -73,7 +73,7 @@
 			})
 			.catch(() => (loading = false));
 		return () => paymentEl?.unmount();
-	}));
+	});
 
 	const submit = () => {
 		if (!stripe || !elements) return;
