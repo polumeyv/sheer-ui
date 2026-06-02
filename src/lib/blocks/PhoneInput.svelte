@@ -28,7 +28,7 @@
 	const toE164 = () => (raw ? `+${COUNTRIES[country]}${clean(raw)}` : '');
 </script>
 
-<div class="flex items-center gap-2">
+<div class="flex w-full gap-2">
 	<Select.Root
 		type="single"
 		value={country}
@@ -52,6 +52,7 @@
 			{placeholder}
 			autocomplete="tel-national"
 			inputmode="numeric"
+			class="w-full"
 			aria-invalid={!!error || undefined}
 			value={clean(raw)}
 			{disabled}

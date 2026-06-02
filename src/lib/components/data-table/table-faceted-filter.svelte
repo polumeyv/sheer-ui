@@ -38,17 +38,17 @@
 				{title}
 				{#if selectedValues.size > 0}
 					<Separator orientation="vertical" class="mx-2 h-4" />
-					<Badge variant="secondary" class="rounded-sm px-1 font-normal lg:hidden">
+					<Badge variant="secondary" class="rounded-md px-1 font-normal lg:hidden">
 						{selectedValues.size}
 					</Badge>
 					<div class="hidden space-x-1 lg:flex">
 						{#if selectedValues.size > 2}
-							<Badge variant="secondary" class="rounded-sm px-1 font-normal">
+							<Badge variant="secondary" class="rounded-md px-1 font-normal">
 								{selectedValues.size} selected
 							</Badge>
 						{:else}
 							{#each options.filter((opt) => selectedValues.has(opt.value)) as option (option)}
-								<Badge variant="secondary" class="rounded-sm px-1 font-normal">
+								<Badge variant="secondary" class="rounded-md px-1 font-normal">
 									{option.label}
 								</Badge>
 							{/each}
@@ -76,7 +76,11 @@
 								const filterValues = Array.from(selectedValues);
 								column?.setFilterValue(filterValues.length ? filterValues : undefined);
 							}}>
-							<div class={['me-2 flex size-4 items-center justify-center rounded-sm border border-primary', isSelected ? 'bg-primary text-primary-foreground' : 'opacity-50 [&_svg]:invisible']}>
+							<div
+								class={[
+									'me-2 flex size-4 items-center justify-center rounded-md border border-primary',
+									isSelected ? 'bg-primary text-primary-foreground' : 'opacity-50 [&_svg]:invisible',
+								]}>
 								<CheckIcon class="size-4" />
 							</div>
 							{#if option.icon}

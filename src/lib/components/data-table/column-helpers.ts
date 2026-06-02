@@ -6,6 +6,11 @@ import DataTableSortButton from './data-table-sort-button.svelte';
 
 type CheckedState = boolean | 'indeterminate';
 
+// `createRawSnippet`'s `render` returns a raw HTML string (like `{@html}`), so any cell text — which is usually
+// user-controlled (names, emails, …) — must be escaped before interpolation to avoid XSS.
+const ESCAPE: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ESCAPE[c]);
+
 /**
  * Creates a selection column with checkbox for selecting rows
  */
@@ -53,12 +58,11 @@ type TextCellOptions = {
  */
 export function textCell<T>(key: keyof T | ((row: T) => string | number | null | undefined), options?: TextCellOptions) {
 	return ({ row }: CellContext<T, unknown>) => {
-		const value = typeof key === 'function' ? key(row.original) : row.original[key];
-		const text = value ?? '';
+		const text = typeof key === 'function' ? key(row.original) : (row.original[key] ?? '');
 		const display = `${options?.prefix ?? ''}${text}${options?.suffix ?? ''}`;
 		const className = options?.bold ? 'font-medium' : '';
 		const snippet = createRawSnippet<[string]>((getText) => ({
-			render: () => `<span class="${className}">${getText()}</span>`,
+			render: () => `<span class="${className}">${escapeHtml(getText())}</span>`,
 		}));
 		return renderSnippet(snippet, display);
 	};
@@ -71,16 +75,19 @@ export function mutedCell<T>(key: keyof T | ((row: T) => string | number | null 
 	return ({ row }: CellContext<T, unknown>) => {
 		const value = typeof key === 'function' ? key(row.original) : row.original[key];
 		if (value == null) {
-			const snippet = createRawSnippet(() => ({
-				render: () => `<span class="text-muted-foreground">-</span>`,
-			}));
-			return renderSnippet(snippet, undefined);
+			return renderSnippet(
+				createRawSnippet(() => ({
+					render: () => `<span class="text-muted-foreground">-</span>`,
+				})),
+				undefined,
+			);
 		}
-		const display = `${options?.prefix ?? ''}${value}${options?.suffix ?? ''}`;
-		const snippet = createRawSnippet<[string]>((getText) => ({
-			render: () => `<span class="text-muted-foreground">${getText()}</span>`,
-		}));
-		return renderSnippet(snippet, display);
+		return renderSnippet(
+			createRawSnippet<[string]>((getText) => ({
+				render: () => `<span class="text-muted-foreground">${escapeHtml(getText())}</span>`,
+			})),
+			`${options?.prefix ?? ''}${value}${options?.suffix ?? ''}`,
+		);
 	};
 }
 

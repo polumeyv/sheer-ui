@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { SVGAttributes } from 'svelte/elements';
-	let { class: className, ...rest }: SVGAttributes<SVGSVGElement> = $props();
+	let { class: className, ...rest }: import('svelte/elements').SVGAttributes<SVGSVGElement> = $props();
 </script>
 
 <svg viewBox="0 0 48 48" class="ms-logo {className}" {...rest}>

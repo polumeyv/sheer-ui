@@ -145,7 +145,7 @@
 					{/each}
 				</Select.Content>
 			</Select.Root>
-			<div class="rounded-sm border">
+			<div class="rounded-md border">
 				<Calendar
 					type="single"
 					bind:value

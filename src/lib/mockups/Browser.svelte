@@ -11,7 +11,7 @@
 			<div class="size-2.5 rounded-full bg-muted-foreground/15"></div>
 			<div class="size-2.5 rounded-full bg-muted-foreground/15"></div>
 		</div>
-		<div class="mx-auto max-w-xs flex-1 rounded-sm bg-muted/50 px-3 py-0.5 text-center">
+		<div class="mx-auto max-w-xs flex-1 rounded-md bg-muted/50 px-3 py-0.5 text-center">
 			<span class="truncate text-xs text-muted-foreground/60">{title || ''}</span>
 		</div>
 		<div class="w-[36px]"></div>

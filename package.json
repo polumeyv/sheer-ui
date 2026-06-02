@@ -24,7 +24,7 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"prepack": "bunx svelte-kit sync && bunx svelte-package && bunx publint",
-		"package:watch": "bunx svelte-kit sync && bunx svelte-package -w",
+		"package:watch": "bunx svelte-kit sync && bunx svelte-package -w -p",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
@@ -299,9 +299,9 @@
 			"types": "./dist/format/index.d.ts",
 			"svelte": "./dist/format/index.js"
 		},
-		"./icons": {
-			"types": "./dist/icons/index.d.ts",
-			"svelte": "./dist/icons/index.js"
+		"./icons/*": {
+			"types": "./dist/icons/*.d.ts",
+			"svelte": "./dist/icons/*"
 		},
 		"./booking/calendar": {
 			"types": "./dist/booking/calendar/index.d.ts",

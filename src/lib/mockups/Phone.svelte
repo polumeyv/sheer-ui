@@ -6,10 +6,10 @@
 
 <div class="relative">
 	<!-- Side buttons -->
-	<div class="absolute w-0.5 bg-foreground/20 rounded-sm top-9/50 h-1/25 -left-[2.5px]"></div>
-	<div class="absolute w-0.5 bg-foreground/20 rounded-sm top-13/50 h-2/25 -left-[2.5px]"></div>
-	<div class="absolute w-0.5 bg-foreground/20 rounded-sm top-18/50 h-2/25 -left-[2.5px]"></div>
-	<div class="absolute w-0.5 bg-foreground/20 rounded-sm top-7/25 h-1/10 -right-0.5"></div>
+	<div class="absolute w-0.5 bg-foreground/20 rounded-md top-9/50 h-1/25 -left-[2.5px]"></div>
+	<div class="absolute w-0.5 bg-foreground/20 rounded-md top-13/50 h-2/25 -left-[2.5px]"></div>
+	<div class="absolute w-0.5 bg-foreground/20 rounded-md top-18/50 h-2/25 -left-[2.5px]"></div>
+	<div class="absolute w-0.5 bg-foreground/20 rounded-md top-7/25 h-1/10 -right-0.5"></div>
 
 	<!-- Phone outer frame -->
 	<div class="aspect-[9.5/19.5] rounded-(--card-radius) bg-foreground/20 p-(--card-padding) [--card-radius:3.2rem] [--card-padding:--spacing(.50)]">

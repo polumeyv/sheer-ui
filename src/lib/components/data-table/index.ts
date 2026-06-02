@@ -2,7 +2,6 @@ export { default as FlexRender } from "./flex-render.svelte";
 export { renderComponent, renderSnippet } from "./render-helpers.js";
 export { createSvelteTable } from "./data-table.svelte.js";
 
-export { default as DataTable } from "./DataTable.svelte";
 export { default as DataTableCheckbox } from "./data-table-checkbox.svelte";
 export { default as DataTableSortButton } from "./data-table-sort-button.svelte";
 export { selectColumn, textHeader, textCell, mutedCell, SortButton } from "./column-helpers.js";

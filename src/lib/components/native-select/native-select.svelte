@@ -20,7 +20,7 @@
 	class={cn(
 		'native-select',
 		'flex w-fit items-center justify-between gap-2',
-		'h-9 rounded-sm border border-input bg-transparent',
+		'h-9 rounded-md border border-input bg-transparent',
 		'text-sm whitespace-nowrap shadow-xs',
 		'outline-none select-none',
 		'transition-[color,box-shadow]',

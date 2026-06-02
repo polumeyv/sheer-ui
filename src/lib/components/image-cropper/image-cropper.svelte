@@ -4,17 +4,31 @@
 	import { Slider } from '@polumeyv/ui/slider';
 	import Upload from '@lucide/svelte/icons/upload';
 	import { draggable } from '../../hooks';
+	import type { Snippet } from 'svelte';
+	import type { HTMLButtonAttributes } from 'svelte/elements';
 
-	interface Props {
+	interface Props extends HTMLButtonAttributes {
 		open?: boolean;
 		aspectRatio?: number;
 		outputSize?: number;
 		initialImage?: string | null;
-		onSave?: (dataUrl: string) => void;
-		onCancel?: () => void;
+		onsave?: (dataUrl: string) => void;
+		oncancel?: () => void;
+		/** Trigger content. When provided, the component renders a button wrapping it that opens the cropper on click
+		 *  (so the consumer can host its own avatar + hover affordance). Omit to drive the dialog via `bind:open`. */
+		children?: Snippet;
 	}
 
-	let { open = $bindable(false), aspectRatio = 1, outputSize = 256, initialImage = null, onSave, onCancel }: Props = $props();
+	let {
+		open = $bindable(false),
+		aspectRatio = 1,
+		outputSize = 256,
+		initialImage = null,
+		onsave,
+		oncancel,
+		children,
+		...triggerProps
+	}: Props = $props();
 
 	let fileInput = $state<HTMLInputElement | null>(null);
 	let imageUrl = $state<string | null>(null);
@@ -78,7 +92,7 @@
 			ctx.drawImage(img, cropX, cropY, cropWidth, cropHeight, 0, 0, canvas.width, canvas.height);
 
 			const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-			onSave?.(dataUrl);
+			onsave?.(dataUrl);
 			close();
 		};
 		img.src = imageUrl;
@@ -92,10 +106,17 @@
 	}
 
 	function handleCancel() {
-		onCancel?.();
+		oncancel?.();
 		close();
 	}
 </script>
+
+{#if children}
+	<!-- Consumer-hosted trigger: the button is the click target + hover `group`, wrapping the avatar/pencil children. -->
+	<button type="button" {...triggerProps} onclick={() => (open = true)}>
+		{@render children()}
+	</button>
+{/if}
 
 <Dialog.Root bind:open onOpenChange={(o) => !o && close()}>
 	<Dialog.Content class="max-w-md">
