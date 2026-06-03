@@ -5,7 +5,7 @@
 	import { Spinner } from '@polumeyv/ui/spinner';
 	import { loadStripe } from '@stripe/stripe-js';
 	import { onMount } from 'svelte';
-	import type { PaymentMethod } from '@polumeyv/lib/public/types';
+	import type { PaymentMethod } from '@polumeyv/lib/schemas';
 
 	let {
 		stripeKey,

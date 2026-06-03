@@ -1,10 +1,10 @@
 /**
  * Time-slot helpers for the time-picker components — comparison, duration, and slot generation over
  * ISO 8601 "HH:MM" wall-clock strings. UI-internal; `formatTimeDisplay` (the wire/display formatter) stays in
- * `@polumeyv/lib/booking/utils` since apps render times directly.
+ * `@polumeyv/lib/public` since apps render times directly.
  */
 import { parseTime, Time } from '@internationalized/date';
-import { formatTimeDisplay } from '@polumeyv/lib/booking/utils';
+import { formatTimeDisplay } from '@polumeyv/lib/public';
 
 export type TimeSlot = { value: string; label: string };
 export type TimeRange = { start: string; end: string };
