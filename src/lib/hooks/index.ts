@@ -1,6 +1,6 @@
 export { IsMobile, isMobile } from './is-mobile.svelte';
 export { autofocus } from './autofocus';
-export { scrollReveal } from './scroll-reveal';
+export { scrollReveal, type ScrollRevealOptions } from './scroll-reveal';
 export { useViewTransition, type UseViewTransitionOptions, type ViewTransitionDirection } from './view-transition';
 export { errorVisibility } from './error-visibility.svelte';
 export { draggable } from './draggable';
