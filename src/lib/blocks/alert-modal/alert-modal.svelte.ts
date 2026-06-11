@@ -74,8 +74,17 @@ export class AlertModalState {
 
 export const alertModal = new AlertModalState();
 
-/** True when a thrown value is the server hook's session-expired signal — an HTTP 401 surfaced from a remote call (SvelteKit's client wrapper rethrows it as `HttpError { status, body }`). */
-export const isSessionExpired = (e: unknown): boolean => typeof e === 'object' && e !== null && 'status' in e && (e as { status: unknown }).status === 401;
+/**
+ * True when a thrown value is the server hook's session-expired signal. Two shapes reach the client:
+ * the raw `HttpError { status: 401, body }` rethrown by SvelteKit's remote wrappers (commands, caught form
+ * submits), and — inside `<svelte:boundary>` `onerror` under `handleRenderingErrors` — the *transformed*
+ * error, which is just the `App.Error` body carrying `code: 'SESSION_EXPIRED'` (the status lives on `page.status`).
+ */
+export const isSessionExpired = (e: unknown): boolean => {
+	if (typeof e !== 'object' || e === null) return false;
+	const { status, code } = e as { status?: unknown; code?: unknown };
+	return status === 401 || code === 'SESSION_EXPIRED';
+};
 
 /**
  * Session-expired UX — the same alertModal pattern as the auth app's lockout/429 flows, never the gray error page:
