@@ -54,10 +54,10 @@
 			{#each { length: Math.ceil(days.length / 7) } as _, week (week)}
 				<div class="flex mt-2">
 					{#each { length: 7 } as _, col (col)}
-						{@const idx = week * 7 + col}
-						{@const num = days[idx] ?? null}
-						{@const isSelected = num === selected}
-						{@const isToday = num === today && !isSelected}
+						{const idx = week * 7 + col}
+						{const num = days[idx] ?? null}
+						{const isSelected = num === selected}
+						{const isToday = num === today && !isSelected}
 						<div class="relative size-(--cell-size) p-0 text-center text-sm">
 							{#if num}
 								<div

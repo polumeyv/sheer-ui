@@ -13,4 +13,5 @@ export const TOAST_ERRORS = {
 } as const;
 
 /** Show error toast - extracts message from Error objects. Returns void for use in .catch(). A session-expired (401) remote failure diverts to the alertModal + re-auth flow instead of a dead-end toast. */
-export const toastError = (e: unknown) => void (isSessionExpired(e) ? recoverSession() : toast.error(e instanceof Error ? e.message : String(e)));
+export const toastError = (e: unknown) =>
+	void (isSessionExpired(e) ? recoverSession() : toast.error(Error.isError(e) ? e.message : String(e)));

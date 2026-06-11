@@ -32,8 +32,8 @@
 	{#if tabs.length > 0}
 		<div role="tablist" aria-orientation="horizontal" class="relative flex">
 			{#each tabs as tab (tab.id)}
-				{@const isActive = activeTab === tab.id}
-				{@const Icon = tab.icon}
+				{const isActive = activeTab === tab.id}
+				{const Icon = tab.icon}
 
 				<svelte:element
 					this={tab.href ? 'a' : 'button'}

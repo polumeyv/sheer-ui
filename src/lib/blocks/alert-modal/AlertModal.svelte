@@ -21,7 +21,7 @@
 >
 	<AlertDialog.Content>
 		{#if alertModal.options}
-			{@const opts = alertModal.options}
+			{const opts = alertModal.options}
 			<AlertDialog.Header>
 				<AlertDialog.Title class={titleClasses[opts.variant ?? ''] ?? ''}>
 					{opts.title}

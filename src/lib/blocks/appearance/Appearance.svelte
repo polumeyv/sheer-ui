@@ -52,8 +52,8 @@
 				{#each [{ value: 'light', label: 'Light', colors: [LIGHT] as const }, { value: 'dark', label: 'Dark', colors: [DARK] as const }, { value: 'system', label: 'System', colors: [DARK, LIGHT] as const }] as mode (mode.value)}
 					<Field.Label for={mode.value} class="cursor-pointer">
 						<Field.Field class="space-y-2">
-							{@const base = mode.colors[0]}
-							{@const overlay = mode.colors[1]}
+							{const base = mode.colors[0]}
+							{const overlay = mode.colors[1]}
 							<svg viewBox="0 0 163 88" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<g clip-path="url(#clip-{mode.value})">
 									<rect x="0.742" width="161.5" height="88" rx="6" fill={base.bg} />

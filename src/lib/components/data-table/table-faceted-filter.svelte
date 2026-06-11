@@ -65,7 +65,7 @@
 				<Command.Empty>No results found.</Command.Empty>
 				<Command.Group>
 					{#each options as option (option)}
-						{@const isSelected = selectedValues.has(option.value)}
+						{const isSelected = selectedValues.has(option.value)}
 						<Command.Item
 							onSelect={() => {
 								if (isSelected) {
@@ -84,7 +84,7 @@
 								<CheckIcon class="size-4" />
 							</div>
 							{#if option.icon}
-								{@const Icon = option.icon}
+								{const Icon = option.icon}
 								<Icon class="text-muted-foreground" />
 							{/if}
 

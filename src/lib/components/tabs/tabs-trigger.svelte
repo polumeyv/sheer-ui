@@ -25,7 +25,7 @@
 {#if childProp}
 	<TabsPrimitive.Trigger bind:ref data-slot="tabs-trigger" {...restProps}>
 		{#snippet child({ props })}
-			{@const mergedProps = mergeProps({ class: triggerClass }, props)}
+			{const mergedProps = mergeProps({ class: triggerClass }, props)}
 			{@render childProp({ props: mergedProps })}
 		{/snippet}
 	</TabsPrimitive.Trigger>

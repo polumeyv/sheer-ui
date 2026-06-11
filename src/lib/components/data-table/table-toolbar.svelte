@@ -39,7 +39,7 @@
 	{/if}
 	<div class="flex items-center space-x-2">
 		{#each filters as filter (filter.column)}
-			{@const col = table.getColumn(filter.column)}
+			{const col = table.getColumn(filter.column)}
 			{#if col}
 				<DataTableFacetedFilter {disabled} column={col} title={filter.title} options={filter.options} />
 			{/if}

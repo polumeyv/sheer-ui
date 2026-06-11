@@ -59,7 +59,7 @@
 		<div class="flex w-full justify-between">
 			<div class="flex gap-6 text-sm text-muted-foreground [&_a]:hover:text-foreground">
 				{#each socialLinks as link (link.href)}
-					{@const Icon = link.icon}
+					{const Icon = link.icon}
 					<a href={link.href} target="_blank" rel="noopener noreferrer" aria-label={link.label}>
 						<Icon class="size-5" />
 					</a>

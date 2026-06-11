@@ -1,4 +1,4 @@
-import type { Component, ComponentProps, Snippet } from "svelte";
+import type { Component, ComponentProps, Snippet } from 'svelte';
 
 /**
  * A helper class to make it easy to identify Svelte components in
@@ -9,9 +9,9 @@ import type { Component, ComponentProps, Snippet } from "svelte";
  *
  * @example
  * ```svelte
- * {@const result = content(context as any)}
+ * {const result = content(context as any)}
  * {#if result instanceof RenderComponentConfig}
- *   {@const { component: Component, props } = result}
+ *   {const { component: Component, props } = result}
  *   <Component {...props} />
  * {/if}
  * ```
@@ -19,10 +19,7 @@ import type { Component, ComponentProps, Snippet } from "svelte";
 export class RenderComponentConfig<TComponent extends Component> {
 	component: TComponent;
 	props: ComponentProps<TComponent> | Record<string, never>;
-	constructor(
-		component: TComponent,
-		props: ComponentProps<TComponent> | Record<string, never> = {}
-	) {
+	constructor(component: TComponent, props: ComponentProps<TComponent> | Record<string, never> = {}) {
 		this.component = component;
 		this.props = props;
 	}
@@ -36,9 +33,9 @@ export class RenderComponentConfig<TComponent extends Component> {
  *
  * @example
  * ```svelte
- * {@const result = content(context as any)}
+ * {const result = content(context as any)}
  * {#if result instanceof RenderSnippetConfig}
- *   {@const { snippet, params } = result}
+ *   {const { snippet, params } = result}
  *   {@render snippet(params)}
  * {/if}
  * ```
