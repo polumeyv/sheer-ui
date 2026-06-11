@@ -1,4 +1,5 @@
 import { toast } from 'svelte-sonner';
+import { isSessionExpired, recoverSession } from '../../blocks/alert-modal/alert-modal.svelte';
 
 export { default as Toaster } from './sonner.svelte';
 export { toast };
@@ -11,5 +12,5 @@ export const TOAST_ERRORS = {
 	server: ['Something went wrong', { description: 'Please try again later.' }],
 } as const;
 
-/** Show error toast - extracts message from Error objects. Returns void for use in .catch() */
-export const toastError = (e: unknown) => void toast.error(e instanceof Error ? e.message : String(e));
+/** Show error toast - extracts message from Error objects. Returns void for use in .catch(). A session-expired (401) remote failure diverts to the alertModal + re-auth flow instead of a dead-end toast. */
+export const toastError = (e: unknown) => void (isSessionExpired(e) ? recoverSession() : toast.error(e instanceof Error ? e.message : String(e)));
