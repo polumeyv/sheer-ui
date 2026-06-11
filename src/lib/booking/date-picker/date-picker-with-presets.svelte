@@ -13,6 +13,7 @@
 	};
 
 	interface Props {
+		/** Controlled value; wins over `valueAsString` while set. Picks are reported via `onValueChange`. */
 		value?: DateValue;
 		valueAsString?: string;
 		placeholder?: string;
@@ -47,7 +48,7 @@
 	];
 
 	let {
-		value = $bindable(),
+		value,
 		valueAsString = $bindable(),
 		placeholder = 'Pick a date',
 		dateFormat = 'long',
@@ -72,30 +73,28 @@
 		isDateUnavailable,
 	}: Props = $props();
 
-	// Sync valueAsString -> value (on mount or external change)
-	$effect(() => {
-		if (valueAsString && !value) {
-			try {
-				value = parseDate(valueAsString);
-			} catch {
-				// Invalid date string, ignore
-			}
+	const parseDateSafe = (s: string | undefined) => {
+		if (!s) return undefined;
+		try {
+			return parseDate(s);
+		} catch {
+			return undefined;
 		}
-	});
+	};
 
-	// Sync value -> valueAsString
-	$effect(() => {
-		if (value) {
-			const str = value.toString();
-			if (str !== valueAsString) {
-				valueAsString = str;
-				onValueStringChange?.(str);
-			}
-		} else if (valueAsString && !value) {
-			valueAsString = '';
-			onValueStringChange?.('');
+	// Props are the source of truth; a pick overrides the derived until either prop changes
+	// externally, so a parent resetting `valueAsString` actually clears the picker.
+	let date = $derived(value ?? parseDateSafe(valueAsString));
+
+	function pick(next: DateValue | undefined) {
+		date = next;
+		const str = next?.toString() ?? '';
+		if (str !== (valueAsString ?? '')) {
+			valueAsString = str;
+			onValueStringChange?.(str);
 		}
-	});
+		onValueChange?.(next);
+	}
 
 	const df = $derived(
 		new DateFormatter(locale, {
@@ -103,14 +102,9 @@
 		}),
 	);
 
-	const displayValue = $derived(value ? df.format(value.toDate(getLocalTimeZone())) : placeholder);
+	const displayValue = $derived(date ? df.format(date.toDate(getLocalTimeZone())) : placeholder);
 
-	const selectValue = $derived(value ? displayValue : '');
-
-	function handleValueChange(newValue: DateValue | undefined) {
-		value = newValue;
-		onValueChange?.(newValue);
-	}
+	const selectValue = $derived(date ? displayValue : '');
 </script>
 
 <div class={cn('grid gap-2', className)}>
@@ -122,7 +116,7 @@
 					variant: 'outline',
 					class: 'w-70 justify-start text-start font-normal',
 				}),
-				!value && 'text-muted-foreground',
+				!date && 'text-muted-foreground',
 				triggerClass,
 			)}>
 			<CalendarIcon class="me-2 size-4" />
@@ -134,7 +128,7 @@
 				value={selectValue}
 				onValueChange={(v) => {
 					if (!v) return;
-					value = today(getLocalTimeZone()).add({ days: Number.parseInt(v) });
+					pick(today(getLocalTimeZone()).add({ days: Number.parseInt(v) }));
 				}}>
 				<Select.Trigger>
 					{selectValue || presetsPlaceholder}
@@ -148,8 +142,8 @@
 			<div class="rounded-md border">
 				<Calendar
 					type="single"
-					bind:value
-					onValueChange={handleValueChange}
+					value={date}
+					onValueChange={pick}
 					{captionLayout}
 					{minValue}
 					{maxValue}

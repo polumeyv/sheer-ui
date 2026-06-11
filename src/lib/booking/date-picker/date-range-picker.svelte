@@ -13,6 +13,7 @@ type DateRangeString = {
 };
 
 interface Props {
+	/** Controlled value; wins over `valueAsString` while set. Picks are reported via `onValueChange`. */
 	value?: DateRange;
 	valueAsString?: DateRangeString;
 	placeholder?: string;
@@ -38,7 +39,7 @@ interface Props {
 }
 
 let {
-	value = $bindable(),
+	value,
 	valueAsString = $bindable(),
 	placeholder = 'Pick a date range',
 	dateFormat = 'medium',
@@ -63,32 +64,30 @@ let {
 
 let startValue: DateValue | undefined = $state(undefined);
 
-// Sync valueAsString -> value (on mount or external change)
-$effect(() => {
-	if (valueAsString?.start && !value?.start) {
-		try {
-			const start = parseDate(valueAsString.start);
-			const end = valueAsString.end ? parseDate(valueAsString.end) : undefined;
-			value = { start, end };
-		} catch {
-			// Invalid date string, ignore
-		}
+const parseRangeSafe = (s: DateRangeString | undefined): DateRange | undefined => {
+	if (!s?.start) return undefined;
+	try {
+		return { start: parseDate(s.start), end: s.end ? parseDate(s.end) : undefined };
+	} catch {
+		return undefined;
 	}
-});
+};
 
-// Sync value -> valueAsString
-$effect(() => {
-	if (value?.start) {
-		const newString: DateRangeString = {
-			start: value.start.toString(),
-			end: value.end?.toString(),
-		};
-		if (newString.start !== valueAsString?.start || newString.end !== valueAsString?.end) {
-			valueAsString = newString;
-			onValueStringChange?.(newString);
-		}
+// Props are the source of truth; a pick overrides the derived until either prop changes
+// externally, so a parent resetting `valueAsString` actually clears the picker.
+let range = $derived(value ?? parseRangeSafe(valueAsString));
+
+function pick(next: DateRange | undefined) {
+	range = next;
+	const start = next?.start?.toString();
+	const end = next?.end?.toString();
+	if (start !== valueAsString?.start || end !== valueAsString?.end) {
+		// spread: keep extra keys a consumer carries on the bound object (e.g. a label field)
+		valueAsString = { ...valueAsString, start, end };
+		onValueStringChange?.(valueAsString);
 	}
-});
+	onValueChange?.(next);
+}
 
 const df = $derived(
 	new DateFormatter(locale, {
@@ -97,22 +96,17 @@ const df = $derived(
 );
 
 const displayValue = $derived.by(() => {
-	if (value?.start) {
-		if (value.end) {
-			return `${df.format(value.start.toDate(getLocalTimeZone()))} - ${df.format(value.end.toDate(getLocalTimeZone()))}`;
+	if (range?.start) {
+		if (range.end) {
+			return `${df.format(range.start.toDate(getLocalTimeZone()))} - ${df.format(range.end.toDate(getLocalTimeZone()))}`;
 		}
-		return df.format(value.start.toDate(getLocalTimeZone()));
+		return df.format(range.start.toDate(getLocalTimeZone()));
 	}
 	if (startValue) {
 		return df.format(startValue.toDate(getLocalTimeZone()));
 	}
 	return placeholder;
 });
-
-function handleValueChange(newValue: DateRange | undefined) {
-	value = newValue;
-	onValueChange?.(newValue);
-}
 </script>
 
 <div class={cn("grid gap-2", className)}>
@@ -122,7 +116,7 @@ function handleValueChange(newValue: DateRange | undefined) {
       class={cn(
         buttonVariants({ variant: "outline" }),
         "justify-start text-start font-normal",
-        !value && "text-muted-foreground",
+        !range && "text-muted-foreground",
         triggerClass
       )}
     >
@@ -131,8 +125,8 @@ function handleValueChange(newValue: DateRange | undefined) {
     </Popover.Trigger>
     <Popover.Content class={cn("w-auto p-0", contentClass)} {align} {side}>
       <RangeCalendar
-        bind:value
-        onValueChange={handleValueChange}
+        value={range}
+        onValueChange={pick}
         onStartValueChange={(v) => {
           startValue = v;
         }}

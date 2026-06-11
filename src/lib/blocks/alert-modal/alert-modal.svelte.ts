@@ -25,7 +25,9 @@ const VARIANT_DEFAULTS: Record<AlertModalVariant, string> = {
 export class AlertModalState {
 	open = $state(false);
 	loading = $state(false);
-	options = $state<AlertModalOptions | null>(null);
+	// raw: replaced wholesale by show()/close(), never mutated, and it carries a Snippet,
+	// which has no business inside a deep proxy
+	options = $state.raw<AlertModalOptions | null>(null);
 	confirmInput = $state('');
 
 	get canConfirm(): boolean {
