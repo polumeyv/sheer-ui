@@ -1,50 +1,16 @@
-import { twMerge } from 'tailwind-merge';
+import { guard, join } from 'overrule';
 
+export type { ClassValue } from 'overrule';
 export type ClassDictionary = Record<string, unknown>;
-export type ClassValue = ClassValue[] | ClassDictionary | string | number | bigint | null | boolean | undefined;
-
-function join(inputs: ClassValue[]): string {
-	let out = '';
-	for (const input of inputs) {
-		if (!input || input === true) continue;
-		let part = '';
-		if (typeof input === 'object') {
-			if (Array.isArray(input)) part = join(input);
-			else for (const key in input) if (input[key]) part += (part ? ' ' : '') + key;
-		} else {
-			part = String(input);
-		}
-		if (part) out += (out ? ' ' : '') + part;
-	}
-	return out;
-}
-
-const reportedConflicts = new Set<string>();
 
 /**
  * Plain class join — conflict resolution is an authoring-time invariant, not a
  * runtime feature. Base/variant/caller classes must never set the same property
  * for the same modifier prefix (use trailing `!` for deliberate overrides). The
- * dev-only assertion below flags violations; variants.test.ts guards the library.
+ * dev-only guard warns on violations; variants.test.ts guards the library.
+ * This is overrule, the package this file's first version grew into.
  */
-export function cn(...inputs: ClassValue[]): string {
-	const joined = join(inputs);
-	if (import.meta.env.DEV) {
-		const merged = twMerge(joined);
-		if (merged.length !== joined.length) {
-			const kept = new Set(merged.split(' '));
-			const dropped = [...new Set(joined.split(/\s+/))].filter((c) => c && !kept.has(c));
-			if (dropped.length > 0) {
-				const signature = dropped.sort().join(' ');
-				if (!reportedConflicts.has(signature)) {
-					reportedConflicts.add(signature);
-					console.warn(`[cn] conflicting classes "${dropped.join(' ')}" are now unresolved (cascade decides) in "${joined}" — fix the caller (see tailwind-merge-removal plan)`);
-				}
-			}
-		}
-	}
-	return joined;
-}
+export const cn = import.meta.env.DEV ? guard(join) : join;
 
 type VariantsSchema = Record<string, Record<string, string>>;
 
