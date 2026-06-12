@@ -19,11 +19,11 @@
 		"**/*.css"
 	],
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build && bun run prepack",
-		"preview": "vite preview",
+		"dev": "bunx --bun vite dev",
+		"build": "bunx --bun vite build && bun run prepack",
+		"preview": "bunx --bun vite preview",
 		"prepare": "svelte-kit sync || echo ''",
-		"prepack": "bunx svelte-kit sync && bunx svelte-package && bunx publint",
+		"prepack": "bunx --bun svelte-kit sync && bunx --bun svelte-package && bunx publint",
 		"package:watch": "bunx svelte-kit sync && bunx svelte-package -w -p",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
