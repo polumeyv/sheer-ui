@@ -5,7 +5,6 @@
 	import { Spinner } from '@polumeyv/ui/spinner';
 	import { loadStripe } from '@stripe/stripe-js';
 	import { untrack } from 'svelte';
-	import type { Attachment } from 'svelte/attachments';
 	import type { PaymentMethod } from '@polumeyv/lib/schemas';
 
 	let {
