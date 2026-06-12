@@ -53,7 +53,6 @@
 					}}
 				>
 					{#if alertModal.loading}<Spinner />{/if}
-					{alertModal.loading ? 'Please wait...' : alertModal.actionLabel}
 				</AlertDialog.Action>
 			</AlertDialog.Footer>
 		{/if}

@@ -14,13 +14,12 @@ export default defineConfig({
 			// Path is relative to the generated .svelte-kit/tsconfig.json.
 			typescript: {
 				config: (c) => {
-					c.extends = '../../../../tsconfig.base.json';
+					c.extends = '../../../../tsconfig.json';
 				},
 			},
 			// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
 			vitePlugin: {
-				dynamicCompileOptions: ({ filename }) =>
-					filename.split(/[/\\]/).includes('node_modules') ? undefined : { runes: true },
+				dynamicCompileOptions: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : { runes: true }),
 			},
 		}),
 	],

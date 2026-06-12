@@ -37,48 +37,6 @@
 	let submitting = $state(false);
 	let loading = $state(true);
 
-	// untrack pins the setup to once-per-mount: the callback props are usually inline arrows,
-	// so their identity changes on every parent render and must not re-create the setup intent.
-	const mountPayment: Attachment<HTMLDivElement> = (node) => {
-		let paymentEl: { unmount(): void } | null = null;
-		untrack(() =>
-			Promise.all([createSetupIntent(), loadStripe(stripeKey)])
-				.then(([{ clientSecret, customerSessionClientSecret }, s]) => {
-					if (!s || !clientSecret) throw new Error('Failed to initialize payment');
-					const isDark = document.documentElement.classList.contains('dark');
-					stripe = s;
-					elements = s.elements({
-						clientSecret,
-						customerSessionClientSecret,
-						appearance: {
-							theme: isDark ? 'night' : 'stripe',
-							variables: {
-								colorPrimary: isDark ? 'hsl(41, 69%, 62%)' : 'hsl(40, 91%, 45%)',
-								tabIconColor: isDark ? '#a3a3a3' : '#737373',
-								tabIconHoverColor: isDark ? '#ffffff' : '#000000',
-								tabIconSelectedColor: '#1f1f1f',
-								colorBackground: isDark ? 'hsl(80 2.1% 12.4%)' : '#ffffff',
-								logoColor: isDark ? 'light' : 'dark',
-							},
-						},
-					});
-					const el = elements.create('payment', {
-						defaultValues: {
-							billingDetails: {
-								name: billingName || undefined,
-								email: email || undefined,
-							},
-						},
-					});
-					el.mount(node);
-					el.on('ready', () => (loading = false));
-					paymentEl = el;
-				})
-				.catch(() => (loading = false)),
-		);
-		return () => paymentEl?.unmount();
-	};
-
 	const submit = () => {
 		if (!stripe || !elements) return;
 		submitting = true;
@@ -104,7 +62,50 @@
 		{#if title}
 			<h3 class="text-base font-medium mb-4">{title}</h3>
 		{/if}
-		<div {@attach mountPayment} class="w-full"></div>
+		<div
+			{@attach (node) => {
+				// untrack pins the setup to once-per-mount: the callback props are usually inline arrows,
+				// so their identity changes on every parent render and must not re-create the setup intent.
+				let paymentEl: { unmount(): void } | null = null;
+				untrack(() =>
+					Promise.all([createSetupIntent(), loadStripe(stripeKey)])
+						.then(([{ clientSecret, customerSessionClientSecret }, s]) => {
+							if (!s || !clientSecret) throw new Error('Failed to initialize payment');
+							const isDark = document.documentElement.classList.contains('dark');
+							stripe = s;
+							elements = s.elements({
+								clientSecret,
+								customerSessionClientSecret,
+								appearance: {
+									theme: isDark ? 'night' : 'stripe',
+									variables: {
+										colorPrimary: isDark ? 'hsl(41, 69%, 62%)' : 'hsl(40, 91%, 45%)',
+										tabIconColor: isDark ? '#a3a3a3' : '#737373',
+										tabIconHoverColor: isDark ? '#ffffff' : '#000000',
+										tabIconSelectedColor: '#1f1f1f',
+										colorBackground: isDark ? 'hsl(80 2.1% 12.4%)' : '#ffffff',
+										logoColor: isDark ? 'light' : 'dark',
+									},
+								},
+							});
+							const el = elements.create('payment', {
+								defaultValues: {
+									billingDetails: {
+										name: billingName || undefined,
+										email: email || undefined,
+									},
+								},
+							});
+							el.mount(node);
+							el.on('ready', () => (loading = false));
+							paymentEl = el;
+						})
+						.catch(() => (loading = false)),
+				);
+				return () => paymentEl?.unmount();
+			}}
+			class="w-full">
+		</div>
 		<div class="flex justify-end gap-2 mt-4">
 			{#if oncancel}
 				<Button variant="outline" disabled={submitting} onclick={oncancel}>Cancel</Button>
