@@ -123,7 +123,7 @@ const displayValue = $derived.by(() => {
       <CalendarIcon class="me-2 size-4" />
       {displayValue}
     </Popover.Trigger>
-    <Popover.Content class={cn("w-auto p-0", contentClass)} {align} {side}>
+    <Popover.Content class={cn("w-auto! p-0!", contentClass)} {align} {side}>
       <RangeCalendar
         value={range}
         onValueChange={pick}

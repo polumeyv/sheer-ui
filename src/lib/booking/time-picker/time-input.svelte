@@ -103,10 +103,10 @@
 		value={display || undefined}
 		onValueChange={handleSelect}
 		{disabled}>
-		<Select.Trigger size="sm" class={cn(use24Hour ? 'w-[72px]' : 'w-[60px]', 'px-2', triggerClass)}>
+		<Select.Trigger size="sm" class={cn(use24Hour ? 'w-[72px]!' : 'w-[60px]!', 'px-2!', triggerClass)}>
 			<span class="flex-1 text-center">{display || placeholder}</span>
 		</Select.Trigger>
-		<Select.Content class="max-h-50">
+		<Select.Content class="max-h-50!">
 			{#each slots as slot}
 				<Select.Item value={slot} label={slot} />
 			{/each}

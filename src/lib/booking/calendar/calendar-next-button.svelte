@@ -20,7 +20,7 @@
 {/snippet}
 <CalendarPrimitive.NextButton
 	bind:ref
-	class={cn(buttonVariants({ variant }), 'size-(--cell-size) bg-transparent p-0 select-none disabled:opacity-50 rtl:rotate-180', className)}
+	class={cn(buttonVariants({ variant }), 'size-(--cell-size)! bg-transparent p-0! select-none disabled:opacity-50 rtl:rotate-180', className)}
 	{...restProps}>
 	{#if children}
 		{@render children?.()}

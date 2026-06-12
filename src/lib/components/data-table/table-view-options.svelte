@@ -3,16 +3,13 @@
 	import type { Table } from '@tanstack/table-core';
 	import * as DropdownMenu from '@polumeyv/ui/dropdown-menu';
 	import { buttonVariants } from '@polumeyv/ui/button';
+	import { cn } from '../../utils';
 	let { table }: { table: Table<TData> } = $props();
 </script>
 
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger
-		class={buttonVariants({
-			variant: 'outline',
-			size: 'sm',
-			class: 'ms-auto hidden h-8 lg:flex',
-		})}>
+		class={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'ms-auto max-lg:hidden')}>
 		<Settings2Icon />
 		View
 	</DropdownMenu.Trigger>

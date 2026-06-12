@@ -10,6 +10,7 @@
 		"skipLibCheck": true,
 		"module": "esnext",
 		"target": "esnext",
+		"types": ["bun"],
 		"strict": true,
 		// Inherit base's plugins/options, but keep this component lib's prior strictness profile:
 		// base enables noUncheckedIndexedAccess, which the vendored UI components aren't written for.

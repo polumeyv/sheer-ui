@@ -46,7 +46,7 @@
 		{/each}
 
 		{#if isFiltered}
-			<Button variant="ghost" {disabled} onclick={() => table.resetColumnFilters()} class="h-8 px-2 lg:px-3">
+			<Button variant="ghost" {disabled} onclick={() => table.resetColumnFilters()} class="h-8! px-2! lg:px-3!">
 				Reset
 				<XIcon />
 			</Button>

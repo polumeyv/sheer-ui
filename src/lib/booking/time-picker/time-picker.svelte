@@ -100,7 +100,7 @@
 			class={cn(
 				buttonVariants({
 					variant: 'outline',
-					class: 'w-[180px] justify-start text-start font-normal',
+					class: 'w-[180px] justify-start! text-start font-normal!',
 				}),
 				!value && 'text-muted-foreground',
 				triggerClass,
@@ -108,7 +108,7 @@
 			<Clock class="me-2 size-4" />
 			{displayValue}
 		</Select.Trigger>
-		<Select.Content class={cn('max-h-[300px]', contentClass)} {align} {side}>
+		<Select.Content class={cn('max-h-[300px]!', contentClass)} {align} {side}>
 			{#each filteredSlots as slot (slot.value)}
 				<Select.Item value={slot.value}>{slot.label}</Select.Item>
 			{/each}

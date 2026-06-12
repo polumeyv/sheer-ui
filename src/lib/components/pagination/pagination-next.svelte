@@ -14,7 +14,7 @@ let { ref = $bindable(null), class: className, ...restProps }: PaginationPrimiti
 		buttonVariants({
 			size: "default",
 			variant: "ghost",
-			class: "gap-1 px-2.5 sm:pe-2.5",
+			class: "gap-1! sm:pe-2.5",
 		}),
 		className
 	)}

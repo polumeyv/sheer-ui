@@ -148,7 +148,7 @@
 			class={cn(
 				buttonVariants({
 					variant: 'outline',
-					class: 'w-auto min-w-[220px] justify-start text-start font-normal',
+					class: 'w-auto min-w-[220px] justify-start! text-start font-normal!',
 				}),
 				!value?.start && 'text-muted-foreground',
 				triggerClass,
@@ -156,14 +156,14 @@
 			<Clock class="me-2 size-4" />
 			{displayValue}
 		</Popover.Trigger>
-		<Popover.Content class={cn('flex w-auto gap-2 p-3', contentClass)} {align} {side}>
+		<Popover.Content class={cn('flex w-auto! gap-2 p-3!', contentClass)} {align} {side}>
 			<div class="flex flex-col gap-1">
 				<span class="text-xs text-muted-foreground px-1">Start</span>
 				<Select.Root type="single" value={value?.start} onValueChange={handleStartChange}>
 					<Select.Trigger class="w-[120px]">
 						{value?.start ? formatTimeDisplay(value.start) : 'Start time'}
 					</Select.Trigger>
-					<Select.Content class="max-h-50">
+					<Select.Content class="max-h-50!">
 						{#each startSlots as slot (slot.value)}
 							<Select.Item value={slot.value}>{slot.label}</Select.Item>
 						{/each}
@@ -179,7 +179,7 @@
 					<Select.Trigger class="w-[120px]">
 						{value?.end ? formatTimeDisplay(value.end) : 'End time'}
 					</Select.Trigger>
-					<Select.Content class="max-h-50">
+					<Select.Content class="max-h-50!">
 						{#each endSlots as slot (slot.value)}
 							<Select.Item value={slot.value}>{slot.label}</Select.Item>
 						{/each}

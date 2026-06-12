@@ -1,0 +1,87 @@
+/**
+ * Test-only registry enumerating every variant axis of every variants.ts config.
+ * Used by variants.test.ts to prove class strings stay disjoint (merge-is-a-no-op).
+ */
+import { buttonVariants } from './button/variants';
+import { badgeVariants } from './badge/variants';
+import { fieldVariants } from './field/variants';
+import { itemVariants, itemMediaVariants } from './item/variants';
+import { emptyMediaVariants } from './empty/variants';
+import { sidebarMenuButtonVariants } from './sidebar/variants';
+import { toggleVariants } from './toggle/variants';
+import { buttonGroupVariants } from './button-group/variants';
+import { alertVariants } from './alert/variants';
+import { navigationMenuTriggerStyle } from './navigation-menu/variants';
+import { inputGroupAddonVariants, inputGroupButtonVariants } from './input-group/variants';
+import { sheetVariants } from './sheet/variants';
+
+export type RegistryEntry = {
+	name: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	fn: (props?: any) => string;
+	axes: Record<string, readonly string[]>;
+};
+
+export const registry: RegistryEntry[] = [
+	{
+		name: 'button',
+		fn: buttonVariants,
+		axes: {
+			variant: ['default', 'card', 'outline', 'secondary', 'ghost', 'destructive', 'link'],
+			size: ['default', 'xs', 'sm', 'lg', 'icon', 'icon-xs', 'icon-sm', 'icon-lg'],
+		},
+	},
+	{ name: 'badge', fn: badgeVariants, axes: { variant: ['default', 'secondary', 'destructive', 'outline', 'bronze', 'gold', 'platinum'] } },
+	{ name: 'field', fn: fieldVariants, axes: { orientation: ['vertical', 'horizontal', 'responsive'] } },
+	{ name: 'item', fn: itemVariants, axes: { variant: ['default', 'outline', 'muted'], size: ['default', 'sm', 'lg'] } },
+	{ name: 'item-media', fn: itemMediaVariants, axes: { variant: ['default', 'icon', 'image'] } },
+	{ name: 'empty-media', fn: emptyMediaVariants, axes: { variant: ['default', 'icon'] } },
+	{
+		name: 'sidebar-menu-button',
+		fn: sidebarMenuButtonVariants,
+		axes: { variant: ['default', 'outline'], size: ['default', 'sm', 'lg'] },
+	},
+	{ name: 'toggle', fn: toggleVariants, axes: { variant: ['default', 'outline'], size: ['default', 'sm', 'lg'] } },
+	{ name: 'button-group', fn: buttonGroupVariants, axes: { orientation: ['horizontal', 'vertical'] } },
+	{ name: 'alert', fn: alertVariants, axes: { variant: ['default', 'destructive'] } },
+	{ name: 'navigation-menu-trigger', fn: navigationMenuTriggerStyle, axes: {} },
+	{
+		name: 'input-group-addon',
+		fn: inputGroupAddonVariants,
+		axes: { align: ['inline-start', 'inline-end', 'block-start', 'block-end'] },
+	},
+	{ name: 'input-group-button', fn: inputGroupButtonVariants, axes: { size: ['xs', 'sm', 'icon-xs', 'icon-sm'] } },
+	{ name: 'sheet', fn: sheetVariants, axes: { side: ['top', 'bottom', 'left', 'right'] } },
+];
+
+/**
+ * Compositions built entirely from live variant functions (both sides recompute
+ * from source, so these cannot drift). Layerings that involve copied class
+ * strings are guarded at runtime by the cn() dev tripwire instead.
+ */
+export const compositions: [string, () => string][] = [
+	['igb/xs', () => `${buttonVariants({ variant: 'ghost', size: null })} ${inputGroupButtonVariants({ size: 'xs' })}`],
+	['igb/sm', () => `${buttonVariants({ variant: 'ghost', size: null })} ${inputGroupButtonVariants({ size: 'sm' })}`],
+	['igb/icon-xs', () => `${buttonVariants({ variant: 'ghost', size: null })} ${inputGroupButtonVariants({ size: 'icon-xs' })}`],
+	['igb/icon-sm', () => `${buttonVariants({ variant: 'ghost', size: null })} ${inputGroupButtonVariants({ size: 'icon-sm' })}`],
+];
+
+export function combos(axes: Record<string, readonly string[]>): Record<string, string>[] {
+	const keys = Object.keys(axes);
+	if (keys.length === 0) return [{}];
+	return keys.reduce<Record<string, string>[]>(
+		(acc, key) => acc.flatMap((partial) => axes[key].map((value) => ({ ...partial, [key]: value }))),
+		[{}],
+	);
+}
+
+export function classSet(classString: string): string[] {
+	return [...new Set(classString.trim().split(/\s+/))].sort();
+}
+
+export function comboKey(name: string, combo: Record<string, string>): string {
+	const parts = Object.keys(combo)
+		.sort()
+		.map((k) => `${k}=${combo[k]}`);
+	return `${name}|${parts.join(',')}`;
+}

@@ -95,7 +95,7 @@ const displayValue = $derived(date ? df.format(date.toDate(getLocalTimeZone())) 
       class={cn(
         buttonVariants({
           variant: "outline",
-          class: "w-70 justify-start text-start font-normal"
+          class: "w-70 justify-start! text-start font-normal!"
         }),
         !date && "text-muted-foreground",
         triggerClass
@@ -104,7 +104,7 @@ const displayValue = $derived(date ? df.format(date.toDate(getLocalTimeZone())) 
       <CalendarIcon class="size-4" />
       {displayValue}
     </Popover.Trigger>
-    <Popover.Content class={cn("w-auto p-0", contentClass)} {align} {side}>
+    <Popover.Content class={cn("w-auto! p-0!", contentClass)} {align} {side}>
       <Calendar
         type="single"
         value={date}

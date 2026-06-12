@@ -114,7 +114,7 @@
 			class={cn(
 				buttonVariants({
 					variant: 'outline',
-					class: 'w-70 justify-start text-start font-normal',
+					class: 'w-70 justify-start! text-start font-normal!',
 				}),
 				!date && 'text-muted-foreground',
 				triggerClass,
@@ -122,7 +122,7 @@
 			<CalendarIcon class="me-2 size-4" />
 			{displayValue}
 		</Popover.Trigger>
-		<Popover.Content class={cn('flex w-auto flex-col space-y-2 p-2', contentClass)} {align} {side}>
+		<Popover.Content class={cn('flex w-auto! flex-col space-y-2 p-2!', contentClass)} {align} {side}>
 			<Select.Root
 				type="single"
 				value={selectValue}

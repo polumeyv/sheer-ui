@@ -25,7 +25,7 @@
 			<div class="flex items-center space-x-2">
 				<p class="text-sm font-medium">Rows per page</p>
 				<Select.Root allowDeselect={false} type="single" value={`${table.getState().pagination.pageSize}`} onValueChange={(value) => table.setPageSize(Number(value))}>
-					<Select.Trigger class="h-8 w-17.5">
+					<Select.Trigger class="w-17.5!">
 						{String(table.getState().pagination.pageSize)}
 					</Select.Trigger>
 					<Select.Content side="top">
@@ -39,7 +39,7 @@
 				Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
 			</div>
 			{#snippet navBtn(onclick: () => void, disabled: boolean, label: string, Icon: typeof ChevronLeftIcon, lgOnly = false)}
-				<Button variant="outline" class={['size-8 p-0', lgOnly && 'hidden lg:flex']} {onclick} {disabled}>
+				<Button variant="outline" size="icon-sm" class={lgOnly ? 'max-lg:hidden' : undefined} {onclick} {disabled}>
 					<span class="sr-only">{label}</span>
 					<Icon />
 				</Button>

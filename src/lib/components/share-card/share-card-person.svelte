@@ -38,7 +38,7 @@ function getInitials(name: string): string {
 	class={cn('flex items-center gap-3 py-2', className)}
 	{...restProps}
 >
-	<Avatar.Root class="size-9 shrink-0">
+	<Avatar.Root class="size-9!">
 		{#if avatar}
 			<Avatar.Image src={avatar} alt={name} />
 		{/if}

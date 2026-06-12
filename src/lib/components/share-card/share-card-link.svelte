@@ -38,7 +38,7 @@ async function handleCopy() {
 	{...restProps}
 >
 	<label for="share-link" class="sr-only">{label}</label>
-	<Input id="share-link" {value} readonly class="h-8 flex-1" />
+	<Input id="share-link" {value} readonly class="h-8! flex-1" />
 	<Button size="sm" variant="outline" onclick={handleCopy} class="shrink-0 shadow-none">
 		{#if copied}
 			<Check class="size-4" />

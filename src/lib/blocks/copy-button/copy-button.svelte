@@ -24,7 +24,7 @@
 <Tooltip.Root disableCloseOnTriggerClick>
 	<Tooltip.Trigger
 		{...rp}
-		class={cn('bg-code absolute inset-e-2 top-3 z-10 size-7 hover:opacity-100 focus-visible:opacity-100', className)}
+		class={cn('bg-code absolute inset-e-2 top-3 z-10 size-7! hover:opacity-100 focus-visible:opacity-100', className)}
 		onclick={() => clipboard.copy(text)}>
 		{#snippet child({ props })}
 			<Button {...props} data-slot="copy-button" size="icon" {variant}>

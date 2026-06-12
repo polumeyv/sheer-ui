@@ -6,8 +6,8 @@
 	import { alertModal } from './alert-modal.svelte';
 
 	const variantClasses: Record<string, string> = {
-		destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-		warning: 'bg-warning text-warning-foreground hover:bg-warning/90',
+		destructive: 'bg-destructive! text-destructive-foreground! hover:bg-destructive/90!',
+		warning: 'bg-warning! text-warning-foreground! hover:bg-warning/90!',
 	};
 
 	const titleClasses: Record<string, string> = {
