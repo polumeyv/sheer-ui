@@ -5,7 +5,12 @@
 	import * as Select from '../../components/select/index.js';
 	import * as Popover from '../../components/popover/index.js';
 	import { formatTimeDisplay } from '@polumeyv/lib/public';
+	import type { TimeString } from '@polumeyv/lib/schemas';
 	import { generateTimeSlots, isTimeInRange, compareTime, getTimeDuration, formatDuration, type TimeSlot, type TimeRange, b_HOURS, EXTENDED_HOURS } from './time-slots.js';
+
+	// The internal TimeRange keeps plain strings ('' = unset end); every set value comes from a TimeSlot,
+	// so casting at the guarded display seam is sound.
+	const fmt = (t: string) => formatTimeDisplay(t as TimeString);
 
 	type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';
 
@@ -108,11 +113,11 @@
 
 	const displayValue = $derived.by(() => {
 		if (!value?.start) return placeholder;
-		if (!value?.end) return formatTimeDisplay(value.start);
+		if (!value?.end) return fmt(value.start);
 
 		const duration = getTimeDuration(value.start, value.end);
 		const durationText = showDuration ? ` (${formatDuration(duration)})` : '';
-		return `${formatTimeDisplay(value.start)} - ${formatTimeDisplay(value.end)}${durationText}`;
+		return `${fmt(value.start)} - ${fmt(value.end)}${durationText}`;
 	});
 
 	function handleStartChange(newStart: string | undefined) {
@@ -161,7 +166,7 @@
 				<span class="text-xs text-muted-foreground px-1">Start</span>
 				<Select.Root type="single" value={value?.start} onValueChange={handleStartChange}>
 					<Select.Trigger class="w-[120px]">
-						{value?.start ? formatTimeDisplay(value.start) : 'Start time'}
+						{value?.start ? fmt(value.start) : 'Start time'}
 					</Select.Trigger>
 					<Select.Content class="max-h-50!">
 						{#each startSlots as slot (slot.value)}
@@ -177,7 +182,7 @@
 				<span class="text-xs text-muted-foreground px-1">End</span>
 				<Select.Root type="single" value={value?.end} onValueChange={handleEndChange} disabled={!value?.start}>
 					<Select.Trigger class="w-[120px]">
-						{value?.end ? formatTimeDisplay(value.end) : 'End time'}
+						{value?.end ? fmt(value.end) : 'End time'}
 					</Select.Trigger>
 					<Select.Content class="max-h-50!">
 						{#each endSlots as slot (slot.value)}

@@ -3,13 +3,24 @@
 	import * as Calendar from './index.js';
 	import { cn, type WithoutChildrenOrChild } from '../../utils.js';
 	import type { ButtonVariant } from '../../components/button/index.js';
-	import { isEqualMonth, type DateValue } from '@internationalized/date';
+	import { isEqualMonth, parseDate, type DateValue } from '@internationalized/date';
+	import { DateString } from '@polumeyv/lib/schemas';
 	import type { Snippet } from 'svelte';
+
+	// Pull the `type: 'single'` member out of bits-ui's discriminated-union RootProps before Omit — Omit over
+	// the whole union expands into a type too complex for consumers' typechecks to represent.
+	type SingleRootProps = Extract<CalendarPrimitive.RootProps, { type: 'single' }>;
 
 	let {
 		ref = $bindable(null),
+		type,
 		value = $bindable(),
 		placeholder = $bindable(),
+		onValueChange,
+		minValue,
+		maxValue,
+		isDateDisabled,
+		isDateUnavailable,
 		class: className,
 		weekdayFormat = 'short',
 		buttonVariant = 'ghost',
@@ -22,30 +33,66 @@
 		day,
 		disableDaysOutsideMonth = false,
 		...restProps
-	}: WithoutChildrenOrChild<CalendarPrimitive.RootProps> & {
+	}: Omit<
+		WithoutChildrenOrChild<SingleRootProps>,
+		'type' | 'value' | 'placeholder' | 'minValue' | 'maxValue' | 'isDateDisabled' | 'isDateUnavailable' | 'onValueChange' | 'onPlaceholderChange'
+	> & {
+		type: 'single';
+		/** Selected date as a branded `DateString` — every date prop and callback on this component speaks the same type. */
+		value?: DateString;
+		/** Displayed month as a `DateString`. */
+		placeholder?: DateString;
+		onValueChange?: (value: DateString | undefined) => void;
+		minValue?: DateString;
+		maxValue?: DateString;
+		isDateDisabled?: (date: DateString) => boolean;
+		isDateUnavailable?: (date: DateString) => boolean;
 		buttonVariant?: ButtonVariant;
 		captionLayout?: 'dropdown' | 'dropdown-months' | 'dropdown-years' | 'label';
 		months?: CalendarPrimitive.MonthSelectProps['months'];
 		years?: CalendarPrimitive.YearSelectProps['years'];
 		monthFormat?: CalendarPrimitive.MonthSelectProps['monthFormat'];
 		yearFormat?: CalendarPrimitive.YearSelectProps['yearFormat'];
-		day?: Snippet<[{ day: DateValue; outsideMonth: boolean }]>;
+		day?: Snippet<[{ day: DateString; outsideMonth: boolean }]>;
 	} = $props();
+
 	const monthFormat = $derived.by(() => {
 		if (monthFormatProp) return monthFormatProp;
 		if (captionLayout.startsWith('dropdown')) return 'short';
 		return 'long';
 	});
+
+	// The @internationalized/date boundary: bits-ui below this point speaks DateValue, everything above
+	// speaks branded DateStrings. Function bindings convert in both directions right at the primitive.
+	const parseSafe = (s: DateString | undefined) => {
+		if (!s) return undefined;
+		try {
+			return parseDate(s);
+		} catch {
+			return undefined;
+		}
+	};
+	const brand = (v: DateValue | undefined): DateString | undefined => (v ? DateString.make(v.toString()) : undefined);
+	const calValue = $derived(parseSafe(value));
+	const calPlaceholder = $derived(parseSafe(placeholder));
+	const setPlaceholder = (v: DateValue | undefined) => (placeholder = brand(v));
 </script>
 
-<!--
-Discriminated Unions + Destructing (required for bindable) do not
-get along, so we shut typescript up by casting `value` to `never`.
--->
 <CalendarPrimitive.Root
-	bind:value={value as never}
+	{type}
+	bind:value={
+		() => calValue,
+		(v) => {
+			value = brand(v);
+			onValueChange?.(value);
+		}
+	}
 	bind:ref
-	bind:placeholder
+	bind:placeholder={() => calPlaceholder, setPlaceholder}
+	minValue={parseSafe(minValue)}
+	maxValue={parseSafe(maxValue)}
+	isDateDisabled={isDateDisabled && ((d: DateValue) => isDateDisabled(DateString.make(d.toString())))}
+	isDateUnavailable={isDateUnavailable && ((d: DateValue) => isDateUnavailable(DateString.make(d.toString())))}
 	{weekdayFormat}
 	{disableDaysOutsideMonth}
 	class={cn(
@@ -72,7 +119,7 @@ get along, so we shut typescript up by casting `value` to `never`.
 							{years}
 							{yearFormat}
 							month={month.value}
-							bind:placeholder
+							bind:placeholder={() => calPlaceholder, setPlaceholder}
 							{locale}
 							{monthIndex} />
 					</Calendar.Header>
@@ -93,7 +140,7 @@ get along, so we shut typescript up by casting `value` to `never`.
 										<Calendar.Cell {date} month={month.value}>
 											{#if day}
 												{@render day({
-													day: date,
+													day: DateString.make(date.toString()),
 													outsideMonth: !isEqualMonth(date, month.value),
 												})}
 											{:else}

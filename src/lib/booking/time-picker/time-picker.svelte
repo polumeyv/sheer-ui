@@ -4,12 +4,13 @@
 	import { buttonVariants } from '../../components/button/index.js';
 	import * as Select from '../../components/select/index.js';
 	import { formatTimeDisplay } from '@polumeyv/lib/public';
+	import type { TimeString } from '@polumeyv/lib/schemas';
 	import { compareTime, generateTimeSlots, isTimeInRange, type TimeSlot, b_HOURS, EXTENDED_HOURS } from './time-slots.js';
 
 	type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';
 
 	interface Props {
-		value?: string;
+		value?: TimeString;
 		placeholder?: string;
 		disabled?: boolean;
 		class?: string;
@@ -17,7 +18,7 @@
 		contentClass?: string;
 		align?: 'start' | 'center' | 'end';
 		side?: 'top' | 'right' | 'bottom' | 'left';
-		onValueChange?: (value: string | undefined) => void;
+		onValueChange?: (value: TimeString | undefined) => void;
 		// Time slot configuration
 		preset?: TimeSlotPreset;
 		slots?: TimeSlot[];
@@ -89,8 +90,9 @@
 	const displayValue = $derived(value ? formatTimeDisplay(value) : placeholder);
 
 	function handleValueChange(newValue: string | undefined) {
-		value = newValue;
-		onValueChange?.(newValue);
+		// Select erases the slot's brand to string; every selectable value is a TimeSlot.value, so it is sound.
+		value = newValue as TimeString | undefined;
+		onValueChange?.(value);
 	}
 </script>
 

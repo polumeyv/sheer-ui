@@ -1,6 +1,7 @@
 <script lang="ts">
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
-	import { DateFormatter, type DateValue, getLocalTimeZone, today, parseDate } from '@internationalized/date';
+	import { addDays, todayIn, localTimeZone } from '@polumeyv/lib/public';
+	import type { DateString } from '@polumeyv/lib/schemas';
 	import { cn } from '../../utils.js';
 	import { buttonVariants } from '../../components/button/index.js';
 	import { Calendar } from '../calendar/index.js';
@@ -13,9 +14,8 @@
 	};
 
 	interface Props {
-		/** Controlled value; wins over `valueAsString` while set. Picks are reported via `onValueChange`. */
-		value?: DateValue;
-		valueAsString?: string;
+		/** Selected date as a branded `DateString` — every date prop and callback speaks the same type. */
+		value?: DateString;
 		placeholder?: string;
 		dateFormat?: Intl.DateTimeFormatOptions['dateStyle'];
 		locale?: string;
@@ -27,17 +27,16 @@
 		side?: 'top' | 'right' | 'bottom' | 'left';
 		presets?: PresetItem[];
 		presetsPlaceholder?: string;
-		onValueChange?: (value: DateValue | undefined) => void;
-		onValueStringChange?: (value: string) => void;
+		onValueChange?: (value: DateString | undefined) => void;
 		// Calendar props
 		captionLayout?: 'dropdown' | 'dropdown-months' | 'dropdown-years' | 'label';
-		minValue?: DateValue;
-		maxValue?: DateValue;
+		minValue?: DateString;
+		maxValue?: DateString;
 		weekdayFormat?: 'short' | 'long' | 'narrow';
 		calendarLabel?: string;
 		fixedWeeks?: boolean;
-		isDateDisabled?: (date: DateValue) => boolean;
-		isDateUnavailable?: (date: DateValue) => boolean;
+		isDateDisabled?: (date: DateString) => boolean;
+		isDateUnavailable?: (date: DateString) => boolean;
 	}
 
 	const defaultPresets: PresetItem[] = [
@@ -48,8 +47,7 @@
 	];
 
 	let {
-		value,
-		valueAsString = $bindable(),
+		value = $bindable(),
 		placeholder = 'Pick a date',
 		dateFormat = 'long',
 		locale = 'en-US',
@@ -62,7 +60,6 @@
 		presets = defaultPresets,
 		presetsPlaceholder = 'Select preset',
 		onValueChange,
-		onValueStringChange,
 		captionLayout,
 		minValue,
 		maxValue,
@@ -73,38 +70,17 @@
 		isDateUnavailable,
 	}: Props = $props();
 
-	const parseDateSafe = (s: string | undefined) => {
-		if (!s) return undefined;
-		try {
-			return parseDate(s);
-		} catch {
-			return undefined;
-		}
-	};
-
-	// Props are the source of truth; a pick overrides the derived until either prop changes
-	// externally, so a parent resetting `valueAsString` actually clears the picker.
-	let date = $derived(value ?? parseDateSafe(valueAsString));
-
-	function pick(next: DateValue | undefined) {
-		date = next;
-		const str = next?.toString() ?? '';
-		if (str !== (valueAsString ?? '')) {
-			valueAsString = str;
-			onValueStringChange?.(str);
-		}
-		onValueChange?.(next);
-	}
-
-	const df = $derived(
-		new DateFormatter(locale, {
-			dateStyle: dateFormat,
-		}),
+	// UTC-pinned both sides (instant and formatter), so the rendered date always matches the input string.
+	const displayValue = $derived(
+		value ? new Intl.DateTimeFormat(locale, { dateStyle: dateFormat, timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`)) : placeholder,
 	);
 
-	const displayValue = $derived(date ? df.format(date.toDate(getLocalTimeZone())) : placeholder);
+	const selectValue = $derived(value ? displayValue : '');
 
-	const selectValue = $derived(date ? displayValue : '');
+	function pick(next: DateString | undefined) {
+		value = next;
+		onValueChange?.(next);
+	}
 </script>
 
 <div class={cn('grid gap-2', className)}>
@@ -116,7 +92,7 @@
 					variant: 'outline',
 					class: 'w-70 justify-start! text-start font-normal!',
 				}),
-				!date && 'text-muted-foreground',
+				!value && 'text-muted-foreground',
 				triggerClass,
 			)}>
 			<CalendarIcon class="me-2 size-4" />
@@ -128,7 +104,7 @@
 				value={selectValue}
 				onValueChange={(v) => {
 					if (!v) return;
-					pick(today(getLocalTimeZone()).add({ days: Number.parseInt(v) }));
+					pick(addDays(todayIn(localTimeZone()), Number.parseInt(v)));
 				}}>
 				<Select.Trigger>
 					{selectValue || presetsPlaceholder}
@@ -142,7 +118,7 @@
 			<div class="rounded-md border">
 				<Calendar
 					type="single"
-					value={date}
+					{value}
 					onValueChange={pick}
 					{captionLayout}
 					{minValue}

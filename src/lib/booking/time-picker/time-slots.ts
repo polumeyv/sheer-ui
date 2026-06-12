@@ -1,29 +1,26 @@
 /**
  * Time-slot helpers for the time-picker components — comparison, duration, and slot generation over
- * ISO 8601 "HH:MM" wall-clock strings. UI-internal; `formatTimeDisplay` (the wire/display formatter) stays in
- * `@polumeyv/lib/public` since apps render times directly.
+ * ISO 8601 "HH:MM" wall-clock strings. UI-internal; the minute math and `formatTimeDisplay` (the wire/display
+ * formatter) live in `@polumeyv/lib/public` since apps work with the same wire format directly.
  */
-import { parseTime, Time } from '@internationalized/date';
-import { formatTimeDisplay } from '@polumeyv/lib/public';
+import { timeToMinutes, minutesToTime, formatTimeDisplay } from '@polumeyv/lib/public';
+import type { TimeString } from '@polumeyv/lib/schemas';
 
-export type TimeSlot = { value: string; label: string };
+export type TimeSlot = { value: TimeString; label: string };
 export type TimeRange = { start: string; end: string };
 
-/** Non-throwing parse of an ISO 8601 "HH:MM" wall-clock string → Time, or null if malformed. */
-function toTime(time: string): Time | null {
-	try {
-		return parseTime(time);
-	} catch {
-		return null;
-	}
+/** Non-throwing parse of an ISO 8601 "HH:MM" wall-clock string → minutes since midnight, or null if malformed.
+ *  The regex IS the brand's validation, so the cast is sound — this is the lenient seam for free-form props. */
+function toMin(time: string): number | null {
+	return /^\d{2}:\d{2}(:\d{2})?$/.test(time) ? timeToMinutes(time as TimeString) : null;
 }
 
 /** Sign of (time1 − time2): negative if earlier, 0 if equal or either is malformed, positive if later. */
 export function compareTime(time1: string, time2: string): number {
-	const a = toTime(time1);
-	const b = toTime(time2);
-	if (!a || !b) return 0;
-	return a.compare(b);
+	const a = toMin(time1);
+	const b = toMin(time2);
+	if (a === null || b === null) return 0;
+	return a - b;
 }
 
 export function isTimeInRange(time: string, minTime: string, maxTime: string): boolean {
@@ -32,10 +29,10 @@ export function isTimeInRange(time: string, minTime: string, maxTime: string): b
 
 /** Duration in minutes from startTime to endTime (0 if either is malformed). */
 export function getTimeDuration(startTime: string, endTime: string): number {
-	const start = toTime(startTime);
-	const end = toTime(endTime);
-	if (!start || !end) return 0;
-	return end.hour * 60 + end.minute - (start.hour * 60 + start.minute);
+	const start = toMin(startTime);
+	const end = toMin(endTime);
+	if (start === null || end === null) return 0;
+	return end - start;
 }
 
 export function formatDuration(minutes: number): string {
@@ -48,13 +45,11 @@ export function formatDuration(minutes: number): string {
 export function generateTimeSlots(startHour: number, endHour: number, interval: number): TimeSlot[] {
 	const slots: TimeSlot[] = [];
 	const span = (endHour - startHour) * 60;
-	// `elapsed` bounds the loop in minutes (so endHour === 24 works); `t` advances via Time.add,
-	// which balances across the hour and wraps at midnight — its toString() zero-pads for us.
-	let t = new Time(startHour);
+	// `elapsed` bounds the loop in minutes (so endHour === 24 works); `minutesToTime` wraps at midnight
+	// and zero-pads for us.
 	for (let elapsed = 0; elapsed < span; elapsed += interval) {
-		const value = t.toString().slice(0, 5);
+		const value = minutesToTime(startHour * 60 + elapsed);
 		slots.push({ value, label: formatTimeDisplay(value) });
-		t = t.add({ minutes: interval });
 	}
 	return slots;
 }
