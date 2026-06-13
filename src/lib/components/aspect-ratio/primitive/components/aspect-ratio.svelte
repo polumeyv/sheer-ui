@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { AspectRatioRootProps } from "$lib/components/aspect-ratio/primitive/index.js";
 	import { AspectRatioRootState } from "$lib/components/aspect-ratio/primitive/aspect-ratio.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -16,12 +16,9 @@
 	}: AspectRatioRootProps = $props();
 
 	const rootState = AspectRatioRootState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		ratio: boxWith(() => ratio),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		ratio: { get current() { return ratio; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, rootState.props));

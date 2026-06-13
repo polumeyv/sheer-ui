@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { CheckboxGroupProps } from "$lib/components/checkbox/primitive/index.js";
 	import { CheckboxGroupState } from "$lib/components/checkbox/primitive/checkbox.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -22,24 +22,14 @@
 	}: CheckboxGroupProps = $props();
 
 	const groupState = CheckboxGroupState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		disabled: boxWith(() => Boolean(disabled)),
-		required: boxWith(() => Boolean(required)),
-		readonly: boxWith(() => Boolean(readonly)),
-		name: boxWith(() => name),
-		value: boxWith(
-			() => $state.snapshot(value),
-			(v) => {
-				if (arraysAreEqual(value, v)) return;
-				value = $state.snapshot(v);
-				onValueChange(v);
-			}
-		),
-		onValueChange: boxWith(() => onValueChange),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		disabled: { get current() { return Boolean(disabled); } },
+		required: { get current() { return Boolean(required); } },
+		readonly: { get current() { return Boolean(readonly); } },
+		name: { get current() { return name; } },
+		value: { get current() { return $state.snapshot(value); }, set current(v) { if (arraysAreEqual(value, v)) return; value = $state.snapshot(v); onValueChange(v); } },
+		onValueChange: { get current() { return onValueChange; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, groupState.props));

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { boxWith, mergeProps } from '$lib/vendor/index.js';
+import { mergeProps } from '$lib/vendor/index.js';
 import type { ScrollAreaRootProps } from '$lib/components/scroll-area/primitive/index.js';
 import { ScrollAreaRootState, ScrollAreaViewportState } from '$lib/components/scroll-area/primitive/scroll-area.svelte.js';
 import { createId } from '$lib/internal/create-id.js';
@@ -30,14 +30,11 @@ let {
 } = $props();
 
 const rootState = ScrollAreaRootState.create({
-	type: boxWith(() => type),
-	dir: boxWith(() => dir),
-	scrollHideDelay: boxWith(() => scrollHideDelay),
-	id: boxWith(() => id),
-	ref: boxWith(
-		() => ref,
-		(v) => (ref = v)
-	),
+	type: { get current() { return type; } },
+	dir: { get current() { return dir; } },
+	scrollHideDelay: { get current() { return scrollHideDelay; } },
+	id: { get current() { return id; } },
+	ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 });
 
 const mergedProps = $derived(
@@ -54,11 +51,8 @@ const mergedProps = $derived(
 const viewportId = createId('viewport', uid);
 
 const viewportState = ScrollAreaViewportState.create({
-	id: boxWith(() => viewportId),
-	ref: boxWith(
-		() => viewportRef,
-		(v) => (viewportRef = v)
-	),
+	id: { get current() { return viewportId; } },
+	ref: { get current() { return viewportRef; }, set current(v) { (viewportRef = v); } },
 });
 
 const mergedViewportProps = $derived(

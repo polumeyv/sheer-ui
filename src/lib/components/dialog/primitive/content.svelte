@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import { DialogContentState } from '$lib/components/dialog/primitive/dialog.svelte.js';
 	import type { DialogContentProps } from '$lib/components/dialog/primitive/index.js';
 	import DismissibleLayer from '$lib/components/_shared/utilities/dismissible-layer/dismissible-layer.svelte';
@@ -28,11 +28,8 @@
 	}: DialogContentProps = $props();
 
 	const contentState = DialogContentState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, contentState.props));

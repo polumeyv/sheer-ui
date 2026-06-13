@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { RatingGroupRootProps } from "$lib/components/rating-group/index.js";
 	import { RatingGroupRootState } from "$lib/components/rating-group/rating-group.svelte.js";
 	import RatingGroupInput from "$lib/components/rating-group/components/rating-group-input.svelte";
@@ -38,29 +38,19 @@
 	});
 
 	const rootState = RatingGroupRootState.create({
-		orientation: boxWith(() => orientation),
-		disabled: boxWith(() => disabled),
-		name: boxWith(() => name),
-		required: boxWith(() => required),
-		min: boxWith(() => min),
-		max: boxWith(() => max),
-		allowHalf: boxWith(() => allowHalf),
-		readonly: boxWith(() => readonly),
-		id: boxWith(() => id),
-		value: boxWith(
-			() => value,
-			(v) => {
-				if (v === value) return;
-				value = v;
-				onValueChange?.(v);
-			}
-		),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		ariaValuetext: boxWith(() => ariaValuetext),
-		hoverPreview: boxWith(() => hoverPreview),
+		orientation: { get current() { return orientation; } },
+		disabled: { get current() { return disabled; } },
+		name: { get current() { return name; } },
+		required: { get current() { return required; } },
+		min: { get current() { return min; } },
+		max: { get current() { return max; } },
+		allowHalf: { get current() { return allowHalf; } },
+		readonly: { get current() { return readonly; } },
+		id: { get current() { return id; } },
+		value: { get current() { return value; }, set current(v) { if (v === value) return; value = v; onValueChange?.(v); } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		ariaValuetext: { get current() { return ariaValuetext; } },
+		hoverPreview: { get current() { return hoverPreview; } },
 	});
 
 	const mergedProps = $derived(

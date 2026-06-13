@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { boxWith } from '$lib/vendor/index.js';
-	import type { TooltipProviderProps } from '$lib/components/tooltip/primitive/index.js';
+		import type { TooltipProviderProps } from '$lib/components/tooltip/primitive/index.js';
 	import { TooltipProviderState } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
 
 	let {
@@ -14,12 +13,12 @@
 	}: TooltipProviderProps = $props();
 
 	TooltipProviderState.create({
-		delayDuration: boxWith(() => delayDuration),
-		disableCloseOnTriggerClick: boxWith(() => disableCloseOnTriggerClick),
-		disableHoverableContent: boxWith(() => disableHoverableContent),
-		disabled: boxWith(() => disabled),
-		ignoreNonKeyboardFocus: boxWith(() => ignoreNonKeyboardFocus),
-		skipDelayDuration: boxWith(() => skipDelayDuration),
+		delayDuration: { get current() { return delayDuration; } },
+		disableCloseOnTriggerClick: { get current() { return disableCloseOnTriggerClick; } },
+		disableHoverableContent: { get current() { return disableHoverableContent; } },
+		disabled: { get current() { return disabled; } },
+		ignoreNonKeyboardFocus: { get current() { return ignoreNonKeyboardFocus; } },
+		skipDelayDuration: { get current() { return skipDelayDuration; } },
 	});
 </script>
 

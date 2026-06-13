@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps, type WritableBox } from '$lib/vendor/index.js';
+	import { mergeProps, type WritableProp } from '$lib/vendor/index.js';
 	import type { SliderRootProps } from '$lib/components/slider/primitive/index.js';
 	import { SliderRootState, SliderRangeState } from '$lib/components/slider/primitive/slider.svelte.js';
 	import SliderThumb from '$lib/components/slider/primitive/components/slider-thumb.svelte';
@@ -60,31 +60,25 @@
 	);
 
 	const rootState = SliderRootState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		value: boxWith(
-			() => value,
-			(v) => {
-				value = v;
-				// @ts-expect-error - we know
-				onValueChange(v);
-			}
-		) as WritableBox<number> | WritableBox<number[]>,
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		value: { get current() { return value; }, set current(v) {
+        				value = v;
+        				// @ts-expect-error - we know
+        				onValueChange(v);
+        			} } as WritableProp<number> | WritableProp<number[]>,
 		// @ts-expect-error - we know
-		onValueCommit: boxWith(() => onValueCommit),
-		disabled: boxWith(() => disabled),
-		min: boxWith(() => min),
-		max: boxWith(() => max),
-		step: boxWith(() => step),
-		dir: boxWith(() => dir),
-		autoSort: boxWith(() => autoSort),
-		orientation: boxWith(() => orientation),
-		thumbPositioning: boxWith(() => thumbPositioning),
+		onValueCommit: { get current() { return onValueCommit; } },
+		disabled: { get current() { return disabled; } },
+		min: { get current() { return min; } },
+		max: { get current() { return max; } },
+		step: { get current() { return step; } },
+		dir: { get current() { return dir; } },
+		autoSort: { get current() { return autoSort; } },
+		orientation: { get current() { return orientation; } },
+		thumbPositioning: { get current() { return thumbPositioning; } },
 		type,
-		trackPadding: boxWith(() => trackPadding),
+		trackPadding: { get current() { return trackPadding; } },
 	});
 
 	const mergedProps = $derived(
@@ -105,11 +99,8 @@
 	const rangeId = createId(`${uid}-range`);
 	let rangeRef = $state<HTMLElement | null>(null);
 	const rangeState = SliderRangeState.create({
-		id: boxWith(() => rangeId),
-		ref: boxWith(
-			() => rangeRef,
-			(v) => (rangeRef = v)
-		),
+		id: { get current() { return rangeId; } },
+		ref: { get current() { return rangeRef; }, set current(v) { (rangeRef = v); } },
 	});
 
 	const rangeMergedProps = $derived(

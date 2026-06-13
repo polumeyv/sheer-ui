@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { AlertDialogCancelProps } from "$lib/components/alert-dialog/primitive/index.js";
 	import { AlertDialogCancelState } from "$lib/components/dialog/primitive/dialog.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -16,12 +16,9 @@
 	}: AlertDialogCancelProps = $props();
 
 	const cancelState = AlertDialogCancelState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		disabled: boxWith(() => Boolean(disabled)),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		disabled: { get current() { return Boolean(disabled); } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, cancelState.props));

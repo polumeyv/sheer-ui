@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import { TimeRangeFieldLabelState } from "$lib/components/time-range-field/time-range-field.svelte.js";
 	import type { TimeRangeFieldLabelProps } from "$lib/components/time-range-field/index.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -15,11 +15,8 @@
 	}: TimeRangeFieldLabelProps = $props();
 
 	const labelState = TimeRangeFieldLabelState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, labelState.props));

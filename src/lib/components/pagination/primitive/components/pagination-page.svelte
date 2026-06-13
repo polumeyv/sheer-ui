@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { PaginationPageProps } from "$lib/components/pagination/primitive/index.js";
 	import { PaginationPageState } from "$lib/components/pagination/primitive/pagination.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -18,13 +18,10 @@
 	}: PaginationPageProps = $props();
 
 	const pageState = PaginationPageState.create({
-		id: boxWith(() => id),
-		page: boxWith(() => page),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		disabled: boxWith(() => Boolean(disabled)),
+		id: { get current() { return id; } },
+		page: { get current() { return page; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		disabled: { get current() { return Boolean(disabled); } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, pageState.props, { type }));

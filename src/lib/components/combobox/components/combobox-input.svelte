@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { ComboboxInputProps } from "$lib/components/combobox/index.js";
 	import { useId } from "$lib/internal/use-id.js";
 	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index.js";
@@ -15,12 +15,9 @@
 	}: ComboboxInputProps = $props();
 
 	const inputState = SelectInputState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		clearOnDeselect: boxWith(() => clearOnDeselect),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		clearOnDeselect: { get current() { return clearOnDeselect; } },
 	});
 
 	if (defaultValue) {

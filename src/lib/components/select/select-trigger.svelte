@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import { SelectTriggerState } from '$lib/components/select/primitive/select.svelte.js';
 	import type { SelectTriggerProps } from '$lib/components/select/primitive/index.js';
 	import { createId } from '$lib/internal/create-id.js';
@@ -23,11 +23,8 @@
 	} = $props();
 
 	const triggerState = SelectTriggerState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(

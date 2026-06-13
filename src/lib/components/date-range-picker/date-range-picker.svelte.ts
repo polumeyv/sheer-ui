@@ -1,6 +1,6 @@
 import { createContext } from 'svelte';
 import type { DateValue } from '@internationalized/date';
-import { type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
+import { type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
 import type { DateMatcher, DateRange, SegmentPart } from '$lib/shared/index.js';
 import type { Granularity, HourCycle, WeekStartsOn } from '$lib/shared/date/types.js';
 
@@ -8,14 +8,14 @@ export const [getDateRangePickerRootContext, setDateRangePickerRootContext] = cr
 
 interface DateRangePickerRootStateOpts
 	extends
-		WritableBoxedValues<{
+		WritableProps<{
 			value: DateRange;
 			startValue: DateValue | undefined;
 			endValue: DateValue | undefined;
 			open: boolean;
 			placeholder: DateValue;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			readonlySegments: SegmentPart[];
 			isDateUnavailable: DateMatcher;
 			isDateDisabled: DateMatcher;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { SelectGroupHeadingProps } from "$lib/components/select/primitive/index.js";
 	import { SelectGroupHeadingState } from "$lib/components/select/primitive/select.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -14,11 +14,8 @@
 	}: SelectGroupHeadingProps = $props();
 
 	const groupHeadingState = SelectGroupHeadingState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, groupHeadingState.props));

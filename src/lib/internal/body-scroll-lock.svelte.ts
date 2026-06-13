@@ -1,6 +1,6 @@
 import { tick } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
-import { type Getter, type ReadableBox, boxWith } from '$lib/vendor/index.js';
+import { type Getter, type ReadableProp } from '$lib/vendor/index.js';
 import type { Fn } from './types.js';
 import { isIOS } from './is.js';
 import { useId } from './use-id.js';
@@ -21,12 +21,9 @@ let stopTouchMoveListener: Fn | null = null;
 let cleanupTimeoutId: number | null = null;
 let isInCleanupTransition = false;
 
-const anyLocked = boxWith(() => {
-	for (const value of lockMap.values()) {
+const anyLocked = { get current() { for (const value of lockMap.values()) {
 		if (value) return true;
-	}
-	return false;
-});
+	} return false; } };
 
 /**
  * We track the time we scheduled the cleanup to prevent race conditions
@@ -182,9 +179,10 @@ export class BodyScrollLock {
 	readonly #initialState: boolean | undefined;
 	readonly #restoreScrollDelay: Getter<number | null> = () => null;
 	readonly #countState: ReturnType<typeof bodyLockStackCount.get>;
-	readonly locked: ReadableBox<boolean> | undefined;
+	readonly locked: ReadableProp<boolean> | undefined;
 
 	constructor(initialState?: boolean | undefined, restoreScrollDelay: Getter<number | null> = () => null) {
+		const self = this;
 		this.#initialState = initialState;
 		this.#restoreScrollDelay = restoreScrollDelay;
 		this.#countState = bodyLockStackCount.get();
@@ -205,10 +203,7 @@ export class BodyScrollLock {
 
 		this.#countState.lockMap.set(this.#id, this.#initialState ?? false);
 
-		this.locked = boxWith(
-			() => this.#countState.lockMap.get(this.#id) ?? false,
-			(v) => this.#countState.lockMap.set(this.#id, v),
-		);
+		this.locked = { get current() { return self.#countState.lockMap.get(self.#id) ?? false; }, set current(v) { self.#countState.lockMap.set(self.#id, v); } };
 
 		$effect(() => () => {
 			this.#countState.lockMap.delete(this.#id);

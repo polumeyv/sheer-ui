@@ -6,16 +6,15 @@ import { createContext, getContext, hasContext } from 'svelte';
  */
 import {
 	type AnyFn,
-	type ReadableBox,
-	type ReadableBoxedValues,
+	type ReadableProp,
+	type ReadableProps,
 	type WithRefProps,
-	type WritableBox,
-	type WritableBoxedValues,
+	type WritableProp,
+	type WritableProps,
 	attachRef,
 	DOMContext,
 	getWindow,
-	simpleBox,
-	boxWith,
+	writableProp
 } from '$lib/vendor/index.js';
 import { useDebounce } from '$lib/vendor/use-debounce.svelte.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
@@ -49,11 +48,11 @@ function getNavigationMenuSubContextOr<T>(fallback: T): NavigationMenuSubState |
 
 interface NavigationMenuProviderStateOpts
 	extends
-		ReadableBoxedValues<{
+		ReadableProps<{
 			dir: Direction;
 			orientation: Orientation;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			rootNavigationMenuRef: HTMLElement | null;
 			value: string;
 			previousValue: string;
@@ -72,8 +71,8 @@ class NavigationMenuProviderState {
 		return setNavigationMenuProviderContext(new NavigationMenuProviderState(opts));
 	}
 	readonly opts: NavigationMenuProviderStateOpts;
-	indicatorTrackRef = simpleBox<HTMLElement | null>(null);
-	viewportRef = simpleBox<HTMLElement | null>(null);
+	indicatorTrackRef = writableProp<HTMLElement | null>(null);
+	viewportRef = writableProp<HTMLElement | null>(null);
 	viewportContent = new SvelteMap<string, NavigationMenuItemState>();
 	onTriggerEnter: NavigationMenuProviderStateOpts['onTriggerEnter'];
 	onTriggerLeave: () => void = () => {};
@@ -103,10 +102,10 @@ class NavigationMenuProviderState {
 interface NavigationMenuRootStateOpts
 	extends
 		WithRefProps,
-		WritableBoxedValues<{
+		WritableProps<{
 			value: string;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			dir: Direction;
 			orientation: Orientation;
 			delayDuration: number;
@@ -119,8 +118,8 @@ export class NavigationMenuRootState {
 	readonly opts: NavigationMenuRootStateOpts;
 	readonly attachment: RefAttachment;
 	provider: NavigationMenuProviderState;
-	previousValue = simpleBox('');
-	isDelaySkipped: WritableBox<boolean>;
+	previousValue = writableProp('');
+	isDelaySkipped: WritableProp<boolean>;
 	readonly #derivedDelay = $derived.by(() => {
 		const isOpen = this.opts?.value?.current !== '';
 		if (isOpen || this.isDelaySkipped.current) {
@@ -223,10 +222,10 @@ export class NavigationMenuRootState {
 interface NavigationMenuSubStateOpts
 	extends
 		WithRefProps,
-		WritableBoxedValues<{
+		WritableProps<{
 			value: string;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			orientation: Orientation;
 		}> {}
 
@@ -236,7 +235,7 @@ export class NavigationMenuSubState {
 	}
 	readonly opts: NavigationMenuSubStateOpts;
 	readonly context: NavigationMenuProviderState;
-	previousValue = simpleBox('');
+	previousValue = writableProp('');
 	readonly subProvider: NavigationMenuProviderState;
 	readonly attachment: RefAttachment;
 
@@ -288,8 +287,8 @@ export class NavigationMenuListState {
 	static create(opts: NavigationMenuListStateOpts) {
 		return setNavigationMenuListContext(new NavigationMenuListState(opts, getNavigationMenuProviderContext()));
 	}
-	wrapperId = simpleBox(useId());
-	wrapperRef = simpleBox<HTMLElement | null>(null);
+	wrapperId = writableProp(useId());
+	wrapperRef = writableProp<HTMLElement | null>(null);
 	readonly opts: NavigationMenuListStateOpts;
 	readonly context: NavigationMenuProviderState;
 	readonly attachment: RefAttachment;
@@ -305,7 +304,7 @@ export class NavigationMenuListState {
 		this.rovingFocusGroup = new RovingFocusGroup({
 			rootNode: opts.ref,
 			candidateSelector: `${navigationMenuAttrs.selector('trigger')}:not([data-disabled]), ${navigationMenuAttrs.selector('link')}:not([data-disabled])`,
-			loop: boxWith(() => false),
+			loop: { get current() { return false; } },
 			orientation: this.context.opts.orientation,
 		});
 	}
@@ -339,7 +338,7 @@ export class NavigationMenuListState {
 interface NavigationMenuItemStateOpts
 	extends
 		WithRefProps,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			value: string;
 			openOnHover: boolean;
 		}> {}
@@ -358,9 +357,9 @@ export class NavigationMenuItemState {
 	wasEscapeClose = false;
 	readonly contentId = $derived.by(() => this.contentNode?.id);
 	readonly triggerId = $derived.by(() => this.triggerNode?.id);
-	contentChildren: ReadableBox<Snippet | undefined> = simpleBox(undefined);
-	contentChild: ReadableBox<Snippet<[{ props: Record<string, unknown> }]> | undefined> = simpleBox(undefined);
-	contentProps: ReadableBox<Record<string, unknown>> = simpleBox({});
+	contentChildren: ReadableProp<Snippet | undefined> = writableProp(undefined);
+	contentChild: ReadableProp<Snippet<[{ props: Record<string, unknown> }]> | undefined> = writableProp(undefined);
+	contentProps: ReadableProp<Record<string, unknown>> = writableProp({});
 	domContext: DOMContext;
 	constructor(opts: NavigationMenuItemStateOpts, listContext: NavigationMenuListState) {
 		this.opts = opts;
@@ -400,7 +399,7 @@ export class NavigationMenuItemState {
 interface NavigationMenuTriggerStateOpts
 	extends
 		WithRefProps,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			disabled: boolean | null | undefined;
 		}> {}
 
@@ -415,13 +414,13 @@ export class NavigationMenuTriggerState {
 	}
 	readonly opts: NavigationMenuTriggerStateOpts;
 	readonly attachment: RefAttachment;
-	focusProxyId = simpleBox(useId());
-	focusProxyRef = simpleBox<HTMLElement | null>(null);
+	focusProxyId = writableProp(useId());
+	focusProxyRef = writableProp<HTMLElement | null>(null);
 	readonly focusProxyAttachment: RefAttachment = attachRef(this.focusProxyRef, (v) => (this.itemContext.focusProxyNode = v));
 	context: NavigationMenuProviderState;
 	itemContext: NavigationMenuItemState;
 	listContext: NavigationMenuListState;
-	hasPointerMoveOpened = simpleBox(false);
+	hasPointerMoveOpened = writableProp(false);
 	wasClickClose = false;
 	focusProxyMounted = $state(false);
 	readonly open = $derived.by(() => this.itemContext.opts.value.current === this.context.opts.value.current);
@@ -549,7 +548,7 @@ export class NavigationMenuTriggerState {
 interface NavigationMenuLinkStateOpts
 	extends
 		WithRefProps,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			active: boolean;
 			onSelect: (e: Event) => void;
 		}> {}

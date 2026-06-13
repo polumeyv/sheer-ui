@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import { DialogDescriptionState } from "$lib/components/dialog/primitive/dialog.svelte.js";
 	import type { DialogDescriptionProps } from "$lib/components/dialog/primitive/index.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -15,11 +15,8 @@
 	}: DialogDescriptionProps = $props();
 
 	const descriptionState = DialogDescriptionState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, descriptionState.props));

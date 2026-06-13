@@ -1,5 +1,5 @@
-import { attachRef, type ReadableBoxedValues } from '$lib/vendor/index.js';
-import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { attachRef, type ReadableProps } from '$lib/vendor/index.js';
+import type { RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 
 const aspectRatioAttrs = createBitsAttrs({
@@ -7,7 +7,7 @@ const aspectRatioAttrs = createBitsAttrs({
 	parts: ['root'],
 });
 
-interface AspectRatioRootStateOpts extends WithRefOpts, ReadableBoxedValues<{ ratio: number }> {}
+interface AspectRatioRootStateOpts extends WithRefProps, ReadableProps<{ ratio: number }> {}
 
 export class AspectRatioRootState {
 	static create(opts: AspectRatioRootStateOpts) {

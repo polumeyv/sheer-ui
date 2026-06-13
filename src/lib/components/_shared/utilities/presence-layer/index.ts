@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { ReadableBox } from '$lib/vendor/index.js';
+import type { ReadableProp } from '$lib/vendor/index.js';
 import type { TransitionState } from '$lib/internal/attrs.js';
 
 export type PresenceLayerProps = {
@@ -24,7 +24,7 @@ export type PresenceLayerImplProps = PresenceLayerProps & {
 		]
 	>;
 
-	ref: ReadableBox<HTMLElement | null>;
+	ref: ReadableProp<HTMLElement | null>;
 };
 
 export { default as PresenceLayer } from '$lib/components/_shared/utilities/presence-layer/presence-layer.svelte';

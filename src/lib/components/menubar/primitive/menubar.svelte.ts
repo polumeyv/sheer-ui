@@ -1,13 +1,13 @@
 import { tick } from 'svelte';
 import { createContext } from 'svelte';
-import { type ReadableBox, boxWith, attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
+import { type ReadableProp, attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import type { InteractOutsideBehaviorType } from '$lib/components/_shared/utilities/dismissible-layer/index.js';
 import type { Direction } from '$lib/shared/index.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { wrapArray } from '$lib/internal/arrays.js';
-import type { OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { onMount } from 'svelte';
 import type { FocusEventHandler, KeyboardEventHandler, PointerEventHandler } from 'svelte/elements';
 import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
@@ -22,12 +22,12 @@ const [getMenubarRootContext, setMenubarRootContext] = createContext<MenubarRoot
 const [getMenubarMenuContext, setMenubarMenuContext] = createContext<MenubarMenuState>();
 interface MenubarRootStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			dir: Direction;
 			loop: boolean;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			value: string;
 		}> {}
 
@@ -42,7 +42,7 @@ export class MenubarRootState {
 	triggerIds = $state<string[]>([]);
 	/** Outgoing menu id when swapping to another top-level menu... skip exit animation wait only then */
 	skipExitAnimationForMenuValue = $state<string | null>(null);
-	valueToChangeHandler = new Map<string, ReadableBox<OnChangeFn<boolean>>>();
+	valueToChangeHandler = new Map<string, ReadableProp<OnChangeFn<boolean>>>();
 
 	constructor(opts: MenubarRootStateOpts) {
 		this.opts = opts;
@@ -51,7 +51,7 @@ export class MenubarRootState {
 			rootNode: this.opts.ref,
 			candidateAttr: menubarAttrs.trigger,
 			loop: this.opts.loop,
-			orientation: boxWith(() => 'horizontal'),
+			orientation: { get current() { return 'horizontal' as const; } },
 		});
 	}
 
@@ -72,7 +72,7 @@ export class MenubarRootState {
 	 * @param contentId - the content id to associate with the value
 	 * @returns - a function to de-register the menu
 	 */
-	registerMenu = (value: string, onOpenChange: ReadableBox<OnChangeFn<boolean>>) => {
+	registerMenu = (value: string, onOpenChange: ReadableProp<OnChangeFn<boolean>>) => {
 		this.valueToChangeHandler.set(value, onOpenChange);
 
 		return () => {
@@ -132,7 +132,7 @@ export class MenubarRootState {
 	);
 }
 
-interface MenubarMenuStateOpts extends ReadableBoxedValues<{
+interface MenubarMenuStateOpts extends ReadableProps<{
 	value: string;
 	onOpenChange: OnChangeFn<boolean>;
 }> {}
@@ -184,8 +184,8 @@ export class MenubarMenuState {
 
 interface MenubarTriggerStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 		}> {}
 
@@ -293,8 +293,8 @@ export class MenubarTriggerState {
 
 interface MenubarContentStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			interactOutsideBehavior: InteractOutsideBehaviorType;
 			onOpenAutoFocus: (e: Event) => void;
 			onCloseAutoFocus: (e: Event) => void;

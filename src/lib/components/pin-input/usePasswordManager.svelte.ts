@@ -1,4 +1,4 @@
-import { getWindow, type DOMContext, type ReadableBox, type WritableBox } from '$lib/vendor/index.js';
+import { getWindow, type DOMContext, type ReadableProp, type WritableProp } from '$lib/vendor/index.js';
 import type { PinInputRootPropsWithoutHTML } from '$lib/components/pin-input/index.js';
 
 const PWM_BADGE_MARGIN_RIGHT = 18;
@@ -13,10 +13,10 @@ const PASSWORD_MANAGER_SELECTORS = [
 ].join(',');
 
 type UsePasswordManagerBadgeProps = {
-	containerRef: WritableBox<HTMLElement | null>;
-	inputRef: WritableBox<HTMLInputElement | null>;
-	pushPasswordManagerStrategy: ReadableBox<PinInputRootPropsWithoutHTML['pushPasswordManagerStrategy']>;
-	isFocused: ReadableBox<boolean>;
+	containerRef: WritableProp<HTMLElement | null>;
+	inputRef: WritableProp<HTMLInputElement | null>;
+	pushPasswordManagerStrategy: ReadableProp<PinInputRootPropsWithoutHTML['pushPasswordManagerStrategy']>;
+	isFocused: ReadableProp<boolean>;
 	domContext: DOMContext;
 };
 

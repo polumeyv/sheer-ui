@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { boxWith } from "$lib/vendor/index.js";
-	import { CommandLabelState } from "$lib/components/command/primitive/command.svelte.js";
+		import { CommandLabelState } from "$lib/components/command/primitive/command.svelte.js";
 
 	import type { WithChildren } from "$lib/internal/types.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -16,11 +15,8 @@
 	}: WithChildren<WithElementRef<BitsPrimitiveLabelAttributes>> = $props();
 
 	const labelState = CommandLabelState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, labelState.props));

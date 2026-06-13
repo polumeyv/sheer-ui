@@ -1,6 +1,6 @@
 import { tick } from 'svelte';
 import { type DateValue, endOfMonth, isSameDay, isSameMonth, startOfMonth } from '@internationalized/date';
-import { type ReadableBox, type WritableBox, getDocument, styleToCSS } from '$lib/vendor/index.js';
+import { type ReadableProp, type WritableProp, getDocument, styleToCSS } from '$lib/vendor/index.js';
 import { untrack } from 'svelte';
 import {
 	getDaysInMonth,
@@ -195,7 +195,7 @@ export function getSelectableCells(calendarNode: HTMLElement | null) {
  * @param node - The node to extract the date from.
  * @param placeholder - The placeholder value store which will be set to the extracted date.
  */
-export function setPlaceholderToNodeValue(node: HTMLElement, placeholder: WritableBox<DateValue>) {
+export function setPlaceholderToNodeValue(node: HTMLElement, placeholder: WritableProp<DateValue>) {
 	const cellValue = node.getAttribute('data-value');
 	if (!cellValue) return;
 	placeholder.current = parseStringToDateValue(cellValue, placeholder.current);
@@ -215,7 +215,7 @@ type ShiftCalendarFocusProps = {
 	/**
 	 * The `placeholder` value box
 	 */
-	placeholder: WritableBox<DateValue>;
+	placeholder: WritableProp<DateValue>;
 
 	/**
 	 * The calendar node.
@@ -480,11 +480,11 @@ export function getWeekdays({ months, formatter, weekdayFormat }: GetWeekdaysPro
 }
 
 type UseMonthViewSyncProps = {
-	weekStartsOn: ReadableBox<number | undefined>;
-	locale: ReadableBox<string>;
-	fixedWeeks: ReadableBox<boolean>;
-	numberOfMonths: ReadableBox<number>;
-	placeholder: WritableBox<DateValue>;
+	weekStartsOn: ReadableProp<number | undefined>;
+	locale: ReadableProp<string>;
+	fixedWeeks: ReadableProp<boolean>;
+	numberOfMonths: ReadableProp<number>;
+	placeholder: WritableProp<DateValue>;
 	setMonths: (months: Month<DateValue>[]) => void;
 };
 
@@ -556,12 +556,12 @@ export function createAccessibleHeading({ calendarNode, label, accessibleHeading
 }
 
 type UseMonthViewPlaceholderSyncProps = {
-	placeholder: WritableBox<DateValue>;
+	placeholder: WritableProp<DateValue>;
 	getVisibleMonths: () => DateValue[];
-	weekStartsOn: ReadableBox<number | undefined>;
-	locale: ReadableBox<string>;
-	fixedWeeks: ReadableBox<boolean>;
-	numberOfMonths: ReadableBox<number>;
+	weekStartsOn: ReadableProp<number | undefined>;
+	locale: ReadableProp<string>;
+	fixedWeeks: ReadableProp<boolean>;
+	numberOfMonths: ReadableProp<number>;
 	setMonths: (months: Month<DateValue>[]) => void;
 };
 
@@ -736,11 +736,11 @@ export function useEnsureNonDisabledPlaceholder({
 	maxValue,
 	isDateDisabled,
 }: {
-	ref: WritableBox<HTMLElement | null>;
-	placeholder: WritableBox<DateValue | undefined>;
-	isDateDisabled: ReadableBox<DateMatcher>;
-	minValue: ReadableBox<DateValue | undefined>;
-	maxValue: ReadableBox<DateValue | undefined>;
+	ref: WritableProp<HTMLElement | null>;
+	placeholder: WritableProp<DateValue | undefined>;
+	isDateDisabled: ReadableProp<DateMatcher>;
+	minValue: ReadableProp<DateValue | undefined>;
+	maxValue: ReadableProp<DateValue | undefined>;
 	defaultPlaceholder: DateValue;
 }) {
 	function isDisabled(date: DateValue) {

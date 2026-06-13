@@ -1,16 +1,16 @@
-import { type ReadableBox, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { type ReadableProp, type ReadableProps } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { AnimationsComplete } from '$lib/internal/animations-complete.js';
 import type { TransitionState } from '$lib/internal/attrs.js';
 
-export interface PresenceOptions extends ReadableBoxedValues<{
+export interface PresenceOptions extends ReadableProps<{
 	open: boolean;
 	ref: HTMLElement | null;
 }> {}
 
 export class Presence {
 	readonly opts: PresenceOptions;
-	present: ReadableBox<boolean>;
+	present: ReadableProp<boolean>;
 	#afterAnimations: AnimationsComplete;
 	#isPresent = $state(false);
 	#hasMounted = false;

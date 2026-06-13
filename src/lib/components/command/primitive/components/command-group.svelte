@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { CommandGroupProps } from "$lib/components/command/primitive/index.js";
 	import { CommandGroupContainerState } from "$lib/components/command/primitive/command.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -17,13 +17,10 @@
 	}: CommandGroupProps = $props();
 
 	const groupState = CommandGroupContainerState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		forceMount: boxWith(() => forceMount),
-		value: boxWith(() => value),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		forceMount: { get current() { return forceMount; } },
+		value: { get current() { return value; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, groupState.props));

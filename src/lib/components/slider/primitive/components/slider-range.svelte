@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { SliderRangeProps } from "$lib/components/slider/primitive/index.js";
 	import { SliderRangeState } from "$lib/components/slider/primitive/slider.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -15,11 +15,8 @@
 	}: SliderRangeProps = $props();
 
 	const rangeState = SliderRangeState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 	const mergedProps = $derived(mergeProps(restProps, rangeState.props));
 </script>

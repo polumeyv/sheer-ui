@@ -1,6 +1,6 @@
-import { attachRef, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { attachRef, type ReadableProps } from '$lib/vendor/index.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import type { Orientation } from '$lib/shared/index.js';
 
 const separatorAttrs = createBitsAttrs({
@@ -10,8 +10,8 @@ const separatorAttrs = createBitsAttrs({
 
 interface SeparatorRootStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			orientation: Orientation;
 			decorative: boolean;
 		}> {}

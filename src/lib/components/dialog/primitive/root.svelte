@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { boxWith } from '$lib/vendor/index.js';
-	import { DialogRootState } from '$lib/components/dialog/primitive/dialog.svelte.js';
+		import { DialogRootState } from '$lib/components/dialog/primitive/dialog.svelte.js';
 	import type { DialogRootProps } from '$lib/components/dialog/primitive/index.js';
 
 	let {
@@ -12,15 +11,9 @@
 	}: DialogRootProps & { variant?: 'dialog' | 'alert-dialog' } = $props();
 
 	DialogRootState.create({
-		variant: boxWith(() => variant),
-		open: boxWith(
-			() => open,
-			(v) => {
-				open = v;
-				onOpenChange(v);
-			}
-		),
-		onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
+		variant: { get current() { return variant; } },
+		open: { get current() { return open; }, set current(v) { open = v; onOpenChange(v); } },
+		onOpenChangeComplete: { get current() { return onOpenChangeComplete; } },
 	});
 </script>
 

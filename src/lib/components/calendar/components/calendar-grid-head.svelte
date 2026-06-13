@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import { CalendarGridHeadState } from "$lib/components/calendar/calendar.svelte.js";
 	import type { CalendarGridHeadProps } from "$lib/components/calendar/index.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -15,11 +15,8 @@
 	}: CalendarGridHeadProps = $props();
 
 	const gridHeadState = CalendarGridHeadState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, gridHeadState.props));

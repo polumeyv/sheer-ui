@@ -2,18 +2,17 @@ import { createContext } from 'svelte';
 import type { Updater } from 'svelte/store';
 import type { DateValue } from '@internationalized/date';
 import {
-	type WritableBox,
-	boxWith,
+	type WritableProp,
 	attachRef,
 	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	simpleBox,
+	type ReadableProps,
+	type WritableProps,
+	writableProp,
 } from '$lib/vendor/index.js';
 import { onMount, untrack } from 'svelte';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import type { DateRangeFieldRootState } from '$lib/components/date-range-field/date-range-field.svelte.js';
-import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, WithRefOpts, RefAttachment } from '$lib/internal/types.js';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, WithRefProps, RefAttachment } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { useId } from '$lib/internal/use-id.js';
@@ -135,11 +134,11 @@ const [getDateFieldRootContext, setDateFieldRootContext] = createContext<DateFie
 
 interface DateFieldRootStateOpts
 	extends
-		WritableBoxedValues<{
+		WritableProps<{
 			value: DateValue | undefined;
 			placeholder: DateValue;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			readonlySegments: SegmentPart[];
 			validate: DateValidator | undefined;
 			onInvalid: DateOnInvalid | undefined;
@@ -162,7 +161,7 @@ export class DateFieldRootState {
 	}
 
 	value: DateFieldRootStateOpts['value'];
-	placeholder: WritableBox<DateValue>;
+	placeholder: WritableProp<DateValue>;
 	validate: DateFieldRootStateOpts['validate'];
 	minValue: DateFieldRootStateOpts['minValue'];
 	maxValue: DateFieldRootStateOpts['maxValue'];
@@ -203,7 +202,7 @@ export class DateFieldRootState {
 		 */
 		this.value = props.value;
 		this.placeholder = rangeRoot ? rangeRoot.opts.placeholder : props.placeholder;
-		this.validate = rangeRoot ? simpleBox(undefined) : props.validate;
+		this.validate = rangeRoot ? writableProp(undefined) : props.validate;
 		this.minValue = rangeRoot ? rangeRoot.opts.minValue : props.minValue;
 		this.maxValue = rangeRoot ? rangeRoot.opts.maxValue : props.maxValue;
 		this.disabled = rangeRoot ? rangeRoot.opts.disabled : props.disabled;
@@ -219,8 +218,8 @@ export class DateFieldRootState {
 		this.isInvalidProp = props.isInvalidProp;
 		this.formatter = createFormatter({
 			initialLocale: this.locale.current,
-			monthFormat: boxWith(() => 'long'),
-			yearFormat: boxWith(() => 'numeric'),
+			monthFormat: { get current() { return 'long' as const; } },
+			yearFormat: { get current() { return 'numeric' as const; } },
 		});
 		this.initialSegments = initializeSegmentValues(this.inferredGranularity);
 		this.segmentValues = this.initialSegments;
@@ -694,8 +693,8 @@ export class DateFieldRootState {
 
 interface DateFieldInputStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			name: string;
 		}> {}
 
@@ -768,7 +767,7 @@ export class DateFieldHiddenInputState {
 	});
 }
 
-interface DateFieldLabelStateOpts extends WithRefOpts {}
+interface DateFieldLabelStateOpts extends WithRefProps {}
 
 export class DateFieldLabelState {
 	static create(opts: DateFieldLabelStateOpts) {
@@ -808,13 +807,13 @@ export class DateFieldLabelState {
 
 // Base class for numeric segments
 abstract class BaseNumericSegmentState {
-	readonly opts: WithRefOpts;
+	readonly opts: WithRefProps;
 	readonly root: DateFieldRootState;
 	readonly announcer: Announcer;
 	readonly part: string;
 	readonly config: SegmentConfig;
 	readonly attachment: RefAttachment;
-	constructor(opts: WithRefOpts, root: DateFieldRootState, part: string, config: SegmentConfig) {
+	constructor(opts: WithRefProps, root: DateFieldRootState, part: string, config: SegmentConfig) {
 		this.opts = opts;
 		this.root = root;
 		this.part = part;
@@ -1115,7 +1114,7 @@ class DateFieldYearSegmentState extends BaseNumericSegmentState {
 	#pressedKeys: string[] = [];
 	#backspaceCount = 0;
 
-	constructor(opts: WithRefOpts, root: DateFieldRootState) {
+	constructor(opts: WithRefProps, root: DateFieldRootState) {
 		super(opts, root, 'year', SEGMENT_CONFIGS.year);
 	}
 
@@ -1252,19 +1251,19 @@ class DateFieldYearSegmentState extends BaseNumericSegmentState {
 }
 
 class DateFieldDaySegmentState extends BaseNumericSegmentState {
-	constructor(opts: WithRefOpts, root: DateFieldRootState) {
+	constructor(opts: WithRefProps, root: DateFieldRootState) {
 		super(opts, root, 'day', SEGMENT_CONFIGS.day);
 	}
 }
 
 class DateFieldMonthSegmentState extends BaseNumericSegmentState {
-	constructor(opts: WithRefOpts, root: DateFieldRootState) {
+	constructor(opts: WithRefProps, root: DateFieldRootState) {
 		super(opts, root, 'month', SEGMENT_CONFIGS.month);
 	}
 }
 
 class DateFieldHourSegmentState extends BaseNumericSegmentState {
-	constructor(opts: WithRefOpts, root: DateFieldRootState) {
+	constructor(opts: WithRefProps, root: DateFieldRootState) {
 		super(opts, root, 'hour', SEGMENT_CONFIGS.hour);
 	}
 
@@ -1297,19 +1296,19 @@ class DateFieldHourSegmentState extends BaseNumericSegmentState {
 }
 
 class DateFieldMinuteSegmentState extends BaseNumericSegmentState {
-	constructor(opts: WithRefOpts, root: DateFieldRootState) {
+	constructor(opts: WithRefProps, root: DateFieldRootState) {
 		super(opts, root, 'minute', SEGMENT_CONFIGS.minute);
 	}
 }
 
 class DateFieldSecondSegmentState extends BaseNumericSegmentState {
-	constructor(opts: WithRefOpts, root: DateFieldRootState) {
+	constructor(opts: WithRefProps, root: DateFieldRootState) {
 		super(opts, root, 'second', SEGMENT_CONFIGS.second);
 	}
 }
 
 // Special segments that don't extend the base class
-interface DateFieldDayPeriodSegmentStateOpts extends WithRefOpts {}
+interface DateFieldDayPeriodSegmentStateOpts extends WithRefProps {}
 
 export class DateFieldDayPeriodSegmentState {
 	static create(opts: DateFieldDayPeriodSegmentStateOpts) {
@@ -1397,7 +1396,7 @@ export class DateFieldDayPeriodSegmentState {
 	});
 }
 
-interface DateFieldLiteralSegmentStateOpts extends WithRefOpts {}
+interface DateFieldLiteralSegmentStateOpts extends WithRefProps {}
 
 export class DateFieldLiteralSegmentState {
 	static create(opts: DateFieldLiteralSegmentStateOpts) {
@@ -1425,7 +1424,7 @@ export class DateFieldLiteralSegmentState {
 	);
 }
 
-interface DateFieldTimeZoneSegmentStateOpts extends WithRefOpts {}
+interface DateFieldTimeZoneSegmentStateOpts extends WithRefProps {}
 
 export class DateFieldTimeZoneSegmentState {
 	static create(opts: DateFieldTimeZoneSegmentStateOpts) {
@@ -1469,7 +1468,7 @@ export class DateFieldTimeZoneSegmentState {
 }
 
 export class DateFieldSegmentState {
-	static create(part: SegmentPart, opts: WithRefOpts) {
+	static create(part: SegmentPart, opts: WithRefProps) {
 		const root = getDateFieldRootContext();
 		switch (part) {
 			case 'day':

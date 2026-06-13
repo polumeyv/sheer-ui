@@ -7,11 +7,11 @@ import { executeCallbacks } from '$lib/vendor/index.js';
 import { untrack } from 'svelte';
 import {
 	attachRef,
-	type Box,
-	type ReadableBox,
+	type WritableProp,
+	type ReadableProp,
 	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
+	type ReadableProps,
+	type WritableProps,
 } from '$lib/vendor/index.js';
 import { on } from 'svelte/events';
 import { watch } from '$lib/vendor/watch.svelte.js';
@@ -29,7 +29,7 @@ import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { isValidIndex } from '$lib/internal/arrays.js';
 import { SvelteResizeObserver } from '$lib/internal/svelte-resize-observer.svelte.js';
-import type { BitsKeyboardEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsKeyboardEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import type { Direction, Orientation, SliderThumbPositioning } from '$lib/shared/index.js';
 import { linearScale } from '$lib/internal/math.js';
 import type { SliderLabelPosition } from '$lib/components/slider/primitive/index.js';
@@ -43,8 +43,8 @@ export const [getSliderRootContext, setSliderRootContext] = createContext<Slider
 
 interface SliderBaseRootStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 			orientation: Orientation;
 			min: number;
@@ -165,10 +165,10 @@ abstract class SliderBaseRootState {
 interface SliderSingleRootStateOpts
 	extends
 		SliderBaseRootStateOpts,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			onValueCommit: OnChangeFn<number>;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			value: number;
 		}> {}
 
@@ -388,10 +388,10 @@ class SliderSingleRootState extends SliderBaseRootState {
 interface SliderMultiRootStateOpts
 	extends
 		SliderBaseRootStateOpts,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			onValueCommit: OnChangeFn<number[]>;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			value: number[];
 		}> {}
 
@@ -698,8 +698,8 @@ type SliderRoot = SliderSingleRootState | SliderMultiRootState;
 
 interface SliderRootStateOpts extends Omit<SliderBaseRootStateOpts, 'type'> {
 	type: 'single' | 'multiple';
-	value: Box<number> | Box<number[]>;
-	onValueCommit: ReadableBox<OnChangeFn<number>> | ReadableBox<OnChangeFn<number[]>>;
+	value: WritableProp<number> | WritableProp<number[]>;
+	onValueCommit: ReadableProp<OnChangeFn<number>> | ReadableProp<OnChangeFn<number[]>>;
 }
 
 export class SliderRootState {
@@ -715,7 +715,7 @@ export class SliderRootState {
 
 const VALID_SLIDER_KEYS = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.ARROW_UP, kbd.ARROW_DOWN, kbd.HOME, kbd.END];
 
-interface SliderRangeStateOpts extends WithRefOpts {}
+interface SliderRangeStateOpts extends WithRefProps {}
 
 export class SliderRangeState {
 	static create(opts: SliderRangeStateOpts) {
@@ -780,8 +780,8 @@ export class SliderRangeState {
 
 interface SliderThumbStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			index: number;
 			disabled: boolean;
 		}> {}
@@ -904,8 +904,8 @@ export class SliderThumbState {
 
 interface SliderTickStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			index: number;
 		}> {}
 
@@ -935,8 +935,8 @@ export class SliderTickState {
 
 interface SliderTickLabelStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			index: number;
 			position?: SliderLabelPosition;
 		}> {}
@@ -981,8 +981,8 @@ export class SliderTickLabelState {
 
 interface SliderThumbLabelStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			index: number;
 			position?: SliderLabelPosition;
 		}> {}

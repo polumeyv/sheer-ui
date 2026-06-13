@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { boxWith } from "$lib/vendor/index.js";
-	import type { ContextMenuRootProps } from "$lib/components/context-menu/primitive/index.js";
+		import type { ContextMenuRootProps } from "$lib/components/context-menu/primitive/index.js";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
 	import { MenuMenuState, MenuRootState } from "$lib/components/_shared/menu/menu.svelte.js";
 
@@ -14,9 +13,8 @@
 	}: ContextMenuRootProps = $props();
 
 	const root = MenuRootState.create({
-		variant: boxWith(() => "context-menu" as const),
-		dir: boxWith(() => dir),
-		// debugMode: boxWith(() => debugMode),
+		variant: { get current() { return "context-menu" as const; } },
+		dir: { get current() { return dir; } },
 		onClose: () => {
 			open = false;
 			onOpenChange?.(false);
@@ -25,14 +23,8 @@
 
 	MenuMenuState.create(
 		{
-			open: boxWith(
-				() => open,
-				(v) => {
-					open = v;
-					onOpenChange(v);
-				}
-			),
-			onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
+			open: { get current() { return open; }, set current(v) { open = v; onOpenChange(v); } },
+			onOpenChangeComplete: { get current() { return onOpenChangeComplete; } },
 		},
 		root
 	);

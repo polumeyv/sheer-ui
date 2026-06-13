@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { ScrollAreaThumbProps } from "$lib/components/scroll-area/primitive/index.js";
 	import { ScrollAreaThumbImplState } from "$lib/components/scroll-area/primitive/scroll-area.svelte.js";
 
@@ -16,11 +16,8 @@
 	} = $props();
 
 	const thumbState = ScrollAreaThumbImplState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(

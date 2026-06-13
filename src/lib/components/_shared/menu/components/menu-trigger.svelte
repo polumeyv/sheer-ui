@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { MenuTriggerProps } from "$lib/components/_shared/menu/index.js";
 	import { DropdownMenuTriggerState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -18,12 +18,9 @@
 	}: MenuTriggerProps = $props();
 
 	const triggerState = DropdownMenuTriggerState.create({
-		id: boxWith(() => id),
-		disabled: boxWith(() => disabled ?? false),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		disabled: { get current() { return disabled ?? false; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, triggerState.props, { type }));

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { watch } from "$lib/vendor/watch.svelte.js";
-	import { boxWith } from "$lib/vendor/index.js";
 	import { DateFieldRootState } from "$lib/components/date-field/date-field.svelte.js";
 	import type { DateFieldRootProps } from "$lib/components/date-field/index.js";
 	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
@@ -60,38 +59,22 @@
 	);
 
 	DateFieldRootState.create({
-		value: boxWith(
-			() => value,
-			(v) => {
-				value = v;
-				onValueChange(v);
-			}
-		),
-		placeholder: boxWith(
-			() => {
-				if (placeholder === undefined) return handleDefaultPlaceholder(false);
-				return placeholder;
-			},
-			(v) => {
-				if (v === undefined) return;
-				placeholder = v;
-				onPlaceholderChange(v);
-			}
-		),
-		disabled: boxWith(() => disabled),
-		granularity: boxWith(() => granularity),
-		hideTimeZone: boxWith(() => hideTimeZone),
-		hourCycle: boxWith(() => hourCycle),
+		value: { get current() { return value; }, set current(v) { value = v; onValueChange(v); } },
+		placeholder: { get current() { if (placeholder === undefined) return handleDefaultPlaceholder(false); return placeholder; }, set current(v) { if (v === undefined) return; placeholder = v; onPlaceholderChange(v); } },
+		disabled: { get current() { return disabled; } },
+		granularity: { get current() { return granularity; } },
+		hideTimeZone: { get current() { return hideTimeZone; } },
+		hourCycle: { get current() { return hourCycle; } },
 		locale: resolveLocaleProp(() => locale),
-		maxValue: boxWith(() => maxValue),
-		minValue: boxWith(() => minValue),
-		validate: boxWith(() => validate),
-		readonly: boxWith(() => readonly),
-		readonlySegments: boxWith(() => readonlySegments),
-		required: boxWith(() => required),
-		onInvalid: boxWith(() => onInvalid),
-		errorMessageId: boxWith(() => errorMessageId),
-		isInvalidProp: boxWith(() => undefined),
+		maxValue: { get current() { return maxValue; } },
+		minValue: { get current() { return minValue; } },
+		validate: { get current() { return validate; } },
+		readonly: { get current() { return readonly; } },
+		readonlySegments: { get current() { return readonlySegments; } },
+		required: { get current() { return required; } },
+		onInvalid: { get current() { return onInvalid; } },
+		errorMessageId: { get current() { return errorMessageId; } },
+		isInvalidProp: { get current() { return undefined; } },
 	});
 </script>
 

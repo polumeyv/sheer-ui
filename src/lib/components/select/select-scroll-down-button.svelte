@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { SelectScrollDownButtonProps } from '$lib/components/select/primitive/index.js';
 	import { SelectScrollDownButtonState } from '$lib/components/select/primitive/select.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
@@ -20,12 +20,9 @@
 	}: SelectScrollDownButtonProps = $props();
 
 	const scrollButtonState = SelectScrollDownButtonState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		delay: boxWith(() => delay),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		delay: { get current() { return delay; } },
 	});
 
 	const mergedProps = $derived(

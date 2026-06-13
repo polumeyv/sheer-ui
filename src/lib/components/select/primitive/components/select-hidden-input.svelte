@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { boxWith } from "$lib/vendor/index.js";
-	import { SelectHiddenInputState } from "$lib/components/select/primitive/select.svelte.js";
+		import { SelectHiddenInputState } from "$lib/components/select/primitive/select.svelte.js";
 	import type { HTMLInputAttributes } from "svelte/elements";
 	import HiddenInput from "$lib/components/_shared/utilities/hidden-input.svelte";
 
@@ -10,7 +9,7 @@
 	}: { value?: string } & Omit<HTMLInputAttributes, "value"> = $props();
 
 	const hiddenInputState = SelectHiddenInputState.create({
-		value: boxWith(() => value),
+		value: { get current() { return value; } },
 	});
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { MenuContentProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuContentState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -24,13 +24,10 @@
 	}: MenuContentProps = $props();
 
 	const contentState = MenuContentState.create({
-		id: boxWith(() => id),
-		loop: boxWith(() => loop),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		onCloseAutoFocus: boxWith(() => onCloseAutoFocusProp),
+		id: { get current() { return id; } },
+		loop: { get current() { return loop; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		onCloseAutoFocus: { get current() { return onCloseAutoFocusProp; } },
 	});
 
 	const mergedProps = $derived(

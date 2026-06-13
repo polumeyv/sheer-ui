@@ -7,7 +7,7 @@
 
 <script lang="ts" generics="T extends TimeValue = Time">
 	import { watch } from "$lib/vendor/watch.svelte.js";
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import { TimeRangeFieldRootState } from "$lib/components/time-range-field/time-range-field.svelte.js";
 	import type { TimeRangeFieldRootProps } from "$lib/components/time-range-field/index.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -84,52 +84,25 @@
 	);
 
 	const rootState = TimeRangeFieldRootState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		disabled: boxWith(() => disabled),
-		readonly: boxWith(() => readonly),
-		required: boxWith(() => required),
-		hourCycle: boxWith(() => hourCycle),
-		granularity: boxWith(() => granularity),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		disabled: { get current() { return disabled; } },
+		readonly: { get current() { return readonly; } },
+		required: { get current() { return required; } },
+		hourCycle: { get current() { return hourCycle; } },
+		granularity: { get current() { return granularity; } },
 		locale: resolveLocaleProp(() => locale),
-		hideTimeZone: boxWith(() => hideTimeZone),
-		validate: boxWith(() => validate),
-		maxValue: boxWith(() => maxValue),
-		minValue: boxWith(() => minValue),
-		placeholder: boxWith(
-			() => placeholder as TimeValue,
-			(v) => {
-				placeholder = v;
-				onPlaceholderChange(v);
-			}
-		),
-		readonlySegments: boxWith(() => readonlySegments),
-		value: boxWith(
-			() => value as TimeRange<T>,
-			(v) => {
-				value = v;
-				onValueChange(v);
-			}
-		),
-		startValue: boxWith(
-			() => startValue,
-			(v) => {
-				startValue = v;
-				onStartValueChange(v);
-			}
-		),
-		endValue: boxWith(
-			() => endValue,
-			(v) => {
-				endValue = v;
-				onEndValueChange(v);
-			}
-		),
-		onInvalid: boxWith(() => onInvalid),
-		errorMessageId: boxWith(() => errorMessageId),
+		hideTimeZone: { get current() { return hideTimeZone; } },
+		validate: { get current() { return validate; } },
+		maxValue: { get current() { return maxValue; } },
+		minValue: { get current() { return minValue; } },
+		placeholder: { get current() { return placeholder as TimeValue; }, set current(v) { placeholder = v; onPlaceholderChange(v); } },
+		readonlySegments: { get current() { return readonlySegments; } },
+		value: { get current() { return value as TimeRange<T>; }, set current(v) { value = v; onValueChange(v); } },
+		startValue: { get current() { return startValue; }, set current(v) { startValue = v; onStartValueChange(v); } },
+		endValue: { get current() { return endValue; }, set current(v) { endValue = v; onEndValueChange(v); } },
+		onInvalid: { get current() { return onInvalid; } },
+		errorMessageId: { get current() { return errorMessageId; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, rootState.props));

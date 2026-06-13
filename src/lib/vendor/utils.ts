@@ -56,6 +56,9 @@ export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?:
  */
 export type Getter<T> = () => T;
 
+/** Either a plain value or a getter for it. */
+export type MaybeGetter<T> = T | Getter<T>;
+
 /** A read-only reactive accessor: `{ get current() { return value } }`. */
 export type ReadableProp<T> = { readonly current: T };
 

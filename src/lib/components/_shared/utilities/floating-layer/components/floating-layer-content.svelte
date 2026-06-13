@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import { FloatingContentState } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte.js";
 	import type { ContentImplProps } from "$lib/components/_shared/utilities/floating-layer/components/index.js";
 	import { useId } from "$lib/internal/use-id.js";
@@ -30,25 +30,25 @@
 
 	const contentState = FloatingContentState.create(
 		{
-			side: boxWith(() => side),
-			sideOffset: boxWith(() => sideOffset),
-			align: boxWith(() => align),
-			alignOffset: boxWith(() => alignOffset),
-			id: boxWith(() => id),
-			arrowPadding: boxWith(() => arrowPadding),
-			avoidCollisions: boxWith(() => avoidCollisions),
-			collisionBoundary: boxWith(() => collisionBoundary),
-			collisionPadding: boxWith(() => collisionPadding),
-			hideWhenDetached: boxWith(() => hideWhenDetached),
-			onPlaced: boxWith(() => onPlaced),
-			sticky: boxWith(() => sticky),
-			updatePositionStrategy: boxWith(() => updatePositionStrategy),
-			strategy: boxWith(() => strategy),
-			dir: boxWith(() => dir),
-			style: boxWith(() => style),
-			enabled: boxWith(() => enabled),
-			wrapperId: boxWith(() => wrapperId),
-			customAnchor: boxWith(() => customAnchor),
+			side: { get current() { return side; } },
+			sideOffset: { get current() { return sideOffset; } },
+			align: { get current() { return align; } },
+			alignOffset: { get current() { return alignOffset; } },
+			id: { get current() { return id; } },
+			arrowPadding: { get current() { return arrowPadding; } },
+			avoidCollisions: { get current() { return avoidCollisions; } },
+			collisionBoundary: { get current() { return collisionBoundary; } },
+			collisionPadding: { get current() { return collisionPadding; } },
+			hideWhenDetached: { get current() { return hideWhenDetached; } },
+			onPlaced: { get current() { return onPlaced; } },
+			sticky: { get current() { return sticky; } },
+			updatePositionStrategy: { get current() { return updatePositionStrategy; } },
+			strategy: { get current() { return strategy; } },
+			dir: { get current() { return dir; } },
+			style: { get current() { return style; } },
+			enabled: { get current() { return enabled; } },
+			wrapperId: { get current() { return wrapperId; } },
+			customAnchor: { get current() { return customAnchor; } },
 		},
 		tooltip
 	);

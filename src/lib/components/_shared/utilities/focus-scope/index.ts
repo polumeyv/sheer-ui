@@ -1,6 +1,6 @@
 import type { Snippet } from 'svelte';
 import type { EventCallback } from '$lib/internal/events.js';
-import type { ReadableBox } from '$lib/vendor/index.js';
+import type { ReadableProp } from '$lib/vendor/index.js';
 
 export type FocusScopeProps = {
 	/**
@@ -41,7 +41,7 @@ export type FocusScopeImplProps = {
 
 	enabled: boolean;
 
-	ref: ReadableBox<HTMLElement | null>;
+	ref: ReadableProp<HTMLElement | null>;
 } & FocusScopeProps;
 
 export { default as FocusScope } from '$lib/components/_shared/utilities/focus-scope/focus-scope.svelte';

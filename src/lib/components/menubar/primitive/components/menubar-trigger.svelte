@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { attachRef, boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { attachRef, mergeProps } from "$lib/vendor/index.js";
 	import type { MenubarTriggerProps } from "$lib/components/menubar/primitive/index.js";
 	import { MenubarTriggerState } from "$lib/components/menubar/primitive/menubar.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -18,12 +18,9 @@
 	}: MenubarTriggerProps = $props();
 
 	const triggerState = MenubarTriggerState.create({
-		id: boxWith(() => id),
-		disabled: boxWith(() => disabled ?? false),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		disabled: { get current() { return disabled ?? false; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const dropdownTriggerState = DropdownMenuTriggerState.create(triggerState.opts);

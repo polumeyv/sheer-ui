@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tick } from "svelte";
-import { boxWith, mergeProps } from "$lib/vendor/index.js";
+import { mergeProps } from "$lib/vendor/index.js";
 	import type { MenuSubContentStaticProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuContentState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { SUB_CLOSE_KEYS } from "$lib/components/_shared/menu/utils.js";
@@ -31,13 +31,10 @@ import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	}: MenuSubContentStaticProps = $props();
 
 	const subContentState = MenuContentState.create({
-		id: boxWith(() => id),
-		loop: boxWith(() => loop),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		onCloseAutoFocus: boxWith(() => handleCloseAutoFocus),
+		id: { get current() { return id; } },
+		loop: { get current() { return loop; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		onCloseAutoFocus: { get current() { return handleCloseAutoFocus; } },
 		isSub: true,
 	});
 

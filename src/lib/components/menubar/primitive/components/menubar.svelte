@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { MenubarRootProps } from "$lib/components/menubar/primitive/index.js";
 	import { MenubarRootState } from "$lib/components/menubar/primitive/menubar.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -19,20 +19,11 @@
 	}: MenubarRootProps = $props();
 
 	const rootState = MenubarRootState.create({
-		id: boxWith(() => id),
-		value: boxWith(
-			() => value,
-			(v) => {
-				value = v;
-				onValueChange?.(v);
-			}
-		),
-		dir: boxWith(() => dir),
-		loop: boxWith(() => loop),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		value: { get current() { return value; }, set current(v) { value = v; onValueChange?.(v); } },
+		dir: { get current() { return dir; } },
+		loop: { get current() { return loop; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, rootState.props));

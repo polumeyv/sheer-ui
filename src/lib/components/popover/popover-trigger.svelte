@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { PopoverTriggerProps } from '$lib/components/popover/primitive/index.js';
 	import { PopoverTriggerState } from '$lib/components/popover/primitive/popover.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
@@ -23,15 +23,12 @@
 	}: PopoverTriggerProps = $props();
 
 	const triggerState = PopoverTriggerState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		disabled: boxWith(() => Boolean(disabled)),
-		openOnHover: boxWith(() => openOnHover),
-		openDelay: boxWith(() => openDelay),
-		closeDelay: boxWith(() => closeDelay),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		disabled: { get current() { return Boolean(disabled); } },
+		openOnHover: { get current() { return openOnHover; } },
+		openDelay: { get current() { return openDelay; } },
+		closeDelay: { get current() { return closeDelay; } },
 	});
 
 	const mergedProps = $derived(

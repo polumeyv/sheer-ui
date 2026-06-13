@@ -1,4 +1,4 @@
-import { DOMContext, type ReadableBox, type ReadableBoxedValues, composeHandlers, contains } from '$lib/vendor/index.js';
+import { DOMContext, type ReadableProp, type ReadableProps, composeHandlers, contains } from '$lib/vendor/index.js';
 import { executeCallbacks } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { on } from 'svelte/events';
@@ -6,13 +6,13 @@ import type { PointerHandler, TextSelectionLayerImplProps } from '$lib/component
 
 const noopPointer: PointerHandler = () => {};
 
-interface TextSelectionLayerStateOpts extends ReadableBoxedValues<
+interface TextSelectionLayerStateOpts extends ReadableProps<
 	Required<Omit<TextSelectionLayerImplProps, 'children' | 'preventOverflowTextSelection' | 'ref'>> & {
 		ref: HTMLElement | null;
 	}
 > {}
 
-globalThis.bitsTextSelectionLayers ??= new Map<TextSelectionLayerState, ReadableBox<boolean>>();
+globalThis.bitsTextSelectionLayers ??= new Map<TextSelectionLayerState, ReadableProp<boolean>>();
 
 export class TextSelectionLayerState {
 	static create(opts: TextSelectionLayerStateOpts) {

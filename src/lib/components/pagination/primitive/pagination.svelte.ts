@@ -1,7 +1,7 @@
 import { createContext } from 'svelte';
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
+import { attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
 import type { Page, PageItem } from '$lib/components/pagination/primitive/index.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { getElemDirection } from '$lib/internal/locale.js';
 import { kbd } from '$lib/internal/kbd.js';
@@ -17,15 +17,15 @@ const [getPaginationRootContext, setPaginationRootContext] = createContext<Pagin
 
 interface PaginationRootStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			count: number;
 			perPage: number;
 			siblingCount: number;
 			orientation: Orientation;
 			loop: boolean;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			page: number;
 		}> {}
 
@@ -102,8 +102,8 @@ export class PaginationRootState {
 
 interface PaginationPageStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			page: Page;
 			disabled: boolean;
 		}> {}
@@ -163,8 +163,8 @@ export class PaginationPageState {
 
 interface PaginationButtonStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 		}> {
 	type: 'prev' | 'next';

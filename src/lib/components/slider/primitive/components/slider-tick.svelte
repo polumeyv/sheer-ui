@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { SliderTickProps } from "$lib/components/slider/primitive/index.js";
 	import { SliderTickState } from "$lib/components/slider/primitive/slider.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -16,12 +16,9 @@
 	}: SliderTickProps = $props();
 
 	const tickState = SliderTickState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		index: boxWith(() => index),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		index: { get current() { return index; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, tickState.props));

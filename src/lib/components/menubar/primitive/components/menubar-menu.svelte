@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { boxWith } from "$lib/vendor/index.js";
-	import type { MenubarMenuProps } from "$lib/components/menubar/primitive/index.js";
+		import type { MenubarMenuProps } from "$lib/components/menubar/primitive/index.js";
 	import { MenubarMenuState } from "$lib/components/menubar/primitive/menubar.svelte.js";
 	import Menu from "$lib/components/_shared/menu/components/menu.svelte";
 	import { createId } from "$lib/internal/create-id.js";
@@ -10,8 +9,8 @@
 	let { value = createId(uid), onOpenChange = (() => {}), ...restProps }: MenubarMenuProps = $props();
 
 	const menuState = MenubarMenuState.create({
-		value: boxWith(() => value),
-		onOpenChange: boxWith(() => onOpenChange),
+		value: { get current() { return value; } },
+		onOpenChange: { get current() { return onOpenChange; } },
 	});
 </script>
 

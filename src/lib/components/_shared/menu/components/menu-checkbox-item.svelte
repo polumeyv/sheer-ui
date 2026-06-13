@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { MenuCheckboxItemProps } from "$lib/components/_shared/menu/index.js";
 	import { getMenuCheckboxGroupContextOr, MenuCheckboxItemState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -48,33 +48,20 @@
 
 	const checkboxItemState = MenuCheckboxItemState.create(
 		{
-			checked: boxWith(
-				() => checked,
-				(v) => {
-					if (v !== checked) {
-						checked = v;
-						onCheckedChange(v);
-					}
-				}
-			),
-			id: boxWith(() => id),
-			disabled: boxWith(() => disabled),
-			onSelect: boxWith(() => handleSelect),
-			ref: boxWith(
-				() => ref,
-				(v) => (ref = v)
-			),
-			closeOnSelect: boxWith(() => closeOnSelect),
-			indeterminate: boxWith(
-				() => indeterminate,
-				(v) => {
-					if (v !== indeterminate) {
-						indeterminate = v;
-						onIndeterminateChange(v);
-					}
-				}
-			),
-			value: boxWith(() => value),
+			checked: { get current() { return checked; }, set current(v) { if (v !== checked) {
+                                    						checked = v;
+                                    						onCheckedChange(v);
+                                    					} } },
+			id: { get current() { return id; } },
+			disabled: { get current() { return disabled; } },
+			onSelect: { get current() { return handleSelect; } },
+			ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+			closeOnSelect: { get current() { return closeOnSelect; } },
+			indeterminate: { get current() { return indeterminate; }, set current(v) { if (v !== indeterminate) {
+                                    						indeterminate = v;
+                                    						onIndeterminateChange(v);
+                                    					} } },
+			value: { get current() { return value; } },
 		},
 		group
 	);

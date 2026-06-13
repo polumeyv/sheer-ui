@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { CommandLinkItemProps } from "$lib/components/command/primitive/index.js";
 	import { CommandItemState } from "$lib/components/command/primitive/command.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -20,16 +20,13 @@
 	}: CommandLinkItemProps = $props();
 
 	const itemState = CommandItemState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		value: boxWith(() => value),
-		disabled: boxWith(() => disabled),
-		onSelect: boxWith(() => onSelect),
-		forceMount: boxWith(() => forceMount),
-		keywords: boxWith(() => keywords),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		value: { get current() { return value; } },
+		disabled: { get current() { return disabled; } },
+		onSelect: { get current() { return onSelect; } },
+		forceMount: { get current() { return forceMount; } },
+		keywords: { get current() { return keywords; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, itemState.props));

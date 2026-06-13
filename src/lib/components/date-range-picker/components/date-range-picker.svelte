@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { watch } from "$lib/vendor/watch.svelte.js";
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { DateValue } from "@internationalized/date";
 	import { DateRangePickerRootState } from "$lib/components/date-range-picker/date-range-picker.svelte.js";
 	import type { DateRangePickerRootProps } from "$lib/components/date-range-picker/index.js";
@@ -115,73 +115,43 @@
 	}
 
 	const pickerRootState = DateRangePickerRootState.create({
-		open: boxWith(
-			() => open,
-			(v) => {
-				open = v;
-				onOpenChange(v);
-			}
-		),
-		value: boxWith(
-			() => value as DateRange,
-			(v) => {
-				value = v;
-				onValueChange(v);
-			}
-		),
-		placeholder: boxWith(
-			() => placeholder as DateValue,
-			(v) => {
-				placeholder = v;
-				onPlaceholderChange(v as DateValue);
-			}
-		),
-		isDateUnavailable: boxWith(() => isDateUnavailable),
-		minValue: boxWith(() => minValue),
-		maxValue: boxWith(() => maxValue),
-		minDays: boxWith(() => minDays),
-		maxDays: boxWith(() => maxDays),
-		disabled: boxWith(() => disabled),
-		readonly: boxWith(() => readonly),
-		granularity: boxWith(() => granularity),
-		readonlySegments: boxWith(() => readonlySegments),
-		hourCycle: boxWith(() => hourCycle),
+		open: { get current() { return open; }, set current(v) { open = v; onOpenChange(v); } },
+		value: { get current() { return value as DateRange; }, set current(v) { value = v; onValueChange(v); } },
+		placeholder: { get current() { return placeholder as DateValue; }, set current(v) { placeholder = v; onPlaceholderChange(v as DateValue); } },
+		isDateUnavailable: { get current() { return isDateUnavailable; } },
+		minValue: { get current() { return minValue; } },
+		maxValue: { get current() { return maxValue; } },
+		minDays: { get current() { return minDays; } },
+		maxDays: { get current() { return maxDays; } },
+		disabled: { get current() { return disabled; } },
+		readonly: { get current() { return readonly; } },
+		granularity: { get current() { return granularity; } },
+		readonlySegments: { get current() { return readonlySegments; } },
+		hourCycle: { get current() { return hourCycle; } },
 		locale: resolveLocaleProp(() => locale),
-		hideTimeZone: boxWith(() => hideTimeZone),
-		required: boxWith(() => required),
-		calendarLabel: boxWith(() => calendarLabel),
-		disableDaysOutsideMonth: boxWith(() => disableDaysOutsideMonth),
-		preventDeselect: boxWith(() => preventDeselect),
-		pagedNavigation: boxWith(() => pagedNavigation),
-		weekStartsOn: boxWith(() => weekStartsOn),
-		weekdayFormat: boxWith(() => weekdayFormat),
-		isDateDisabled: boxWith(() => isDateDisabled),
-		fixedWeeks: boxWith(() => fixedWeeks),
-		numberOfMonths: boxWith(() => numberOfMonths),
-		excludeDisabled: boxWith(() => excludeDisabled),
-		onRangeSelect: boxWith(() => onRangeSelect),
-		startValue: boxWith(
-			() => startValue,
-			(v) => {
-				startValue = v;
-				onStartValueChange(v);
-			}
-		),
-		endValue: boxWith(
-			() => endValue,
-			(v) => {
-				endValue = v;
-				onEndValueChange(v);
-			}
-		),
-		monthFormat: boxWith(() => monthFormat),
-		yearFormat: boxWith(() => yearFormat),
+		hideTimeZone: { get current() { return hideTimeZone; } },
+		required: { get current() { return required; } },
+		calendarLabel: { get current() { return calendarLabel; } },
+		disableDaysOutsideMonth: { get current() { return disableDaysOutsideMonth; } },
+		preventDeselect: { get current() { return preventDeselect; } },
+		pagedNavigation: { get current() { return pagedNavigation; } },
+		weekStartsOn: { get current() { return weekStartsOn; } },
+		weekdayFormat: { get current() { return weekdayFormat; } },
+		isDateDisabled: { get current() { return isDateDisabled; } },
+		fixedWeeks: { get current() { return fixedWeeks; } },
+		numberOfMonths: { get current() { return numberOfMonths; } },
+		excludeDisabled: { get current() { return excludeDisabled; } },
+		onRangeSelect: { get current() { return onRangeSelect; } },
+		startValue: { get current() { return startValue; }, set current(v) { startValue = v; onStartValueChange(v); } },
+		endValue: { get current() { return endValue; }, set current(v) { endValue = v; onEndValueChange(v); } },
+		monthFormat: { get current() { return monthFormat; } },
+		yearFormat: { get current() { return yearFormat; } },
 		defaultPlaceholder,
 	});
 
 	PopoverRootState.create({
 		open: pickerRootState.opts.open,
-		onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
+		onOpenChangeComplete: { get current() { return onOpenChangeComplete; } },
 	});
 
 	const fieldRootState = DateRangeFieldRootState.create({
@@ -189,7 +159,7 @@
 		disabled: pickerRootState.opts.disabled,
 		readonly: pickerRootState.opts.readonly,
 		readonlySegments: pickerRootState.opts.readonlySegments,
-		validate: boxWith(() => validate),
+		validate: { get current() { return validate; } },
 		minValue: pickerRootState.opts.minValue,
 		maxValue: pickerRootState.opts.maxValue,
 		granularity: pickerRootState.opts.granularity,
@@ -198,15 +168,12 @@
 		locale: pickerRootState.opts.locale,
 		required: pickerRootState.opts.required,
 		placeholder: pickerRootState.opts.placeholder,
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 		startValue: pickerRootState.opts.startValue,
 		endValue: pickerRootState.opts.endValue,
-		onInvalid: boxWith(() => onInvalid),
-		errorMessageId: boxWith(() => errorMessageId),
+		onInvalid: { get current() { return onInvalid; } },
+		errorMessageId: { get current() { return errorMessageId; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, fieldRootState.props));

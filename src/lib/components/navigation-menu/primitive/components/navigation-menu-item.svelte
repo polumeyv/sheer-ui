@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { NavigationMenuItemProps } from "$lib/components/navigation-menu/primitive/index.js";
 	import { NavigationMenuItemState } from "$lib/components/navigation-menu/primitive/navigation-menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -18,13 +18,10 @@
 	}: NavigationMenuItemProps = $props();
 
 	const itemState = NavigationMenuItemState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		value: boxWith(() => value),
-		openOnHover: boxWith(() => openOnHover),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		value: { get current() { return value; } },
+		openOnHover: { get current() { return openOnHover; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, itemState.props));

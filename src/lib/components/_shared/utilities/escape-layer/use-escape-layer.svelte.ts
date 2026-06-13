@@ -1,13 +1,13 @@
-import { DOMContext, type Box, type ReadableBox, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { DOMContext, type WritableProp, type ReadableProp, type ReadableProps } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { on } from 'svelte/events';
 import type { EscapeBehaviorType, EscapeLayerImplProps } from '$lib/components/_shared/utilities/escape-layer/index.js';
 import { kbd } from '$lib/internal/kbd.js';
 
-globalThis.bitsEscapeLayers ??= new Map<EscapeLayerState, ReadableBox<EscapeBehaviorType>>();
+globalThis.bitsEscapeLayers ??= new Map<EscapeLayerState, ReadableProp<EscapeBehaviorType>>();
 
-interface EscapeLayerStateOpts extends ReadableBoxedValues<Required<Omit<EscapeLayerImplProps, 'children' | 'ref'>>> {
-	ref: Box<HTMLElement | null>;
+interface EscapeLayerStateOpts extends ReadableProps<Required<Omit<EscapeLayerImplProps, 'children' | 'ref'>>> {
+	ref: WritableProp<HTMLElement | null>;
 }
 
 export class EscapeLayerState {

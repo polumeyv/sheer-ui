@@ -1,10 +1,10 @@
 import { tick } from 'svelte';
 import { createContext, getContext, hasContext, setContext } from 'svelte';
-import { srOnlyStyles, attachRef, type WritableBoxedValues, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { srOnlyStyles, attachRef, type WritableProps, type ReadableProps } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { findNextSibling, findPreviousSibling } from '$lib/components/command/primitive/utils.js';
 import type { CommandState } from '$lib/components/command/primitive/index.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { getFirstNonCommentChild } from '$lib/internal/dom.js';
@@ -61,8 +61,8 @@ type ItemsGrid = GridItem[][];
 
 interface CommandRootStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			filter: (value: string, search: string, keywords?: string[]) => number;
 			shouldFilter: boolean;
 			loop: boolean;
@@ -72,7 +72,7 @@ interface CommandRootStateOpts
 			disableInitialScroll: boolean;
 			onStateChange?: (state: Readonly<CommandState>) => void;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			value: string;
 		}> {}
 
@@ -1091,8 +1091,8 @@ function itemIsDisabled(item: HTMLElement) {
 
 interface CommandEmptyStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			forceMount: boolean;
 		}> {}
 
@@ -1132,8 +1132,8 @@ export class CommandEmptyState {
 
 interface CommandGroupContainerStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			value: string;
 			forceMount: boolean;
 		}> {}
@@ -1196,7 +1196,7 @@ export class CommandGroupContainerState {
 	);
 }
 
-interface CommandGroupHeadingStateOpts extends WithRefOpts {}
+interface CommandGroupHeadingStateOpts extends WithRefProps {}
 
 export class CommandGroupHeadingState {
 	static create(opts: CommandGroupHeadingStateOpts) {
@@ -1223,7 +1223,7 @@ export class CommandGroupHeadingState {
 	);
 }
 
-interface CommandGroupItemsStateOpts extends WithRefOpts {}
+interface CommandGroupItemsStateOpts extends WithRefProps {}
 
 export class CommandGroupItemsState {
 	static create(opts: CommandGroupItemsStateOpts) {
@@ -1254,11 +1254,11 @@ export class CommandGroupItemsState {
 
 interface CommandInputStateOpts
 	extends
-		WithRefOpts,
-		WritableBoxedValues<{
+		WithRefProps,
+		WritableProps<{
 			value: string;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			autofocus: boolean;
 		}> {}
 
@@ -1324,8 +1324,8 @@ export class CommandInputState {
 
 interface CommandItemStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			value: string;
 			disabled: boolean;
 			onSelect: () => void;
@@ -1435,8 +1435,8 @@ export class CommandItemState {
 
 interface CommandLoadingStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			progress: number;
 		}> {}
 
@@ -1469,8 +1469,8 @@ export class CommandLoadingState {
 
 interface CommandSeparatorStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			forceMount: boolean;
 		}> {}
 
@@ -1504,8 +1504,8 @@ export class CommandSeparatorState {
 
 interface CommandListStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			ariaLabel: string;
 		}> {}
 
@@ -1538,8 +1538,8 @@ export class CommandListState {
 
 interface CommandLabelStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			for?: string;
 		}> {}
 
@@ -1568,7 +1568,7 @@ export class CommandLabelState {
 	);
 }
 
-interface CommandViewportStateOpts extends WithRefOpts {}
+interface CommandViewportStateOpts extends WithRefProps {}
 
 export class CommandViewportState {
 	static create(opts: CommandViewportStateOpts) {

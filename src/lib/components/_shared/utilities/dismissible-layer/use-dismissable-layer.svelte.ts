@@ -1,6 +1,6 @@
 import { tick } from 'svelte';
 import { executeCallbacks } from '$lib/vendor/index.js';
-import { type ReadableBox, type WritableBox, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { type ReadableProp, type WritableProp, type ReadableProps } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { on } from 'svelte/events';
 import type { DismissibleLayerImplProps, InteractOutsideBehaviorType } from '$lib/components/_shared/utilities/dismissible-layer/index.js';
@@ -9,10 +9,10 @@ import { debounce } from '$lib/internal/debounce.js';
 import { isClickTrulyOutside } from '$lib/internal/dom.js';
 import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '$lib/components/_shared/menu/menu.svelte.js';
 
-globalThis.bitsDismissableLayers ??= new Map<DismissibleLayerState, ReadableBox<InteractOutsideBehaviorType>>();
+globalThis.bitsDismissableLayers ??= new Map<DismissibleLayerState, ReadableProp<InteractOutsideBehaviorType>>();
 
-interface DismissibleLayerStateOpts extends ReadableBoxedValues<Required<Omit<DismissibleLayerImplProps, 'children' | 'ref'>>> {
-	ref: WritableBox<HTMLElement | null>;
+interface DismissibleLayerStateOpts extends ReadableProps<Required<Omit<DismissibleLayerImplProps, 'children' | 'ref'>>> {
+	ref: WritableProp<HTMLElement | null>;
 }
 
 export class DismissibleLayerState {
@@ -20,8 +20,8 @@ export class DismissibleLayerState {
 		return new DismissibleLayerState(opts);
 	}
 	readonly opts: DismissibleLayerStateOpts;
-	#interactOutsideProp: ReadableBox<EventCallback<PointerEvent>>;
-	#behaviorType: ReadableBox<InteractOutsideBehaviorType>;
+	#interactOutsideProp: ReadableProp<EventCallback<PointerEvent>>;
+	#behaviorType: ReadableProp<InteractOutsideBehaviorType>;
 	#interceptedEvents: Record<string, boolean> = {
 		pointerdown: false,
 	};
@@ -195,7 +195,7 @@ export class DismissibleLayerState {
 }
 
 export function getTopMostDismissableLayer(
-	layersArr: [DismissibleLayerState, ReadableBox<InteractOutsideBehaviorType>][] = [...globalThis.bitsDismissableLayers],
+	layersArr: [DismissibleLayerState, ReadableProp<InteractOutsideBehaviorType>][] = [...globalThis.bitsDismissableLayers],
 ) {
 	return layersArr.findLast(([_, { current: behaviorType }]) => behaviorType === 'close' || behaviorType === 'ignore');
 }

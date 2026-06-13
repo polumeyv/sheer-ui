@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { Box } from '$lib/vendor/index.js';
+import type { WritableProp } from '$lib/vendor/index.js';
 
 export type EscapeBehaviorType = 'close' | 'defer-otherwise-close' | 'defer-otherwise-ignore' | 'ignore';
 
@@ -30,7 +30,7 @@ export type EscapeLayerImplProps = {
 	 */
 	enabled: boolean;
 	children?: Snippet;
-	ref: Box<HTMLElement | null>;
+	ref: WritableProp<HTMLElement | null>;
 } & EscapeLayerProps;
 
 export { default as EscapeLayer } from '$lib/components/_shared/utilities/escape-layer/escape-layer.svelte';

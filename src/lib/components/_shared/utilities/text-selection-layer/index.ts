@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { ReadableBox } from '$lib/vendor/index.js';
+import type { ReadableProp } from '$lib/vendor/index.js';
 
 export type PointerHandler = (e: PointerEvent) => void;
 
@@ -37,7 +37,7 @@ export type TextSelectionLayerImplProps = {
 	 */
 	onPointerUp?: PointerHandler;
 
-	ref: ReadableBox<HTMLElement | null>;
+	ref: ReadableProp<HTMLElement | null>;
 } & TextSelectionLayerProps;
 
 export { default as TextSelectionLayer } from '$lib/components/_shared/utilities/text-selection-layer/text-selection-layer.svelte';

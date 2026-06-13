@@ -1,10 +1,10 @@
-import { type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { type ReadableProps } from '$lib/vendor/index.js';
 import { FocusScopeManager } from '$lib/components/_shared/utilities/focus-scope/focus-scope-manager.js';
 import { focusable, isFocusable, tabbable } from 'tabbable';
 import { on } from 'svelte/events';
 import { watch } from '$lib/vendor/watch.svelte.js';
 
-interface FocusScopeOpts extends ReadableBoxedValues<{
+interface FocusScopeOpts extends ReadableProps<{
 	onOpenAutoFocus: (event: Event) => void;
 	onCloseAutoFocus: (event: Event) => void;
 	trap: boolean;
@@ -15,7 +15,7 @@ interface FocusScopeOpts extends ReadableBoxedValues<{
 interface FocusScopeUseOpts
 	extends
 		FocusScopeOpts,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			enabled: boolean;
 			ref: HTMLElement | null;
 		}> {}

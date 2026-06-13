@@ -1,9 +1,9 @@
-import { simpleBox } from '$lib/vendor/index.js';
+import { writableProp } from '$lib/vendor/index.js';
 import { FocusScope } from '$lib/components/_shared/utilities/focus-scope/focus-scope.svelte.js';
 
 export class FocusScopeManager {
 	static instance: FocusScopeManager;
-	#scopeStack = simpleBox<FocusScope[]>([]);
+	#scopeStack = writableProp<FocusScope[]>([]);
 	#focusHistory = new WeakMap<FocusScope, HTMLElement>();
 	#preFocusHistory = new WeakMap<FocusScope, HTMLElement>();
 

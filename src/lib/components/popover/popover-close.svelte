@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { PopoverCloseProps } from '$lib/components/popover/primitive/index.js';
 	import { PopoverCloseState } from '$lib/components/popover/primitive/popover.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
@@ -15,11 +15,8 @@
 	}: PopoverCloseProps = $props();
 
 	const closeState = PopoverCloseState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 	const mergedProps = $derived(
 		mergeProps({ 'data-slot': 'popover-close' }, restProps, closeState.props),

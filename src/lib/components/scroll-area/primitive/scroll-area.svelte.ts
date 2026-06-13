@@ -10,16 +10,16 @@ import { executeCallbacks } from '$lib/vendor/index.js';
 import { useDebounce } from '$lib/vendor/use-debounce.svelte.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { untrack } from 'svelte';
-import { simpleBox, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { writableProp, attachRef, DOMContext, getWindow, type ReadableProps } from '$lib/vendor/index.js';
 import type { ScrollAreaType } from '$lib/components/scroll-area/primitive/index.js';
-import type { BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsPointerEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { type Direction, type Orientation, mergeProps, useId } from '$lib/shared/index.js';
 import { on } from 'svelte/events';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { SvelteResizeObserver } from '$lib/internal/svelte-resize-observer.svelte.js';
 
 
-import { type WritableBox } from '$lib/vendor/index.js';
+import { type WritableProp } from '$lib/vendor/index.js';
 
 interface Machine<S> {
 	[k: string]: { [k: string]: S };
@@ -32,11 +32,11 @@ type MachineEvent<T> = keyof UnionToIntersection<T[keyof T]>;
 type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never;
 
 export class StateMachine<M> {
-	readonly state: WritableBox<MachineState<M>>;
+	readonly state: WritableProp<MachineState<M>>;
 	readonly #machine: M & Machine<MachineState<M>>;
 
 	constructor(initialState: MachineState<M>, machine: M & Machine<MachineState<M>>) {
-		this.state = simpleBox(initialState);
+		this.state = writableProp(initialState);
 		this.#machine = machine;
 		this.dispatch = this.dispatch.bind(this);
 	}
@@ -76,8 +76,8 @@ interface Sizes {
 
 interface ScrollAreaRootStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			dir: Direction;
 			type: ScrollAreaType;
 			scrollHideDelay: number;
@@ -123,7 +123,7 @@ export class ScrollAreaRootState {
 	);
 }
 
-interface ScrollAreaViewportStateOpts extends WithRefOpts {}
+interface ScrollAreaViewportStateOpts extends WithRefProps {}
 
 export class ScrollAreaViewportState {
 	static create(opts: ScrollAreaViewportStateOpts) {
@@ -133,8 +133,8 @@ export class ScrollAreaViewportState {
 	readonly opts: ScrollAreaViewportStateOpts;
 	readonly root: ScrollAreaRootState;
 	readonly attachment: RefAttachment;
-	#contentId = simpleBox(useId());
-	#contentRef = simpleBox<HTMLElement | null>(null);
+	#contentId = writableProp(useId());
+	#contentRef = writableProp<HTMLElement | null>(null);
 	readonly contentAttachment: RefAttachment = attachRef(this.#contentRef, (v) => (this.root.contentNode = v));
 
 	constructor(opts: ScrollAreaViewportStateOpts, root: ScrollAreaRootState) {
@@ -176,8 +176,8 @@ export class ScrollAreaViewportState {
 
 interface ScrollAreaScrollbarStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			orientation: Orientation;
 		}> {}
 
@@ -805,7 +805,7 @@ export class ScrollAreaScrollbarSharedState {
 	);
 }
 
-interface ScrollAreaThumbImplStateOpts extends WithRefOpts {}
+interface ScrollAreaThumbImplStateOpts extends WithRefProps {}
 
 export class ScrollAreaThumbImplState {
 	static create(opts: ScrollAreaThumbImplStateOpts) {
@@ -880,7 +880,7 @@ export class ScrollAreaThumbImplState {
 	);
 }
 
-interface ScrollAreaCornerImplStateOpts extends WithRefOpts {}
+interface ScrollAreaCornerImplStateOpts extends WithRefProps {}
 
 export class ScrollAreaCornerImplState {
 	static create(opts: ScrollAreaCornerImplStateOpts) {

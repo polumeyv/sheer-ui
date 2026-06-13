@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { CommandInputProps } from '$lib/components/command/primitive/index.js';
 	import { CommandInputState } from '$lib/components/command/primitive/command.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
@@ -19,18 +19,10 @@
 	}: CommandInputProps = $props();
 
 	const inputState = CommandInputState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		value: boxWith(
-			() => value,
-			(v) => {
-				value = v;
-			}
-		),
-		autofocus: boxWith(() => autofocus ?? false),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		value: { get current() { return value; }, set current(v) { value = v; } },
+		autofocus: { get current() { return autofocus ?? false; } },
 	});
 
 	const mergedProps = $derived(

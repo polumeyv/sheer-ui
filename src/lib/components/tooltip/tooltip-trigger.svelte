@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts" generics="T = never">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { TooltipTriggerProps } from '$lib/components/tooltip/primitive/index.js';
 	import { TooltipTriggerState } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
@@ -24,15 +24,12 @@
 	}: TooltipTriggerProps<T> = $props();
 
 	const triggerState = TooltipTriggerState.create({
-		id: boxWith(() => id),
-		disabled: boxWith(() => disabled ?? false),
-		tabindex: boxWith(() => tabindex ?? 0),
-		payload: boxWith(() => payload),
-		tether: boxWith(() => tether),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		disabled: { get current() { return disabled ?? false; } },
+		tabindex: { get current() { return tabindex ?? 0; } },
+		payload: { get current() { return payload; } },
+		tether: { get current() { return tether; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(

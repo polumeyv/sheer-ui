@@ -2,10 +2,10 @@ import { createContext } from 'svelte';
 import { type DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
 import { DEV } from '$lib/vendor/env.js';
 import { onMount, untrack } from 'svelte';
-import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
+import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import type { RangeCalendarRootState } from '$lib/components/range-calendar/range-calendar.svelte.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { useId } from '$lib/internal/use-id.js';
 import type { DateMatcher, Month } from '$lib/shared/index.js';
 import { type Announcer, getAnnouncer } from '$lib/internal/date-time/announcer.js';
@@ -34,12 +34,12 @@ import type { WeekStartsOn } from '$lib/shared/date/types.js';
 
 interface CalendarRootStateOpts
 	extends
-		WithRefOpts,
-		WritableBoxedValues<{
+		WithRefProps,
+		WritableProps<{
 			value: DateValue | undefined | DateValue[];
 			placeholder: DateValue;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			preventDeselect: boolean;
 			minValue: DateValue | undefined;
 			maxValue: DateValue | undefined;
@@ -504,7 +504,7 @@ export class CalendarRootState {
 	);
 }
 
-interface CalendarHeadingStateOpts extends WithRefOpts {}
+interface CalendarHeadingStateOpts extends WithRefProps {}
 
 export class CalendarHeadingState {
 	static create(opts: CalendarHeadingStateOpts) {
@@ -538,8 +538,8 @@ const [getCalendarCellContext, setCalendarCellContext] = createContext<CalendarC
 
 interface CalendarCellStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			date: DateValue;
 			month: DateValue;
 		}> {}
@@ -617,7 +617,7 @@ export class CalendarCellState {
 	);
 }
 
-interface CalendarDayStateOpts extends WithRefOpts {}
+interface CalendarDayStateOpts extends WithRefProps {}
 
 export class CalendarDayState {
 	static create(opts: CalendarDayStateOpts) {
@@ -674,7 +674,7 @@ export class CalendarDayState {
 	);
 }
 
-interface CalendarNextButtonStateOpts extends WithRefOpts {}
+interface CalendarNextButtonStateOpts extends WithRefProps {}
 
 export class CalendarNextButtonState {
 	static create(opts: CalendarNextButtonStateOpts) {
@@ -716,7 +716,7 @@ export class CalendarNextButtonState {
 	);
 }
 
-interface CalendarPrevButtonStateOpts extends WithRefOpts {}
+interface CalendarPrevButtonStateOpts extends WithRefProps {}
 
 export class CalendarPrevButtonState {
 	static create(opts: CalendarPrevButtonStateOpts) {
@@ -758,7 +758,7 @@ export class CalendarPrevButtonState {
 	);
 }
 
-interface CalendarGridStateOpts extends WithRefOpts {}
+interface CalendarGridStateOpts extends WithRefProps {}
 
 export class CalendarGridState {
 	static create(opts: CalendarGridStateOpts) {
@@ -791,7 +791,7 @@ export class CalendarGridState {
 	);
 }
 
-interface CalendarGridBodyStateOpts extends WithRefOpts {}
+interface CalendarGridBodyStateOpts extends WithRefProps {}
 
 export class CalendarGridBodyState {
 	static create(opts: CalendarGridBodyStateOpts) {
@@ -820,7 +820,7 @@ export class CalendarGridBodyState {
 	);
 }
 
-interface CalendarGridHeadStateOpts extends WithRefOpts {}
+interface CalendarGridHeadStateOpts extends WithRefProps {}
 
 export class CalendarGridHeadState {
 	static create(opts: CalendarGridHeadStateOpts) {
@@ -848,7 +848,7 @@ export class CalendarGridHeadState {
 	);
 }
 
-interface CalendarGridRowStateOpts extends WithRefOpts {}
+interface CalendarGridRowStateOpts extends WithRefProps {}
 
 export class CalendarGridRowState {
 	static create(opts: CalendarGridRowStateOpts) {
@@ -876,7 +876,7 @@ export class CalendarGridRowState {
 	);
 }
 
-interface CalendarHeadCellStateOpts extends WithRefOpts {}
+interface CalendarHeadCellStateOpts extends WithRefProps {}
 
 export class CalendarHeadCellState {
 	static create(opts: CalendarHeadCellStateOpts) {
@@ -904,7 +904,7 @@ export class CalendarHeadCellState {
 	);
 }
 
-interface CalendarHeaderStateOpts extends WithRefOpts {}
+interface CalendarHeaderStateOpts extends WithRefProps {}
 
 export class CalendarHeaderState {
 	static create(opts: CalendarHeaderStateOpts) {
@@ -934,8 +934,8 @@ export class CalendarHeaderState {
 
 interface CalendarMonthSelectStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			months: number[];
 			monthFormat: Intl.DateTimeFormatOptions['month'] | ((month: number) => string);
 			disabled: boolean;
@@ -1020,8 +1020,8 @@ export class CalendarMonthSelectState {
 
 interface CalendarYearSelectStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			years: number[] | undefined;
 			yearFormat: Intl.DateTimeFormatOptions['year'] | ((year: number) => string);
 			disabled: boolean;

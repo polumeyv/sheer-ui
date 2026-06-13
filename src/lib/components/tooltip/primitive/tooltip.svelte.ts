@@ -1,9 +1,9 @@
 import { createContext, untrack } from 'svelte';
-import { attachRef, DOMContext, type WritableBoxedValues, type ReadableBoxedValues, simpleBox, boxWith } from '$lib/vendor/index.js';
+import { attachRef, DOMContext, type WritableProps, type ReadableProps, writableProp } from '$lib/vendor/index.js';
 import { on } from 'svelte/events';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { AnyFn, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { AnyFn, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import type { FocusEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
 import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
 import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
@@ -166,7 +166,7 @@ export function createTooltipTether<Payload = never>() {
 	return new TooltipTether<Payload>();
 }
 
-interface TooltipProviderStateOpts extends ReadableBoxedValues<{
+interface TooltipProviderStateOpts extends ReadableProps<{
 	delayDuration: number;
 	disableHoverableContent: boolean;
 	disableCloseOnTriggerClick: boolean;
@@ -181,7 +181,7 @@ export class TooltipProviderState {
 	}
 	readonly opts: TooltipProviderStateOpts;
 	isOpenDelayed = $state<boolean>(true);
-	isPointerInTransit = simpleBox(false);
+	isPointerInTransit = writableProp(false);
 	#timerFn: TimeoutFn<() => void>;
 	#openTooltip = $state<TooltipRootState | null>(null);
 
@@ -250,7 +250,7 @@ export class TooltipProviderState {
 
 interface TooltipRootStateOpts
 	extends
-		ReadableBoxedValues<{
+		ReadableProps<{
 			delayDuration: number | undefined;
 			disableHoverableContent: boolean | undefined;
 			disableCloseOnTriggerClick: boolean | undefined;
@@ -259,7 +259,7 @@ interface TooltipRootStateOpts
 			onOpenChangeComplete: OnChangeFn<boolean>;
 			tether: TooltipTether<unknown> | undefined;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			open: boolean;
 			triggerId: string | null;
 		}> {}
@@ -293,6 +293,7 @@ export class TooltipRootState {
 	});
 
 	constructor(opts: TooltipRootStateOpts, provider: TooltipProviderState) {
+		const self = this;
 		this.opts = opts;
 		this.provider = provider;
 		this.tether = opts.tether.current?.state ?? null;
@@ -317,7 +318,7 @@ export class TooltipRootState {
 
 		this.contentPresence = new PresenceManager({
 			open: this.opts.open,
-			ref: boxWith(() => this.contentNode),
+			ref: { get current() { return self.contentNode; } },
 			onComplete: () => {
 				this.opts.onOpenChangeComplete.current(this.opts.open.current);
 			},
@@ -467,8 +468,8 @@ export class TooltipRootState {
 
 interface TooltipTriggerStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 			tabindex: number;
 			payload: unknown;
@@ -486,7 +487,7 @@ export class TooltipTriggerState {
 	readonly root: TooltipRootState | null;
 	readonly tether: TooltipTetherState | null;
 	readonly attachment: RefAttachment;
-	#isPointerDown = simpleBox(false);
+	#isPointerDown = writableProp(false);
 	#hasPointerMoveOpened = $state(false);
 	domContext: DOMContext;
 	#transitCheckTimeout: number | null = null;
@@ -761,8 +762,8 @@ export class TooltipTriggerState {
 
 interface TooltipContentStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			onInteractOutside: (e: PointerEvent) => void;
 			onEscapeKeydown: (e: KeyboardEvent) => void;
 		}> {}

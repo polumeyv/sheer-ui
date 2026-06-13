@@ -1,4 +1,4 @@
-import { boxWith, type Getter, type ReadableBox } from '$lib/vendor/index.js';
+import { type Getter, type ReadableProp } from '$lib/vendor/index.js';
 import { type BitsConfigState, getBitsConfig } from '$lib/components/_shared/utilities/config/bits-config.js';
 
 /**
@@ -8,18 +8,18 @@ import { type BitsConfigState, getBitsConfig } from '$lib/components/_shared/uti
  * 3. The fallback value (if no config value found)
  */
 function createPropResolver<T>(configOption: (config: BitsConfigState['opts']) => { current: T | undefined }, fallback: T) {
-	return (getProp: Getter<T | undefined>): ReadableBox<T> => {
+	return (getProp: Getter<T | undefined>): ReadableProp<T> => {
 		const config = getBitsConfig();
-		return boxWith(() => {
-			// 1. return the prop's value, if provided
-			const propValue = getProp();
-			if (propValue !== undefined) return propValue;
-			// 2. return the resolved config option value, if available
-			const option = configOption(config).current;
-			if (option !== undefined) return option;
-			// 3. return the fallback if no other value is found
-			return fallback;
-		});
+		return { get current() {
+        			// 1. return the prop's value, if provided
+        			const propValue = getProp();
+        			if (propValue !== undefined) return propValue;
+        			// 2. return the resolved config option value, if available
+        			const option = configOption(config).current;
+        			if (option !== undefined) return option;
+        			// 3. return the fallback if no other value is found
+        			return fallback;
+        		} };
 	};
 }
 

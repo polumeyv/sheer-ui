@@ -1,7 +1,6 @@
 <script lang="ts">
 	// Date Picker composes the DateField, Popover, and Calendar components
 	import { watch } from "$lib/vendor/watch.svelte.js";
-	import { boxWith } from "$lib/vendor/index.js";
 	import type { DateValue } from "@internationalized/date";
 	import { DatePickerRootState } from "$lib/components/date-picker/date-picker.svelte.js";
 	import type { DatePickerRootProps } from "$lib/components/date-picker/index.js";
@@ -83,57 +82,39 @@
 	}
 
 	const pickerRootState = DatePickerRootState.create({
-		open: boxWith(
-			() => open,
-			(v) => {
-				open = v;
-				onOpenChange(v);
-			}
-		),
-		value: boxWith(
-			() => value,
-			(v) => {
-				value = v;
-				onValueChange(v);
-			}
-		),
-		placeholder: boxWith(
-			() => placeholder as DateValue,
-			(v) => {
-				placeholder = v;
-				onPlaceholderChange(v as DateValue);
-			}
-		),
-		isDateUnavailable: boxWith(() => isDateUnavailable),
-		minValue: boxWith(() => minValue),
-		maxValue: boxWith(() => maxValue),
-		disabled: boxWith(() => disabled),
-		readonly: boxWith(() => readonly),
-		granularity: boxWith(() => granularity),
-		readonlySegments: boxWith(() => readonlySegments),
-		hourCycle: boxWith(() => hourCycle),
+		open: { get current() { return open; }, set current(v) { open = v; onOpenChange(v); } },
+		value: { get current() { return value; }, set current(v) { value = v; onValueChange(v); } },
+		placeholder: { get current() { return placeholder as DateValue; }, set current(v) { placeholder = v; onPlaceholderChange(v as DateValue); } },
+		isDateUnavailable: { get current() { return isDateUnavailable; } },
+		minValue: { get current() { return minValue; } },
+		maxValue: { get current() { return maxValue; } },
+		disabled: { get current() { return disabled; } },
+		readonly: { get current() { return readonly; } },
+		granularity: { get current() { return granularity; } },
+		readonlySegments: { get current() { return readonlySegments; } },
+		hourCycle: { get current() { return hourCycle; } },
 		locale: resolveLocaleProp(() => locale),
-		hideTimeZone: boxWith(() => hideTimeZone),
-		required: boxWith(() => required),
-		calendarLabel: boxWith(() => calendarLabel),
-		disableDaysOutsideMonth: boxWith(() => disableDaysOutsideMonth),
-		preventDeselect: boxWith(() => preventDeselect),
-		pagedNavigation: boxWith(() => pagedNavigation),
-		weekStartsOn: boxWith(() => weekStartsOn),
-		weekdayFormat: boxWith(() => weekdayFormat),
-		isDateDisabled: boxWith(() => isDateDisabled),
-		fixedWeeks: boxWith(() => fixedWeeks),
-		numberOfMonths: boxWith(() => numberOfMonths),
-		initialFocus: boxWith(() => initialFocus),
-		onDateSelect: boxWith(() => onDateSelect),
+		hideTimeZone: { get current() { return hideTimeZone; } },
+		required: { get current() { return required; } },
+		calendarLabel: { get current() { return calendarLabel; } },
+		disableDaysOutsideMonth: { get current() { return disableDaysOutsideMonth; } },
+		preventDeselect: { get current() { return preventDeselect; } },
+		pagedNavigation: { get current() { return pagedNavigation; } },
+		weekStartsOn: { get current() { return weekStartsOn; } },
+		weekdayFormat: { get current() { return weekdayFormat; } },
+		isDateDisabled: { get current() { return isDateDisabled; } },
+		fixedWeeks: { get current() { return fixedWeeks; } },
+		numberOfMonths: { get current() { return numberOfMonths; } },
+		initialFocus: { get current() { return initialFocus; } },
+		onDateSelect: { get current() { return onDateSelect; } },
 		defaultPlaceholder,
-		monthFormat: boxWith(() => monthFormat),
-		yearFormat: boxWith(() => yearFormat),
+		monthFormat: { get current() { return monthFormat; } },
+		yearFormat: { get current() { return yearFormat; } },
 	});
 
 	PopoverRootState.create({
 		open: pickerRootState.opts.open,
-		onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
+		onOpenChangeComplete: { get current() { return onOpenChangeComplete; } },
 	});
 
 	DateFieldRootState.create({
@@ -141,8 +122,8 @@
 		disabled: pickerRootState.opts.disabled,
 		readonly: pickerRootState.opts.readonly,
 		readonlySegments: pickerRootState.opts.readonlySegments,
-		validate: boxWith(() => validate),
-		onInvalid: boxWith(() => onInvalid),
+		validate: { get current() { return validate; } },
+		onInvalid: { get current() { return onInvalid; } },
 		minValue: pickerRootState.opts.minValue,
 		maxValue: pickerRootState.opts.maxValue,
 		granularity: pickerRootState.opts.granularity,
@@ -151,8 +132,8 @@
 		locale: pickerRootState.opts.locale,
 		required: pickerRootState.opts.required,
 		placeholder: pickerRootState.opts.placeholder,
-		errorMessageId: boxWith(() => errorMessageId),
-		isInvalidProp: boxWith(() => undefined),
+		errorMessageId: { get current() { return errorMessageId; } },
+		isInvalidProp: { get current() { return undefined; } },
 	});
 </script>
 

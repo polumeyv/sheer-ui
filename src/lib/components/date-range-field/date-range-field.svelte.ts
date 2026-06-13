@@ -1,11 +1,11 @@
 import { createContext } from 'svelte';
 import type { DateValue } from '@internationalized/date';
-import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
+import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { DateFieldInputState, DateFieldRootState } from '$lib/components/date-field/date-field.svelte.js';
 import { useId } from '$lib/internal/use-id.js';
 import type { DateOnInvalid, DateRange, DateRangeValidator, SegmentPart } from '$lib/shared/index.js';
-import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import type { Granularity } from '$lib/shared/date/types.js';
 import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
@@ -22,14 +22,14 @@ export const [getDateRangeFieldRootContext, setDateRangeFieldRootContext] = crea
 
 interface DateRangeFieldRootStateOpts
 	extends
-		WithRefOpts,
-		WritableBoxedValues<{
+		WithRefProps,
+		WritableProps<{
 			value: DateRange;
 			placeholder: DateValue;
 			startValue: DateValue | undefined;
 			endValue: DateValue | undefined;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			readonlySegments: SegmentPart[];
 			validate: DateRangeValidator | undefined;
 			onInvalid: DateOnInvalid | undefined;
@@ -68,8 +68,8 @@ export class DateRangeFieldRootState {
 		this.opts = opts;
 		this.formatter = createFormatter({
 			initialLocale: this.opts.locale.current,
-			monthFormat: boxWith(() => 'long'),
-			yearFormat: boxWith(() => 'numeric'),
+			monthFormat: { get current() { return 'long' as const; } },
+			yearFormat: { get current() { return 'numeric' as const; } },
 		});
 		this.domContext = new DOMContext(this.opts.ref);
 		this.attachment = attachRef(this.opts.ref, (v) => (this.fieldNode = v));
@@ -196,7 +196,7 @@ export class DateRangeFieldRootState {
 	);
 }
 
-interface DateRangeFieldLabelStateOpts extends WithRefOpts {}
+interface DateRangeFieldLabelStateOpts extends WithRefProps {}
 
 export class DateRangeFieldLabelState {
 	static create(opts: DateRangeFieldLabelStateOpts) {
@@ -235,11 +235,11 @@ export class DateRangeFieldLabelState {
 
 interface DateRangeFieldInputStateOpts
 	extends
-		WithRefOpts,
-		WritableBoxedValues<{
+		WithRefProps,
+		WritableProps<{
 			value: DateValue | undefined;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			name: string;
 		}> {}
 
@@ -252,7 +252,7 @@ export class DateRangeFieldInputState {
 				disabled: root.opts.disabled,
 				readonly: root.opts.readonly,
 				readonlySegments: root.opts.readonlySegments,
-				validate: boxWith(() => undefined),
+				validate: { get current() { return undefined; } },
 				minValue: root.opts.minValue,
 				maxValue: root.opts.maxValue,
 				hourCycle: root.opts.hourCycle,
@@ -263,7 +263,7 @@ export class DateRangeFieldInputState {
 				placeholder: root.opts.placeholder,
 				onInvalid: root.opts.onInvalid,
 				errorMessageId: root.opts.errorMessageId,
-				isInvalidProp: boxWith(() => root.isInvalid),
+				isInvalidProp: { get current() { return root.isInvalid; } },
 			},
 			root,
 		);

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { PinInputRootProps } from '$lib/components/pin-input/index.js';
 	import { PinInputRootState } from '$lib/components/pin-input/pin-input.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
@@ -29,32 +29,20 @@
 	}: Omit<PinInputRootProps, 'value'> & { value?: string | number } = $props();
 
 	const rootState = PinInputRootState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		inputRef: boxWith(
-			() => inputRef,
-			(v) => (inputRef = v)
-		),
-		inputId: boxWith(() => inputId),
-		autocomplete: boxWith(() => autocomplete),
-		maxLength: boxWith(() => maxlength),
-		textAlign: boxWith(() => textalign),
-		disabled: boxWith(() => disabled),
-		inputmode: boxWith(() => inputmode),
-		pattern: boxWith(() => pattern),
-		onComplete: boxWith(() => onComplete),
-		value: boxWith(
-			() => String(value),
-			(v) => {
-				value = v;
-				onValueChange(v);
-			}
-		),
-		pushPasswordManagerStrategy: boxWith(() => pushPasswordManagerStrategy),
-		pasteTransformer: boxWith(() => pasteTransformer),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		inputRef: { get current() { return inputRef; }, set current(v) { (inputRef = v); } },
+		inputId: { get current() { return inputId; } },
+		autocomplete: { get current() { return autocomplete; } },
+		maxLength: { get current() { return maxlength; } },
+		textAlign: { get current() { return textalign; } },
+		disabled: { get current() { return disabled; } },
+		inputmode: { get current() { return inputmode; } },
+		pattern: { get current() { return pattern; } },
+		onComplete: { get current() { return onComplete; } },
+		value: { get current() { return String(value); }, set current(v) { value = v; onValueChange(v); } },
+		pushPasswordManagerStrategy: { get current() { return pushPasswordManagerStrategy; } },
+		pasteTransformer: { get current() { return pasteTransformer; } },
 	});
 
 	const mergedInputProps = $derived(

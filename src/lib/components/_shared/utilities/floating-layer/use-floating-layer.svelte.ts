@@ -4,16 +4,15 @@ import {
 	attachRef,
 	cssToStyleObj,
 	getWindow,
-	type ReadableBoxedValues,
-	type ReadableBox,
-	type Box,
-	simpleBox,
-	boxFrom,
+	type ReadableProps,
+	type ReadableProp,
+	type WritableProp,
+	writableProp,
 } from '$lib/vendor/index.js';
 import { styleToCSS } from '$lib/vendor/index.js';
 import { ElementSize } from '$lib/vendor/element-size.svelte.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
-import type { Arrayable, WithRefOpts } from '$lib/internal/types.js';
+import type { Arrayable, WithRefProps } from '$lib/internal/types.js';
 import { useId } from '$lib/internal/use-id.js';
 import { useFloating } from '$lib/internal/floating-svelte/use-floating.svelte.js';
 import type { Measurable, UseFloatingReturn } from '$lib/internal/floating-svelte/types.js';
@@ -42,9 +41,9 @@ export class FloatingRootState {
 	static create(tooltip = false) {
 		return tooltip ? setFloatingTooltipRootContext(new FloatingRootState()) : setFloatingRootContext(new FloatingRootState());
 	}
-	anchorNode = simpleBox<Measurable | HTMLElement | null>(null);
-	customAnchorNode = simpleBox<Measurable | HTMLElement | null | string>(null);
-	triggerNode: ReadableBox<Measurable | HTMLElement | null> = simpleBox(null);
+	anchorNode = writableProp<Measurable | HTMLElement | null>(null);
+	customAnchorNode = writableProp<Measurable | HTMLElement | null | string>(null);
+	triggerNode: ReadableProp<Measurable | HTMLElement | null> = writableProp(null);
 
 	constructor() {
 		$effect(() => {
@@ -61,7 +60,7 @@ export class FloatingRootState {
 	}
 }
 
-export interface FloatingContentStateOpts extends ReadableBoxedValues<{
+export interface FloatingContentStateOpts extends ReadableProps<{
 	id: string;
 	wrapperId: string;
 	side: Side;
@@ -93,15 +92,15 @@ export class FloatingContentState {
 	readonly root: FloatingRootState;
 
 	// nodes
-	contentRef = simpleBox<HTMLElement | null>(null);
-	wrapperRef = simpleBox<HTMLElement | null>(null);
-	arrowRef = simpleBox<HTMLElement | null>(null);
+	contentRef = writableProp<HTMLElement | null>(null);
+	wrapperRef = writableProp<HTMLElement | null>(null);
+	arrowRef = writableProp<HTMLElement | null>(null);
 	readonly contentAttachment = attachRef(this.contentRef);
 	readonly wrapperAttachment = attachRef(this.wrapperRef);
 	readonly arrowAttachment = attachRef(this.arrowRef);
 
 	// ids
-	arrowId: Box<string> = simpleBox(useId());
+	arrowId: WritableProp<string> = writableProp(useId());
 
 	#transformedStyle = $derived.by(() => {
 		if (typeof this.opts.style === 'string') return cssToStyleObj(this.opts.style);
@@ -293,7 +292,7 @@ export class FloatingContentState {
 	}
 }
 
-interface FloatingArrowStateOpts extends WithRefOpts {}
+interface FloatingArrowStateOpts extends WithRefProps {}
 
 export class FloatingArrowState {
 	static create(opts: FloatingArrowStateOpts) {
@@ -318,7 +317,7 @@ export class FloatingArrowState {
 	);
 }
 
-interface FloatingAnchorStateOpts extends ReadableBoxedValues<{
+interface FloatingAnchorStateOpts extends ReadableProps<{
 	id: string;
 	virtualEl?: Measurable | null;
 	ref: Measurable | HTMLElement | null;
@@ -338,7 +337,7 @@ export class FloatingAnchorState {
 		this.root = root;
 
 		if (opts.virtualEl && opts.virtualEl.current) {
-			root.triggerNode = boxFrom(opts.virtualEl.current);
+			root.triggerNode = writableProp(opts.virtualEl.current);
 		} else {
 			root.triggerNode = opts.ref;
 		}

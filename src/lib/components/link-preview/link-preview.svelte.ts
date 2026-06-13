@@ -1,9 +1,9 @@
 import { createContext } from 'svelte';
-import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, boxWith } from '$lib/vendor/index.js';
+import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { on } from 'svelte/events';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { getTabbableCandidates } from '$lib/internal/focus.js';
 import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
 import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
@@ -17,10 +17,10 @@ const [getLinkPreviewRootContext, setLinkPreviewRootContext] = createContext<Lin
 
 interface LinkPreviewRootStateOpts
 	extends
-		WritableBoxedValues<{
+		WritableProps<{
 			open: boolean;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			disabled: boolean;
 			openDelay: number;
 			closeDelay: number;
@@ -46,10 +46,11 @@ export class LinkPreviewRootState {
 	domContext: DOMContext = new DOMContext(() => null);
 
 	constructor(opts: LinkPreviewRootStateOpts) {
+		const self = this;
 		this.opts = opts;
 
 		this.contentPresence = new PresenceManager({
-			ref: boxWith(() => this.contentNode),
+			ref: { get current() { return self.contentNode; } },
 			open: this.opts.open,
 			onComplete: () => {
 				this.opts.onOpenChangeComplete.current(this.opts.open.current);
@@ -135,7 +136,7 @@ export class LinkPreviewRootState {
 	}
 }
 
-interface LinkPreviewTriggerStateOpts extends WithRefOpts {}
+interface LinkPreviewTriggerStateOpts extends WithRefProps {}
 
 export class LinkPreviewTriggerState {
 	static create(opts: LinkPreviewTriggerStateOpts) {
@@ -199,8 +200,8 @@ export class LinkPreviewTriggerState {
 
 interface LinkPreviewContentStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			onInteractOutside: (e: PointerEvent) => void;
 			onEscapeKeydown: (e: KeyboardEvent) => void;
 		}> {}

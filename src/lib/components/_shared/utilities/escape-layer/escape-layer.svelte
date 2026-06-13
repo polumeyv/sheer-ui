@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { boxWith } from "$lib/vendor/index.js";
-	import type { EscapeLayerImplProps } from "$lib/components/_shared/utilities/escape-layer/index.js";
+		import type { EscapeLayerImplProps } from "$lib/components/_shared/utilities/escape-layer/index.js";
 	import { EscapeLayerState } from "$lib/components/_shared/utilities/escape-layer/use-escape-layer.svelte.js";
 
 	let {
@@ -12,9 +11,9 @@
 	}: EscapeLayerImplProps = $props();
 
 	EscapeLayerState.create({
-		escapeKeydownBehavior: boxWith(() => escapeKeydownBehavior),
-		onEscapeKeydown: boxWith(() => onEscapeKeydown),
-		enabled: boxWith(() => enabled),
+		escapeKeydownBehavior: { get current() { return escapeKeydownBehavior; } },
+		onEscapeKeydown: { get current() { return onEscapeKeydown; } },
+		enabled: { get current() { return enabled; } },
 		ref,
 	});
 </script>

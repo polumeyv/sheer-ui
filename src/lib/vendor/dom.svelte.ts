@@ -1,5 +1,4 @@
-import { boxWith } from '$lib/vendor/box.svelte';
-import type { Box } from '$lib/vendor/types';
+import type { ReadableProp } from '$lib/vendor/utils';
 
 const ELEMENT_NODE: typeof Node.ELEMENT_NODE = 1;
 const DOCUMENT_NODE: typeof Node.DOCUMENT_NODE = 9;
@@ -89,16 +88,16 @@ export function getParentNode(node: Node): Node {
 type ElementGetter = () => HTMLElement | null;
 
 export class DOMContext {
-	readonly element: Box<HTMLElement | null>;
+	readonly element: ReadableProp<HTMLElement | null>;
 	readonly root: Document | ShadowRoot = $derived.by(() => {
 		if (!this.element.current) return document;
 		const rootNode = this.element.current.getRootNode() ?? document;
 		return rootNode as Document | ShadowRoot;
 	});
 
-	constructor(element: Box<HTMLElement | null> | ElementGetter) {
+	constructor(element: ReadableProp<HTMLElement | null> | ElementGetter) {
 		if (typeof element === 'function') {
-			this.element = boxWith(element);
+			this.element = { get current() { return (element)(); } };
 		} else {
 			this.element = element;
 		}

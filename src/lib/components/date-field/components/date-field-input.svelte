@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import { DateFieldInputState } from "$lib/components/date-field/date-field.svelte.js";
 	import type { DateFieldInputProps } from "$lib/components/date-field/index.js";
 	import DateFieldHiddenInput from "$lib/components/date-field/components/date-field-hidden-input.svelte";
@@ -17,12 +17,9 @@
 	}: DateFieldInputProps = $props();
 
 	const inputState = DateFieldInputState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		name: boxWith(() => name),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		name: { get current() { return name; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, inputState.props));

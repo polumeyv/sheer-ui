@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { CommandSeparatorProps } from '$lib/components/command/primitive/index.js';
 	import { CommandSeparatorState } from '$lib/components/command/primitive/command.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
@@ -18,12 +18,9 @@
 	}: CommandSeparatorProps = $props();
 
 	const separatorState = CommandSeparatorState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		forceMount: boxWith(() => forceMount),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		forceMount: { get current() { return forceMount; } },
 	});
 
 	const mergedProps = $derived(

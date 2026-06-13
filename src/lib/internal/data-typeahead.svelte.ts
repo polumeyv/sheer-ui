@@ -1,4 +1,4 @@
-import type { Getter, WritableBox } from '$lib/vendor/index.js';
+import type { Getter, WritableProp } from '$lib/vendor/index.js';
 import { getNextMatch } from './arrays.js';
 import { boxAutoReset } from './box-auto-reset.svelte.js';
 
@@ -14,7 +14,7 @@ export class DataTypeahead {
 	readonly #opts: DataTypeaheadOpts;
 	readonly #candidateValues = $derived.by(() => this.#opts.candidateValues());
 
-	#search: WritableBox<string>;
+	#search: WritableProp<string>;
 
 	constructor(opts: DataTypeaheadOpts) {
 		this.#opts = opts;

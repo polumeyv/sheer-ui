@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { ProgressRootProps } from "$lib/components/progress/primitive/index.js";
 	import { ProgressRootState } from "$lib/components/progress/primitive/progress.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -18,14 +18,11 @@
 	}: ProgressRootProps = $props();
 
 	const rootState = ProgressRootState.create({
-		value: boxWith(() => value),
-		max: boxWith(() => max),
-		min: boxWith(() => min),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		value: { get current() { return value; } },
+		max: { get current() { return max; } },
+		min: { get current() { return min; } },
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, rootState.props));

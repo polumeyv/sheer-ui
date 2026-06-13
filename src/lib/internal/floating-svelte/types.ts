@@ -1,5 +1,5 @@
 import type { FloatingElement, Middleware, MiddlewareData, Placement, ReferenceElement, Strategy } from '@floating-ui/dom';
-import type { ReadableBox, WritableBox } from '$lib/vendor/index.js';
+import type { ReadableProp, WritableProp } from '$lib/vendor/index.js';
 
 type ValueOrGetValue<T> = T | (() => T);
 
@@ -39,7 +39,7 @@ export type UseFloatingOptions = {
 	/**
 	 * Reference / Anchor element to position the floating element relative to
 	 */
-	reference: ReadableBox<Measurable | HTMLElement | null>;
+	reference: ReadableProp<Measurable | HTMLElement | null>;
 
 	/**
 	 * Callback to handle mounting/unmounting of the elements.
@@ -66,12 +66,12 @@ export type UseFloatingReturn = {
 	/**
 	 * The reference element to position the floating element relative to.
 	 */
-	reference: ReadableBox<Measurable | HTMLElement | null>;
+	reference: ReadableProp<Measurable | HTMLElement | null>;
 
 	/**
 	 * The floating element to position.
 	 */
-	floating: WritableBox<HTMLElement | null>;
+	floating: WritableProp<HTMLElement | null>;
 
 	/**
 	 * The stateful placement, which can be different from the initial `placement` passed as options.

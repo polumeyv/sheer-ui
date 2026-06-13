@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { DatePickerCalendarProps } from "$lib/components/date-picker/index.js";
 	import { getDatePickerRootContext } from "$lib/components/date-picker/date-picker.svelte.js";
 	import { CalendarRootState } from "$lib/components/calendar/calendar.svelte.js";
@@ -18,11 +18,8 @@
 	const datePickerRootState = getDatePickerRootContext();
 
 	const calendarState = CalendarRootState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 		calendarLabel: datePickerRootState.opts.calendarLabel,
 		fixedWeeks: datePickerRootState.opts.fixedWeeks,
 		isDateDisabled: datePickerRootState.opts.isDateDisabled,
@@ -32,7 +29,7 @@
 		pagedNavigation: datePickerRootState.opts.pagedNavigation,
 		preventDeselect: datePickerRootState.opts.preventDeselect,
 		readonly: datePickerRootState.opts.readonly,
-		type: boxWith(() => "single"),
+		type: { get current() { return "single" as const; } },
 		weekStartsOn: datePickerRootState.opts.weekStartsOn,
 		weekdayFormat: datePickerRootState.opts.weekdayFormat,
 		disabled: datePickerRootState.opts.disabled,
@@ -44,7 +41,7 @@
 		onDateSelect: datePickerRootState.opts.onDateSelect,
 		initialFocus: datePickerRootState.opts.initialFocus,
 		defaultPlaceholder: datePickerRootState.opts.defaultPlaceholder,
-		maxDays: boxWith(() => undefined),
+		maxDays: { get current() { return undefined; } },
 		monthFormat: datePickerRootState.opts.monthFormat,
 		yearFormat: datePickerRootState.opts.yearFormat,
 	});

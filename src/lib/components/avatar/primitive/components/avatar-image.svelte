@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { AvatarImageProps } from "$lib/components/avatar/primitive/index.js";
 	import { AvatarImageState } from "$lib/components/avatar/primitive/avatar.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -17,14 +17,11 @@
 	}: AvatarImageProps = $props();
 
 	const imageState = AvatarImageState.create({
-		src: boxWith(() => src),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		crossOrigin: boxWith(() => crossorigin),
-		referrerPolicy: boxWith(() => referrerpolicy),
+		src: { get current() { return src; } },
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		crossOrigin: { get current() { return crossorigin; } },
+		referrerPolicy: { get current() { return referrerpolicy; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, imageState.props));

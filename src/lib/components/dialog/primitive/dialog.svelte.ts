@@ -1,8 +1,8 @@
 import { getContext, hasContext, setContext } from 'svelte';
-import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
+import { attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 
@@ -27,10 +27,10 @@ function setDialogRootContext(state: DialogRootState): DialogRootState {
 
 interface DialogRootStateOpts
 	extends
-		WritableBoxedValues<{
+		WritableProps<{
 			open: boolean;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			variant: DialogVariant;
 			onOpenChangeComplete: OnChangeFn<boolean>;
 		}> {}
@@ -58,6 +58,7 @@ export class DialogRootState {
 	overlayPresence: PresenceManager;
 
 	constructor(opts: DialogRootStateOpts, parent: DialogRootState | null) {
+		const self = this;
 		this.opts = opts;
 		this.parent = parent;
 		this.depth = parent ? parent.depth + 1 : 0;
@@ -65,7 +66,7 @@ export class DialogRootState {
 		this.handleClose = this.handleClose.bind(this);
 
 		this.contentPresence = new PresenceManager({
-			ref: boxWith(() => this.contentNode),
+			ref: { get current() { return self.contentNode; } },
 			open: this.opts.open,
 			enabled: true,
 			onComplete: () => {
@@ -74,7 +75,7 @@ export class DialogRootState {
 		});
 
 		this.overlayPresence = new PresenceManager({
-			ref: boxWith(() => this.overlayNode),
+			ref: { get current() { return self.overlayNode; } },
 			open: this.opts.open,
 			enabled: true,
 		});
@@ -132,7 +133,7 @@ export class DialogRootState {
 	);
 }
 
-interface DialogTriggerStateOpts extends WithRefOpts, ReadableBoxedValues<{ disabled: boolean }> {}
+interface DialogTriggerStateOpts extends WithRefProps, ReadableProps<{ disabled: boolean }> {}
 
 export class DialogTriggerState {
 	static create(opts: DialogTriggerStateOpts) {
@@ -185,7 +186,7 @@ export class DialogTriggerState {
 	);
 }
 
-interface DialogCloseStateOpts extends WithRefOpts, ReadableBoxedValues<{ variant: 'action' | 'cancel' | 'close'; disabled: boolean }> {}
+interface DialogCloseStateOpts extends WithRefProps, ReadableProps<{ variant: 'action' | 'cancel' | 'close'; disabled: boolean }> {}
 
 export class DialogCloseState {
 	static create(opts: DialogCloseStateOpts) {
@@ -233,7 +234,7 @@ export class DialogCloseState {
 	);
 }
 
-interface DialogActionStateOpts extends WithRefOpts {}
+interface DialogActionStateOpts extends WithRefProps {}
 
 export class DialogActionState {
 	static create(opts: DialogActionStateOpts) {
@@ -260,7 +261,7 @@ export class DialogActionState {
 	);
 }
 
-interface DialogTitleStateOpts extends WithRefOpts, ReadableBoxedValues<{ level: 1 | 2 | 3 | 4 | 5 | 6 }> {}
+interface DialogTitleStateOpts extends WithRefProps, ReadableProps<{ level: 1 | 2 | 3 | 4 | 5 | 6 }> {}
 
 export class DialogTitleState {
 	static create(opts: DialogTitleStateOpts) {
@@ -298,7 +299,7 @@ export class DialogTitleState {
 	);
 }
 
-interface DialogDescriptionStateOpts extends WithRefOpts {}
+interface DialogDescriptionStateOpts extends WithRefProps {}
 
 export class DialogDescriptionState {
 	static create(opts: DialogDescriptionStateOpts) {
@@ -335,7 +336,7 @@ export class DialogDescriptionState {
 	);
 }
 
-interface DialogContentStateOpts extends WithRefOpts {}
+interface DialogContentStateOpts extends WithRefProps {}
 
 export class DialogContentState {
 	static create(opts: DialogContentStateOpts) {
@@ -393,7 +394,7 @@ export class DialogContentState {
 	}
 }
 
-interface DialogOverlayStateOpts extends WithRefOpts {}
+interface DialogOverlayStateOpts extends WithRefProps {}
 
 export class DialogOverlayState {
 	static create(opts: DialogOverlayStateOpts) {
@@ -437,7 +438,7 @@ export class DialogOverlayState {
 	}
 }
 
-interface AlertDialogCancelStateOpts extends WithRefOpts, ReadableBoxedValues<{ disabled: boolean }> {}
+interface AlertDialogCancelStateOpts extends WithRefProps, ReadableProps<{ disabled: boolean }> {}
 
 export class AlertDialogCancelState {
 	static create(opts: AlertDialogCancelStateOpts) {

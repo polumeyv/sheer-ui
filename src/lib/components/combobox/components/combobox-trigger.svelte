@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { ComboboxTriggerProps } from "$lib/components/combobox/index.js";
 	import { useId } from "$lib/internal/use-id.js";
 	import { SelectComboTriggerState } from "$lib/components/select/primitive/select.svelte.js";
@@ -14,11 +14,8 @@
 	}: ComboboxTriggerProps = $props();
 
 	const triggerState = SelectComboTriggerState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, triggerState.props, { type }));

@@ -3,15 +3,15 @@ import type { Updater } from 'svelte/store';
 import { CalendarDateTime, Time, ZonedDateTime } from '@internationalized/date';
 import {
 	attachRef,
-	type WritableBox,
+	type WritableProp,
 	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	simpleBox,
+	type ReadableProps,
+	type WritableProps,
+	writableProp,
 } from '$lib/vendor/index.js';
 import { onMount, untrack } from 'svelte';
 import { watch } from '$lib/vendor/watch.svelte.js';
-import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { useId } from '$lib/internal/use-id.js';
@@ -106,11 +106,11 @@ function get24HourValueFromTypedHour(hour: string, dayPeriod: Exclude<TimeSegmen
 
 export interface TimeFieldRootStateOpts<T extends TimeValue = Time>
 	extends
-		WritableBoxedValues<{
+		WritableProps<{
 			value: T | undefined;
 			placeholder: TimeValue;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			readonlySegments: SegmentPart[];
 			validate: TimeValidator<T> | undefined;
 			onInvalid: TimeOnInvalid | undefined;
@@ -132,7 +132,7 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 		return setTimeFieldRootContext(new TimeFieldRootState(opts, rangeRoot) as unknown as TimeFieldRootState);
 	}
 	value: TimeFieldRootStateOpts<T>['value'];
-	placeholder: WritableBox<TimeValue>;
+	placeholder: WritableProp<TimeValue>;
 	validate: TimeFieldRootStateOpts<T>['validate'];
 	minValue: TimeFieldRootStateOpts<T>['minValue'];
 	maxValue: TimeFieldRootStateOpts<T>['maxValue'];
@@ -190,7 +190,7 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 		 */
 		this.value = props.value;
 		this.placeholder = rangeRoot ? rangeRoot.opts.placeholder : props.placeholder;
-		this.validate = rangeRoot ? simpleBox(undefined) : props.validate;
+		this.validate = rangeRoot ? writableProp(undefined) : props.validate;
 		this.minValue = rangeRoot ? rangeRoot.opts.minValue : props.minValue;
 		this.maxValue = rangeRoot ? rangeRoot.opts.maxValue : props.maxValue;
 		this.disabled = rangeRoot ? rangeRoot.opts.disabled : props.disabled;
@@ -583,8 +583,8 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 
 interface TimeFieldInputStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			name: string;
 		}> {}
 
@@ -654,7 +654,7 @@ export class TimeFieldHiddenInputState {
 	);
 }
 
-interface TimeFieldLabelStateOpts extends WithRefOpts {}
+interface TimeFieldLabelStateOpts extends WithRefProps {}
 
 export class TimeFieldLabelState {
 	static create(opts: TimeFieldLabelStateOpts) {
@@ -693,14 +693,14 @@ export class TimeFieldLabelState {
 
 // Base class for time segments - simplified from date-field version
 abstract class BaseTimeSegmentState {
-	readonly opts: WithRefOpts;
+	readonly opts: WithRefProps;
 	readonly root: TimeFieldRootState;
 	readonly announcer: Announcer;
 	readonly part: string;
 	readonly config: SegmentConfig;
 	readonly attachment: RefAttachment;
 
-	constructor(opts: WithRefOpts, root: TimeFieldRootState, part: string, config: SegmentConfig) {
+	constructor(opts: WithRefProps, root: TimeFieldRootState, part: string, config: SegmentConfig) {
 		this.opts = opts;
 		this.root = root;
 		this.part = part;
@@ -983,7 +983,7 @@ abstract class BaseTimeSegmentState {
 }
 
 class TimeFieldHourSegmentState extends BaseTimeSegmentState {
-	constructor(opts: WithRefOpts, root: TimeFieldRootState) {
+	constructor(opts: WithRefProps, root: TimeFieldRootState) {
 		super(opts, root, 'hour', SEGMENT_CONFIGS.hour);
 	}
 
@@ -1013,18 +1013,18 @@ class TimeFieldHourSegmentState extends BaseTimeSegmentState {
 }
 
 class TimeFieldMinuteSegmentState extends BaseTimeSegmentState {
-	constructor(opts: WithRefOpts, root: TimeFieldRootState) {
+	constructor(opts: WithRefProps, root: TimeFieldRootState) {
 		super(opts, root, 'minute', SEGMENT_CONFIGS.minute);
 	}
 }
 
 class TimeFieldSecondSegmentState extends BaseTimeSegmentState {
-	constructor(opts: WithRefOpts, root: TimeFieldRootState) {
+	constructor(opts: WithRefProps, root: TimeFieldRootState) {
 		super(opts, root, 'second', SEGMENT_CONFIGS.second);
 	}
 }
 
-interface TimeFieldDayPeriodSegmentStateOpts extends WithRefOpts {}
+interface TimeFieldDayPeriodSegmentStateOpts extends WithRefProps {}
 
 class TimeFieldDayPeriodSegmentState {
 	readonly opts: TimeFieldDayPeriodSegmentStateOpts;
@@ -1127,7 +1127,7 @@ class TimeFieldDayPeriodSegmentState {
 	});
 }
 
-interface TimeFieldLiteralSegmentStateOpts extends WithRefOpts {}
+interface TimeFieldLiteralSegmentStateOpts extends WithRefProps {}
 
 class TimeFieldLiteralSegmentState {
 	readonly opts: TimeFieldLiteralSegmentStateOpts;
@@ -1190,7 +1190,7 @@ class TimeFieldTimeZoneSegmentState {
 }
 
 export class DateFieldSegmentState {
-	static create(part: SegmentPart, opts: WithRefOpts) {
+	static create(part: SegmentPart, opts: WithRefProps) {
 		const root = getTimeFieldRootContext();
 		switch (part) {
 			case 'hour':

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type WritableBox, boxWith } from "$lib/vendor/index.js";
+	import { type WritableProp } from "$lib/vendor/index.js";
 	import type { ComboboxRootProps } from "$lib/components/combobox/index.js";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
 	import { SelectRootState } from "$lib/components/select/primitive/select.svelte.js";
@@ -39,34 +39,22 @@
 
 	const rootState = SelectRootState.create({
 		type,
-		value: boxWith(
-			() => value!,
-			(v) => {
-				value = v;
-				// @ts-expect-error - we know
-				onValueChange(v);
-			}
-		) as WritableBox<string> | WritableBox<string[]>,
-		disabled: boxWith(() => disabled),
-		required: boxWith(() => required),
-		open: boxWith(
-			() => open,
-			(v) => {
-				open = v;
-				onOpenChange(v);
-			}
-		),
-		loop: boxWith(() => loop),
-		scrollAlignment: boxWith(() => scrollAlignment),
-		name: boxWith(() => name),
+		value: { get current() { return value!; }, set current(v) {
+        				value = v;
+        				// @ts-expect-error - we know
+        				onValueChange(v);
+        			} } as WritableProp<string> | WritableProp<string[]>,
+		disabled: { get current() { return disabled; } },
+		required: { get current() { return required; } },
+		open: { get current() { return open; }, set current(v) { open = v; onOpenChange(v); } },
+		loop: { get current() { return loop; } },
+		scrollAlignment: { get current() { return scrollAlignment; } },
+		name: { get current() { return name; } },
 		isCombobox: true,
-		items: boxWith(() => items),
-		allowDeselect: boxWith(() => allowDeselect),
-		inputValue: boxWith(
-			() => inputValue,
-			(v) => (inputValue = v)
-		),
-		onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
+		items: { get current() { return items; } },
+		allowDeselect: { get current() { return allowDeselect; } },
+		inputValue: { get current() { return inputValue; }, set current(v) { (inputValue = v); } },
+		onOpenChangeComplete: { get current() { return onOpenChangeComplete; } },
 	});
 </script>
 

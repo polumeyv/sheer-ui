@@ -6,11 +6,10 @@ import {
 	DOMContext,
 	getDocument,
 	getWindow,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	simpleBox,
-	boxWith,
-	type ReadableBox,
+	type ReadableProps,
+	type WritableProps,
+	writableProp,
+	type ReadableProp,
 } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import {
@@ -31,7 +30,7 @@ import type {
 	BitsPointerEvent,
 	OnChangeFn,
 	RefAttachment,
-	WithRefOpts,
+	WithRefProps,
 } from '$lib/internal/types.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
@@ -74,7 +73,7 @@ export function setMenuCheckboxGroupContext(state: MenuCheckboxGroupState): Menu
 
 type MenuVariant = 'context-menu' | 'dropdown-menu' | 'menubar';
 
-export interface MenuRootStateOpts extends ReadableBoxedValues<{
+export interface MenuRootStateOpts extends ReadableProps<{
 	dir: Direction;
 	variant: MenuVariant;
 	// debugMode: boolean;
@@ -766,10 +765,10 @@ export class MenuRootState {
 
 interface MenuMenuStateOpts
 	extends
-		WritableBoxedValues<{
+		WritableProps<{
 			open: boolean;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			onOpenChangeComplete: OnChangeFn<boolean>;
 		}> {}
 
@@ -781,18 +780,19 @@ export class MenuMenuState {
 	readonly opts: MenuMenuStateOpts;
 	readonly root: MenuRootState;
 	readonly parentMenu: MenuMenuState | null;
-	contentId = boxWith<string>(() => '');
+	contentId = { get current() { return ''; } };
 	contentNode = $state<HTMLElement | null>(null);
 	contentPresence: PresenceManager;
 	triggerNode = $state<HTMLElement | null>(null);
 
 	constructor(opts: MenuMenuStateOpts, root: MenuRootState, parentMenu: MenuMenuState | null) {
+		const self = this;
 		this.opts = opts;
 		this.root = root;
 		this.parentMenu = parentMenu;
 
 		this.contentPresence = new PresenceManager({
-			ref: boxWith(() => this.contentNode),
+			ref: { get current() { return self.contentNode; } },
 			open: this.opts.open,
 			onComplete: () => {
 				this.opts.onOpenChangeComplete.current(this.opts.open.current);
@@ -831,8 +831,8 @@ export class MenuMenuState {
 
 interface MenuContentStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			loop: boolean;
 			onCloseAutoFocus: (event: Event) => void;
 		}> {
@@ -856,6 +856,7 @@ export class MenuContentState {
 	#isSub: boolean;
 
 	constructor(opts: MenuContentStateOpts, parentMenu: MenuMenuState) {
+		const self = this;
 		this.opts = opts;
 		this.parentMenu = parentMenu;
 		this.domContext = new DOMContext(opts.ref);
@@ -896,10 +897,10 @@ export class MenuContentState {
 			getWindow: () => this.domContext.getWindow(),
 		}).handleTypeaheadSearch;
 		this.rovingFocusGroup = new RovingFocusGroup({
-			rootNode: boxWith(() => this.parentMenu.contentNode),
+			rootNode: { get current() { return self.parentMenu.contentNode; } },
 			candidateAttr: this.parentMenu.root.getBitsAttr('item'),
 			loop: this.opts.loop,
-			orientation: boxWith(() => 'vertical'),
+			orientation: { get current() { return 'vertical' as const; } },
 		});
 
 		watch(
@@ -1134,8 +1135,8 @@ export class MenuContentState {
 
 interface MenuItemSharedStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 		}> {}
 
@@ -1212,7 +1213,7 @@ class MenuItemSharedState {
 
 type MenuItemCombinedProps = MenuItemSharedStateOpts & MenuItemStateOpts;
 
-interface MenuItemStateOpts extends ReadableBoxedValues<{
+interface MenuItemStateOpts extends ReadableProps<{
 	onSelect: AnyFn;
 	closeOnSelect: boolean;
 }> {}
@@ -1296,7 +1297,7 @@ export class MenuItemState {
 }
 
 interface MenuSubTriggerStateOpts extends MenuItemSharedStateOpts, Pick<MenuItemStateOpts, 'onSelect'> {
-	openDelay: ReadableBox<number>;
+	openDelay: ReadableProp<number>;
 }
 
 export class MenuSubTriggerState {
@@ -1422,11 +1423,11 @@ export class MenuSubTriggerState {
 
 interface MenuCheckboxItemStateOpts
 	extends
-		WritableBoxedValues<{
+		WritableProps<{
 			checked: boolean;
 			indeterminate: boolean;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			value: string;
 		}> {}
 
@@ -1494,7 +1495,7 @@ export class MenuCheckboxItemState {
 	);
 }
 
-interface MenuGroupStateOpts extends WithRefOpts {}
+interface MenuGroupStateOpts extends WithRefProps {}
 
 export class MenuGroupState {
 	static create(opts: MenuGroupStateOpts) {
@@ -1524,7 +1525,7 @@ export class MenuGroupState {
 	);
 }
 
-interface MenuGroupHeadingStateOpts extends WithRefOpts {}
+interface MenuGroupHeadingStateOpts extends WithRefProps {}
 
 export class MenuGroupHeadingState {
 	static create(opts: MenuGroupHeadingStateOpts) {
@@ -1558,7 +1559,7 @@ export class MenuGroupHeadingState {
 	);
 }
 
-interface MenuSeparatorStateOpts extends WithRefOpts {}
+interface MenuSeparatorStateOpts extends WithRefProps {}
 
 export class MenuSeparatorState {
 	static create(opts: MenuSeparatorStateOpts) {
@@ -1607,8 +1608,8 @@ export class MenuArrowState {
 
 interface MenuRadioGroupStateOpts
 	extends
-		WithRefOpts,
-		WritableBoxedValues<{
+		WithRefProps,
+		WritableProps<{
 			value: string;
 		}> {}
 
@@ -1647,8 +1648,8 @@ export class MenuRadioGroupState {
 
 interface MenuRadioItemStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			value: string;
 			closeOnSelect: boolean;
 		}> {}
@@ -1696,8 +1697,8 @@ export class MenuRadioItemState {
 
 interface DropdownMenuTriggerStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 		}> {}
 
@@ -1788,8 +1789,8 @@ export class DropdownMenuTriggerState {
 
 interface ContextMenuTriggerStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 		}> {}
 
@@ -1803,7 +1804,7 @@ export class ContextMenuTriggerState {
 	readonly attachment: RefAttachment;
 	#point = $state({ x: 0, y: 0 });
 
-	virtualElement = simpleBox({
+	virtualElement = writableProp({
 		getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...this.#point }),
 	});
 	#longPressTimer: number | null = null;
@@ -1900,11 +1901,11 @@ export class ContextMenuTriggerState {
 
 interface MenuCheckboxGroupStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			onValueChange: (value: string[]) => void;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			value: string[];
 		}> {}
 

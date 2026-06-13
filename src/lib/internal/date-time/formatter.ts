@@ -2,7 +2,7 @@ import { DateFormatter, type DateValue } from '@internationalized/date';
 import { hasTime, isZonedDateTime, toDate } from './utils.js';
 import type { HourCycle, TimeValue } from '$lib/shared/date/types.js';
 import { convertTimeValueToDateValue } from './field/time-helpers.js';
-import type { ReadableBox } from '$lib/vendor/index.js';
+import type { ReadableProp } from '$lib/vendor/index.js';
 
 export type Formatter = ReturnType<typeof createFormatter>;
 export type TimeFormatter = ReturnType<typeof createTimeFormatter>;
@@ -18,8 +18,8 @@ const defaultPartOptions: Intl.DateTimeFormatOptions = {
 
 type CreateFormatterOptions = {
 	initialLocale: string;
-	monthFormat: ReadableBox<Intl.DateTimeFormatOptions['month'] | ((month: number) => string)>;
-	yearFormat: ReadableBox<Intl.DateTimeFormatOptions['year'] | ((year: number) => string)>;
+	monthFormat: ReadableProp<Intl.DateTimeFormatOptions['month'] | ((month: number) => string)>;
+	yearFormat: ReadableProp<Intl.DateTimeFormatOptions['year'] | ((year: number) => string)>;
 };
 
 /**

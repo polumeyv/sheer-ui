@@ -6,7 +6,6 @@
 
 <script lang="ts" generics="T extends TimeValue = Time">
 	import { watch } from "$lib/vendor/watch.svelte.js";
-	import { boxWith } from "$lib/vendor/index.js";
 	import { TimeFieldRootState } from "$lib/components/time-field/time-field.svelte.js";
 	import type { TimeFieldRootProps } from "$lib/components/time-field/index.js";
 	import { getDefaultTime } from "$lib/internal/date-time/utils.js";
@@ -60,34 +59,22 @@
 	);
 
 	TimeFieldRootState.create({
-		value: boxWith(
-			() => value,
-			(v) => {
-				value = v;
-				onValueChange(v);
-			}
-		),
-		placeholder: boxWith(
-			() => placeholder as TimeValue,
-			(v) => {
-				placeholder = v;
-				onPlaceholderChange(v);
-			}
-		),
-		disabled: boxWith(() => disabled),
-		granularity: boxWith(() => granularity),
-		hideTimeZone: boxWith(() => hideTimeZone),
-		hourCycle: boxWith(() => hourCycle),
+		value: { get current() { return value; }, set current(v) { value = v; onValueChange(v); } },
+		placeholder: { get current() { return placeholder as TimeValue; }, set current(v) { placeholder = v; onPlaceholderChange(v); } },
+		disabled: { get current() { return disabled; } },
+		granularity: { get current() { return granularity; } },
+		hideTimeZone: { get current() { return hideTimeZone; } },
+		hourCycle: { get current() { return hourCycle; } },
 		locale: resolveLocaleProp(() => locale),
-		maxValue: boxWith(() => maxValue),
-		minValue: boxWith(() => minValue),
-		validate: boxWith(() => validate),
-		readonly: boxWith(() => readonly),
-		readonlySegments: boxWith(() => readonlySegments),
-		required: boxWith(() => required),
-		onInvalid: boxWith(() => onInvalid),
-		errorMessageId: boxWith(() => errorMessageId),
-		isInvalidProp: boxWith(() => undefined),
+		maxValue: { get current() { return maxValue; } },
+		minValue: { get current() { return minValue; } },
+		validate: { get current() { return validate; } },
+		readonly: { get current() { return readonly; } },
+		readonlySegments: { get current() { return readonlySegments; } },
+		required: { get current() { return required; } },
+		onInvalid: { get current() { return onInvalid; } },
+		errorMessageId: { get current() { return errorMessageId; } },
+		isInvalidProp: { get current() { return undefined; } },
 	});
 </script>
 

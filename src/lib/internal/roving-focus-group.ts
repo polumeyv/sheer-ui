@@ -1,4 +1,4 @@
-import { box } from '$lib/vendor/index.js';
+import { writableProp } from '$lib/vendor/index.js';
 import type { ReadableProp, WritableProp } from '$lib/vendor/utils.js';
 import { getElemDirection } from './locale.js';
 import { getDirectionalKeys } from './get-directional-keys.js';
@@ -46,7 +46,7 @@ type RovingFocusGroupOptions = (
 
 export class RovingFocusGroup {
 	readonly #opts: RovingFocusGroupOptions;
-	readonly #currentTabStopId = box<string | null>(null);
+	readonly #currentTabStopId = writableProp<string | null>(null);
 
 	constructor(opts: RovingFocusGroupOptions) {
 		this.#opts = opts;

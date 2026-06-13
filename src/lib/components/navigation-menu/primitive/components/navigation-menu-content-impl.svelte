@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import { untrack, type Snippet } from "svelte";
 	import type { NavigationMenuContentProps } from "$lib/components/navigation-menu/primitive/index.js";
 	import {
@@ -34,14 +34,8 @@
 
 	const contentImplState = NavigationMenuContentImplState.create(
 		{
-			id: boxWith(() => id),
-			ref: boxWith(
-				() => ref,
-				(v) => {
-					ref = v;
-					untrack(() => onRefChange?.(v));
-				}
-			),
+			id: { get current() { return id; } },
+			ref: { get current() { return ref; }, set current(v) { ref = v; untrack(() => onRefChange?.(v)); } },
 		},
 		itemState
 	);

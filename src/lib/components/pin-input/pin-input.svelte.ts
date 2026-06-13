@@ -2,16 +2,16 @@ import { Previous } from '$lib/vendor/previous.svelte.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { onMount } from 'svelte';
 import {
-	type WritableBox,
+	type WritableProp,
 	attachRef,
 	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	simpleBox,
+	type ReadableProps,
+	type WritableProps,
+	writableProp,
 } from '$lib/vendor/index.js';
 import { usePasswordManagerBadge } from '$lib/components/pin-input/usePasswordManager.svelte.js';
 import type { PinInputCell, PinInputRootProps as RootComponentProps } from '$lib/components/pin-input/index.js';
-import type { BitsEvent, BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsEvent, BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { on } from 'svelte/events';
 
@@ -26,12 +26,12 @@ const pinInputAttrs = createBitsAttrs({
 
 interface PinInputRootStateOpts
 	extends
-		WithRefOpts,
-		WritableBoxedValues<{
+		WithRefProps,
+		WritableProps<{
 			value: string;
 			inputRef: HTMLInputElement | null;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			inputId: string;
 			disabled: boolean;
 			// oxlint-disable-next-line no-explicit-any
@@ -51,7 +51,7 @@ interface PrevInputMetadata {
 	willSyntheticBlur: boolean;
 }
 interface InitialLoad {
-	value: WritableBox<string>;
+	value: WritableProp<string>;
 	isIOS: boolean;
 }
 
@@ -81,7 +81,7 @@ export class PinInputRootState {
 	readonly attachment: RefAttachment;
 	readonly inputAttachment: RefAttachment<HTMLInputElement>;
 	#isHoveringInput = $state(false);
-	#isFocused = simpleBox(false);
+	#isFocused = writableProp(false);
 	#mirrorSelectionStart = $state<number | null>(null);
 	#mirrorSelectionEnd = $state<number | null>(null);
 
@@ -492,8 +492,8 @@ export class PinInputRootState {
 
 interface PinInputCellStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			cell: PinInputCell;
 		}> {}
 

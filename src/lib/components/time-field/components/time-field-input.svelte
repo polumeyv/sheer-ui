@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import { TimeFieldInputState } from "$lib/components/time-field/time-field.svelte.js";
 	import type { TimeFieldInputProps } from "$lib/components/time-field/index.js";
 	import DateFieldHiddenInput from "$lib/components/time-field/components/time-field-hidden-input.svelte";
@@ -17,12 +17,9 @@
 	}: TimeFieldInputProps = $props();
 
 	const inputState = TimeFieldInputState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		name: boxWith(() => name),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		name: { get current() { return name; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, inputState.props));

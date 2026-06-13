@@ -1,6 +1,6 @@
-import { attachRef, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { attachRef, type ReadableProps } from '$lib/vendor/index.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { RefAttachment, WithRefProps } from '$lib/internal/types.js';
 
 const progressAttrs = createBitsAttrs({
 	component: 'progress',
@@ -9,8 +9,8 @@ const progressAttrs = createBitsAttrs({
 
 interface ProgressRootStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			value: number | null;
 			max: number;
 			min: number;

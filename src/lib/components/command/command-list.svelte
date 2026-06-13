@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { CommandListProps } from '$lib/components/command/primitive/index.js';
 	import { CommandListState } from '$lib/components/command/primitive/command.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
@@ -18,12 +18,9 @@
 	}: CommandListProps = $props();
 
 	const listState = CommandListState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		ariaLabel: boxWith(() => ariaLabel ?? 'Suggestions...'),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		ariaLabel: { get current() { return ariaLabel ?? 'Suggestions...'; } },
 	});
 
 	const mergedProps = $derived(

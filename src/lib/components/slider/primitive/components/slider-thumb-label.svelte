@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { SliderThumbLabelProps } from "$lib/components/slider/primitive/index.js";
 	import { getSliderRootContext, SliderThumbLabelState } from "$lib/components/slider/primitive/slider.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -31,13 +31,10 @@
 	});
 
 	const tickLabelState = SliderThumbLabelState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		index: boxWith(() => index),
-		position: boxWith(() => position),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		index: { get current() { return index; } },
+		position: { get current() { return position; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, tickLabelState.props));

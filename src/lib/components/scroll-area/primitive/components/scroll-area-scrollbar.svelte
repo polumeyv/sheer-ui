@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { boxWith } from "$lib/vendor/index.js";
-	import type { ScrollAreaScrollbarProps } from "$lib/components/scroll-area/primitive/index.js";
+		import type { ScrollAreaScrollbarProps } from "$lib/components/scroll-area/primitive/index.js";
 	import { ScrollAreaScrollbarState } from "$lib/components/scroll-area/primitive/scroll-area.svelte.js";
 	import ScrollAreaScrollbarAuto from "$lib/components/scroll-area/primitive/components/scroll-area-scrollbar-auto.svelte";
 	import ScrollAreaScrollbarScroll from "$lib/components/scroll-area/primitive/components/scroll-area-scrollbar-scroll.svelte";
@@ -18,12 +17,9 @@
 	}: ScrollAreaScrollbarProps = $props();
 
 	const scrollbarState = ScrollAreaScrollbarState.create({
-		orientation: boxWith(() => orientation),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		orientation: { get current() { return orientation; } },
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 
 	const type = $derived(scrollbarState.root.opts.type.current);

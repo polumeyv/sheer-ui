@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { PinInputCellProps } from '$lib/components/pin-input/index.js';
 	import { PinInputCellState } from '$lib/components/pin-input/pin-input.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
@@ -18,12 +18,9 @@
 	}: PinInputCellProps = $props();
 
 	const cellState = PinInputCellState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		cell: boxWith(() => cell),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		cell: { get current() { return cell; } },
 	});
 
 	const mergedProps = $derived(

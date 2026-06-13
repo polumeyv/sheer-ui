@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { boxWith } from "$lib/vendor/index.js";
-	import type { MenuRootProps } from "$lib/components/_shared/menu/index.js";
+		import type { MenuRootProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuMenuState, MenuRootState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
 
@@ -19,9 +18,8 @@
 	} = $props();
 
 	const root = MenuRootState.create({
-		variant: boxWith(() => variant),
-		dir: boxWith(() => dir),
-		// debugMode: boxWith(() => debugMode),
+		variant: { get current() { return variant; } },
+		dir: { get current() { return dir; } },
 		onClose: () => {
 			open = false;
 			onOpenChange(false);
@@ -31,14 +29,8 @@
 
 	MenuMenuState.create(
 		{
-			open: boxWith(
-				() => open,
-				(v) => {
-					open = v;
-					onOpenChange(v);
-				}
-			),
-			onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
+			open: { get current() { return open; }, set current(v) { open = v; onOpenChange(v); } },
+			onOpenChangeComplete: { get current() { return onOpenChangeComplete; } },
 		},
 		root
 	);

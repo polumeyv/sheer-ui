@@ -1,4 +1,4 @@
-import type { WritableBox } from '$lib/vendor/index.js';
+import type { WritableProp } from '$lib/vendor/index.js';
 import { getNextMatch } from './arrays.js';
 import { boxAutoReset } from './box-auto-reset.svelte.js';
 
@@ -11,7 +11,7 @@ type DOMTypeaheadOptions = {
 
 export class DOMTypeahead {
 	readonly #opts: DOMTypeaheadOptions;
-	readonly #search: WritableBox<string>;
+	readonly #search: WritableProp<string>;
 	#onMatch: (item: HTMLElement) => void = $derived.by(() => {
 		if (this.#opts.onMatch) return this.#opts.onMatch;
 		return (node) => node.focus();

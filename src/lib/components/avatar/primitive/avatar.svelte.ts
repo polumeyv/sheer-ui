@@ -1,9 +1,9 @@
 import { createContext } from 'svelte';
-import { DOMContext, type ReadableBox, type WritableBox, attachRef, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { DOMContext, type ReadableProp, type WritableProp, attachRef, type ReadableProps } from '$lib/vendor/index.js';
 import type { HTMLImgAttributes } from 'svelte/elements';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import type { AvatarImageLoadingStatus } from '$lib/components/avatar/primitive/index.js';
-import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 
 const avatarAttrs = createBitsAttrs({
@@ -15,9 +15,9 @@ type CrossOrigin = HTMLImgAttributes['crossorigin'];
 type ReferrerPolicy = HTMLImgAttributes['referrerpolicy'];
 type AvatarImageSrc = string | null | undefined;
 
-interface AvatarRootStateOpts extends WithRefOpts {
-	delayMs: ReadableBox<number>;
-	loadingStatus: WritableBox<AvatarImageLoadingStatus>;
+interface AvatarRootStateOpts extends WithRefProps {
+	delayMs: ReadableProp<number>;
+	loadingStatus: WritableProp<AvatarImageLoadingStatus>;
 }
 
 const [getAvatarRootContext, setAvatarRootContext] = createContext<AvatarRootState>();
@@ -75,8 +75,8 @@ export class AvatarRootState {
 
 interface AvatarImageStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			src: AvatarImageSrc;
 			crossOrigin: CrossOrigin;
 			referrerPolicy: ReferrerPolicy;
@@ -121,7 +121,7 @@ export class AvatarImageState {
 	);
 }
 
-interface AvatarFallbackStateOpts extends WithRefOpts {}
+interface AvatarFallbackStateOpts extends WithRefProps {}
 export class AvatarFallbackState {
 	static create(opts: AvatarFallbackStateOpts) {
 		return new AvatarFallbackState(opts, getAvatarRootContext());

@@ -289,8 +289,8 @@
 			"svelte": "./dist/layout/index.js"
 		},
 		"./utils": {
-			"types": "./dist/utils.d.ts",
-			"svelte": "./dist/utils.js"
+			"types": "./dist/vendor/utils.d.ts",
+			"svelte": "./dist/vendor/utils.js"
 		},
 		"./format": {
 			"types": "./dist/format/index.d.ts",

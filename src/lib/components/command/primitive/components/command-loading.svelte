@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { CommandLoadingProps } from "$lib/components/command/primitive/index.js";
 	import { CommandLoadingState } from "$lib/components/command/primitive/command.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -16,12 +16,9 @@
 	}: CommandLoadingProps = $props();
 
 	const loadingState = CommandLoadingState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		progress: boxWith(() => progress),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		progress: { get current() { return progress; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, loadingState.props));

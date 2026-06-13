@@ -1,8 +1,8 @@
 import { getContext, hasContext, setContext } from 'svelte';
-import { boxWith, type ReadableBox, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { type ReadableProp, type ReadableProps } from '$lib/vendor/index.js';
 import type { BitsConfigPropsWithoutChildren } from '$lib/components/_shared/utilities/config/index.js';
 
-type BitsConfigStateProps = ReadableBoxedValues<BitsConfigPropsWithoutChildren>;
+type BitsConfigStateProps = ReadableProps<BitsConfigPropsWithoutChildren>;
 
 const bitsConfigContextKey = Symbol('BitsConfig');
 function getBitsConfigContextOr<T>(fallback: T): BitsConfigState | T {
@@ -31,10 +31,10 @@ export function getBitsConfig() {
  * @example
  * ```typescript
  * // In a component that wants to set a default portal target
- * const config = useBitsConfig({ defaultPortalTo: box("#some-element") });
+ * const config = useBitsConfig({ defaultPortalTo: writableProp("#some-element") });
  *
  * // Child components will inherit this config and can override specific values
- * const childConfig = useBitsConfig({ someOtherProp: box("value") });
+ * const childConfig = useBitsConfig({ someOtherProp: writableProp("value") });
  * // childConfig still has defaultPortalTo="#some-element" from parent
  * ```
  */
@@ -65,8 +65,8 @@ export class BitsConfigState {
 	}
 }
 
-type ConfigOptionGetter<T> = (config: BitsConfigStateProps) => ReadableBox<T> | undefined;
-type ConfigOptionResolver = <T>(getter: ConfigOptionGetter<T>) => ReadableBox<T | undefined>;
+type ConfigOptionGetter<T> = (config: BitsConfigStateProps) => ReadableProp<T> | undefined;
+type ConfigOptionResolver = <T>(getter: ConfigOptionGetter<T>) => ReadableProp<T | undefined>;
 
 /**
  * Returns a config resolver that resolves a given config option's value.
@@ -94,15 +94,15 @@ type ConfigOptionResolver = <T>(getter: ConfigOptionGetter<T>) => ReadableBox<T 
  */
 function createConfigResolver(parent: BitsConfigState | null, currentOpts: BitsConfigStateProps): ConfigOptionResolver {
 	return <T>(getter: ConfigOptionGetter<T>) => {
-		const configOption = boxWith(() => {
-			// try current opts first
-			const value = getter(currentOpts)?.current;
-			if (value !== undefined) return value;
-			// if no parent, return undefined
-			if (parent === null) return undefined;
-			// get value from parent (which already has its own chain resolved)
-			return getter(parent.opts)?.current;
-		});
+		const configOption = { get current() {
+        			// try current opts first
+        			const value = getter(currentOpts)?.current;
+        			if (value !== undefined) return value;
+        			// if no parent, return undefined
+        			if (parent === null) return undefined;
+        			// get value from parent (which already has its own chain resolved)
+        			return getter(parent.opts)?.current;
+        		} };
 		return configOption;
 	};
 }

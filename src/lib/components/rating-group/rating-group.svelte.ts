@@ -1,6 +1,6 @@
 import { createContext } from 'svelte';
-import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import type { RatingGroupAriaValuetext, RatingGroupItemState as RatingGroupItemStateType } from '$lib/components/rating-group/index.js';
 import type { Orientation } from '$lib/shared/index.js';
@@ -15,8 +15,8 @@ const [getRatingGroupRootContext, setRatingGroupRootContext] = createContext<Rat
 
 interface RatingGroupRootStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 			required: boolean;
 			orientation: Orientation;
@@ -28,7 +28,7 @@ interface RatingGroupRootStateOpts
 			hoverPreview: boolean;
 			ariaValuetext: NonNullable<RatingGroupAriaValuetext>;
 		}>,
-		WritableBoxedValues<{ value: number }> {}
+		WritableProps<{ value: number }> {}
 
 export class RatingGroupRootState {
 	static create(opts: RatingGroupRootStateOpts) {
@@ -268,8 +268,8 @@ export class RatingGroupRootState {
 
 interface RatingGroupItemStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 			index: number;
 		}> {}

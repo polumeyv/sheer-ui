@@ -1,5 +1,5 @@
-import { attachRef, type ReadableBoxedValues } from '$lib/vendor/index.js';
-import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { attachRef, type ReadableProps } from '$lib/vendor/index.js';
+import type { RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 
 const meterAttrs = createBitsAttrs({
@@ -9,8 +9,8 @@ const meterAttrs = createBitsAttrs({
 
 interface MeterRootStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			value: number;
 			max: number;
 			min: number;

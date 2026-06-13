@@ -1,10 +1,10 @@
 import { createContext } from 'svelte';
 import { type DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
-import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
+import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { getCalendarRootContext, setCalendarRootContext } from '$lib/components/calendar/calendar.svelte.js';
 import type { DateRange, Month } from '$lib/shared/index.js';
-import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { useId } from '$lib/internal/use-id.js';
 import { type Announcer, getAnnouncer } from '$lib/internal/date-time/announcer.js';
 import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
@@ -33,14 +33,14 @@ const [getRangeCalendarCellContext, setRangeCalendarCellContext] = createContext
 
 interface RangeCalendarRootStateOpts
 	extends
-		WithRefOpts,
-		WritableBoxedValues<{
+		WithRefProps,
+		WritableProps<{
 			value: DateRange;
 			placeholder: DateValue;
 			startValue: DateValue | undefined;
 			endValue: DateValue | undefined;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			preventDeselect: boolean;
 			minValue: DateValue | undefined;
 			maxValue: DateValue | undefined;
@@ -635,8 +635,8 @@ export class RangeCalendarRootState {
 
 interface RangeCalendarCellStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			date: DateValue;
 			month: DateValue;
 		}> {}
@@ -741,7 +741,7 @@ export class RangeCalendarCellState {
 	);
 }
 
-interface RangeCalendarDayStateOpts extends WithRefOpts {}
+interface RangeCalendarDayStateOpts extends WithRefProps {}
 
 export class RangeCalendarDayState {
 	static create(opts: RangeCalendarDayStateOpts) {

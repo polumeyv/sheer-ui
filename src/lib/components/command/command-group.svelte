@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { CommandGroupProps } from '$lib/components/command/primitive/index.js';
 	import {
 		CommandGroupContainerState,
@@ -31,29 +31,20 @@
 	} = $props();
 
 	const groupState = CommandGroupContainerState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		forceMount: boxWith(() => forceMount),
-		value: boxWith(() => value ?? heading ?? `----${id}`),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		forceMount: { get current() { return forceMount; } },
+		value: { get current() { return value ?? heading ?? `----${id}`; } },
 	});
 
 	const headingState = CommandGroupHeadingState.create({
-		id: boxWith(() => headingId),
-		ref: boxWith(
-			() => headingRef,
-			(v) => (headingRef = v)
-		),
+		id: { get current() { return headingId; } },
+		ref: { get current() { return headingRef; }, set current(v) { (headingRef = v); } },
 	});
 
 	const itemsState = CommandGroupItemsState.create({
-		id: boxWith(() => itemsId),
-		ref: boxWith(
-			() => itemsRef,
-			(v) => (itemsRef = v)
-		),
+		id: { get current() { return itemsId; } },
+		ref: { get current() { return itemsRef; }, set current(v) { (itemsRef = v); } },
 	});
 
 	const mergedProps = $derived(

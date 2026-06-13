@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { MenuItemProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuItemState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -18,14 +18,11 @@
 	}: MenuItemProps = $props();
 
 	const itemState = MenuItemState.create({
-		id: boxWith(() => id),
-		disabled: boxWith(() => disabled),
-		onSelect: boxWith(() => onSelect),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		closeOnSelect: boxWith(() => closeOnSelect),
+		id: { get current() { return id; } },
+		disabled: { get current() { return disabled; } },
+		onSelect: { get current() { return onSelect; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		closeOnSelect: { get current() { return closeOnSelect; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, itemState.props));

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { MenuRadioGroupProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuRadioGroupState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -17,18 +17,9 @@
 	}: MenuRadioGroupProps = $props();
 
 	const radioGroupState = MenuRadioGroupState.create({
-		value: boxWith(
-			() => value,
-			(v) => {
-				value = v;
-				onValueChange(v);
-			}
-		),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		id: boxWith(() => id),
+		value: { get current() { return value; }, set current(v) { value = v; onValueChange(v); } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		id: { get current() { return id; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, radioGroupState.props));

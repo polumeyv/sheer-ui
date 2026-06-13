@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { NavigationMenuIndicatorProps } from '$lib/components/navigation-menu/primitive/index.js';
 	import { NavigationMenuIndicatorState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte.js';
 	import NavigationMenuIndicatorImpl from '$lib/components/navigation-menu/primitive/components/navigation-menu-indicator-impl.svelte';
@@ -37,7 +37,7 @@
 
 {#if indicatorState.context.indicatorTrackRef.current}
 	<Portal to={indicatorState.context.indicatorTrackRef.current}>
-		<PresenceLayer open={forceMount || indicatorState.isVisible} ref={boxWith(() => ref)}>
+		<PresenceLayer open={forceMount || indicatorState.isVisible} ref={{ get current() { return ref; } }}>
 			{#snippet presence({ transitionStatus })}
 				<NavigationMenuIndicatorImpl
 					{...mergeProps(mergedProps, { "data-starting-style": transitionStatus === "starting" ? "" : undefined, "data-ending-style": transitionStatus === "ending" ? "" : undefined })}

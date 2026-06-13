@@ -1,12 +1,12 @@
 import { createContext } from 'svelte';
 import type { Time } from '@internationalized/date';
-import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
+import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { TimeFieldRootState } from '$lib/components/time-field/time-field.svelte.js';
 import { TimeFieldInputState } from '$lib/components/time-field/time-field.svelte.js';
 import { useId } from '$lib/internal/use-id.js';
 import type { TimeSegmentPart } from '$lib/shared/index.js';
-import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import type { TimeGranularity, TimeOnInvalid, TimeRange, TimeRangeValidator, TimeValue } from '$lib/shared/date/types.js';
 import { type TimeFormatter, createTimeFormatter } from '$lib/internal/date-time/formatter.js';
@@ -23,14 +23,14 @@ export const [getTimeRangeFieldRootContext, setTimeRangeFieldRootContext] = crea
 
 interface TimeRangeFieldRootStateOpts<T extends TimeValue = Time>
 	extends
-		WithRefOpts,
-		WritableBoxedValues<{
+		WithRefProps,
+		WritableProps<{
 			value: TimeRange<T>;
 			placeholder: TimeValue;
 			startValue: T | undefined;
 			endValue: T | undefined;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			readonlySegments: TimeSegmentPart[];
 			validate: TimeRangeValidator<T> | undefined;
 			onInvalid: TimeOnInvalid | undefined;
@@ -208,7 +208,7 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 	);
 }
 
-interface TimeRangeFieldLabelStateOpts extends WithRefOpts {}
+interface TimeRangeFieldLabelStateOpts extends WithRefProps {}
 
 export class TimeRangeFieldLabelState {
 	static create(opts: TimeRangeFieldLabelStateOpts) {
@@ -246,13 +246,13 @@ export class TimeRangeFieldLabelState {
 
 interface TimeRangeFieldInputStateOpts<T extends TimeValue = Time>
 	extends
-		WritableBoxedValues<{
+		WritableProps<{
 			value: T | undefined;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			name: string;
 		}>,
-		WithRefOpts {}
+		WithRefProps {}
 
 export class TimeRangeFieldInputState {
 	static create(opts: Omit<TimeRangeFieldInputStateOpts, 'value'>, type: 'start' | 'end') {
@@ -263,7 +263,7 @@ export class TimeRangeFieldInputState {
 				disabled: root.opts.disabled,
 				readonly: root.opts.readonly,
 				readonlySegments: root.opts.readonlySegments,
-				validate: boxWith(() => undefined),
+				validate: { get current() { return undefined; } },
 				minValue: root.opts.minValue,
 				maxValue: root.opts.maxValue,
 				hourCycle: root.opts.hourCycle,
@@ -274,7 +274,7 @@ export class TimeRangeFieldInputState {
 				placeholder: root.opts.placeholder,
 				onInvalid: root.opts.onInvalid,
 				errorMessageId: root.opts.errorMessageId,
-				isInvalidProp: boxWith(() => root.isInvalid),
+				isInvalidProp: { get current() { return root.isInvalid; } },
 			},
 			root,
 		);

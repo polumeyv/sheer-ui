@@ -1,5 +1,5 @@
 import { createContext } from 'svelte';
-import { type ReadableBoxedValues, type WritableBoxedValues, attachRef, boxWith, DOMContext } from '$lib/vendor/index.js';
+import { type ReadableProps, type WritableProps, attachRef, DOMContext } from '$lib/vendor/index.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
@@ -10,7 +10,7 @@ import type {
 	BitsPointerEvent,
 	OnChangeFn,
 	RefAttachment,
-	WithRefOpts,
+	WithRefProps,
 } from '$lib/internal/types.js';
 import type { Measurable } from '$lib/internal/floating-svelte/types.js';
 import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
@@ -26,10 +26,10 @@ const [getPopoverRootContext, setPopoverRootContext] = createContext<PopoverRoot
 
 interface PopoverRootStateOpts
 	extends
-		WritableBoxedValues<{
+		WritableProps<{
 			open: boolean;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			onOpenChangeComplete: OnChangeFn<boolean>;
 		}> {}
 
@@ -54,10 +54,11 @@ export class PopoverRootState {
 	#domContext: DOMContext | null = null;
 
 	constructor(opts: PopoverRootStateOpts) {
+		const self = this;
 		this.opts = opts;
 
 		this.contentPresence = new PresenceManager({
-			ref: boxWith(() => this.contentNode),
+			ref: { get current() { return self.contentNode; } },
 			open: this.opts.open,
 			onComplete: () => {
 				this.opts.onOpenChangeComplete.current(this.opts.open.current);
@@ -65,7 +66,7 @@ export class PopoverRootState {
 		});
 
 		this.overlayPresence = new PresenceManager({
-			ref: boxWith(() => this.overlayNode),
+			ref: { get current() { return self.overlayNode; } },
 			open: this.opts.open,
 		});
 
@@ -148,8 +149,8 @@ export class PopoverRootState {
 
 interface PopoverTriggerStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 			openOnHover: boolean;
 			openDelay: number;
@@ -307,8 +308,8 @@ export class PopoverTriggerState {
 
 interface PopoverContentStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			onInteractOutside: (e: PointerEvent) => void;
 			onEscapeKeydown: (e: KeyboardEvent) => void;
 			customAnchor: string | HTMLElement | null | Measurable;
@@ -429,7 +430,7 @@ export class PopoverContentState {
 	};
 }
 
-interface PopoverCloseStateOpts extends WithRefOpts {}
+interface PopoverCloseStateOpts extends WithRefProps {}
 
 export class PopoverCloseState {
 	static create(opts: PopoverCloseStateOpts) {
@@ -471,7 +472,7 @@ export class PopoverCloseState {
 	);
 }
 
-interface PopoverOverlayStateOpts extends WithRefOpts {}
+interface PopoverOverlayStateOpts extends WithRefProps {}
 
 export class PopoverOverlayState {
 	static create(opts: PopoverOverlayStateOpts) {

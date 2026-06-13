@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { ReadableBox } from '$lib/vendor/index.js';
+import type { ReadableProp } from '$lib/vendor/index.js';
 import type { Align, Boundary, Side } from '$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte.js';
 import type { Arrayable } from '$lib/internal/types.js';
 import type { Direction, StyleProperties } from '$lib/shared/index.js';
@@ -138,8 +138,8 @@ export type FloatingLayerContentImplProps = {
 export type FloatingLayerAnchorProps = {
 	id: string;
 	children?: Snippet;
-	virtualEl?: ReadableBox<Measurable | null>;
-	ref: ReadableBox<HTMLElement | null>;
+	virtualEl?: ReadableProp<Measurable | null>;
+	ref: ReadableProp<HTMLElement | null>;
 	/**
 	 * Tooltips are special in that they are commonly composed
 	 * with other floating components, where the same trigger is

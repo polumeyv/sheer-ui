@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { MenuSubTriggerProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuSubTriggerState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import FloatingLayerAnchor from "$lib/components/_shared/utilities/floating-layer/components/floating-layer-anchor.svelte";
@@ -19,14 +19,11 @@
 	}: MenuSubTriggerProps = $props();
 
 	const subTriggerState = MenuSubTriggerState.create({
-		disabled: boxWith(() => disabled),
-		onSelect: boxWith(() => onSelect),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		openDelay: boxWith(() => openDelay),
+		disabled: { get current() { return disabled; } },
+		onSelect: { get current() { return onSelect; } },
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		openDelay: { get current() { return openDelay; } },
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, subTriggerState.props));

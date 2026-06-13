@@ -1,4 +1,4 @@
-import { type WritableBox, boxWith } from '$lib/vendor/index.js';
+import { type WritableProp } from '$lib/vendor/index.js';
 
 type BoxAutoResetOptions<T> = {
 	afterMs?: number;
@@ -17,7 +17,7 @@ const defaultOptions: Partial<BoxAutoResetOptions<unknown>> = {
  * @param defaultValue The value which will be set.
  * @param afterMs      A zero-or-greater delay in milliseconds.
  */
-export function boxAutoReset<T>(defaultValue: T, options: BoxAutoResetOptions<T>): WritableBox<T> {
+export function boxAutoReset<T>(defaultValue: T, options: BoxAutoResetOptions<T>): WritableProp<T> {
 	const { afterMs, onChange, getWindow } = { ...defaultOptions, ...options };
 
 	let timeout: number | null = null;
@@ -36,13 +36,5 @@ export function boxAutoReset<T>(defaultValue: T, options: BoxAutoResetOptions<T>
 		};
 	});
 
-	return boxWith(
-		() => value,
-		(v) => {
-			value = v;
-			onChange?.(v);
-			if (timeout) getWindow().clearTimeout(timeout);
-			timeout = resetAfter();
-		},
-	);
+	return { get current() { return value; }, set current(v) { value = v; onChange?.(v); if (timeout) getWindow().clearTimeout(timeout); timeout = resetAfter(); } };
 }

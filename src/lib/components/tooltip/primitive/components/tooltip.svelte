@@ -3,8 +3,7 @@
 </script>
 
 <script lang="ts" generics="T = never">
-	import { boxWith } from "$lib/vendor/index.js";
-	import type { TooltipRootProps } from "$lib/components/tooltip/primitive/index.js";
+		import type { TooltipRootProps } from "$lib/components/tooltip/primitive/index.js";
 	import { TooltipRootState } from "$lib/components/tooltip/primitive/tooltip.svelte.js";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
 
@@ -23,26 +22,15 @@
 	}: TooltipRootProps<T> = $props();
 
 	const rootState = TooltipRootState.create({
-		open: boxWith(
-			() => open,
-			(v) => {
-				open = v;
-				onOpenChange(v);
-			}
-		),
-		triggerId: boxWith(
-			() => triggerId,
-			(v) => {
-				triggerId = v;
-			}
-		),
-		delayDuration: boxWith(() => delayDuration),
-		disableCloseOnTriggerClick: boxWith(() => disableCloseOnTriggerClick),
-		disableHoverableContent: boxWith(() => disableHoverableContent),
-		ignoreNonKeyboardFocus: boxWith(() => ignoreNonKeyboardFocus),
-		disabled: boxWith(() => disabled),
-		onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
-		tether: boxWith(() => tether),
+		open: { get current() { return open; }, set current(v) { open = v; onOpenChange(v); } },
+		triggerId: { get current() { return triggerId; }, set current(v) { triggerId = v; } },
+		delayDuration: { get current() { return delayDuration; } },
+		disableCloseOnTriggerClick: { get current() { return disableCloseOnTriggerClick; } },
+		disableHoverableContent: { get current() { return disableHoverableContent; } },
+		ignoreNonKeyboardFocus: { get current() { return ignoreNonKeyboardFocus; } },
+		disabled: { get current() { return disabled; } },
+		onOpenChangeComplete: { get current() { return onOpenChangeComplete; } },
+		tether: { get current() { return tether; } },
 	});
 </script>
 

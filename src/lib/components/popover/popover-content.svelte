@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { PopoverContentProps } from '$lib/components/popover/primitive/index.js';
 	import { PopoverContentState } from '$lib/components/popover/primitive/popover.svelte.js';
 	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
@@ -36,14 +36,11 @@
 	} = $props();
 
 	const contentState = PopoverContentState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		onInteractOutside: boxWith(() => onInteractOutside),
-		onEscapeKeydown: boxWith(() => onEscapeKeydown),
-		customAnchor: boxWith(() => customAnchor),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		onInteractOutside: { get current() { return onInteractOutside; } },
+		onEscapeKeydown: { get current() { return onEscapeKeydown; } },
+		customAnchor: { get current() { return customAnchor; } },
 	});
 
 	const mergedProps = $derived(

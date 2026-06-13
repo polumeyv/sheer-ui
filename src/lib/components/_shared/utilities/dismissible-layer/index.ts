@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { WritableBox } from '$lib/vendor/index.js';
+import type { WritableProp } from '$lib/vendor/index.js';
 
 export type InteractOutsideEvent = PointerEvent;
 export type InteractOutsideEventHandler = (e: PointerEvent) => void;
@@ -53,7 +53,7 @@ export type DismissibleLayerImplProps = {
 
 	children?: Snippet<[{ props: Record<string, unknown> }]>;
 
-	ref: WritableBox<HTMLElement | null>;
+	ref: WritableProp<HTMLElement | null>;
 } & DismissibleLayerProps;
 
 export { default as DismissibleLayer } from '$lib/components/_shared/utilities/dismissible-layer/dismissible-layer.svelte';

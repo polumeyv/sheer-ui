@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { boxWith } from "$lib/vendor/index.js";
-	import { FloatingAnchorState } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte.js";
+		import { FloatingAnchorState } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte.js";
 	import type { AnchorProps } from "$lib/components/_shared/utilities/floating-layer/components/index.js";
 	import type { Measurable } from "$lib/internal/floating-svelte/types.js";
 
@@ -8,8 +7,8 @@
 
 	FloatingAnchorState.create(
 		{
-			id: boxWith(() => id),
-			virtualEl: boxWith(() => virtualEl as unknown as Measurable | null),
+			id: { get current() { return id; } },
+			virtualEl: { get current() { return virtualEl as unknown as Measurable | null; } },
 			ref,
 		},
 		tooltip

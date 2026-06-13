@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { SelectContentProps } from '$lib/components/select/primitive/index.js';
 	import { SelectContentState } from '$lib/components/select/primitive/select.svelte.js';
 	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
@@ -34,13 +34,10 @@
 	} = $props();
 
 	const contentState = SelectContentState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		onInteractOutside: boxWith(() => onInteractOutside),
-		onEscapeKeydown: boxWith(() => onEscapeKeydown),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		onInteractOutside: { get current() { return onInteractOutside; } },
+		onEscapeKeydown: { get current() { return onEscapeKeydown; } },
 	});
 
 	const mergedProps = $derived(

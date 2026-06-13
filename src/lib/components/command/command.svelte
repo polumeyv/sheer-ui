@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import { CommandRootState } from '$lib/components/command/primitive/command.svelte.js';
 	import type { CommandRootProps } from '$lib/components/command/primitive/index.js';
 	import CommandLabel from '$lib/components/command/primitive/components/_command-label.svelte';
@@ -30,28 +30,20 @@
 	}: CommandRootProps = $props();
 
 	const rootState = CommandRootState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		filter: boxWith(() => filter),
-		shouldFilter: boxWith(() => shouldFilter),
-		loop: boxWith(() => loop),
-		value: boxWith(
-			() => value,
-			(v) => {
-				if (value !== v) {
-					value = v;
-					onValueChange(v);
-				}
-			}
-		),
-		vimBindings: boxWith(() => vimBindings),
-		disablePointerSelection: boxWith(() => disablePointerSelection),
-		disableInitialScroll: boxWith(() => disableInitialScroll),
-		onStateChange: boxWith(() => onStateChange),
-		columns: boxWith(() => columns),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		filter: { get current() { return filter; } },
+		shouldFilter: { get current() { return shouldFilter; } },
+		loop: { get current() { return loop; } },
+		value: { get current() { return value; }, set current(v) { if (value !== v) {
+                        					value = v;
+                        					onValueChange(v);
+                        				} } },
+		vimBindings: { get current() { return vimBindings; } },
+		disablePointerSelection: { get current() { return disablePointerSelection; } },
+		disableInitialScroll: { get current() { return disableInitialScroll; } },
+		onStateChange: { get current() { return onStateChange; } },
+		columns: { get current() { return columns; } },
 	});
 
 	// Imperative APIs - DO NOT REMOVE OR RENAME

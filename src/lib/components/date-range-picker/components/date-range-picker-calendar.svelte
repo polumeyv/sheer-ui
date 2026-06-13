@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { DateRangePickerCalendarProps } from "$lib/components/date-range-picker/index.js";
 	import { getDateRangePickerRootContext } from "$lib/components/date-range-picker/date-range-picker.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -18,11 +18,8 @@
 	const dateRangePickerRootState = getDateRangePickerRootContext();
 
 	const rangeCalendarState = RangeCalendarRootState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 		calendarLabel: dateRangePickerRootState.opts.calendarLabel,
 		fixedWeeks: dateRangePickerRootState.opts.fixedWeeks,
 		isDateDisabled: dateRangePickerRootState.opts.isDateDisabled,

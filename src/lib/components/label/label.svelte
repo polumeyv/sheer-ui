@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/index.js';
+	import { mergeProps } from '$lib/vendor/index.js';
 	import type { LabelRootProps } from '$lib/components/label/primitive/index.js';
 	import { LabelRootState } from '$lib/components/label/primitive/label.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
@@ -18,11 +18,8 @@
 	}: LabelRootProps = $props();
 
 	const rootState = LabelRootState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
 	});
 	const mergedProps = $derived(
 		mergeProps(

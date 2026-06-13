@@ -1,9 +1,9 @@
 import { watch } from '$lib/vendor/watch.svelte.js';
-import { type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { type ReadableProps } from '$lib/vendor/index.js';
 import { AnimationsComplete } from './animations-complete.js';
 import type { TransitionState } from './attrs.js';
 
-interface PresenceManagerOpts extends ReadableBoxedValues<{
+interface PresenceManagerOpts extends ReadableProps<{
 	open: boolean;
 	ref: HTMLElement | null;
 }> {

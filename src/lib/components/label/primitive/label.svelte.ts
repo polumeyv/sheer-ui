@@ -1,5 +1,5 @@
 import { attachRef } from '$lib/vendor/index.js';
-import type { BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 
 const labelAttrs = createBitsAttrs({
@@ -7,7 +7,7 @@ const labelAttrs = createBitsAttrs({
 	parts: ['root'],
 });
 
-interface LabelRootStateOpts extends WithRefOpts {}
+interface LabelRootStateOpts extends WithRefProps {}
 
 export class LabelRootState {
 	static create(opts: LabelRootStateOpts) {

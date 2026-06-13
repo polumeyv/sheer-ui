@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { boxWith } from '$lib/vendor/index.js';
-	import type { LinkPreviewRootProps } from '$lib/components/link-preview/index.js';
+		import type { LinkPreviewRootProps } from '$lib/components/link-preview/index.js';
 	import { LinkPreviewRootState } from '$lib/components/link-preview/link-preview.svelte.js';
 	import { FloatingLayer } from '$lib/components/_shared/utilities/floating-layer/index.js';
 
@@ -15,17 +14,11 @@
 	}: LinkPreviewRootProps = $props();
 
 	LinkPreviewRootState.create({
-		disabled: boxWith(() => disabled),
-		open: boxWith(
-			() => open,
-			(v) => {
-				open = v;
-				onOpenChange(v);
-			}
-		),
-		openDelay: boxWith(() => openDelay),
-		closeDelay: boxWith(() => closeDelay),
-		onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
+		disabled: { get current() { return disabled; } },
+		open: { get current() { return open; }, set current(v) { open = v; onOpenChange(v); } },
+		openDelay: { get current() { return openDelay; } },
+		closeDelay: { get current() { return closeDelay; } },
+		onOpenChangeComplete: { get current() { return onOpenChangeComplete; } },
 	});
 </script>
 

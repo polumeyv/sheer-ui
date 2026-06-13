@@ -1,7 +1,7 @@
 import { tick } from 'svelte';
 import { createContext } from 'svelte';
 import { watch } from '$lib/vendor/watch.svelte.js';
-import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, type Box, boxWith } from '$lib/vendor/index.js';
+import { attachRef, DOMContext, type ReadableProps, type WritableProps, type WritableProp } from '$lib/vendor/index.js';
 import { on } from 'svelte/events';
 import { backward, forward, next, prev } from '$lib/internal/arrays.js';
 import { kbd } from '$lib/internal/kbd.js';
@@ -12,7 +12,7 @@ import type {
 	BitsMouseEvent,
 	BitsPointerEvent,
 	OnChangeFn,
-	WithRefOpts,
+	WithRefProps,
 	RefAttachment,
 } from '$lib/internal/types.js';
 import { isIOS } from '$lib/internal/is.js';
@@ -60,7 +60,7 @@ const [getSelectContentContext, setSelectContentContext] = createContext<SelectC
 
 interface SelectBaseRootStateOpts
 	extends
-		ReadableBoxedValues<{
+		ReadableProps<{
 			disabled: boolean;
 			required: boolean;
 			name: string;
@@ -70,7 +70,7 @@ interface SelectBaseRootStateOpts
 			allowDeselect: boolean;
 			onOpenChangeComplete: OnChangeFn<boolean>;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			open: boolean;
 			inputValue: string;
 		}> {
@@ -106,11 +106,12 @@ abstract class SelectBaseRootState {
 	domContext = new DOMContext(() => null);
 
 	constructor(opts: SelectBaseRootStateOpts) {
+		const self = this;
 		this.opts = opts;
 		this.isCombobox = opts.isCombobox;
 
 		this.contentPresence = new PresenceManager({
-			ref: boxWith(() => this.contentNode),
+			ref: { get current() { return self.contentNode; } },
 			open: this.opts.open,
 			onComplete: () => {
 				this.opts.onOpenChangeComplete.current(this.opts.open.current);
@@ -221,7 +222,7 @@ abstract class SelectBaseRootState {
 interface SelectSingleRootStateOpts
 	extends
 		SelectBaseRootStateOpts,
-		WritableBoxedValues<{
+		WritableProps<{
 			value: string;
 		}> {}
 
@@ -295,7 +296,7 @@ export class SelectSingleRootState extends SelectBaseRootState {
 interface SelectMultipleRootStateOpts
 	extends
 		SelectBaseRootStateOpts,
-		WritableBoxedValues<{
+		WritableProps<{
 			value: string[];
 		}> {}
 
@@ -356,7 +357,7 @@ class SelectMultipleRootState extends SelectBaseRootState {
 
 interface SelectRootStateOpts
 	extends
-		ReadableBoxedValues<{
+		ReadableProps<{
 			disabled: boolean;
 			required: boolean;
 			loop: boolean;
@@ -366,13 +367,13 @@ interface SelectRootStateOpts
 			allowDeselect: boolean;
 			onOpenChangeComplete: OnChangeFn<boolean>;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			open: boolean;
 			inputValue: string;
 		}> {
 	isCombobox: boolean;
 	type: 'single' | 'multiple';
-	value: Box<string> | Box<string[]>;
+	value: WritableProp<string> | WritableProp<string[]>;
 }
 
 export class SelectRootState {
@@ -390,8 +391,8 @@ export class SelectRootState {
 
 type SelectRoot = SelectSingleRootState | SelectMultipleRootState;
 
-type SelectValueStateProps = WithRefOpts<
-	ReadableBoxedValues<{
+type SelectValueStateProps = WithRefProps<
+	ReadableProps<{
 		placeholder: string | null | undefined;
 	}>
 >;
@@ -464,8 +465,8 @@ export class SelectValueState {
 
 interface SelectInputStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			clearOnDeselect: boolean;
 		}> {}
 
@@ -609,7 +610,7 @@ export class SelectInputState {
 	);
 }
 
-interface SelectComboTriggerStateOpts extends WithRefOpts {}
+interface SelectComboTriggerStateOpts extends WithRefProps {}
 
 export class SelectComboTriggerState {
 	static create(opts: SelectComboTriggerStateOpts) {
@@ -667,7 +668,7 @@ export class SelectComboTriggerState {
 	);
 }
 
-interface SelectTriggerStateOpts extends WithRefOpts {}
+interface SelectTriggerStateOpts extends WithRefProps {}
 
 export class SelectTriggerState {
 	static create(opts: SelectTriggerStateOpts) {
@@ -921,8 +922,8 @@ export class SelectTriggerState {
 
 interface SelectContentStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			onInteractOutside: (e: PointerEvent) => void;
 			onEscapeKeydown: (e: KeyboardEvent) => void;
 		}> {}
@@ -1053,8 +1054,8 @@ export class SelectContentState {
 
 interface SelectItemStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			value: string;
 			disabled: boolean;
 			label: string;
@@ -1200,7 +1201,7 @@ export class SelectItemState {
 	);
 }
 
-interface SelectGroupStateOpts extends WithRefOpts {}
+interface SelectGroupStateOpts extends WithRefProps {}
 
 export class SelectGroupState {
 	static create(opts: SelectGroupStateOpts) {
@@ -1229,7 +1230,7 @@ export class SelectGroupState {
 	);
 }
 
-interface SelectGroupHeadingStateOpts extends WithRefOpts {}
+interface SelectGroupHeadingStateOpts extends WithRefProps {}
 
 export class SelectGroupHeadingState {
 	static create(opts: SelectGroupHeadingStateOpts) {
@@ -1255,7 +1256,7 @@ export class SelectGroupHeadingState {
 	);
 }
 
-interface SelectHiddenInputStateOpts extends ReadableBoxedValues<{
+interface SelectHiddenInputStateOpts extends ReadableProps<{
 	value: string | undefined;
 }> {}
 
@@ -1295,7 +1296,7 @@ export class SelectHiddenInputState {
 	);
 }
 
-interface SelectViewportStateOpts extends WithRefOpts {}
+interface SelectViewportStateOpts extends WithRefProps {}
 
 export class SelectViewportState {
 	static create(opts: SelectViewportStateOpts) {
@@ -1337,8 +1338,8 @@ export class SelectViewportState {
 
 interface SelectScrollButtonImplStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			delay: (tick: number) => number;
 		}> {}
 

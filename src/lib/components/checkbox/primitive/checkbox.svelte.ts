@@ -1,8 +1,8 @@
 import { createContext, getContext, hasContext, setContext } from 'svelte';
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
+import { attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
 import type { HTMLButtonAttributes } from 'svelte/elements';
 import { watch } from '$lib/vendor/watch.svelte.js';
-import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { arraysAreEqual } from '$lib/internal/arrays.js';
@@ -14,15 +14,15 @@ const checkboxAttrs = createBitsAttrs({
 
 interface CheckboxGroupStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			name: string | undefined;
 			disabled: boolean;
 			required: boolean;
 			readonly: boolean;
 			onValueChange: OnChangeFn<string[]>;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			value: string[];
 		}> {}
 
@@ -85,7 +85,7 @@ export class CheckboxGroupState {
 	);
 }
 
-interface CheckboxGroupLabelStateOpts extends WithRefOpts {}
+interface CheckboxGroupLabelStateOpts extends WithRefProps {}
 
 export class CheckboxGroupLabelState {
 	static create(opts: CheckboxGroupLabelStateOpts) {
@@ -125,8 +125,8 @@ const [getCheckboxRootContext, setCheckboxRootContext] = createContext<CheckboxR
 
 interface CheckboxRootStateOpts
 	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 			required: boolean;
 			readonly: boolean;
@@ -134,7 +134,7 @@ interface CheckboxRootStateOpts
 			value: string | undefined;
 			type: HTMLButtonAttributes['type'];
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			checked: boolean;
 			indeterminate: boolean;
 		}> {}

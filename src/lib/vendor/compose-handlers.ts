@@ -1,5 +1,5 @@
 import type { EventCallback } from './utils/events.js';
-import type { ReadableBox } from '$lib/vendor/box.svelte';
+import type { ReadableProp } from './utils.js';
 
 /**
  * Composes event handlers into a single function that can be called with an event.
@@ -7,7 +7,7 @@ import type { ReadableBox } from '$lib/vendor/box.svelte';
  * that follow will not be called.
  */
 export function composeHandlers<E extends Event = Event, T extends Element = Element>(
-	...handlers: Array<EventCallback<E> | ReadableBox<EventCallback<E>> | undefined>
+	...handlers: Array<EventCallback<E> | ReadableProp<EventCallback<E>> | undefined>
 ): (e: E) => void {
 	return function (this: T, e: E) {
 		for (const handler of handlers) {
