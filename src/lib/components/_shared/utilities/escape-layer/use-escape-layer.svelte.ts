@@ -1,5 +1,5 @@
+import { untrack } from "svelte";
 import { DOMContext, type WritableProp, type ReadableProp, type ReadableProps } from '$lib/vendor/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import { on } from 'svelte/events';
 import type { EscapeBehaviorType, EscapeLayerImplProps } from '$lib/components/_shared/utilities/escape-layer/index.js';
 import { kbd } from '$lib/internal/kbd.js';
@@ -22,9 +22,9 @@ export class EscapeLayerState {
 		this.domContext = new DOMContext(this.opts.ref);
 
 		let unsubEvents = () => {};
-		watch(
-			() => opts.enabled.current,
-			(enabled) => {
+		$effect(() => {
+			const enabled = opts.enabled.current;
+			return untrack(() => {
 				if (enabled) {
 					globalThis.bitsEscapeLayers.set(this, opts.escapeKeydownBehavior);
 					unsubEvents = this.#addEventListener();
@@ -34,8 +34,8 @@ export class EscapeLayerState {
 					unsubEvents();
 					globalThis.bitsEscapeLayers.delete(this);
 				};
-			},
-		);
+			});
+		});
 	}
 
 	#addEventListener = () => {

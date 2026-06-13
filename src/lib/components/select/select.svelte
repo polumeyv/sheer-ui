@@ -1,11 +1,9 @@
-<script lang="ts">
+<script lang="ts">import { untrack } from "svelte";
 	import FloatingLayer from '$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte';
 	import { type WritableProp } from '$lib/vendor/index.js';
 	import { SelectRootState } from '$lib/components/select/primitive/select.svelte.js';
 	import type { SelectRootProps } from '$lib/components/select/primitive/index.js';
 	import SelectHiddenInput from '$lib/components/select/primitive/components/select-hidden-input.svelte';
-	import { watch } from "$lib/vendor/watch.svelte.js";
-
 	let {
 		value = $bindable(),
 		onValueChange = (() => {}),
@@ -32,12 +30,12 @@
 	// SSR
 	handleDefaultValue();
 
-	watch.pre(
-		() => value,
-		() => {
+	$effect.pre(() => {
+		void (value);
+		untrack(() => {
 			handleDefaultValue();
-		}
-	);
+		});
+	});
 
 	let inputValue = $state('');
 

@@ -1,7 +1,6 @@
-import { tick } from 'svelte';
+import { tick, untrack } from 'svelte';
 import { type DateValue, endOfMonth, isSameDay, isSameMonth, startOfMonth } from '@internationalized/date';
 import { type ReadableProp, type WritableProp, getDocument, styleToCSS } from '$lib/vendor/index.js';
-import { untrack } from 'svelte';
 import {
 	getDaysInMonth,
 	getLastFirstDayOfWeek,
@@ -18,7 +17,6 @@ import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { chunk, isValidIndex } from '$lib/internal/arrays.js';
 import { kbd } from '$lib/internal/kbd.js';
 import type { DateMatcher, Month } from '$lib/shared/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 
 /**
  * Checks if a given node is a calendar cell element.
@@ -750,9 +748,9 @@ export function useEnsureNonDisabledPlaceholder({
 		return false;
 	}
 
-	watch(
-		() => ref.current,
-		() => {
+	$effect(() => {
+		void (ref.current);
+		untrack(() => {
 			if (!ref.current) return;
 			/**
 			 * If the placeholder is still the default placeholder and it's a disabled date, find
@@ -769,8 +767,8 @@ export function useEnsureNonDisabledPlaceholder({
 			if (placeholder.current && isSameDay(placeholder.current, defaultPlaceholder) && isDisabled(defaultPlaceholder)) {
 				placeholder.current = getFirstNonDisabledDateInView(ref.current) ?? defaultPlaceholder;
 			}
-		},
-	);
+		});
+	});
 }
 
 export function getDateWithPreviousTime(date: DateValue | undefined, prev: DateValue | undefined) {

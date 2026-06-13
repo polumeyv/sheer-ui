@@ -1,7 +1,6 @@
-import { tick } from 'svelte';
+import { tick, untrack } from 'svelte';
 import { createContext, getContext, hasContext, setContext } from 'svelte';
 import { srOnlyStyles, attachRef, type WritableProps, type ReadableProps } from '$lib/vendor/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import { findNextSibling, findPreviousSibling } from '$lib/components/command/primitive/utils.js';
 import type { CommandState } from '$lib/components/command/primitive/index.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
@@ -1162,12 +1161,12 @@ export class CommandGroupContainerState {
 		this.attachment = attachRef(this.opts.ref);
 		this.trueValue = opts.value.current ?? opts.id.current;
 
-		watch(
-			() => this.trueValue,
-			() => {
+		$effect(() => {
+			void (this.trueValue);
+			return untrack(() => {
 				return this.root.registerGroup(this.trueValue);
-			},
-		);
+			});
+		});
 
 		$effect(() => {
 			if (this.opts.value.current) {
@@ -1282,24 +1281,24 @@ export class CommandInputState {
 		this.opts = opts;
 		this.root = root;
 		this.attachment = attachRef(this.opts.ref, (v) => (this.root.inputNode = v));
-		watch(
-			() => this.opts.ref.current,
-			() => {
+		$effect(() => {
+			void (this.opts.ref.current);
+			untrack(() => {
 				const node = this.opts.ref.current;
 				if (node && this.opts.autofocus.current) {
 					setTimeout(() => node.focus(), 10);
 				}
-			},
-		);
+			});
+		});
 
-		watch(
-			() => this.opts.value.current,
-			() => {
+		$effect(() => {
+			void (this.opts.value.current);
+			untrack(() => {
 				if (this.root.commandState.search !== this.opts.value.current) {
 					this.root.setState('search', this.opts.value.current);
 				}
-			},
-		);
+			});
+		});
 	}
 
 	readonly props = $derived.by(
@@ -1367,25 +1366,31 @@ export class CommandItemState {
 		this.trueValue = opts.value.current;
 		this.attachment = attachRef(this.opts.ref);
 
-		watch([() => this.trueValue, () => this.#group?.trueValue, () => this.opts.forceMount.current], () => {
-			if (this.opts.forceMount.current || !this.trueValue) return;
-			return this.root.registerItem(this.trueValue, this.#group?.trueValue);
+		$effect(() => {
+			void [this.trueValue, this.#group?.trueValue, this.opts.forceMount.current];
+			return untrack(() => {
+				if (this.opts.forceMount.current || !this.trueValue) return;
+				return this.root.registerItem(this.trueValue, this.#group?.trueValue);
+			});
 		});
 
-		watch([() => this.opts.value.current, () => this.opts.ref.current], () => {
-			if (this.opts.value.current) {
-				this.trueValue = this.opts.value.current;
-			} else if (this.opts.ref.current?.textContent) {
-				this.trueValue = this.opts.ref.current.textContent.trim();
-			}
+		$effect(() => {
+			void [this.opts.value.current, this.opts.ref.current];
+			untrack(() => {
+				if (this.opts.value.current) {
+					this.trueValue = this.opts.value.current;
+				} else if (this.opts.ref.current?.textContent) {
+					this.trueValue = this.opts.ref.current.textContent.trim();
+				}
 
-			if (this.trueValue) {
-				this.root.registerValue(
-					this.trueValue,
-					opts.keywords.current.map((kw) => kw.trim()),
-				);
-				this.opts.ref.current?.setAttribute(COMMAND_VALUE_ATTR, this.trueValue);
-			}
+				if (this.trueValue) {
+					this.root.registerValue(
+						this.trueValue,
+						opts.keywords.current.map((kw) => kw.trim()),
+					);
+					this.opts.ref.current?.setAttribute(COMMAND_VALUE_ATTR, this.trueValue);
+				}
+			});
 		});
 
 		// bindings
@@ -1582,23 +1587,26 @@ export class CommandViewportState {
 		this.opts = opts;
 		this.list = list;
 		this.attachment = attachRef(this.opts.ref, (v) => (this.list.root.viewportNode = v));
-		watch([() => this.opts.ref.current, () => this.list.opts.ref.current], ([node, listNode]) => {
-			if (node === null || listNode === null) return;
-			let aF: number;
+		$effect(() => {
+			const [node, listNode] = [this.opts.ref.current, this.list.opts.ref.current];
+			return untrack(() => {
+				if (node === null || listNode === null) return;
+				let aF: number;
 
-			const observer = new ResizeObserver(() => {
-				aF = requestAnimationFrame(() => {
-					const height = node.offsetHeight;
-					listNode.style.setProperty('--bits-command-list-height', `${height.toFixed(1)}px`);
+				const observer = new ResizeObserver(() => {
+					aF = requestAnimationFrame(() => {
+						const height = node.offsetHeight;
+						listNode.style.setProperty('--bits-command-list-height', `${height.toFixed(1)}px`);
+					});
 				});
+
+				observer.observe(node);
+
+				return () => {
+					cancelAnimationFrame(aF);
+					observer.unobserve(node);
+				};
 			});
-
-			observer.observe(node);
-
-			return () => {
-				cancelAnimationFrame(aF);
-				observer.unobserve(node);
-			};
 		});
 	}
 

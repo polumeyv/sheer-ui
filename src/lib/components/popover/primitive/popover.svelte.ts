@@ -1,6 +1,5 @@
-import { createContext } from 'svelte';
+import { createContext, untrack } from 'svelte';
 import { type ReadableProps, type WritableProps, attachRef, DOMContext } from '$lib/vendor/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import type {
@@ -70,16 +69,16 @@ export class PopoverRootState {
 			open: this.opts.open,
 		});
 
-		watch(
-			() => this.opts.open.current,
-			(isOpen) => {
+		$effect(() => {
+			const isOpen = this.opts.open.current;
+			untrack(() => {
 				if (!isOpen) {
 					this.openedViaHover = false;
 					this.hasInteractedWithContent = false;
 					this.#clearCloseTimeout();
 				}
-			},
-		);
+			});
+		});
 	}
 
 	setDomContext(ctx: DOMContext) {
@@ -183,12 +182,12 @@ export class PopoverTriggerState {
 		this.onpointerenter = this.onpointerenter.bind(this);
 		this.onpointerleave = this.onpointerleave.bind(this);
 
-		watch(
-			() => this.opts.closeDelay.current,
-			(delay) => {
+		$effect(() => {
+			const delay = this.opts.closeDelay.current;
+			untrack(() => {
 				this.root.closeDelay = delay;
-			},
-		);
+			});
+		});
 	}
 
 	#clearOpenTimeout() {

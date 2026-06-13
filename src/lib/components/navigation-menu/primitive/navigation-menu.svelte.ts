@@ -1,4 +1,4 @@
-import { tick } from 'svelte';
+import { tick, untrack } from 'svelte';
 import { createContext, getContext, hasContext } from 'svelte';
 /**
  * Based on Radix UI's Navigation Menu
@@ -17,8 +17,7 @@ import {
 	writableProp
 } from '$lib/vendor/index.js';
 import { useDebounce } from '$lib/vendor/use-debounce.svelte.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
-import { untrack, type Snippet } from 'svelte';
+import { type Snippet } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
 import { type Direction, type Orientation, useId } from '$lib/shared/index.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
@@ -444,14 +443,14 @@ export class NavigationMenuTriggerState {
 		this.itemContext = context.item;
 		this.listContext = context.list;
 
-		watch(
-			() => this.opts.ref.current,
-			() => {
+		$effect(() => {
+			void (this.opts.ref.current);
+			return untrack(() => {
 				const node = this.opts.ref.current;
 				if (!node) return;
 				return this.listContext.registerTrigger(node);
-			},
-		);
+			});
+		});
 	}
 
 	onpointerenter = (_: BitsPointerEvent<HTMLButtonElement>) => {
@@ -852,22 +851,25 @@ export class NavigationMenuContentImplState {
 		this.context = itemContext.listContext.context;
 		this.domContext = new DOMContext(opts.ref);
 
-		watch([() => this.itemContext.opts.value.current, () => this.itemContext.triggerNode, () => this.opts.ref.current], () => {
-			const content = this.opts.ref.current;
-			if (!(content && this.context.opts.isRootMenu)) return;
+		$effect(() => {
+			void [this.itemContext.opts.value.current, this.itemContext.triggerNode, this.opts.ref.current];
+			return untrack(() => {
+				const content = this.opts.ref.current;
+				if (!(content && this.context.opts.isRootMenu)) return;
 
-			const handleClose = () => {
-				this.context.onItemDismiss();
-				this.itemContext.onRootContentClose();
-				if (content.contains(this.domContext.getActiveElement())) {
-					this.itemContext.triggerNode?.focus();
-				}
-			};
-			const removeListener = ROOT_CONTENT_DISMISS_EVENT.listen(content, handleClose);
+				const handleClose = () => {
+					this.context.onItemDismiss();
+					this.itemContext.onRootContentClose();
+					if (content.contains(this.domContext.getActiveElement())) {
+						this.itemContext.triggerNode?.focus();
+					}
+				};
+				const removeListener = ROOT_CONTENT_DISMISS_EVENT.listen(content, handleClose);
 
-			return () => {
-				removeListener();
-			};
+				return () => {
+					removeListener();
+				};
+			});
 		});
 	}
 
@@ -992,13 +994,16 @@ export class NavigationMenuViewportState {
 		this.context = context;
 		this.attachment = attachRef(this.opts.ref, (v) => (this.context.viewportRef.current = v));
 
-		watch([() => this.activeContentValue, () => this.open], () => {
-			tick().then(() => {
-				const currNode = this.context.viewportRef.current;
-				if (!currNode) return;
-				const el = (currNode.querySelector<HTMLElement>('[data-state=open]')?.children?.[0] as HTMLElement | null) ?? null;
+		$effect(() => {
+			void [this.activeContentValue, this.open];
+			untrack(() => {
+				tick().then(() => {
+					const currNode = this.context.viewportRef.current;
+					if (!currNode) return;
+					const el = (currNode.querySelector<HTMLElement>('[data-state=open]')?.children?.[0] as HTMLElement | null) ?? null;
 
-				this.contentNode = el;
+					this.contentNode = el;
+				});
 			});
 		});
 
@@ -1021,14 +1026,14 @@ export class NavigationMenuViewportState {
 		);
 
 		// reset size when viewport closes to prevent residual size animations
-		watch(
-			() => this.mounted,
-			() => {
+		$effect(() => {
+			void (this.mounted);
+			untrack(() => {
 				if (!this.mounted && this.size) {
 					this.size = null;
 				}
-			},
-		);
+			});
+		});
 	}
 
 	readonly props = $derived.by(

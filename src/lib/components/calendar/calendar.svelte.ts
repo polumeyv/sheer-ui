@@ -1,9 +1,8 @@
-import { createContext } from 'svelte';
+import { createContext, untrack } from 'svelte';
 import { type DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
 import { DEV } from '$lib/vendor/env.js';
-import { onMount, untrack } from 'svelte';
+import { onMount } from 'svelte';
 import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import type { RangeCalendarRootState } from '$lib/components/range-calendar/range-calendar.svelte.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { useId } from '$lib/internal/use-id.js';
@@ -159,21 +158,21 @@ export class CalendarRootState {
 		 * Update the accessible heading's text content when the `fullCalendarLabel`
 		 * changes.
 		 */
-		watch(
-			() => this.fullCalendarLabel,
-			(label) => {
+		$effect(() => {
+			const label = this.fullCalendarLabel;
+			untrack(() => {
 				const node = this.domContext.getElementById(this.accessibleHeadingId);
 				if (!node) return;
 				node.textContent = label;
-			},
-		);
+			});
+		});
 
 		/**
 		 * Synchronize the placeholder value with the current value.
 		 */
-		watch(
-			() => this.opts.value.current,
-			() => {
+		$effect(() => {
+			void (this.opts.value.current);
+			untrack(() => {
 				const value = this.opts.value.current;
 				if (Array.isArray(value) && value.length) {
 					const lastValue = value[value.length - 1];
@@ -183,8 +182,8 @@ export class CalendarRootState {
 				} else if (!Array.isArray(value) && value && this.opts.placeholder.current !== value) {
 					this.opts.placeholder.current = value;
 				}
-			},
-		);
+			});
+		});
 
 		useEnsureNonDisabledPlaceholder({
 			placeholder: opts.placeholder,

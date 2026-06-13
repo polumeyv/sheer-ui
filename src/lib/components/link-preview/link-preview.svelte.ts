@@ -1,6 +1,5 @@
-import { createContext } from 'svelte';
+import { createContext, untrack } from 'svelte';
 import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import { on } from 'svelte/events';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
@@ -57,9 +56,9 @@ export class LinkPreviewRootState {
 			},
 		});
 
-		watch(
-			() => this.opts.open.current,
-			(isOpen) => {
+		$effect(() => {
+			const isOpen = this.opts.open.current;
+			return untrack(() => {
 				if (!isOpen) {
 					this.hasSelection = false;
 					return;
@@ -95,8 +94,8 @@ export class LinkPreviewRootState {
 					this.hasSelection = false;
 					this.isPointerDownOnContent = false;
 				};
-			},
-		);
+			});
+		});
 	}
 
 	clearTimeout() {

@@ -1,6 +1,5 @@
-import { getContext, hasContext, setContext } from 'svelte';
+import { getContext, hasContext, setContext, untrack } from 'svelte';
 import { attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { kbd } from '$lib/internal/kbd.js';
@@ -80,18 +79,22 @@ export class DialogRootState {
 			enabled: true,
 		});
 
-		watch(
-			() => this.opts.open.current,
-			(isOpen) => {
+		let hasMounted = false;
+		$effect(() => {
+			const isOpen = this.opts.open.current;
+			if (!hasMounted) {
+				hasMounted = true;
+				return;
+			}
+			untrack(() => {
 				if (!this.parent) return;
 				if (isOpen) {
 					this.parent.incrementNested();
 				} else {
 					this.parent.decrementNested();
 				}
-			},
-			{ lazy: true },
-		);
+			});
+		});
 
 		$effect(() => () => {
 			if (this.opts.open.current) {
@@ -278,12 +281,12 @@ export class DialogTitleState {
 		this.root.titleId = this.opts.id.current;
 		this.attachment = attachRef(this.opts.ref);
 
-		watch.pre(
-			() => this.opts.id.current,
-			(id) => {
+		$effect.pre(() => {
+			const id = this.opts.id.current;
+			untrack(() => {
 				this.root.titleId = id;
-			},
-		);
+			});
+		});
 	}
 
 	readonly props = $derived.by(
@@ -317,12 +320,12 @@ export class DialogDescriptionState {
 		this.attachment = attachRef(this.opts.ref, (v) => {
 			this.root.descriptionNode = v;
 		});
-		watch.pre(
-			() => this.opts.id.current,
-			(id) => {
+		$effect.pre(() => {
+			const id = this.opts.id.current;
+			untrack(() => {
 				this.root.descriptionId = id;
-			},
-		);
+			});
+		});
 	}
 
 	readonly props = $derived.by(

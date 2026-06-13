@@ -1,4 +1,4 @@
-import { createContext } from 'svelte';
+import { createContext, untrack } from 'svelte';
 import type { Updater } from 'svelte/store';
 import { CalendarDateTime, Time, ZonedDateTime } from '@internationalized/date';
 import {
@@ -9,8 +9,7 @@ import {
 	type WritableProps,
 	writableProp,
 } from '$lib/vendor/index.js';
-import { onMount, untrack } from 'svelte';
-import { watch } from '$lib/vendor/watch.svelte.js';
+import { onMount } from 'svelte';
 import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
@@ -271,14 +270,14 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 			}
 		});
 
-		watch(
-			() => this.validationStatus,
-			() => {
+		$effect(() => {
+			void (this.validationStatus);
+			untrack(() => {
 				if (this.validationStatus !== false) {
 					this.onInvalid.current?.(this.validationStatus.reason, this.validationStatus.message);
 				}
-			},
-		);
+			});
+		});
 	}
 
 	#initializeTimeSegmentValues(): TimeSegmentObj {

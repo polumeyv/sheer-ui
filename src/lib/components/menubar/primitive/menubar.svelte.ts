@@ -1,7 +1,6 @@
-import { tick } from 'svelte';
+import { tick, untrack } from 'svelte';
 import { createContext } from 'svelte';
 import { type ReadableProp, attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import type { InteractOutsideBehaviorType } from '$lib/components/_shared/utilities/dismissible-layer/index.js';
 import type { Direction } from '$lib/shared/index.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
@@ -155,14 +154,14 @@ export class MenubarMenuState {
 		this.opts = opts;
 		this.root = root;
 
-		watch(
-			() => this.open,
-			() => {
+		$effect(() => {
+			void (this.open);
+			untrack(() => {
 				if (!this.open) {
 					this.wasOpenedByKeyboard = false;
 				}
-			},
-		);
+			});
+		});
 
 		onMount(() => {
 			return this.root.registerMenu(this.opts.value.current, opts.onOpenChange);

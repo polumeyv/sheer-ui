@@ -5,9 +5,8 @@
 	type T = unknown;
 </script>
 
-<script lang="ts" generics="T extends TimeValue = Time">
-	import { watch } from "$lib/vendor/watch.svelte.js";
-	import { mergeProps } from "$lib/vendor/index.js";
+<script lang="ts" generics="T extends TimeValue = Time">import { untrack } from "svelte";
+		import { mergeProps } from "$lib/vendor/index.js";
 	import { TimeRangeFieldRootState } from "$lib/components/time-range-field/time-range-field.svelte.js";
 	import type { TimeRangeFieldRootProps } from "$lib/components/time-range-field/index.js";
 	import { createId } from "$lib/internal/create-id.js";
@@ -55,12 +54,12 @@
 	// SSR
 	handleDefaultPlaceholder();
 
-	watch.pre(
-		() => placeholder,
-		() => {
+	$effect.pre(() => {
+		void (placeholder);
+		untrack(() => {
 			handleDefaultPlaceholder();
-		}
-	);
+		});
+	});
 
 	function handleDefaultValue() {
 		if (value !== undefined) return;
@@ -76,12 +75,12 @@
 	 * the props are reset to their default values, which would make value
 	 * undefined which causes errors to be thrown.
 	 */
-	watch.pre(
-		() => value,
-		() => {
+	$effect.pre(() => {
+		void (value);
+		untrack(() => {
 			handleDefaultValue();
-		}
-	);
+		});
+	});
 
 	const rootState = TimeRangeFieldRootState.create({
 		id: { get current() { return id; } },

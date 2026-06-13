@@ -1,6 +1,5 @@
-<script lang="ts">
-	import { watch } from "$lib/vendor/watch.svelte.js";
-	import { mergeProps } from "$lib/vendor/index.js";
+<script lang="ts">import { untrack } from "svelte";
+		import { mergeProps } from "$lib/vendor/index.js";
 	import type { DateValue } from "@internationalized/date";
 	import { DateRangePickerRootState } from "$lib/components/date-range-picker/date-range-picker.svelte.js";
 	import type { DateRangePickerRootProps } from "$lib/components/date-range-picker/index.js";
@@ -74,12 +73,12 @@
 	 * the props are reset to their default values, which would make value
 	 * undefined which causes errors to be thrown.
 	 */
-	watch.pre(
-		() => value,
-		() => {
+	$effect.pre(() => {
+		void (value);
+		untrack(() => {
 			handleDefaultValue();
-		}
-	);
+		});
+	});
 
 	const defaultPlaceholder = getDefaultDate({
 		granularity,
@@ -101,12 +100,12 @@
 	 * the props are reset to their default values, which would make placeholder
 	 * undefined which causes errors to be thrown.
 	 */
-	watch.pre(
-		() => placeholder,
-		() => {
+	$effect.pre(() => {
+		void (placeholder);
+		untrack(() => {
 			handleDefaultPlaceholder();
-		}
-	);
+		});
+	});
 
 	function onRangeSelect() {
 		if (closeOnRangeSelect) {

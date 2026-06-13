@@ -1,4 +1,4 @@
-import { createContext } from 'svelte';
+import { createContext, untrack } from 'svelte';
 import { type Middleware, type Placement, arrow, autoUpdate, flip, hide, limitShift, offset, shift, size } from '@floating-ui/dom';
 import {
 	attachRef,
@@ -11,7 +11,6 @@ import {
 } from '$lib/vendor/index.js';
 import { styleToCSS } from '$lib/vendor/index.js';
 import { ElementSize } from '$lib/vendor/element-size.svelte.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import type { Arrayable, WithRefProps } from '$lib/internal/types.js';
 import { useId } from '$lib/internal/use-id.js';
 import { useFloating } from '$lib/internal/floating-svelte/use-floating.svelte.js';
@@ -238,12 +237,12 @@ export class FloatingContentState {
 			this.root.customAnchorNode.current = opts.customAnchor.current;
 		}
 
-		watch(
-			() => opts.customAnchor.current,
-			(customAnchor) => {
+		$effect(() => {
+			const customAnchor = opts.customAnchor.current;
+			untrack(() => {
 				this.root.customAnchorNode.current = customAnchor;
-			},
-		);
+			});
+		});
 
 		this.floating = useFloating({
 			strategy: () => this.opts.strategy.current,
@@ -266,9 +265,9 @@ export class FloatingContentState {
 			this.opts.onPlaced?.current();
 		});
 
-		watch(
-			() => this.contentRef.current,
-			(contentNode) => {
+		$effect(() => {
+			const contentNode = this.contentRef.current;
+			return untrack(() => {
 				if (!contentNode || !this.opts.enabled.current) return;
 				const win = getWindow(contentNode);
 				const rafId = win.requestAnimationFrame(() => {
@@ -283,8 +282,8 @@ export class FloatingContentState {
 				return () => {
 					win.cancelAnimationFrame(rafId);
 				};
-			},
-		);
+			});
+		});
 
 		$effect(() => {
 			this.floating.floating.current = this.wrapperRef.current;

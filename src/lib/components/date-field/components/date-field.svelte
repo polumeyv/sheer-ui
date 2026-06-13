@@ -1,6 +1,5 @@
-<script lang="ts">
-	import { watch } from "$lib/vendor/watch.svelte.js";
-	import { DateFieldRootState } from "$lib/components/date-field/date-field.svelte.js";
+<script lang="ts">import { untrack } from "svelte";
+		import { DateFieldRootState } from "$lib/components/date-field/date-field.svelte.js";
 	import type { DateFieldRootProps } from "$lib/components/date-field/index.js";
 	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
 	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
@@ -51,12 +50,12 @@
 	 * the props are reset to their default values, which would make placeholder
 	 * undefined which causes errors to be thrown.
 	 */
-	watch.pre(
-		() => placeholder,
-		() => {
+	$effect.pre(() => {
+		void (placeholder);
+		untrack(() => {
 			handleDefaultPlaceholder();
-		}
-	);
+		});
+	});
 
 	DateFieldRootState.create({
 		value: { get current() { return value; }, set current(v) { value = v; onValueChange(v); } },

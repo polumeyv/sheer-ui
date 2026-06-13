@@ -1,10 +1,9 @@
-import { tick } from 'svelte';
+import { tick, untrack } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
 import { type Getter, type ReadableProp } from '$lib/vendor/index.js';
 import type { Fn } from './types.js';
 import { isIOS } from './is.js';
 import { useId } from './use-id.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import { SharedState } from './shared-state.svelte.js';
 import { BROWSER } from '$lib/vendor/env.js';
 import { on } from 'svelte/events';
@@ -93,9 +92,9 @@ const bodyLockStackCount = new SharedState(() => {
 		}
 	}
 
-	watch(
-		() => anyLocked.current,
-		() => {
+	$effect(() => {
+		void (anyLocked.current);
+		untrack(() => {
 			if (!anyLocked.current) return;
 
 			// ensure we've captured the initial style before applying any lock styles
@@ -154,8 +153,8 @@ const bodyLockStackCount = new SharedState(() => {
 				document.body.style.pointerEvents = 'none';
 				document.body.style.overflow = 'hidden';
 			});
-		},
-	);
+		});
+	});
 
 	$effect(() => () => {
 		return () => {

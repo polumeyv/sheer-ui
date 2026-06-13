@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { getAllContexts, mount, unmount } from "svelte";
+	import { getAllContexts, mount, unmount, untrack } from "svelte";
 	import { DEV } from "$lib/vendor/env.js";
-	import { watch } from "$lib/vendor/watch.svelte.js";
 	import PortalConsumer from "$lib/components/_shared/utilities/portal/portal-consumer.svelte";
 	import type { PortalProps } from "$lib/components/_shared/utilities/portal/index.js";
 	import { resolvePortalToProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
@@ -47,20 +46,23 @@
 		}
 	}
 
-	watch([() => target, () => disabled], ([target, disabled]) => {
-		if (!target || disabled) {
-			unmountInstance();
-			return;
-		}
-		instance = mount(PortalConsumer, {
-			target: target,
-			props: { children },
-			context,
-		});
+	$effect(() => {
+		void [target, disabled];
+		return untrack(() => {
+			if (!target || disabled) {
+				unmountInstance();
+				return;
+			}
+			instance = mount(PortalConsumer, {
+				target: target,
+				props: { children },
+				context,
+			});
 
-		return () => {
-			unmountInstance();
-		};
+			return () => {
+				unmountInstance();
+			};
+		});
 	});
 </script>
 

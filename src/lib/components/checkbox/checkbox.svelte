@@ -1,10 +1,9 @@
-<script lang="ts">
+<script lang="ts">import { untrack } from "svelte";
 	import { mergeProps } from '$lib/vendor/index.js';
 	import type { CheckboxRootProps } from '$lib/components/checkbox/primitive/index.js';
 	import { getCheckboxGroupContextOr, CheckboxRootState } from '$lib/components/checkbox/primitive/checkbox.svelte.js';
 	import CheckboxInput from '$lib/components/checkbox/primitive/components/checkbox-input.svelte';
 	import { createId } from '$lib/internal/create-id.js';
-	import { watch } from "$lib/vendor/watch.svelte.js";
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
@@ -38,9 +37,9 @@
 		}
 	}
 
-	watch.pre(
-		() => value,
-		() => {
+	$effect.pre(() => {
+		void (value);
+		untrack(() => {
 			if (group && value) {
 				if (group.opts.value.current.includes(value)) {
 					checked = true;
@@ -48,8 +47,8 @@
 					checked = false;
 				}
 			}
-		}
-	);
+		});
+	});
 
 	const rootState = CheckboxRootState.create(
 		{

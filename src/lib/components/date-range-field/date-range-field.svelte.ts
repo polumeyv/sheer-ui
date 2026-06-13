@@ -1,7 +1,6 @@
-import { createContext } from 'svelte';
+import { createContext, untrack } from 'svelte';
 import type { DateValue } from '@internationalized/date';
 import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import { DateFieldInputState, DateFieldRootState } from '$lib/components/date-field/date-field.svelte.js';
 import { useId } from '$lib/internal/use-id.js';
 import type { DateOnInvalid, DateRange, DateRangeValidator, SegmentPart } from '$lib/shared/index.js';
@@ -87,9 +86,9 @@ export class DateRangeFieldRootState {
 		 * Synchronize the start and end values with the `value` in case
 		 * it is updated externally.
 		 */
-		watch(
-			() => this.opts.value.current,
-			(value) => {
+		$effect(() => {
+			const value = this.opts.value.current;
+			untrack(() => {
 				if (value.start && value.end) {
 					this.opts.startValue.current = value.start;
 					this.opts.endValue.current = value.end;
@@ -100,41 +99,44 @@ export class DateRangeFieldRootState {
 					this.opts.startValue.current = undefined;
 					this.opts.endValue.current = undefined;
 				}
-			},
-		);
+			});
+		});
 
 		/**
 		 * Synchronize the placeholder value with the current start value
 		 */
-		watch(
-			() => this.opts.value.current,
-			(value) => {
+		$effect(() => {
+			const value = this.opts.value.current;
+			untrack(() => {
 				const startValue = value.start;
 				if (startValue && this.opts.placeholder.current !== startValue) {
 					this.opts.placeholder.current = startValue;
 				}
-			},
-		);
+			});
+		});
 
-		watch([() => this.opts.startValue.current, () => this.opts.endValue.current], ([startValue, endValue]) => {
-			if (this.opts.value.current && this.opts.value.current.start === startValue && this.opts.value.current.end === endValue) {
-				return;
-			}
+		$effect(() => {
+			const [startValue, endValue] = [this.opts.startValue.current, this.opts.endValue.current];
+			untrack(() => {
+				if (this.opts.value.current && this.opts.value.current.start === startValue && this.opts.value.current.end === endValue) {
+					return;
+				}
 
-			if (startValue && endValue) {
-				this.#updateValue((prev) => {
-					if (prev.start === startValue && prev.end === endValue) {
-						return prev;
-					}
-					return {
-						start: startValue,
-						end: endValue,
-					};
-				});
-			} else if (this.opts.value.current && this.opts.value.current.start && this.opts.value.current.end) {
-				this.opts.value.current.start = undefined;
-				this.opts.value.current.end = undefined;
-			}
+				if (startValue && endValue) {
+					this.#updateValue((prev) => {
+						if (prev.start === startValue && prev.end === endValue) {
+							return prev;
+						}
+						return {
+							start: startValue,
+							end: endValue,
+						};
+					});
+				} else if (this.opts.value.current && this.opts.value.current.start && this.opts.value.current.end) {
+					this.opts.value.current.start = undefined;
+					this.opts.value.current.end = undefined;
+				}
+			});
 		});
 	}
 

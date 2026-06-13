@@ -1,4 +1,4 @@
-import { createContext } from 'svelte';
+import { createContext, untrack } from 'svelte';
 import type { Updater } from 'svelte/store';
 import type { DateValue } from '@internationalized/date';
 import {
@@ -9,8 +9,7 @@ import {
 	type WritableProps,
 	writableProp,
 } from '$lib/vendor/index.js';
-import { onMount, untrack } from 'svelte';
-import { watch } from '$lib/vendor/watch.svelte.js';
+import { onMount } from 'svelte';
 import type { DateRangeFieldRootState } from '$lib/components/date-range-field/date-range-field.svelte.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, WithRefProps, RefAttachment } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
@@ -290,14 +289,14 @@ export class DateFieldRootState {
 			}
 		});
 
-		watch(
-			() => this.validationStatus,
-			() => {
+		$effect(() => {
+			void (this.validationStatus);
+			untrack(() => {
 				if (this.validationStatus !== false) {
 					this.onInvalid.current?.(this.validationStatus.reason, this.validationStatus.message);
 				}
-			},
-		);
+			});
+		});
 	}
 
 	setName(name: string) {
@@ -715,12 +714,12 @@ export class DateFieldInputState {
 		this.root.domContext = this.domContext;
 		this.attachment = attachRef(opts.ref, (v) => this.root.setFieldNode(v));
 
-		watch(
-			() => this.opts.name.current,
-			(v) => {
+		$effect(() => {
+			const v = this.opts.name.current;
+			untrack(() => {
 				this.root.setName(v);
-			},
-		);
+			});
+		});
 	}
 
 	readonly #ariaDescribedBy = $derived.by(() => {

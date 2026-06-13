@@ -1,6 +1,5 @@
-<script lang="ts">
-	import { watch } from "$lib/vendor/watch.svelte.js";
-	import { mergeProps } from "$lib/vendor/index.js";
+<script lang="ts">import { untrack } from "svelte";
+		import { mergeProps } from "$lib/vendor/index.js";
 	import { type DateValue } from "@internationalized/date";
 	import type { RangeCalendarRootProps } from "$lib/components/range-calendar/index.js";
 	import { RangeCalendarRootState } from "$lib/components/range-calendar/range-calendar.svelte.js";
@@ -61,12 +60,12 @@
 	// SSR
 	handleDefaultPlaceholder();
 
-	watch.pre(
-		() => placeholder,
-		() => {
+	$effect.pre(() => {
+		void (placeholder);
+		untrack(() => {
 			handleDefaultPlaceholder();
-		}
-	);
+		});
+	});
 
 	function handleDefaultValue() {
 		if (value !== undefined) return;
@@ -76,12 +75,12 @@
 	// SSR
 	handleDefaultValue();
 
-	watch.pre(
-		() => value,
-		() => {
+	$effect.pre(() => {
+		void (value);
+		untrack(() => {
 			handleDefaultValue();
-		}
-	);
+		});
+	});
 
 	const rootState = RangeCalendarRootState.create({
 		id: { get current() { return id; } },

@@ -1,10 +1,8 @@
-<script lang="ts">
+<script lang="ts">import { untrack } from "svelte";
 	import { mergeProps } from "$lib/vendor/index.js";
 	import type { MenuCheckboxItemProps } from "$lib/components/_shared/menu/index.js";
 	import { getMenuCheckboxGroupContextOr, MenuCheckboxItemState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { watch } from "$lib/vendor/watch.svelte.js";
-
 	const uid = $props.id();
 
 	let {
@@ -33,9 +31,9 @@
 		}
 	}
 
-	watch.pre(
-		() => value,
-		() => {
+	$effect.pre(() => {
+		void (value);
+		untrack(() => {
 			if (group && value) {
 				if (group.opts.value.current.includes(value)) {
 					checked = true;
@@ -43,8 +41,8 @@
 					checked = false;
 				}
 			}
-		}
-	);
+		});
+	});
 
 	const checkboxItemState = MenuCheckboxItemState.create(
 		{

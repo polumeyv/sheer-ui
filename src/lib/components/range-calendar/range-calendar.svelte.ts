@@ -1,7 +1,6 @@
-import { createContext } from 'svelte';
+import { createContext, untrack } from 'svelte';
 import { type DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
 import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import { getCalendarRootContext, setCalendarRootContext } from '$lib/components/calendar/calendar.svelte.js';
 import type { DateRange, Month } from '$lib/shared/index.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
@@ -27,7 +26,7 @@ import {
 } from '$lib/internal/date-time/calendar-helpers.svelte.js';
 import { areAllDaysBetweenValid, getDateValueType, isAfter, isBefore, isBetweenInclusive, toDate } from '$lib/internal/date-time/utils.js';
 import type { WeekStartsOn } from '$lib/shared/date/types.js';
-import { onMount, untrack } from 'svelte';
+import { onMount } from 'svelte';
 
 const [getRangeCalendarCellContext, setRangeCalendarCellContext] = createContext<RangeCalendarCellState>();
 
@@ -246,9 +245,9 @@ export class RangeCalendarRootState {
 		 * Synchronize the start and end values with the `value` in case
 		 * it is updated externally.
 		 */
-		watch(
-			() => this.opts.value.current,
-			(value) => {
+		$effect(() => {
+			const value = this.opts.value.current;
+			untrack(() => {
 				if (value.start && value.end) {
 					this.opts.startValue.current = value.start;
 					this.opts.endValue.current = value.end;
@@ -259,28 +258,28 @@ export class RangeCalendarRootState {
 					this.opts.startValue.current = undefined;
 					this.opts.endValue.current = undefined;
 				}
-			},
-		);
+			});
+		});
 
 		/**
 		 * Synchronize the placeholder value with the current start value
 		 */
-		watch(
-			() => this.opts.value.current,
-			(value) => {
+		$effect(() => {
+			const value = this.opts.value.current;
+			untrack(() => {
 				const startValue = value.start;
 				if (startValue && this.opts.placeholder.current !== startValue) {
 					this.opts.placeholder.current = startValue;
 				}
-			},
-		);
+			});
+		});
 
 		/**
 		 * Check for disabled dates in the selected range when excludeDisabled is enabled
 		 */
-		watch(
-			[() => this.opts.startValue.current, () => this.opts.endValue.current, () => this.opts.excludeDisabled.current],
-			([startValue, endValue, excludeDisabled]) => {
+		$effect(() => {
+			const [startValue, endValue, excludeDisabled] = [this.opts.startValue.current, this.opts.endValue.current, this.opts.excludeDisabled.current];
+			untrack(() => {
 				if (!excludeDisabled || !startValue || !endValue) return;
 
 				if (this.#hasDisabledDatesInRange(startValue, endValue)) {
@@ -288,46 +287,49 @@ export class RangeCalendarRootState {
 					this.#setEndValue(undefined);
 					this.#announceEmpty();
 				}
-			},
-		);
+			});
+		});
 
-		watch([() => this.opts.startValue.current, () => this.opts.endValue.current], ([startValue, endValue]) => {
-			if (this.opts.value.current && this.opts.value.current.start === startValue && this.opts.value.current.end === endValue) {
-				return;
-			}
+		$effect(() => {
+			const [startValue, endValue] = [this.opts.startValue.current, this.opts.endValue.current];
+			untrack(() => {
+				if (this.opts.value.current && this.opts.value.current.start === startValue && this.opts.value.current.end === endValue) {
+					return;
+				}
 
-			if (startValue && endValue) {
-				this.#updateValue((prev) => {
-					if (prev.start === startValue && prev.end === endValue) {
-						return prev;
-					}
-					if (isBefore(endValue, startValue)) {
-						const start = startValue;
-						const end = endValue;
-						this.#setStartValue(end);
-						this.#setEndValue(start);
-						if (!this.#isRangeValid(endValue, startValue)) {
-							this.#setStartValue(startValue);
-							this.#setEndValue(undefined);
-							return { start: startValue, end: undefined };
+				if (startValue && endValue) {
+					this.#updateValue((prev) => {
+						if (prev.start === startValue && prev.end === endValue) {
+							return prev;
 						}
-						return { start: endValue, end: startValue };
-					} else {
-						if (!this.#isRangeValid(startValue, endValue)) {
-							this.#setStartValue(endValue);
-							this.#setEndValue(undefined);
-							return { start: endValue, end: undefined };
+						if (isBefore(endValue, startValue)) {
+							const start = startValue;
+							const end = endValue;
+							this.#setStartValue(end);
+							this.#setEndValue(start);
+							if (!this.#isRangeValid(endValue, startValue)) {
+								this.#setStartValue(startValue);
+								this.#setEndValue(undefined);
+								return { start: startValue, end: undefined };
+							}
+							return { start: endValue, end: startValue };
+						} else {
+							if (!this.#isRangeValid(startValue, endValue)) {
+								this.#setStartValue(endValue);
+								this.#setEndValue(undefined);
+								return { start: endValue, end: undefined };
+							}
+							return {
+								start: startValue,
+								end: endValue,
+							};
 						}
-						return {
-							start: startValue,
-							end: endValue,
-						};
-					}
-				});
-			} else if (this.opts.value.current && this.opts.value.current.start && this.opts.value.current.end) {
-				this.opts.value.current.start = undefined;
-				this.opts.value.current.end = undefined;
-			}
+					});
+				} else if (this.opts.value.current && this.opts.value.current.start && this.opts.value.current.end) {
+					this.opts.value.current.start = undefined;
+					this.opts.value.current.end = undefined;
+				}
+			});
 		});
 
 		this.shiftFocus = this.shiftFocus.bind(this);

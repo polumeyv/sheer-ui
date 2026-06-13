@@ -1,6 +1,5 @@
 import { Previous } from '$lib/vendor/previous.svelte.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
-import { onMount } from 'svelte';
+import { onMount, untrack } from 'svelte';
 import {
 	type WritableProp,
 	attachRef,
@@ -162,23 +161,26 @@ export class PinInputRootState {
 			};
 		});
 
-		watch([() => this.opts.value.current, () => this.opts.inputRef.current], () => {
-			syncTimeouts(() => {
-				const input = this.opts.inputRef.current;
-				if (!input) return;
-				// forcefully remove :autofill state
-				input.dispatchEvent(new Event('input'));
+		$effect(() => {
+			void [this.opts.value.current, this.opts.inputRef.current];
+			untrack(() => {
+				syncTimeouts(() => {
+					const input = this.opts.inputRef.current;
+					if (!input) return;
+					// forcefully remove :autofill state
+					input.dispatchEvent(new Event('input'));
 
-				// update selection state
-				const start = input.selectionStart;
-				const end = input.selectionEnd;
-				const dir = input.selectionDirection ?? 'none';
-				if (start !== null && end !== null) {
-					this.#mirrorSelectionStart = start;
-					this.#mirrorSelectionEnd = end;
-					this.#prevInputMetadata.prev = [start, end, dir];
-				}
-			}, this.domContext);
+					// update selection state
+					const start = input.selectionStart;
+					const end = input.selectionEnd;
+					const dir = input.selectionDirection ?? 'none';
+					if (start !== null && end !== null) {
+						this.#mirrorSelectionStart = start;
+						this.#mirrorSelectionEnd = end;
+						this.#prevInputMetadata.prev = [start, end, dir];
+					}
+				}, this.domContext);
+			});
 		});
 
 		$effect(() => {

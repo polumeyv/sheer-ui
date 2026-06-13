@@ -1,6 +1,6 @@
+import { untrack } from "svelte";
 import { DOMContext, type ReadableProp, type ReadableProps, composeHandlers, contains } from '$lib/vendor/index.js';
 import { executeCallbacks } from '$lib/vendor/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import { on } from 'svelte/events';
 import type { PointerHandler, TextSelectionLayerImplProps } from '$lib/components/_shared/utilities/text-selection-layer/index.js';
 
@@ -31,9 +31,9 @@ export class TextSelectionLayerState {
 
 		let unsubEvents = () => {};
 
-		watch(
-			() => [this.opts.enabled.current, this.opts.onPointerDown.current, this.opts.onPointerUp.current] as const,
-			([enabled, onPointerDown, onPointerUp]) => {
+		$effect(() => {
+			const [enabled, onPointerDown, onPointerUp] = [this.opts.enabled.current, this.opts.onPointerDown.current, this.opts.onPointerUp.current] as const;
+			return untrack(() => {
 				this.#enabledSnapshot = enabled;
 				this.#onPointerDownSnapshot = onPointerDown;
 				this.#onPointerUpSnapshot = onPointerUp;
@@ -49,8 +49,8 @@ export class TextSelectionLayerState {
 					this.#resetSelectionLock();
 					globalThis.bitsTextSelectionLayers.delete(this);
 				};
-			},
-		);
+			});
+		});
 	}
 
 	#addEventListeners() {

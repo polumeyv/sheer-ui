@@ -1,4 +1,4 @@
-import { createContext } from 'svelte';
+import { createContext, untrack } from 'svelte';
 import { executeCallbacks } from '$lib/vendor/index.js';
 /**
  * This logic is adapted from Radix UI ScrollArea component.
@@ -8,8 +8,6 @@ import { executeCallbacks } from '$lib/vendor/index.js';
  */
 
 import { useDebounce } from '$lib/vendor/use-debounce.svelte.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
-import { untrack } from 'svelte';
 import { writableProp, attachRef, DOMContext, getWindow, type ReadableProps } from '$lib/vendor/index.js';
 import type { ScrollAreaType } from '$lib/components/scroll-area/primitive/index.js';
 import type { BitsPointerEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
@@ -194,9 +192,9 @@ export class ScrollAreaScrollbarState {
 		this.opts = opts;
 		this.root = root;
 
-		watch(
-			() => this.isHorizontal,
-			(isHorizontal) => {
+		$effect(() => {
+			const isHorizontal = this.isHorizontal;
+			untrack(() => {
 				if (isHorizontal) {
 					this.root.scrollbarXEnabled = true;
 					return () => {
@@ -208,8 +206,8 @@ export class ScrollAreaScrollbarState {
 						this.root.scrollbarYEnabled = false;
 					};
 				}
-			},
-		);
+			});
+		});
 	}
 }
 

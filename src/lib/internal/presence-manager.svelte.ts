@@ -1,4 +1,4 @@
-import { watch } from '$lib/vendor/watch.svelte.js';
+import { untrack } from "svelte";
 import { type ReadableProps } from '$lib/vendor/index.js';
 import { AnimationsComplete } from './animations-complete.js';
 import type { TransitionState } from './attrs.js';
@@ -31,9 +31,9 @@ export class PresenceManager {
 		});
 		$effect(() => () => this.#clearTransitionFrame());
 
-		watch(
-			() => this.#opts.open.current,
-			(isOpen) => {
+		$effect(() => {
+			const isOpen = this.#opts.open.current;
+			untrack(() => {
 				if (!this.#hasMounted) {
 					this.#hasMounted = true;
 					return;
@@ -77,8 +77,8 @@ export class PresenceManager {
 						this.#opts.onComplete?.();
 					}
 				});
-			},
-		);
+			});
+		});
 	}
 
 	get shouldRender() {

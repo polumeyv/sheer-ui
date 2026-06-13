@@ -1,7 +1,6 @@
-import { createContext } from 'svelte';
+import { createContext, untrack } from 'svelte';
 import { DOMContext, type ReadableProp, type WritableProp, attachRef, type ReadableProps } from '$lib/vendor/index.js';
 import type { HTMLImgAttributes } from 'svelte/elements';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import type { AvatarImageLoadingStatus } from '$lib/components/avatar/primitive/index.js';
 import type { RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
@@ -95,12 +94,15 @@ export class AvatarImageState {
 		this.root = root;
 		this.attachment = attachRef(this.opts.ref);
 
-		watch.pre([() => this.opts.src.current, () => this.opts.crossOrigin.current], ([src, crossOrigin]) => {
-			if (!src) {
-				this.root.opts.loadingStatus.current = 'error';
-				return;
-			}
-			this.root.loadImage(src, crossOrigin, this.opts.referrerPolicy.current);
+		$effect.pre(() => {
+			const [src, crossOrigin] = [this.opts.src.current, this.opts.crossOrigin.current];
+			untrack(() => {
+				if (!src) {
+					this.root.opts.loadingStatus.current = 'error';
+					return;
+				}
+				this.root.loadImage(src, crossOrigin, this.opts.referrerPolicy.current);
+			});
 		});
 	}
 

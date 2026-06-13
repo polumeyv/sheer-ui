@@ -1,7 +1,6 @@
 import { createContext, untrack } from 'svelte';
 import { attachRef, DOMContext, type WritableProps, type ReadableProps, writableProp } from '$lib/vendor/index.js';
 import { on } from 'svelte/events';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import type { AnyFn, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import type { FocusEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
@@ -324,45 +323,49 @@ export class TooltipRootState {
 			},
 		});
 
-		watch(
-			() => this.delayDuration,
-			() => {
+		$effect(() => {
+			void (this.delayDuration);
+			untrack(() => {
 				if (this.delayDuration === undefined) return;
 				this.#timerFn = new TimeoutFn(() => {
 					this.#wasOpenDelayed = true;
 					this.opts.open.current = true;
 				}, this.delayDuration);
-			},
-		);
+			});
+		});
 
-		watch(
-			() => this.opts.open.current,
-			(isOpen) => {
+		let hasMounted = false;
+		$effect(() => {
+			const isOpen = this.opts.open.current;
+			if (!hasMounted) {
+				hasMounted = true;
+				return;
+			}
+			untrack(() => {
 				if (isOpen) {
 					this.ensureActiveTrigger();
 					this.provider.onOpen(this);
 				} else {
 					this.provider.onClose(this);
 				}
-			},
-			{ lazy: true },
-		);
+			});
+		});
 
-		watch(
-			() => this.opts.triggerId.current,
-			(triggerId) => {
+		$effect(() => {
+			const triggerId = this.opts.triggerId.current;
+			untrack(() => {
 				if (triggerId === this.registry.activeTriggerId) return;
 				this.registry.setActiveTrigger(triggerId);
-			},
-		);
+			});
+		});
 
-		watch(
-			() => this.registry.activeTriggerId,
-			(activeTriggerId) => {
+		$effect(() => {
+			const activeTriggerId = this.registry.activeTriggerId;
+			untrack(() => {
 				if (this.opts.triggerId.current === activeTriggerId) return;
 				this.opts.triggerId.current = activeTriggerId;
-			},
-		);
+			});
+		});
 	}
 
 	handleOpen = () => {
@@ -501,24 +504,24 @@ export class TooltipTriggerState {
 		this.domContext = new DOMContext(opts.ref);
 		this.attachment = attachRef(this.opts.ref, (v) => this.#register(v));
 
-		watch(
-			() => this.opts.id.current,
-			() => {
+		$effect(() => {
+			void (this.opts.id.current);
+			untrack(() => {
 				this.#register(this.opts.ref.current);
-			},
-		);
-		watch(
-			() => this.opts.payload.current,
-			() => {
+			});
+		});
+		$effect(() => {
+			void (this.opts.payload.current);
+			untrack(() => {
 				this.#register(this.opts.ref.current);
-			},
-		);
-		watch(
-			() => this.opts.disabled.current,
-			() => {
+			});
+		});
+		$effect(() => {
+			void (this.opts.disabled.current);
+			untrack(() => {
 				this.#register(this.opts.ref.current);
-			},
-		);
+			});
+		});
 
 		$effect(() =>
 			untrack(() => {

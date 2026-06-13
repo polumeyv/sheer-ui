@@ -1,8 +1,8 @@
+import { untrack } from "svelte";
 import { type ReadableProps } from '$lib/vendor/index.js';
 import { FocusScopeManager } from '$lib/components/_shared/utilities/focus-scope/focus-scope-manager.js';
 import { focusable, isFocusable, tabbable } from 'tabbable';
 import { on } from 'svelte/events';
-import { watch } from '$lib/vendor/watch.svelte.js';
 
 interface FocusScopeOpts extends ReadableProps<{
 	onOpenAutoFocus: (event: Event) => void;
@@ -226,16 +226,19 @@ export class FocusScope {
 	static use(opts: FocusScopeUseOpts) {
 		let scope: FocusScope | null = null;
 
-		watch([() => opts.ref.current, () => opts.enabled.current], ([ref, enabled]) => {
-			if (ref && enabled) {
-				if (!scope) {
-					scope = new FocusScope(opts);
+		$effect(() => {
+			const [ref, enabled] = [opts.ref.current, opts.enabled.current];
+			untrack(() => {
+				if (ref && enabled) {
+					if (!scope) {
+						scope = new FocusScope(opts);
+					}
+					scope.mount(ref);
+				} else if (scope) {
+					scope.unmount();
+					scope = null;
 				}
-				scope.mount(ref);
-			} else if (scope) {
-				scope.unmount();
-				scope = null;
-			}
+			});
 		});
 
 		$effect(() => () => {

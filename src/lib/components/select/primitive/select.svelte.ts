@@ -1,6 +1,5 @@
-import { tick } from 'svelte';
+import { tick, untrack } from 'svelte';
 import { createContext } from 'svelte';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import { attachRef, DOMContext, type ReadableProps, type WritableProps, type WritableProp } from '$lib/vendor/index.js';
 import { on } from 'svelte/events';
 import { backward, forward, next, prev } from '$lib/internal/arrays.js';
@@ -256,13 +255,13 @@ export class SelectSingleRootState extends SelectBaseRootState {
 			}
 		});
 
-		watch(
-			() => this.opts.open.current,
-			() => {
+		$effect(() => {
+			void (this.opts.open.current);
+			untrack(() => {
 				if (!this.opts.open.current) return;
 				this.setInitialHighlightedNode();
-			},
-		);
+			});
+		});
 	}
 
 	includesItem(itemValue: string) {
@@ -316,13 +315,13 @@ class SelectMultipleRootState extends SelectBaseRootState {
 			}
 		});
 
-		watch(
-			() => this.opts.open.current,
-			() => {
+		$effect(() => {
+			void (this.opts.open.current);
+			untrack(() => {
 				if (!this.opts.open.current) return;
 				this.setInitialHighlightedNode();
-			},
-		);
+			});
+		});
 	}
 
 	includesItem(itemValue: string) {
@@ -487,15 +486,22 @@ export class SelectInputState {
 		this.onkeydown = this.onkeydown.bind(this);
 		this.oninput = this.oninput.bind(this);
 
-		watch([() => this.root.opts.value.current, () => this.opts.clearOnDeselect.current], ([value, clearOnDeselect], [prevValue]) => {
-			if (!clearOnDeselect) return;
-			if (Array.isArray(value) && Array.isArray(prevValue)) {
-				if (value.length === 0 && prevValue.length !== 0) {
+		let prevValues: unknown[] = [];
+		$effect(() => {
+			const value = this.root.opts.value.current;
+			const clearOnDeselect = this.opts.clearOnDeselect.current;
+			const [prevValue] = prevValues;
+			untrack(() => {
+				if (!clearOnDeselect) return;
+				if (Array.isArray(value) && Array.isArray(prevValue)) {
+					if (value.length === 0 && prevValue.length !== 0) {
+						this.root.opts.inputValue.current = '';
+					}
+				} else if (value === '' && prevValue !== '') {
 					this.root.opts.inputValue.current = '';
 				}
-			} else if (value === '' && prevValue !== '') {
-				this.root.opts.inputValue.current = '';
-			}
+			});
+			prevValues = [value, clearOnDeselect];
 		});
 	}
 
@@ -954,18 +960,21 @@ export class SelectContentState {
 			this.isPositioned = false;
 		});
 
-		watch(
-			() => this.root.opts.open.current,
-			() => {
+		$effect(() => {
+			void (this.root.opts.open.current);
+			untrack(() => {
 				if (this.root.opts.open.current) return;
 				this.root.contentIsPositioned = false;
 				this.isPositioned = false;
-			},
-		);
+			});
+		});
 
-		watch([() => this.isPositioned, () => this.root.highlightedNode], () => {
-			if (!this.isPositioned || !this.root.highlightedNode) return;
-			this.root.scrollHighlightedNodeIntoView(this.root.highlightedNode);
+		$effect(() => {
+			void [this.isPositioned, this.root.highlightedNode];
+			untrack(() => {
+				if (!this.isPositioned || !this.root.highlightedNode) return;
+				this.root.scrollHighlightedNodeIntoView(this.root.highlightedNode);
+			});
 		});
 
 		this.onpointermove = this.onpointermove.bind(this);
@@ -1079,24 +1088,27 @@ export class SelectItemState {
 		this.root = root;
 		this.attachment = attachRef(opts.ref);
 
-		watch(
-			() => this.isHighlighted,
-			(isHighlighted, wasHighlighted) => {
+		let wasHighlightedPrev: boolean | undefined = undefined;
+		$effect(() => {
+			const isHighlighted = this.isHighlighted;
+			const wasHighlighted = wasHighlightedPrev;
+			untrack(() => {
 				if (isHighlighted) {
 					this.opts.onHighlight.current();
 				} else if (wasHighlighted) {
 					this.opts.onUnhighlight.current();
 				}
-			},
-		);
+			});
+			wasHighlightedPrev = isHighlighted;
+		});
 
-		watch(
-			() => this.mounted,
-			() => {
+		$effect(() => {
+			void (this.mounted);
+			untrack(() => {
 				if (!this.mounted) return;
 				this.root.setInitialHighlightedNode();
-			},
-		);
+			});
+		});
 
 		this.onpointerdown = this.onpointerdown.bind(this);
 		this.onpointerup = this.onpointerup.bind(this);
@@ -1360,12 +1372,15 @@ export class SelectScrollButtonImplState {
 		this.root = content.root;
 		this.attachment = attachRef(opts.ref);
 
-		watch([() => this.mounted], () => {
-			if (!this.mounted) {
-				this.isUserScrolling = false;
-				return;
-			}
-			if (this.isUserScrolling) return;
+		$effect(() => {
+			void [this.mounted];
+			untrack(() => {
+				if (!this.mounted) {
+					this.isUserScrolling = false;
+					return;
+				}
+				if (this.isUserScrolling) return;
+			});
 		});
 
 		$effect(() => {
@@ -1441,25 +1456,31 @@ export class SelectScrollDownButtonState {
 		this.root = scrollButtonState.root;
 		this.scrollButtonState.onAutoScroll = this.handleAutoScroll;
 
-		watch([() => this.root.viewportNode, () => this.content.isPositioned], () => {
-			if (!this.root.viewportNode || !this.content.isPositioned) return;
-			this.handleScroll(true);
+		$effect(() => {
+			void [this.root.viewportNode, this.content.isPositioned];
+			return untrack(() => {
+				if (!this.root.viewportNode || !this.content.isPositioned) return;
+				this.handleScroll(true);
 
-			return on(this.root.viewportNode, 'scroll', () => this.handleScroll());
+				return on(this.root.viewportNode, 'scroll', () => this.handleScroll());
+			});
 		});
 
 		/**
 		 * If the input value changes, this means that the filtered items may have changed,
 		 * so we need to re-evaluate the scroll-ability of the list.
 		 */
-		watch([() => this.root.opts.inputValue.current, () => this.root.viewportNode, () => this.content.isPositioned], () => {
-			if (!this.root.viewportNode || !this.content.isPositioned) return;
-			this.handleScroll(true);
+		$effect(() => {
+			void [this.root.opts.inputValue.current, this.root.viewportNode, this.content.isPositioned];
+			untrack(() => {
+				if (!this.root.viewportNode || !this.content.isPositioned) return;
+				this.handleScroll(true);
+			});
 		});
 
-		watch(
-			() => this.scrollButtonState.mounted,
-			() => {
+		$effect(() => {
+			void (this.scrollButtonState.mounted);
+			untrack(() => {
 				if (!this.scrollButtonState.mounted) return;
 				if (this.scrollIntoViewTimer) {
 					clearTimeout(this.scrollIntoViewTimer);
@@ -1469,8 +1490,8 @@ export class SelectScrollDownButtonState {
 					if (!activeItem) return;
 					this.root.scrollHighlightedNodeIntoView(activeItem);
 				}, 5);
-			},
-		);
+			});
+		});
 	}
 	/**
 	 * @param manual - if true, it means the function was invoked manually outside of an event
@@ -1518,11 +1539,14 @@ export class SelectScrollUpButtonState {
 		this.root = scrollButtonState.root;
 		this.scrollButtonState.onAutoScroll = this.handleAutoScroll;
 
-		watch([() => this.root.viewportNode, () => this.content.isPositioned], () => {
-			if (!this.root.viewportNode || !this.content.isPositioned) return;
+		$effect(() => {
+			void [this.root.viewportNode, this.content.isPositioned];
+			return untrack(() => {
+				if (!this.root.viewportNode || !this.content.isPositioned) return;
 
-			this.handleScroll(true);
-			return on(this.root.viewportNode, 'scroll', () => this.handleScroll());
+				this.handleScroll(true);
+				return on(this.root.viewportNode, 'scroll', () => this.handleScroll());
+			});
 		});
 	}
 

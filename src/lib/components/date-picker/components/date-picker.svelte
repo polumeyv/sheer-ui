@@ -1,6 +1,6 @@
-<script lang="ts">
+<script lang="ts">import { untrack } from "svelte";
+
 	// Date Picker composes the DateField, Popover, and Calendar components
-	import { watch } from "$lib/vendor/watch.svelte.js";
 	import type { DateValue } from "@internationalized/date";
 	import { DatePickerRootState } from "$lib/components/date-picker/date-picker.svelte.js";
 	import type { DatePickerRootProps } from "$lib/components/date-picker/index.js";
@@ -68,12 +68,12 @@
 	 * the props are reset to their default values, which would make placeholder
 	 * undefined which causes errors to be thrown.
 	 */
-	watch.pre(
-		() => placeholder,
-		() => {
+	$effect.pre(() => {
+		void (placeholder);
+		untrack(() => {
 			handleDefaultPlaceholder();
-		}
-	);
+		});
+	});
 
 	function onDateSelect() {
 		if (closeOnDateSelect) {

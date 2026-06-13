@@ -1,4 +1,4 @@
-import { tick } from 'svelte';
+import { tick, untrack } from 'svelte';
 import { createContext, getContext, hasContext, setContext } from 'svelte';
 import {
 	mergeProps,
@@ -11,7 +11,6 @@ import {
 	writableProp,
 	type ReadableProp,
 } from '$lib/vendor/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import {
 	FIRST_LAST_KEYS,
 	LAST_KEYS,
@@ -280,67 +279,70 @@ class MenuSubmenuIntent {
 		// 	getDocument: () => getDocument(this.#opts.triggerNode() ?? this.#opts.contentNode()),
 		// });
 
-		watch([opts.triggerNode, opts.contentNode, opts.enabled], ([triggerNode, contentNode, enabled]) => {
-			this.#reset();
-			if (!triggerNode || !contentNode || !enabled) return;
+		$effect(() => {
+			const [triggerNode, contentNode, enabled] = [opts.triggerNode(), opts.contentNode(), opts.enabled()];
+			return untrack(() => {
+				this.#reset();
+				if (!triggerNode || !contentNode || !enabled) return;
 
-			const onTriggerMove = (e: PointerEvent) => {
-				if (!isMouseEvent(e)) return;
-				this.#launchPoint = { x: e.clientX, y: e.clientY };
-				if (!this.#active) this.#preview(e, 'content');
-			};
+				const onTriggerMove = (e: PointerEvent) => {
+					if (!isMouseEvent(e)) return;
+					this.#launchPoint = { x: e.clientX, y: e.clientY };
+					if (!this.#active) this.#preview(e, 'content');
+				};
 
-			const onTriggerLeave = (e: PointerEvent) => {
-				if (!isMouseEvent(e)) return;
-				this.#engage(e, 'content');
-			};
+				const onTriggerLeave = (e: PointerEvent) => {
+					if (!isMouseEvent(e)) return;
+					this.#engage(e, 'content');
+				};
 
-			const onContentMove = (e: PointerEvent) => {
-				if (!isMouseEvent(e)) return;
-				if (!this.#active) this.#preview(e, 'trigger');
-			};
+				const onContentMove = (e: PointerEvent) => {
+					if (!isMouseEvent(e)) return;
+					if (!this.#active) this.#preview(e, 'trigger');
+				};
 
-			const onContentLeave = (e: PointerEvent) => {
-				if (!isMouseEvent(e)) return;
-				if (e.relatedTarget instanceof Element) {
-					const selector = this.#opts.subContentSelector();
-					const matchedSubContent = e.relatedTarget.closest(selector);
-					if (matchedSubContent && matchedSubContent !== contentNode && matchedSubContent.id) {
-						const isChild = !!contentNode.querySelector(`[aria-controls="${matchedSubContent.id}"]`);
-						if (isChild) {
-							return;
+				const onContentLeave = (e: PointerEvent) => {
+					if (!isMouseEvent(e)) return;
+					if (e.relatedTarget instanceof Element) {
+						const selector = this.#opts.subContentSelector();
+						const matchedSubContent = e.relatedTarget.closest(selector);
+						if (matchedSubContent && matchedSubContent !== contentNode && matchedSubContent.id) {
+							const isChild = !!contentNode.querySelector(`[aria-controls="${matchedSubContent.id}"]`);
+							if (isChild) {
+								return;
+							}
 						}
 					}
-				}
-				this.#engage(e, 'trigger');
-			};
+					this.#engage(e, 'trigger');
+				};
 
-			const onTriggerEnter = (e: PointerEvent) => {
-				if (!isMouseEvent(e)) return;
-				this.#disengage();
-			};
+				const onTriggerEnter = (e: PointerEvent) => {
+					if (!isMouseEvent(e)) return;
+					this.#disengage();
+				};
 
-			const onContentEnter = (e: PointerEvent) => {
-				if (!isMouseEvent(e)) return;
-				this.#disengage();
-			};
+				const onContentEnter = (e: PointerEvent) => {
+					if (!isMouseEvent(e)) return;
+					this.#disengage();
+				};
 
-			triggerNode.addEventListener('pointermove', onTriggerMove);
-			triggerNode.addEventListener('pointerleave', onTriggerLeave);
-			triggerNode.addEventListener('pointerenter', onTriggerEnter);
-			contentNode.addEventListener('pointermove', onContentMove);
-			contentNode.addEventListener('pointerleave', onContentLeave);
-			contentNode.addEventListener('pointerenter', onContentEnter);
+				triggerNode.addEventListener('pointermove', onTriggerMove);
+				triggerNode.addEventListener('pointerleave', onTriggerLeave);
+				triggerNode.addEventListener('pointerenter', onTriggerEnter);
+				contentNode.addEventListener('pointermove', onContentMove);
+				contentNode.addEventListener('pointerleave', onContentLeave);
+				contentNode.addEventListener('pointerenter', onContentEnter);
 
-			return () => {
-				triggerNode.removeEventListener('pointermove', onTriggerMove);
-				triggerNode.removeEventListener('pointerleave', onTriggerLeave);
-				triggerNode.removeEventListener('pointerenter', onTriggerEnter);
-				contentNode.removeEventListener('pointermove', onContentMove);
-				contentNode.removeEventListener('pointerleave', onContentLeave);
-				contentNode.removeEventListener('pointerenter', onContentEnter);
-				this.#reset();
-			};
+				return () => {
+					triggerNode.removeEventListener('pointermove', onTriggerMove);
+					triggerNode.removeEventListener('pointerleave', onTriggerLeave);
+					triggerNode.removeEventListener('pointerenter', onTriggerEnter);
+					contentNode.removeEventListener('pointermove', onContentMove);
+					contentNode.removeEventListener('pointerleave', onContentLeave);
+					contentNode.removeEventListener('pointerenter', onContentEnter);
+					this.#reset();
+				};
+			});
 		});
 
 		$effect(() => () => {
@@ -806,13 +808,13 @@ export class MenuMenuState {
 		});
 
 		if (parentMenu) {
-			watch(
-				() => parentMenu.opts.open.current,
-				() => {
+			$effect(() => {
+				void (parentMenu.opts.open.current);
+				untrack(() => {
 					if (parentMenu.opts.open.current) return;
 					this.opts.open.current = false;
-				},
-			);
+				});
+			});
 		}
 	}
 
@@ -903,9 +905,9 @@ export class MenuContentState {
 			orientation: { get current() { return 'vertical' as const; } },
 		});
 
-		watch(
-			() => this.parentMenu.contentNode,
-			(contentNode) => {
+		$effect(() => {
+			const contentNode = this.parentMenu.contentNode;
+			return untrack(() => {
 				if (!contentNode) return;
 				const handler = () => {
 					tick().then(() => {
@@ -914,8 +916,8 @@ export class MenuContentState {
 					});
 				};
 				return MenuOpenEvent.listen(contentNode, handler);
-			},
-		);
+			});
+		});
 
 		$effect(() => {
 			if (!this.parentMenu.opts.open.current) {
@@ -1448,24 +1450,24 @@ export class MenuCheckboxItemState {
 
 		// Watch for value changes in the group if we're part of one
 		if (this.group) {
-			watch(
-				() => this.group!.opts.value.current,
-				(groupValues) => {
+			$effect(() => {
+				const groupValues = this.group!.opts.value.current;
+				untrack(() => {
 					this.opts.checked.current = groupValues.includes(this.opts.value.current);
-				},
-			);
+				});
+			});
 
 			// Watch for checked state changes and sync with group
-			watch(
-				() => this.opts.checked.current,
-				(checked) => {
+			$effect(() => {
+				const checked = this.opts.checked.current;
+				untrack(() => {
 					if (checked) {
 						this.group!.addValue(this.opts.value.current);
 					} else {
 						this.group!.removeValue(this.opts.value.current);
 					}
-				},
-			);
+				});
+			});
 		}
 	}
 
@@ -1819,23 +1821,23 @@ export class ContextMenuTriggerState {
 		this.onpointercancel = this.onpointercancel.bind(this);
 		this.onpointerup = this.onpointerup.bind(this);
 
-		watch(
-			() => this.#point,
-			(point) => {
+		$effect(() => {
+			const point = this.#point;
+			untrack(() => {
 				this.virtualElement.current = {
 					getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...point }),
 				};
-			},
-		);
+			});
+		});
 
-		watch(
-			() => this.opts.disabled.current,
-			(isDisabled) => {
+		$effect(() => {
+			const isDisabled = this.opts.disabled.current;
+			untrack(() => {
 				if (isDisabled) {
 					this.#clearLongPressTimer();
 				}
-			},
-		);
+			});
+		});
 
 		$effect(() => () => this.#clearLongPressTimer());
 	}

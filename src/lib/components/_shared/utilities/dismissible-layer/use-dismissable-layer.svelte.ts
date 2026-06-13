@@ -1,7 +1,6 @@
-import { tick } from 'svelte';
+import { tick, untrack } from 'svelte';
 import { executeCallbacks } from '$lib/vendor/index.js';
 import { type ReadableProp, type WritableProp, type ReadableProps } from '$lib/vendor/index.js';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import { on } from 'svelte/events';
 import type { DismissibleLayerImplProps, InteractOutsideBehaviorType } from '$lib/components/_shared/utilities/dismissible-layer/index.js';
 import { type EventCallback } from '$lib/internal/events.js';
@@ -51,16 +50,19 @@ export class DismissibleLayerState {
 			unsubEvents();
 		};
 
-		watch([() => this.opts.enabled.current, () => this.opts.ref.current], () => {
-			if (!this.opts.enabled.current || !this.opts.ref.current) return;
-			setTimeout(() => {
-				if (!this.opts.ref.current) return;
-				globalThis.bitsDismissableLayers.set(this, this.#behaviorType);
+		$effect(() => {
+			void [this.opts.enabled.current, this.opts.ref.current];
+			return untrack(() => {
+				if (!this.opts.enabled.current || !this.opts.ref.current) return;
+				setTimeout(() => {
+					if (!this.opts.ref.current) return;
+					globalThis.bitsDismissableLayers.set(this, this.#behaviorType);
 
-				unsubEvents();
-				unsubEvents = this.#addEventListeners();
-			}, 1);
-			return cleanup;
+					unsubEvents();
+					unsubEvents = this.#addEventListeners();
+				}, 1);
+				return cleanup;
+			});
 		});
 
 		$effect(() => () => {

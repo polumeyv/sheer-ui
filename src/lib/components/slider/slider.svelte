@@ -1,10 +1,9 @@
-<script lang="ts">
+<script lang="ts">import { untrack } from "svelte";
 	import { mergeProps, type WritableProp } from '$lib/vendor/index.js';
 	import type { SliderRootProps } from '$lib/components/slider/primitive/index.js';
 	import { SliderRootState, SliderRangeState } from '$lib/components/slider/primitive/slider.svelte.js';
 	import SliderThumb from '$lib/components/slider/primitive/components/slider-thumb.svelte';
 	import { createId } from '$lib/internal/create-id.js';
-	import { watch } from "$lib/vendor/watch.svelte.js";
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 
 	const uid = $props.id();
@@ -52,12 +51,12 @@
 	// SSR
 	handleDefaultValue();
 
-	watch.pre(
-		() => value,
-		() => {
+	$effect.pre(() => {
+		void (value);
+		untrack(() => {
 			handleDefaultValue();
-		}
-	);
+		});
+	});
 
 	const rootState = SliderRootState.create({
 		id: { get current() { return id; } },

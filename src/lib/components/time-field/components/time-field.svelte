@@ -4,9 +4,8 @@
 	type T = unknown;
 </script>
 
-<script lang="ts" generics="T extends TimeValue = Time">
-	import { watch } from "$lib/vendor/watch.svelte.js";
-	import { TimeFieldRootState } from "$lib/components/time-field/time-field.svelte.js";
+<script lang="ts" generics="T extends TimeValue = Time">import { untrack } from "svelte";
+		import { TimeFieldRootState } from "$lib/components/time-field/time-field.svelte.js";
 	import type { TimeFieldRootProps } from "$lib/components/time-field/index.js";
 	import { getDefaultTime } from "$lib/internal/date-time/utils.js";
 	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
@@ -51,12 +50,12 @@
 	 * the props are reset to their default values, which would make placeholder
 	 * undefined which causes errors to be thrown.
 	 */
-	watch.pre(
-		() => placeholder,
-		() => {
+	$effect.pre(() => {
+		void (placeholder);
+		untrack(() => {
 			handleDefaultPlaceholder();
-		}
-	);
+		});
+	});
 
 	TimeFieldRootState.create({
 		value: { get current() { return value; }, set current(v) { value = v; onValueChange(v); } },

@@ -1,7 +1,7 @@
+import { untrack } from "svelte";
 import { type Getter, getDocument } from '$lib/vendor/index.js';
 import { executeCallbacks } from '$lib/vendor/index.js';
 import { on } from 'svelte/events';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import type { Side } from '$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte.js';
 
 type Point = [number, number];
@@ -111,76 +111,79 @@ export class SafePolygon {
 		const transitIntentTimeout = opts.transitIntentTimeout;
 		this.#transitIntentTimeout = typeof transitIntentTimeout === 'number' && transitIntentTimeout > 0 ? transitIntentTimeout : null;
 
-		watch([opts.triggerNode, opts.contentNode, opts.enabled], ([triggerNode, contentNode, enabled]) => {
-			if (!triggerNode || !contentNode || !enabled) {
-				this.#trackedTriggerNode = null;
-				this.#clearTracking();
-				return;
-			}
-			if (this.#trackedTriggerNode && this.#trackedTriggerNode !== triggerNode) {
-				this.#clearTracking();
-			}
-			this.#trackedTriggerNode = triggerNode;
-
-			const doc = getDocument(triggerNode);
-
-			const handlePointerMove = (e: PointerEvent) => {
-				this.#onPointerMove([e.clientX, e.clientY], triggerNode, contentNode);
-			};
-
-			const handleTriggerLeave = (e: PointerEvent) => {
-				// when leaving trigger toward content, record exit point
-				const target = e.relatedTarget;
-				// if going directly to content, no need for polygon tracking
-				if (target instanceof Element && contentNode.contains(target)) {
+		$effect(() => {
+			const [triggerNode, contentNode, enabled] = [opts.triggerNode(), opts.contentNode(), opts.enabled()];
+			return untrack(() => {
+				if (!triggerNode || !contentNode || !enabled) {
+					this.#trackedTriggerNode = null;
+					this.#clearTracking();
 					return;
 				}
-				// if moving to an ignored target (e.g. a sibling trigger), don't close —
-				// the sibling's enter handler will take over
-				const ignoredTargets = this.#opts.ignoredTargets?.() ?? [];
-				if (target instanceof Element && ignoredTargets.some((n) => n === target || n.contains(target))) {
-					return;
+				if (this.#trackedTriggerNode && this.#trackedTriggerNode !== triggerNode) {
+					this.#clearTracking();
 				}
-				this.#transitTargets =
-					target instanceof Element && ignoredTargets.length > 0 ? ignoredTargets.filter((n) => target.contains(n)) : [];
-				// for unrelated elements, defer close decisions to pointer geometry checks.
-				// this allows the cursor to pass through intermediate elements on the way
-				// to content without immediately closing.
-				this.#exitPoint = [e.clientX, e.clientY];
-				this.#exitTarget = 'content';
-				this.#scheduleLeaveFallback();
-			};
+				this.#trackedTriggerNode = triggerNode;
 
-			const handleTriggerEnter = () => {
-				// reached trigger, clear tracking
-				this.#clearTracking();
-			};
+				const doc = getDocument(triggerNode);
 
-			const handleContentEnter = () => {
-				// reached content, clear tracking
-				this.#clearTracking();
-			};
+				const handlePointerMove = (e: PointerEvent) => {
+					this.#onPointerMove([e.clientX, e.clientY], triggerNode, contentNode);
+				};
 
-			const handleContentLeave = (e: PointerEvent) => {
-				// when leaving content, check if going directly back to trigger
-				const target = e.relatedTarget;
-				if (target instanceof Element && triggerNode.contains(target)) {
-					// going directly to trigger, no polygon tracking needed
-					return;
-				}
-				// set up polygon tracking toward trigger — pointermove decides whether to close
-				this.#exitPoint = [e.clientX, e.clientY];
-				this.#exitTarget = 'trigger';
-				this.#scheduleLeaveFallback();
-			};
+				const handleTriggerLeave = (e: PointerEvent) => {
+					// when leaving trigger toward content, record exit point
+					const target = e.relatedTarget;
+					// if going directly to content, no need for polygon tracking
+					if (target instanceof Element && contentNode.contains(target)) {
+						return;
+					}
+					// if moving to an ignored target (e.g. a sibling trigger), don't close —
+					// the sibling's enter handler will take over
+					const ignoredTargets = this.#opts.ignoredTargets?.() ?? [];
+					if (target instanceof Element && ignoredTargets.some((n) => n === target || n.contains(target))) {
+						return;
+					}
+					this.#transitTargets =
+						target instanceof Element && ignoredTargets.length > 0 ? ignoredTargets.filter((n) => target.contains(n)) : [];
+					// for unrelated elements, defer close decisions to pointer geometry checks.
+					// this allows the cursor to pass through intermediate elements on the way
+					// to content without immediately closing.
+					this.#exitPoint = [e.clientX, e.clientY];
+					this.#exitTarget = 'content';
+					this.#scheduleLeaveFallback();
+				};
 
-			return executeCallbacks(
-				on(doc, 'pointermove', handlePointerMove),
-				on(triggerNode, 'pointerleave', handleTriggerLeave),
-				on(triggerNode, 'pointerenter', handleTriggerEnter),
-				on(contentNode, 'pointerenter', handleContentEnter),
-				on(contentNode, 'pointerleave', handleContentLeave),
-			);
+				const handleTriggerEnter = () => {
+					// reached trigger, clear tracking
+					this.#clearTracking();
+				};
+
+				const handleContentEnter = () => {
+					// reached content, clear tracking
+					this.#clearTracking();
+				};
+
+				const handleContentLeave = (e: PointerEvent) => {
+					// when leaving content, check if going directly back to trigger
+					const target = e.relatedTarget;
+					if (target instanceof Element && triggerNode.contains(target)) {
+						// going directly to trigger, no polygon tracking needed
+						return;
+					}
+					// set up polygon tracking toward trigger — pointermove decides whether to close
+					this.#exitPoint = [e.clientX, e.clientY];
+					this.#exitTarget = 'trigger';
+					this.#scheduleLeaveFallback();
+				};
+
+				return executeCallbacks(
+					on(doc, 'pointermove', handlePointerMove),
+					on(triggerNode, 'pointerleave', handleTriggerLeave),
+					on(triggerNode, 'pointerenter', handleTriggerEnter),
+					on(contentNode, 'pointerenter', handleContentEnter),
+					on(contentNode, 'pointerleave', handleContentLeave),
+				);
+			});
 		});
 	}
 

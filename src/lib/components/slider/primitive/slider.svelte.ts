@@ -1,10 +1,5 @@
-import { createContext } from 'svelte';
+import { createContext, untrack } from 'svelte';
 import { executeCallbacks } from '$lib/vendor/index.js';
-/**
- * This logic is adapted from the @melt-ui/svelte slider, which was mostly written by
- * Abdelrahman (https://github.com/abdel-17)
- */
-import { untrack } from 'svelte';
 import {
 	attachRef,
 	type WritableProp,
@@ -14,7 +9,6 @@ import {
 	type WritableProps,
 } from '$lib/vendor/index.js';
 import { on } from 'svelte/events';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import {
 	getRangeStyles,
 	getThumbStyles,
@@ -191,9 +185,9 @@ class SliderSingleRootState extends SliderBaseRootState {
 			}),
 		);
 
-		watch(
-			[() => this.opts.step.current, () => this.opts.min.current, () => this.opts.max.current, () => this.opts.value.current],
-			([step, min, max, value]) => {
+		$effect(() => {
+			const [step, min, max, value] = [this.opts.step.current, this.opts.min.current, this.opts.max.current, this.opts.value.current];
+			untrack(() => {
 				const steps = normalizeSteps(step, min, max);
 
 				const isValidValue = (v: number) => {
@@ -207,8 +201,8 @@ class SliderSingleRootState extends SliderBaseRootState {
 				if (!isValidValue(value)) {
 					this.opts.value.current = gcv(value);
 				}
-			},
-		);
+			});
+		});
 	}
 
 	isTickValueSelected = (tickValue: number) => {
@@ -416,9 +410,9 @@ class SliderMultiRootState extends SliderBaseRootState {
 			}),
 		);
 
-		watch(
-			[() => this.opts.step.current, () => this.opts.min.current, () => this.opts.max.current, () => this.opts.value.current],
-			([step, min, max, value]) => {
+		$effect(() => {
+			const [step, min, max, value] = [this.opts.step.current, this.opts.min.current, this.opts.max.current, this.opts.value.current];
+			untrack(() => {
 				const steps = normalizeSteps(step, min, max);
 
 				const isValidValue = (v: number) => {
@@ -432,8 +426,8 @@ class SliderMultiRootState extends SliderBaseRootState {
 				if (value.some((v) => !isValidValue(v))) {
 					this.opts.value.current = value.map(gcv);
 				}
-			},
-		);
+			});
+		});
 	}
 
 	isTickValueSelected = (tickValue: number) => {

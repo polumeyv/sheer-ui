@@ -1,7 +1,6 @@
-import { createContext, getContext, hasContext, setContext } from 'svelte';
+import { createContext, getContext, hasContext, setContext, untrack } from 'svelte';
 import { attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
 import type { HTMLButtonAttributes } from 'svelte/elements';
-import { watch } from '$lib/vendor/watch.svelte.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
@@ -102,12 +101,12 @@ export class CheckboxGroupLabelState {
 		this.group.labelId = this.opts.id.current;
 		this.attachment = attachRef(this.opts.ref);
 
-		watch.pre(
-			() => this.opts.id.current,
-			(id) => {
+		$effect.pre(() => {
+			const id = this.opts.id.current;
+			untrack(() => {
 				this.group.labelId = id;
-			},
-		);
+			});
+		});
 	}
 
 	readonly props = $derived.by(
@@ -171,22 +170,25 @@ export class CheckboxRootState {
 		this.onkeydown = this.onkeydown.bind(this);
 		this.onclick = this.onclick.bind(this);
 
-		watch.pre([() => $state.snapshot(this.group?.opts.value.current), () => this.opts.value.current], ([groupValue, value]) => {
-			if (!groupValue || !value) return;
-			this.opts.checked.current = groupValue.includes(value);
+		$effect.pre(() => {
+			const [groupValue, value] = [$state.snapshot(this.group?.opts.value.current), this.opts.value.current];
+			untrack(() => {
+				if (!groupValue || !value) return;
+				this.opts.checked.current = groupValue.includes(value);
+			});
 		});
 
-		watch.pre(
-			() => this.opts.checked.current,
-			(checked) => {
+		$effect.pre(() => {
+			const checked = this.opts.checked.current;
+			untrack(() => {
 				if (!this.group) return;
 				if (checked) {
 					this.group?.addValue(this.opts.value.current);
 				} else {
 					this.group?.removeValue(this.opts.value.current);
 				}
-			},
-		);
+			});
+		});
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
