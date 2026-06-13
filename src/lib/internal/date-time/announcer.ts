@@ -1,6 +1,4 @@
-import { srOnlyStyles } from '$lib/vendor';
-
-export const srOnlyStylesString = styleToCSS(srOnlyStyles).replace('\n', ' ');
+import { srOnlyStyles, styleToCSS } from '$lib/vendor';
 
 /**
  * Creates or gets an announcer element which is used to announce messages to screen readers.
@@ -24,7 +22,7 @@ function initAnnouncer(doc: Document | null) {
 
 	if (!(el instanceof HTMLElement)) {
 		const div = doc.createElement('div');
-		div.style.cssText = srOnlyStylesString;
+		div.style.cssText = styleToCSS(srOnlyStyles).replace('\n', ' ');
 		div.setAttribute('data-bits-announcer', '');
 		div.appendChild(createLog('assertive'));
 		div.appendChild(createLog('polite'));
