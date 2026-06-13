@@ -1,7 +1,8 @@
 <script lang="ts">
-import { Select as SelectPrimitive } from 'bits-ui';
+	import Portal from '$lib/bits/utilities/portal/portal.svelte';
+	import type { SelectPortalProps } from '$lib/bits/select/types.js';
 
-let { ...restProps }: SelectPrimitive.PortalProps = $props();
+	let { ...restProps }: SelectPortalProps = $props();
 </script>
 
-<SelectPrimitive.Portal {...restProps} />
+<Portal {...restProps} />

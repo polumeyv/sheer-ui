@@ -1,7 +1,40 @@
 <script lang="ts">
-import { AspectRatio as AspectRatioPrimitive } from 'bits-ui';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { AspectRatioRootProps } from '$lib/bits/aspect-ratio/types.js';
+	import { AspectRatioRootState } from '$lib/bits/aspect-ratio/aspect-ratio.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
-let { ref = $bindable(null), ...restProps }: AspectRatioPrimitive.RootProps = $props();
+	const uid = $props.id();
+
+	let {
+		ref = $bindable(null),
+		id = createId(uid),
+		ratio = 1,
+		children,
+		child,
+		...restProps
+	}: AspectRatioRootProps = $props();
+
+	const rootState = AspectRatioRootState.create({
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+		ratio: boxWith(() => ratio),
+	});
+
+	const mergedProps = $derived(
+		mergeProps({ 'data-slot': 'aspect-ratio' }, restProps, rootState.props)
+	);
 </script>
 
-<AspectRatioPrimitive.Root bind:ref data-slot="aspect-ratio" {...restProps} />
+<div style:position="relative" style:width="100%" style:padding-bottom="{ratio ? 100 / ratio : 0}%">
+	{#if child}
+		{@render child({ props: mergedProps })}
+	{:else}
+		<div {...mergedProps}>
+			{@render children?.()}
+		</div>
+	{/if}
+</div>

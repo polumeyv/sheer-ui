@@ -1,7 +1,29 @@
 <script lang="ts">
-import { Popover as PopoverPrimitive } from 'bits-ui';
+	import { boxWith } from '$lib/vendor/toolbelt/index.js';
+	import type { PopoverRootProps } from '$lib/bits/popover/types.js';
+	import { PopoverRootState } from '$lib/bits/popover/popover.svelte.js';
+	import FloatingLayer from '$lib/bits/utilities/floating-layer/components/floating-layer.svelte';
+	import { noop } from '$lib/internal/noop.js';
 
-let { open = $bindable(false), ...restProps }: PopoverPrimitive.RootProps = $props();
+	let {
+		open = $bindable(false),
+		onOpenChange = noop,
+		onOpenChangeComplete = noop,
+		children,
+	}: PopoverRootProps = $props();
+
+	PopoverRootState.create({
+		open: boxWith(
+			() => open,
+			(v) => {
+				open = v;
+				onOpenChange(v);
+			}
+		),
+		onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
+	});
 </script>
 
-<PopoverPrimitive.Root bind:open {...restProps} />
+<FloatingLayer>
+	{@render children?.()}
+</FloatingLayer>

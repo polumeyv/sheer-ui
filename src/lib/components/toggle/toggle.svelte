@@ -4,20 +4,66 @@
 </script>
 
 <script lang="ts">
-	import { Toggle as TogglePrimitive } from 'bits-ui';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { ToggleRootProps } from '$lib/bits/toggle/types.js';
+	import { ToggleRootState } from '$lib/bits/toggle/toggle.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { noop } from '$lib/internal/noop.js';
 	import { cn } from '../../utils.js';
+
+	const uid = $props.id();
 
 	let {
 		ref = $bindable(null),
+		id = createId(uid),
 		pressed = $bindable(false),
+		onPressedChange = noop,
+		disabled = false,
+		type = 'button',
+		children,
+		child,
 		class: className,
 		size = 'default',
 		variant = 'default',
 		...restProps
-	}: TogglePrimitive.RootProps & {
+	}: ToggleRootProps & {
 		variant?: ToggleVariant;
 		size?: ToggleSize;
 	} = $props();
+
+	const toggleState = ToggleRootState.create({
+		pressed: boxWith(
+			() => pressed,
+			(v) => {
+				pressed = v;
+				onPressedChange(v);
+			}
+		),
+		disabled: boxWith(() => disabled ?? false),
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(
+		mergeProps(
+			{
+				'data-slot': 'toggle',
+				class: cn(toggleVariants({ variant, size }), className),
+			},
+			restProps,
+			toggleState.props,
+			{ type }
+		)
+	);
 </script>
 
-<TogglePrimitive.Root bind:ref bind:pressed data-slot="toggle" class={cn(toggleVariants({ variant, size }), className)} {...restProps} />
+{#if child}
+	{@render child({ props: mergedProps, ...toggleState.snippetProps })}
+{:else}
+	<button {...mergedProps}>
+		{@render children?.(toggleState.snippetProps)}
+	</button>
+{/if}

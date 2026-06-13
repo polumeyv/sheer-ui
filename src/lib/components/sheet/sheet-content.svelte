@@ -4,7 +4,7 @@ export { sheetVariants, type Side };
 </script>
 
 <script lang="ts">
-	import { Dialog as SheetPrimitive } from "bits-ui";
+	import * as SheetPrimitive from "../dialog/primitive/index.js";
 	import XIcon from "@lucide/svelte/icons/x";
 	import type { Snippet } from "svelte";
 	import SheetPortal from "./sheet-portal.svelte";

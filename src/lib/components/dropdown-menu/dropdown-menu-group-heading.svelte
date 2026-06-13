@@ -1,5 +1,5 @@
 <script lang="ts">
-import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
+import { DropdownMenu as DropdownMenuPrimitive } from '$lib/bits-ui.js';
 import { cn } from '../../utils';
 import type { ComponentProps } from 'svelte';
 

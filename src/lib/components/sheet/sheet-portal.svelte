@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Dialog as SheetPrimitive } from 'bits-ui';
+import * as SheetPrimitive from '../dialog/primitive/index.js';
 
 let { ...restProps }: SheetPrimitive.PortalProps = $props();
 </script>

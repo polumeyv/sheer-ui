@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menubar as MenubarPrimitive } from 'bits-ui';
+	import { Menubar as MenubarPrimitive } from '$lib/bits-ui.js';
 	import MenubarPortal from './menubar-portal.svelte';
 	import { cn, type WithoutChildrenOrChild } from '../../utils';
 	import type { ComponentProps } from 'svelte';

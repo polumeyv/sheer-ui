@@ -1,14 +1,45 @@
 <script lang="ts">
-import { AlertDialog as AlertDialogPrimitive } from 'bits-ui';
-import { buttonVariants } from '../button';
-import { cn } from '../../utils';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { AlertDialogCancelProps } from '$lib/bits/alert-dialog/types.js';
+	import { AlertDialogCancelState } from '$lib/bits/dialog/dialog.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { buttonVariants } from '../button';
+	import { cn } from '../../utils';
 
-let { ref = $bindable(null), class: className, ...restProps }: AlertDialogPrimitive.CancelProps = $props();
+	const uid = $props.id();
+
+	let {
+		id = createId(uid),
+		ref = $bindable(null),
+		children,
+		child,
+		disabled = false,
+		class: className,
+		...restProps
+	}: AlertDialogCancelProps = $props();
+
+	const cancelState = AlertDialogCancelState.create({
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+		disabled: boxWith(() => Boolean(disabled)),
+	});
+
+	const mergedProps = $derived(
+		mergeProps(
+			{ 'data-slot': 'alert-dialog-cancel', class: cn(buttonVariants({ variant: 'outline' }), className) },
+			restProps,
+			cancelState.props
+		)
+	);
 </script>
 
-<AlertDialogPrimitive.Cancel
-	bind:ref
-	data-slot="alert-dialog-cancel"
-	class={cn(buttonVariants({ variant: "outline" }), className)}
-	{...restProps}
-/>
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<button {...mergedProps}>
+		{@render children?.()}
+	</button>
+{/if}

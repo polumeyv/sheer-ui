@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Menubar as MenubarPrimitive } from 'bits-ui';
+import { Menubar as MenubarPrimitive } from '$lib/bits-ui.js';
 import CircleIcon from '@lucide/svelte/icons/circle';
 import { cn, type WithoutChild } from '../../utils';
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Menubar as MenubarPrimitive } from 'bits-ui';
+import { Menubar as MenubarPrimitive } from '$lib/bits-ui.js';
 
 let { ref = $bindable(null), value = $bindable(''), ...restProps }: MenubarPrimitive.RadioGroupProps = $props();
 </script>

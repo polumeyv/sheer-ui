@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Dialog as DialogPrimitive } from 'bits-ui';
+import * as DialogPrimitive from './primitive/index.js';
 import DialogPortal from './dialog-portal.svelte';
 import XIcon from '@lucide/svelte/icons/x';
 import type { Snippet } from 'svelte';

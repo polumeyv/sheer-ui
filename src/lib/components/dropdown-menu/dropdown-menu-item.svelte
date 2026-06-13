@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { cn } from '../../utils';
-	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
+	import { DropdownMenu as DropdownMenuPrimitive } from '$lib/bits-ui.js';
 
 	let {
 		ref = $bindable(null),

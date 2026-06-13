@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Calendar as CalendarPrimitive } from 'bits-ui';
+import { Calendar as CalendarPrimitive } from '$lib/bits-ui.js';
 import { cn } from '../../utils.js';
 
 let { ref = $bindable(null), class: className, ...restProps }: CalendarPrimitive.GridBodyProps = $props();

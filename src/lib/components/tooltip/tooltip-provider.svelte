@@ -1,7 +1,26 @@
 <script lang="ts">
-import { Tooltip as TooltipPrimitive } from 'bits-ui';
+	import { boxWith } from '$lib/vendor/toolbelt/index.js';
+	import type { TooltipProviderProps } from '$lib/bits/tooltip/types.js';
+	import { TooltipProviderState } from '$lib/bits/tooltip/tooltip.svelte.js';
 
-let { ...restProps }: TooltipPrimitive.ProviderProps = $props();
+	let {
+		children,
+		delayDuration = 700,
+		disableCloseOnTriggerClick = false,
+		disableHoverableContent = false,
+		disabled = false,
+		ignoreNonKeyboardFocus = false,
+		skipDelayDuration = 300,
+	}: TooltipProviderProps = $props();
+
+	TooltipProviderState.create({
+		delayDuration: boxWith(() => delayDuration),
+		disableCloseOnTriggerClick: boxWith(() => disableCloseOnTriggerClick),
+		disableHoverableContent: boxWith(() => disableHoverableContent),
+		disabled: boxWith(() => disabled),
+		ignoreNonKeyboardFocus: boxWith(() => ignoreNonKeyboardFocus),
+		skipDelayDuration: boxWith(() => skipDelayDuration),
+	});
 </script>
 
-<TooltipPrimitive.Provider {...restProps} />
+{@render children?.()}

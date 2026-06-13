@@ -1,27 +1,49 @@
 <script lang="ts">
-import { Progress as ProgressPrimitive } from 'bits-ui';
-import { cn, type WithoutChildrenOrChild } from '../../utils';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { ProgressRootProps } from '$lib/bits/progress/types.js';
+	import { ProgressRootState } from '$lib/bits/progress/progress.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { cn, type WithoutChildrenOrChild } from '../../utils';
 
-let {
-	ref = $bindable(null),
-	class: className,
-	max = 100,
-	value,
-	...restProps
-}: WithoutChildrenOrChild<ProgressPrimitive.RootProps> = $props();
+	const uid = $props.id();
+
+	let {
+		value = 0,
+		max = 100,
+		min = 0,
+		id = createId(uid),
+		ref = $bindable(null),
+		class: className,
+		...restProps
+	}: WithoutChildrenOrChild<ProgressRootProps> = $props();
+
+	const rootState = ProgressRootState.create({
+		value: boxWith(() => value),
+		max: boxWith(() => max),
+		min: boxWith(() => min),
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(
+		mergeProps(
+			{
+				'data-slot': 'progress',
+				class: cn("bg-primary/20 relative h-2 w-full overflow-hidden rounded-full", className),
+			},
+			restProps,
+			rootState.props
+		)
+	);
 </script>
 
-<ProgressPrimitive.Root
-	bind:ref
-	data-slot="progress"
-	class={cn("bg-primary/20 relative h-2 w-full overflow-hidden rounded-full", className)}
-	{value}
-	{max}
-	{...restProps}
->
+<div {...mergedProps}>
 	<div
 		data-slot="progress-indicator"
 		class="bg-primary h-full w-full flex-1 transition-all"
 		style="transform: translateX(-{100 - (100 * (value ?? 0)) / (max ?? 1)}%)"
 	></div>
-</ProgressPrimitive.Root>
+</div>

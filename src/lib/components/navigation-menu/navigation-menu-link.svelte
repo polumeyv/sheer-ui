@@ -1,15 +1,55 @@
 <script lang="ts">
-	import { NavigationMenu as NavigationMenuPrimitive } from 'bits-ui';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { NavigationMenuLinkProps } from '$lib/bits/navigation-menu/types.js';
+	import { NavigationMenuLinkState } from '$lib/bits/navigation-menu/navigation-menu.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { noop } from '$lib/internal/noop.js';
 	import { cn } from '../../utils';
 
-	let { ref = $bindable(null), class: className, ...restProps }: NavigationMenuPrimitive.LinkProps = $props();
+	const uid = $props.id();
+
+	let {
+		id = createId(uid),
+		ref = $bindable(null),
+		child,
+		children,
+		active = false,
+		onSelect = noop,
+		tabindex = 0,
+		class: className,
+		...restProps
+	}: NavigationMenuLinkProps = $props();
+
+	const linkState = NavigationMenuLinkState.create({
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+		active: boxWith(() => active),
+		onSelect: boxWith(() => onSelect),
+	});
+
+	const mergedProps = $derived(
+		mergeProps(
+			{
+				'data-slot': 'navigation-menu-link',
+				class: cn(
+					"data-[active=true]:focus:bg-accent data-[active=true]:hover:bg-accent data-[active=true]:bg-accent/50 data-[active=true]:text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-md p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+					className
+				),
+			},
+			restProps,
+			linkState.props,
+			{ tabindex }
+		)
+	);
 </script>
 
-<NavigationMenuPrimitive.Link
-	bind:ref
-	data-slot="navigation-menu-link"
-	class={cn(
-		"data-[active=true]:focus:bg-accent data-[active=true]:hover:bg-accent data-[active=true]:bg-accent/50 data-[active=true]:text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-md p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
-		className,
-	)}
-	{...restProps} />
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<a {...mergedProps}>
+		{@render children?.()}
+	</a>
+{/if}

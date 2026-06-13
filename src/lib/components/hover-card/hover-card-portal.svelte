@@ -1,7 +1,8 @@
 <script lang="ts">
-import { LinkPreview as HoverCardPrimitive } from 'bits-ui';
+	import Portal from '$lib/bits/utilities/portal/portal.svelte';
+	import type { PortalProps } from '$lib/bits/utilities/portal/types.js';
 
-let { ...restProps }: HoverCardPrimitive.PortalProps = $props();
+	let { ...restProps }: PortalProps = $props();
 </script>
 
-<HoverCardPrimitive.Portal {...restProps} />
+<Portal {...restProps} />

@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Separator as SeparatorPrimitive } from 'bits-ui';
+import type { Separator as SeparatorPrimitive } from '$lib/bits-ui.js';
 import { Separator } from '../separator';
 import { cn } from '../../utils';
 

@@ -1,13 +1,47 @@
 <script lang="ts">
-import { Tabs as TabsPrimitive } from 'bits-ui';
-import { cn } from '../../utils';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { TabsContentProps } from '$lib/bits/tabs/types.js';
+	import { TabsContentState } from '$lib/bits/tabs/tabs.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { cn } from '../../utils.js';
 
-let { ref = $bindable(null), class: className, ...restProps }: TabsPrimitive.ContentProps = $props();
+	const uid = $props.id();
+
+	let {
+		children,
+		child,
+		id = createId(uid),
+		ref = $bindable(null),
+		value,
+		class: className,
+		...restProps
+	}: TabsContentProps = $props();
+
+	const contentState = TabsContentState.create({
+		value: boxWith(() => value),
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(
+		mergeProps(
+			{
+				'data-slot': 'tabs-content',
+				class: cn('flex-1 outline-none', className),
+			},
+			restProps,
+			contentState.props
+		)
+	);
 </script>
 
-<TabsPrimitive.Content
-	bind:ref
-	data-slot="tabs-content"
-	class={cn("flex-1 outline-none", className)}
-	{...restProps}
-/>
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<div {...mergedProps}>
+		{@render children?.()}
+	</div>
+{/if}

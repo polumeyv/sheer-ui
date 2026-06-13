@@ -1,20 +1,58 @@
 <script lang="ts">
-	import { Command as CommandPrimitive } from 'bits-ui';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { CommandInputProps } from '$lib/bits/command/types.js';
+	import { CommandInputState } from '$lib/bits/command/command.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 	import SearchIcon from '@lucide/svelte/icons/search';
 	import { cn } from '../../utils';
 
-	let { ref = $bindable(null), class: className, value = $bindable(''), ...restProps }: CommandPrimitive.InputProps = $props();
+	const uid = $props.id();
+
+	let {
+		value = $bindable(''),
+		autofocus = false,
+		id = createId(uid),
+		ref = $bindable(null),
+		child,
+		class: className,
+		...restProps
+	}: CommandInputProps = $props();
+
+	const inputState = CommandInputState.create({
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+		value: boxWith(
+			() => value,
+			(v) => {
+				value = v;
+			}
+		),
+		autofocus: boxWith(() => autofocus ?? false),
+	});
+
+	const mergedProps = $derived(
+		mergeProps(
+			{
+				'data-slot': 'command-input',
+				class: cn(
+					'placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
+					className
+				),
+			},
+			restProps,
+			inputState.props
+		)
+	);
 </script>
 
 <div class="flex h-9 items-center gap-2 border-b ps-3 pe-8" data-slot="command-input-wrapper">
 	<SearchIcon class="size-4 shrink-0 opacity-50" />
-	<CommandPrimitive.Input
-		data-slot="command-input"
-		class={cn(
-			'placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
-			className,
-		)}
-		bind:ref
-		{...restProps}
-		bind:value />
+	{#if child}
+		{@render child({ props: mergedProps })}
+	{:else}
+		<input {...mergedProps} bind:value />
+	{/if}
 </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
-import { AlertDialog as AlertDialogPrimitive } from 'bits-ui';
+import * as DialogPrimitive from '../dialog/primitive/index.js';
 
-let { ref = $bindable(null), ...restProps }: AlertDialogPrimitive.TriggerProps = $props();
+let { ref = $bindable(null), ...restProps }: DialogPrimitive.TriggerProps = $props();
 </script>
 
-<AlertDialogPrimitive.Trigger bind:ref data-slot="alert-dialog-trigger" {...restProps} />
+<DialogPrimitive.Trigger bind:ref data-slot="alert-dialog-trigger" {...restProps} />

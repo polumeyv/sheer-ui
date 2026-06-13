@@ -1,31 +1,64 @@
 <script lang="ts">
-import { ScrollArea as ScrollAreaPrimitive } from 'bits-ui';
+import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+import type { ScrollAreaScrollbarProps } from '$lib/bits/scroll-area/types.js';
+import { ScrollAreaScrollbarState } from '$lib/bits/scroll-area/scroll-area.svelte.js';
+import ScrollAreaScrollbarAuto from '$lib/bits/scroll-area/components/scroll-area-scrollbar-auto.svelte';
+import ScrollAreaScrollbarScroll from '$lib/bits/scroll-area/components/scroll-area-scrollbar-scroll.svelte';
+import ScrollAreaScrollbarHover from '$lib/bits/scroll-area/components/scroll-area-scrollbar-hover.svelte';
+import ScrollAreaScrollbarVisible from '$lib/bits/scroll-area/components/scroll-area-scrollbar-visible.svelte';
+import Thumb from '$lib/bits/scroll-area/components/scroll-area-thumb.svelte';
+import { createId } from '$lib/internal/create-id.js';
 import { cn, type WithoutChild } from '../../utils';
+
+const uid = $props.id();
 
 let {
 	ref = $bindable(null),
+	id = createId(uid),
 	class: className,
 	orientation = 'vertical',
 	children,
 	...restProps
-}: WithoutChild<ScrollAreaPrimitive.ScrollbarProps> = $props();
+}: WithoutChild<ScrollAreaScrollbarProps> = $props();
+
+const scrollbarState = ScrollAreaScrollbarState.create({
+	orientation: boxWith(() => orientation),
+	id: boxWith(() => id),
+	ref: boxWith(
+		() => ref,
+		(v) => (ref = v)
+	),
+});
+
+const type = $derived(scrollbarState.root.opts.type.current);
+
+const mergedProps = $derived(
+	mergeProps(
+		{
+			'data-slot': 'scroll-area-scrollbar',
+			class: cn(
+				'flex touch-none p-px transition-colors select-none',
+				orientation === 'vertical' && 'h-full w-2.5 border-s border-s-transparent',
+				orientation === 'horizontal' && 'h-2.5 flex-col border-t border-t-transparent',
+				className
+			),
+		},
+		restProps
+	)
+);
 </script>
 
-<ScrollAreaPrimitive.Scrollbar
-	bind:ref
-	data-slot="scroll-area-scrollbar"
-	{orientation}
-	class={cn(
-		"flex touch-none p-px transition-colors select-none",
-		orientation === "vertical" && "h-full w-2.5 border-s border-s-transparent",
-		orientation === "horizontal" && "h-2.5 flex-col border-t border-t-transparent",
-		className
-	)}
-	{...restProps}
->
+{#snippet scrollbarChildren()}
 	{@render children?.()}
-	<ScrollAreaPrimitive.Thumb
-		data-slot="scroll-area-thumb"
-		class="bg-border relative flex-1 rounded-full"
-	/>
-</ScrollAreaPrimitive.Scrollbar>
+	<Thumb data-slot="scroll-area-thumb" class="bg-border relative flex-1 rounded-full" />
+{/snippet}
+
+{#if type === 'hover'}
+	<ScrollAreaScrollbarHover {...mergedProps} {id} children={scrollbarChildren} />
+{:else if type === 'scroll'}
+	<ScrollAreaScrollbarScroll {...mergedProps} {id} children={scrollbarChildren} />
+{:else if type === 'auto'}
+	<ScrollAreaScrollbarAuto {...mergedProps} {id} children={scrollbarChildren} />
+{:else if type === 'always'}
+	<ScrollAreaScrollbarVisible {...mergedProps} {id} children={scrollbarChildren} />
+{/if}

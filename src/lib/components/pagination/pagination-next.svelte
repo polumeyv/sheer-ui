@@ -1,25 +1,60 @@
 <script lang="ts">
-import { Pagination as PaginationPrimitive } from 'bits-ui';
-import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-import { buttonVariants } from '../button';
-import { cn } from '../../utils';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { PaginationNextButtonProps } from '$lib/bits/pagination/types.js';
+	import { PaginationButtonState } from '$lib/bits/pagination/pagination.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+	import { buttonVariants } from '../button';
+	import { cn } from '../../utils';
 
-let { ref = $bindable(null), class: className, ...restProps }: PaginationPrimitive.NextButtonProps = $props();
+	const uid = $props.id();
+
+	let {
+		id = createId(uid),
+		child,
+		children,
+		ref = $bindable(null),
+		type = 'button',
+		disabled = false,
+		class: className,
+		...restProps
+	}: PaginationNextButtonProps = $props();
+
+	const nextButtonState = PaginationButtonState.create({
+		type: 'next',
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+		disabled: boxWith(() => Boolean(disabled)),
+	});
+
+	const mergedProps = $derived(
+		mergeProps(
+			{
+				'aria-label': 'Go to next page',
+				class: cn(
+					buttonVariants({
+						size: 'default',
+						variant: 'ghost',
+						class: 'gap-1! sm:pe-2.5',
+					}),
+					className
+				),
+			},
+			restProps,
+			nextButtonState.props,
+			{ type }
+		)
+	);
 </script>
 
-<PaginationPrimitive.NextButton
-	bind:ref
-	aria-label="Go to next page"
-	class={cn(
-		buttonVariants({
-			size: "default",
-			variant: "ghost",
-			class: "gap-1! sm:pe-2.5",
-		}),
-		className
-	)}
-	{...restProps}
->
-	<span class="hidden sm:block">Next</span>
-	<ChevronRightIcon /></PaginationPrimitive.NextButton
->
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<button {...mergedProps}>
+		<span class="hidden sm:block">Next</span>
+		<ChevronRightIcon />
+	</button>
+{/if}

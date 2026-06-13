@@ -1,24 +1,81 @@
 <script lang="ts">
-import { PinInput as InputOTPPrimitive } from 'bits-ui';
-import { cn } from '../../utils';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { PinInputRootProps } from '$lib/bits/pin-input/types.js';
+	import { PinInputRootState } from '$lib/bits/pin-input/pin-input.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { noop } from '$lib/internal/noop.js';
+	import { cn } from '../../utils';
 
-let {
-	ref = $bindable(null),
-	class: className,
-	value = $bindable<string | number>(''),
-	onValueChange,
-	...restProps
-}: Omit<InputOTPPrimitive.RootProps, 'value'> & { value?: string | number } = $props();
+	const uid = $props.id();
+
+	let {
+		id = createId(uid),
+		inputId = `${createId(uid)}-input`,
+		ref = $bindable(null),
+		inputRef = $bindable(null),
+		maxlength = 6,
+		textalign = 'left',
+		pattern,
+		inputmode = 'numeric',
+		onComplete = noop,
+		pushPasswordManagerStrategy = 'increase-width',
+		class: className,
+		children,
+		autocomplete = 'one-time-code',
+		disabled = false,
+		value = $bindable<string | number>(''),
+		onValueChange = noop,
+		pasteTransformer,
+		...restProps
+	}: Omit<PinInputRootProps, 'value'> & { value?: string | number } = $props();
+
+	const rootState = PinInputRootState.create({
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+		inputRef: boxWith(
+			() => inputRef,
+			(v) => (inputRef = v)
+		),
+		inputId: boxWith(() => inputId),
+		autocomplete: boxWith(() => autocomplete),
+		maxLength: boxWith(() => maxlength),
+		textAlign: boxWith(() => textalign),
+		disabled: boxWith(() => disabled),
+		inputmode: boxWith(() => inputmode),
+		pattern: boxWith(() => pattern),
+		onComplete: boxWith(() => onComplete),
+		value: boxWith(
+			() => String(value),
+			(v) => {
+				value = v;
+				onValueChange(v);
+			}
+		),
+		pushPasswordManagerStrategy: boxWith(() => pushPasswordManagerStrategy),
+		pasteTransformer: boxWith(() => pasteTransformer),
+	});
+
+	const mergedInputProps = $derived(
+		mergeProps({ 'data-slot': 'input-otp' }, restProps, rootState.inputProps)
+	);
+	const mergedRootProps = $derived(
+		mergeProps(rootState.rootProps, {
+			class: cn(
+				'flex items-center gap-2 has-disabled:opacity-50 [&_input]:disabled:cursor-not-allowed',
+				className
+			),
+		})
+	);
+	const mergedInputWrapperProps = $derived(mergeProps(rootState.inputWrapperProps, {}));
 </script>
 
-<InputOTPPrimitive.Root
-	bind:ref
-	value={String(value)}
-	onValueChange={(v) => ((value = v), onValueChange?.(v))}
-	data-slot="input-otp"
-	class={cn(
-		"flex items-center gap-2 has-disabled:opacity-50 [&_input]:disabled:cursor-not-allowed",
-		className
-	)}
-	{...restProps}
-/>
+<div {...mergedRootProps}>
+	{@render children?.(rootState.snippetProps)}
+
+	<div {...mergedInputWrapperProps}>
+		<input {...mergedInputProps} />
+	</div>
+</div>

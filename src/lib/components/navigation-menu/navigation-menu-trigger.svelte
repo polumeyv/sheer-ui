@@ -5,14 +5,66 @@
 </script>
 
 <script lang="ts">
-	import { NavigationMenu as NavigationMenuPrimitive } from 'bits-ui';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { NavigationMenuTriggerProps } from '$lib/bits/navigation-menu/types.js';
+	import { NavigationMenuTriggerState } from '$lib/bits/navigation-menu/navigation-menu.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import VisuallyHidden from '$lib/bits/utilities/visually-hidden/visually-hidden.svelte';
+	import Mounted from '$lib/bits/utilities/mounted.svelte';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
-	let { ref = $bindable(null), class: className, children, ...restProps }: NavigationMenuPrimitive.TriggerProps = $props();
+	const uid = $props.id();
+
+	let {
+		id = createId(uid),
+		disabled = false,
+		children,
+		child,
+		ref = $bindable(null),
+		tabindex = 0,
+		class: className,
+		...restProps
+	}: NavigationMenuTriggerProps = $props();
+
+	const triggerState = NavigationMenuTriggerState.create({
+		id: boxWith(() => id),
+		disabled: boxWith(() => disabled ?? false),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(
+		mergeProps(
+			{
+				'data-slot': 'navigation-menu-trigger',
+				class: cn(navigationMenuTriggerStyle(), 'group', className),
+			},
+			restProps,
+			triggerState.props,
+			{ tabindex }
+		)
+	);
 </script>
 
-<NavigationMenuPrimitive.Trigger bind:ref data-slot="navigation-menu-trigger" class={cn(navigationMenuTriggerStyle(), 'group', className)} {...restProps}>
-	{@render children?.()}
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<button {...mergedProps}>
+		{@render children?.()}
 
-	<ChevronDownIcon class="relative top-[1px] ms-1 size-3 transition duration-300 group-data-[state=open]:rotate-180" aria-hidden="true" />
-</NavigationMenuPrimitive.Trigger>
+		<ChevronDownIcon
+			class="relative top-[1px] ms-1 size-3 transition duration-300 group-data-[state=open]:rotate-180"
+			aria-hidden="true"
+		/>
+	</button>
+{/if}
+
+{#if triggerState.open}
+	<VisuallyHidden {...triggerState.focusProxyProps} />
+	<Mounted bind:mounted={triggerState.focusProxyMounted} />
+	{#if triggerState.context.viewportRef.current}
+		<span aria-owns={triggerState.itemContext.contentId ?? undefined}></span>
+	{/if}
+{/if}

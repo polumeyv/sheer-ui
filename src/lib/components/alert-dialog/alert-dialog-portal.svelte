@@ -1,7 +1,7 @@
 <script lang="ts">
-import { AlertDialog as AlertDialogPrimitive } from 'bits-ui';
+import * as DialogPrimitive from '../dialog/primitive/index.js';
 
-let { ...restProps }: AlertDialogPrimitive.PortalProps = $props();
+let { ...restProps }: DialogPrimitive.PortalProps = $props();
 </script>
 
-<AlertDialogPrimitive.Portal {...restProps} />
+<DialogPrimitive.Portal {...restProps} />

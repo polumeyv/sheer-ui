@@ -1,6 +1,6 @@
 <script lang="ts">
 import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-import type { WithoutChildren } from 'bits-ui';
+import type { WithoutChildren } from '$lib/bits-ui.js';
 import { getEmblaContext } from './context';
 import { cn } from '../../utils';
 import { Button, type Props } from '../button';

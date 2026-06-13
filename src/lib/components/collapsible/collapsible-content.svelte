@@ -1,7 +1,43 @@
 <script lang="ts">
-import { Collapsible as CollapsiblePrimitive } from 'bits-ui';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import { CollapsibleContentState } from '$lib/bits/collapsible/collapsible.svelte.js';
+	import type { CollapsibleContentProps } from '$lib/bits/collapsible/types.js';
+	import { createId } from '$lib/internal/create-id.js';
 
-let { ref = $bindable(null), ...restProps }: CollapsiblePrimitive.ContentProps = $props();
+	const uid = $props.id();
+
+	let {
+		child,
+		ref = $bindable(null),
+		forceMount = false,
+		hiddenUntilFound = false,
+		children,
+		id = createId(uid),
+		...restProps
+	}: CollapsibleContentProps = $props();
+
+	const contentState = CollapsibleContentState.create({
+		id: boxWith(() => id),
+		forceMount: boxWith(() => forceMount),
+		hiddenUntilFound: boxWith(() => hiddenUntilFound),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(
+		mergeProps({ 'data-slot': 'collapsible-content' }, restProps, contentState.props),
+	);
 </script>
 
-<CollapsiblePrimitive.Content bind:ref data-slot="collapsible-content" {...restProps} />
+{#if child}
+	{@render child({
+		...contentState.snippetProps,
+		props: mergedProps,
+	})}
+{:else}
+	<div {...mergedProps}>
+		{@render children?.()}
+	</div>
+{/if}

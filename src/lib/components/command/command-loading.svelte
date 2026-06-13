@@ -1,7 +1,36 @@
 <script lang="ts">
-import { Command as CommandPrimitive } from 'bits-ui';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { CommandLoadingProps } from '$lib/bits/command/types.js';
+	import { CommandLoadingState } from '$lib/bits/command/command.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
-let { ref = $bindable(null), ...restProps }: CommandPrimitive.LoadingProps = $props();
+	const uid = $props.id();
+
+	let {
+		progress = 0,
+		id = createId(uid),
+		ref = $bindable(null),
+		children,
+		child,
+		...restProps
+	}: CommandLoadingProps = $props();
+
+	const loadingState = CommandLoadingState.create({
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+		progress: boxWith(() => progress),
+	});
+
+	const mergedProps = $derived(mergeProps(restProps, loadingState.props));
 </script>
 
-<CommandPrimitive.Loading bind:ref {...restProps} />
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<div {...mergedProps}>
+		{@render children?.()}
+	</div>
+{/if}

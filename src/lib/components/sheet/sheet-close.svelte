@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Dialog as SheetPrimitive } from 'bits-ui';
+import * as SheetPrimitive from '../dialog/primitive/index.js';
 
 let { ref = $bindable(null), ...restProps }: SheetPrimitive.CloseProps = $props();
 </script>

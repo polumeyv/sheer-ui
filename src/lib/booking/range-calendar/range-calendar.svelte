@@ -1,5 +1,5 @@
 <script lang="ts">
-import { RangeCalendar as RangeCalendarPrimitive } from 'bits-ui';
+import { RangeCalendar as RangeCalendarPrimitive } from '$lib/bits-ui.js';
 import * as RangeCalendar from './index.js';
 import { cn, type WithoutChildrenOrChild } from '../../utils.js';
 import type { ButtonVariant } from '../../components/button/index.js';

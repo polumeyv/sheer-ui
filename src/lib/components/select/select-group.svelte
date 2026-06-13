@@ -1,7 +1,34 @@
 <script lang="ts">
-import { Select as SelectPrimitive } from 'bits-ui';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import { SelectGroupState } from '$lib/bits/select/select.svelte.js';
+	import type { SelectGroupProps } from '$lib/bits/select/types.js';
+	import { createId } from '$lib/internal/create-id.js';
 
-let { ref = $bindable(null), ...restProps }: SelectPrimitive.GroupProps = $props();
+	const uid = $props.id();
+
+	let {
+		id = createId(uid),
+		ref = $bindable(null),
+		children,
+		child,
+		...restProps
+	}: SelectGroupProps = $props();
+
+	const groupState = SelectGroupState.create({
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(mergeProps({ 'data-slot': 'select-group' }, restProps, groupState.props));
 </script>
 
-<SelectPrimitive.Group data-slot="select-group" {...restProps} />
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<div {...mergedProps}>
+		{@render children?.()}
+	</div>
+{/if}

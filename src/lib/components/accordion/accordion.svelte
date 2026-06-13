@@ -1,12 +1,71 @@
 <script lang="ts">
-import { Accordion as AccordionPrimitive } from 'bits-ui';
+	import { type WritableBox, boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import { AccordionRootState } from '$lib/bits/accordion/accordion.svelte.js';
+	import type { AccordionRootProps } from '$lib/bits/accordion/types.js';
+	import { noop } from '$lib/internal/noop.js';
+	import { watch } from '$lib/vendor/runed/index.js';
+	import { createId } from '$lib/internal/create-id.js';
 
-let { ref = $bindable(null), value = $bindable(), ...restProps }: AccordionPrimitive.RootProps = $props();
+	const uid = $props.id();
+
+	let {
+		disabled = false,
+		children,
+		child,
+		type,
+		value = $bindable(),
+		ref = $bindable(null),
+		id = createId(uid),
+		onValueChange = noop,
+		loop = true,
+		orientation = 'vertical',
+		...restProps
+	}: AccordionRootProps = $props();
+
+	function handleDefaultValue() {
+		if (value !== undefined) return;
+		value = type === 'single' ? '' : [];
+	}
+
+	// SSR
+	handleDefaultValue();
+
+	watch.pre(
+		() => value,
+		() => {
+			handleDefaultValue();
+		}
+	);
+
+	const rootState = AccordionRootState.create({
+		type,
+		value: boxWith(
+			() => value!,
+			(v) => {
+				value = v;
+				// oxlint-disable-next-line no-explicit-any
+				onValueChange(v as any);
+			}
+		) as WritableBox<string> | WritableBox<string[]>,
+		id: boxWith(() => id),
+		disabled: boxWith(() => disabled),
+		loop: boxWith(() => loop),
+		orientation: boxWith(() => orientation),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(
+		mergeProps({ 'data-slot': 'accordion' }, restProps, rootState.props),
+	);
 </script>
 
-<AccordionPrimitive.Root
-	bind:ref
-	bind:value={value as never}
-	data-slot="accordion"
-	{...restProps}
-/>
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<div {...mergedProps}>
+		{@render children?.()}
+	</div>
+{/if}

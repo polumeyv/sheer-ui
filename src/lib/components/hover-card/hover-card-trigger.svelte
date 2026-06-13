@@ -1,7 +1,39 @@
 <script lang="ts">
-import { LinkPreview as HoverCardPrimitive } from 'bits-ui';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { LinkPreviewTriggerProps } from '$lib/bits/link-preview/types.js';
+	import { LinkPreviewTriggerState } from '$lib/bits/link-preview/link-preview.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { FloatingLayer } from '$lib/bits/utilities/floating-layer/index.js';
 
-let { ref = $bindable(null), ...restProps }: HoverCardPrimitive.TriggerProps = $props();
+	const uid = $props.id();
+
+	let {
+		ref = $bindable(null),
+		id = createId(uid),
+		child,
+		children,
+		...restProps
+	}: LinkPreviewTriggerProps = $props();
+
+	const triggerState = LinkPreviewTriggerState.create({
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(
+		mergeProps({ 'data-slot': 'hover-card-trigger' }, restProps, triggerState.props),
+	);
 </script>
 
-<HoverCardPrimitive.Trigger bind:ref data-slot="hover-card-trigger" {...restProps} />
+<FloatingLayer.Anchor {id} ref={triggerState.opts.ref}>
+	{#if child}
+		{@render child({ props: mergedProps })}
+	{:else}
+		<a {...mergedProps}>
+			{@render children?.()}
+		</a>
+	{/if}
+</FloatingLayer.Anchor>

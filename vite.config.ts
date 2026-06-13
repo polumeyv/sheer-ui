@@ -6,7 +6,7 @@ export default defineConfig({
 	plugins: [
 		sveltekit({
 			alias: {
-				//TODO!
+				$utils: 'src/lib/utils'
 			},
 			// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
 			// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
@@ -23,6 +23,12 @@ export default defineConfig({
 			// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
 			vitePlugin: {
 				dynamicCompileOptions: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : { runes: true }),
+			},
+			compilerOptions: {
+				// The vendored bits-ui code intentionally reads $state at init in places; upstream
+				// ships with these warnings too. Everything outside lib/bits keeps the full surface.
+				warningFilter: (warning) =>
+					!(warning.code === 'state_referenced_locally' && !!warning.filename?.includes('/lib/bits/')),
 			},
 		}),
 	],

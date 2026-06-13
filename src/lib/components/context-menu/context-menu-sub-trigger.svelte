@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ContextMenu as ContextMenuPrimitive } from 'bits-ui';
+	import { ContextMenu as ContextMenuPrimitive } from '$lib/bits-ui.js';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import { cn, type WithoutChild } from '../../utils';
 

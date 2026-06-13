@@ -1,13 +1,55 @@
 <script lang="ts">
-import { cn } from '../../utils';
-import { Popover as PopoverPrimitive } from 'bits-ui';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { PopoverTriggerProps } from '$lib/bits/popover/types.js';
+	import { PopoverTriggerState } from '$lib/bits/popover/popover.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import FloatingLayerAnchor from '$lib/bits/utilities/floating-layer/components/floating-layer-anchor.svelte';
+	import { cn } from '../../utils';
 
-let { ref = $bindable(null), class: className, ...restProps }: PopoverPrimitive.TriggerProps = $props();
+	const uid = $props.id();
+
+	let {
+		children,
+		child,
+		id = createId(uid),
+		ref = $bindable(null),
+		class: className,
+		type = 'button',
+		disabled = false,
+		openOnHover = false,
+		openDelay = 700,
+		closeDelay = 300,
+		...restProps
+	}: PopoverTriggerProps = $props();
+
+	const triggerState = PopoverTriggerState.create({
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+		disabled: boxWith(() => Boolean(disabled)),
+		openOnHover: boxWith(() => openOnHover),
+		openDelay: boxWith(() => openDelay),
+		closeDelay: boxWith(() => closeDelay),
+	});
+
+	const mergedProps = $derived(
+		mergeProps(
+			{ 'data-slot': 'popover-trigger', class: cn('', className) },
+			restProps,
+			triggerState.props,
+			{ type },
+		),
+	);
 </script>
 
-<PopoverPrimitive.Trigger
-	bind:ref
-	data-slot="popover-trigger"
-	class={cn("", className)}
-	{...restProps}
-/>
+<FloatingLayerAnchor {id} ref={triggerState.opts.ref}>
+	{#if child}
+		{@render child({ props: mergedProps })}
+	{:else}
+		<button {...mergedProps}>
+			{@render children?.()}
+		</button>
+	{/if}
+</FloatingLayerAnchor>

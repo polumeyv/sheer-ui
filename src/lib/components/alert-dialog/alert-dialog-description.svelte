@@ -1,11 +1,11 @@
 <script lang="ts">
-import { AlertDialog as AlertDialogPrimitive } from 'bits-ui';
+import * as DialogPrimitive from '../dialog/primitive/index.js';
 import { cn } from '../../utils';
 
-let { ref = $bindable(null), class: className, ...restProps }: AlertDialogPrimitive.DescriptionProps = $props();
+let { ref = $bindable(null), class: className, ...restProps }: DialogPrimitive.DescriptionProps = $props();
 </script>
 
-<AlertDialogPrimitive.Description
+<DialogPrimitive.Description
 	bind:ref
 	data-slot="alert-dialog-description"
 	class={cn("text-muted-foreground text-sm", className)}

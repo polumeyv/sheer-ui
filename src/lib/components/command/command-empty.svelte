@@ -1,13 +1,49 @@
 <script lang="ts">
-import { Command as CommandPrimitive } from 'bits-ui';
-import { cn } from '../../utils';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { CommandEmptyProps } from '$lib/bits/command/types.js';
+	import { CommandEmptyState } from '$lib/bits/command/command.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { cn } from '../../utils';
 
-let { ref = $bindable(null), class: className, ...restProps }: CommandPrimitive.EmptyProps = $props();
+	const uid = $props.id();
+
+	let {
+		id = createId(uid),
+		ref = $bindable(null),
+		children,
+		child,
+		forceMount = false,
+		class: className,
+		...restProps
+	}: CommandEmptyProps = $props();
+
+	const emptyState = CommandEmptyState.create({
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+		forceMount: boxWith(() => forceMount),
+	});
+
+	const mergedProps = $derived(
+		mergeProps(
+			{
+				'data-slot': 'command-empty',
+				class: cn('py-6 text-center text-sm', className),
+			},
+			restProps,
+			emptyState.props
+		)
+	);
 </script>
 
-<CommandPrimitive.Empty
-	bind:ref
-	data-slot="command-empty"
-	class={cn("py-6 text-center text-sm", className)}
-	{...restProps}
-/>
+{#if emptyState.shouldRender}
+	{#if child}
+		{@render child({ props: mergedProps })}
+	{:else}
+		<div {...mergedProps}>
+			{@render children?.()}
+		</div>
+	{/if}
+{/if}

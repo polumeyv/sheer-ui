@@ -1,6 +1,6 @@
 # @polumeyv/ui
 
-Svelte 5 component library built on [bits-ui](https://bits-ui.com), [Tailwind CSS v4](https://tailwindcss.com), and [tw-animate-css](https://github.com/magicuidesign/tw-animate-css).
+Svelte 5 component library built on [Tailwind CSS v4](https://tailwindcss.com). The headless primitives are a vendored copy of [bits-ui](https://bits-ui.com) (see `src/lib/VENDORED.md`), so the package has no Svelte component dependencies to fight bundlers over.
 
 ## Components
 

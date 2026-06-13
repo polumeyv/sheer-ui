@@ -1,6 +1,6 @@
 <script lang="ts">
 import { cn } from '../../utils';
-import { Menubar as MenubarPrimitive } from 'bits-ui';
+import { Menubar as MenubarPrimitive } from '$lib/bits-ui.js';
 import type { ComponentProps } from 'svelte';
 
 let {

@@ -1,28 +1,67 @@
 <script lang="ts">
-import { Pagination as PaginationPrimitive } from 'bits-ui';
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { PaginationRootProps } from '$lib/bits/pagination/types.js';
+	import { PaginationRootState } from '$lib/bits/pagination/pagination.svelte.js';
+	import { noop } from '$lib/internal/noop.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { cn } from '../../utils';
 
-import { cn } from '../../utils';
+	const uid = $props.id();
 
-let {
-	ref = $bindable(null),
-	class: className,
-	count = 0,
-	perPage = 10,
-	page = $bindable(1),
-	siblingCount = 1,
-	...restProps
-}: PaginationPrimitive.RootProps = $props();
+	let {
+		id = createId(uid),
+		count = 0,
+		perPage = 10,
+		page = $bindable(1),
+		ref = $bindable(null),
+		siblingCount = 1,
+		onPageChange = noop,
+		loop = false,
+		orientation = 'horizontal',
+		child,
+		children,
+		class: className,
+		...restProps
+	}: PaginationRootProps = $props();
+
+	const rootState = PaginationRootState.create({
+		id: boxWith(() => id),
+		count: boxWith(() => count),
+		perPage: boxWith(() => perPage),
+		page: boxWith(
+			() => page,
+			(v) => {
+				page = v;
+				onPageChange?.(v);
+			}
+		),
+		loop: boxWith(() => loop),
+		siblingCount: boxWith(() => siblingCount),
+		orientation: boxWith(() => orientation),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(
+		mergeProps(
+			{
+				role: 'navigation',
+				'aria-label': 'pagination',
+				'data-slot': 'pagination',
+				class: cn('mx-auto flex w-full justify-center', className),
+			},
+			restProps,
+			rootState.props
+		)
+	);
 </script>
 
-<PaginationPrimitive.Root
-	bind:ref
-	bind:page
-	role="navigation"
-	aria-label="pagination"
-	data-slot="pagination"
-	class={cn("mx-auto flex w-full justify-center", className)}
-	{count}
-	{perPage}
-	{siblingCount}
-	{...restProps}
-/>
+{#if child}
+	{@render child({ props: mergedProps, ...rootState.snippetProps })}
+{:else}
+	<div {...mergedProps}>
+		{@render children?.(rootState.snippetProps)}
+	</div>
+{/if}

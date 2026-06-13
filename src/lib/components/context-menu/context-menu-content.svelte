@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ContextMenu as ContextMenuPrimitive } from 'bits-ui';
+	import { ContextMenu as ContextMenuPrimitive } from '$lib/bits-ui.js';
 	import { cn } from '../../utils';
 	import ContextMenuPortal from './context-menu-portal.svelte';
 	import type { ComponentProps } from 'svelte';
