@@ -1,4 +1,4 @@
-import type { EventCallback } from './utils/events.js';
+import type { EventCallback } from '$lib/internal/events.js';
 import type { ReadableProp } from './utils.js';
 
 /**

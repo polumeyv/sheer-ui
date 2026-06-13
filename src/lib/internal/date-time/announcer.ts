@@ -1,4 +1,6 @@
-import { srOnlyStylesString } from '$lib/vendor/index.js';
+import { srOnlyStyles } from '$lib/vendor';
+
+export const srOnlyStylesString = styleToCSS(srOnlyStyles).replace('\n', ' ');
 
 /**
  * Creates or gets an announcer element which is used to announce messages to screen readers.

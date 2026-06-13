@@ -2,10 +2,9 @@ export { writableProp } from './writable-prop.svelte.js';
 export * from './types.js';
 export { composeHandlers } from './compose-handlers.js';
 export { executeCallbacks } from './utils/execute-callbacks.js';
-export { addEventListener, type EventCallback } from './utils/events.js';
 export { mergeProps } from './utils/merge-props.js';
 export { pascalCase, camelCase } from './utils/strings.js';
-export { styleToCSS, srOnlyStyles, srOnlyStylesString, cssToStyleObj } from './utils/merge-props.js';
+export { styleToCSS, srOnlyStyles, cssToStyleObj } from './utils/merge-props.js';
 export {
 	isHTMLElement,
 	isDocument,

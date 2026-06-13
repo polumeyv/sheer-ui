@@ -17,7 +17,7 @@ import { composeHandlers } from '$lib/vendor/compose-handlers.js';
 import { executeCallbacks } from '$lib/vendor/utils/execute-callbacks.js';
 import { cssToStyleObj } from '$lib/vendor/utils/merge-props.js';
 import { styleToCSS } from '$lib/vendor/utils/merge-props.js';
-import type { EventCallback } from '$lib/vendor/utils/events.js';
+import type { EventCallback } from '$lib/internal/events.js';
 import type { StyleProperties } from '$lib/vendor/types.js';
 
 // `class` here is the runtime caller-vs-component merge — exactly the conflict site

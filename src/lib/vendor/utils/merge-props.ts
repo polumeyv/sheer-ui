@@ -3,7 +3,7 @@
  */
 import { join, type ClassValue } from 'overrule';
 import { executeCallbacks } from '$lib/vendor/utils/execute-callbacks';
-import type { EventCallback } from './events.js';
+import type { EventCallback } from '$lib/internal/events.js';
 import { composeHandlers } from '../compose-handlers';
 import parse from 'style-to-object';
 import type { StyleProperties } from '$lib/vendor/types';
@@ -155,5 +155,3 @@ export const srOnlyStyles: StyleProperties = {
 	borderWidth: '0',
 	transform: 'translateX(-100%)',
 };
-
-export const srOnlyStylesString = styleToCSS(srOnlyStyles).replace('\n', ' ');
