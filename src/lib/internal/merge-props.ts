@@ -15,8 +15,8 @@ import { guard, join } from 'overrule';
 import type { ClassValue } from 'overrule';
 import { composeHandlers } from '$lib/vendor/compose-handlers.js';
 import { executeCallbacks } from '$lib/vendor/utils/execute-callbacks.js';
-import { cssToStyleObj } from '$lib/vendor/utils/css-to-style-obj.js';
-import { styleToCSS } from '$lib/vendor/utils/style-to-css.js';
+import { cssToStyleObj } from '$lib/vendor/utils/merge-props.js';
+import { styleToCSS } from '$lib/vendor/utils/merge-props.js';
 import type { EventCallback } from '$lib/vendor/utils/events.js';
 import type { StyleProperties } from '$lib/vendor/types.js';
 

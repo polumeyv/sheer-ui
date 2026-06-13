@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts" generics="T = never">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import { boxWith, mergeProps } from '$lib/vendor/index.js';
 	import type { TooltipTriggerProps } from '$lib/components/tooltip/primitive/index.js';
 	import { TooltipTriggerState } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';

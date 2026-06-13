@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { ScrollAreaCornerProps } from "$lib/components/scroll-area/primitive/index.js";
 	import { ScrollAreaCornerImplState } from "$lib/components/scroll-area/primitive/scroll-area.svelte.js";
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import { boxWith, mergeProps } from '$lib/vendor/index.js';
 	import type { PopoverTriggerProps } from '$lib/components/popover/primitive/index.js';
 	import { PopoverTriggerState } from '$lib/components/popover/primitive/popover.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';

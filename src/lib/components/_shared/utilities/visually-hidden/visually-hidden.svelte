@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { VisuallyHiddenProps } from "$lib/components/_shared/utilities/visually-hidden/index.js";
 	import type { StyleProperties } from "$lib/shared/index.js";
 

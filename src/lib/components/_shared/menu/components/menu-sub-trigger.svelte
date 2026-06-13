@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { MenuSubTriggerProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuSubTriggerState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import FloatingLayerAnchor from "$lib/components/_shared/utilities/floating-layer/components/floating-layer-anchor.svelte";

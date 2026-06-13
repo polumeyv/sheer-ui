@@ -16,11 +16,10 @@ import type { BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal
 import { type Direction, type Orientation, mergeProps, useId } from '$lib/shared/index.js';
 import { on } from 'svelte/events';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { StateMachine } from '$lib/internal/state-machine.js';
 import { SvelteResizeObserver } from '$lib/internal/svelte-resize-observer.svelte.js';
 
 
-import { simpleBox, type WritableBox } from '$lib/vendor/index.js';
+import { type WritableBox } from '$lib/vendor/index.js';
 
 interface Machine<S> {
 	[k: string]: { [k: string]: S };

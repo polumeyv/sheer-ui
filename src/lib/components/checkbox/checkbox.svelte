@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import { boxWith, mergeProps } from '$lib/vendor/index.js';
 	import type { CheckboxRootProps } from '$lib/components/checkbox/primitive/index.js';
 	import { getCheckboxGroupContextOr, CheckboxRootState } from '$lib/components/checkbox/primitive/checkbox.svelte.js';
 	import CheckboxInput from '$lib/components/checkbox/primitive/components/checkbox-input.svelte';
 	import { createId } from '$lib/internal/create-id.js';
-	import { watch } from "$lib/vendor/runed/watch.svelte.js";
+	import { watch } from "$lib/vendor/watch.svelte.js";
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';

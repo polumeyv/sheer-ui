@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { AspectRatioRootProps } from "$lib/components/aspect-ratio/primitive/index.js";
 	import { AspectRatioRootState } from "$lib/components/aspect-ratio/primitive/aspect-ratio.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";

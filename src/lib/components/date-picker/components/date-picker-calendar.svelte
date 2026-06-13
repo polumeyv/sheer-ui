@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { DatePickerCalendarProps } from "$lib/components/date-picker/index.js";
 	import { getDatePickerRootContext } from "$lib/components/date-picker/date-picker.svelte.js";
 	import { CalendarRootState } from "$lib/components/calendar/calendar.svelte.js";

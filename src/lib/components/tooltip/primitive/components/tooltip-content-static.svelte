@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import { boxWith, mergeProps } from '$lib/vendor/index.js';
 	import type { TooltipContentStaticProps } from '$lib/components/tooltip/primitive/index.js';
 	import { TooltipContentState } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';

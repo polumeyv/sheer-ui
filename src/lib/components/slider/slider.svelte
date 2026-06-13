@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { boxWith, mergeProps, type WritableBox } from '$lib/vendor/toolbelt/index.js';
+	import { boxWith, mergeProps, type WritableBox } from '$lib/vendor/index.js';
 	import type { SliderRootProps } from '$lib/components/slider/primitive/index.js';
 	import { SliderRootState, SliderRangeState } from '$lib/components/slider/primitive/slider.svelte.js';
 	import SliderThumb from '$lib/components/slider/primitive/components/slider-thumb.svelte';
 	import { createId } from '$lib/internal/create-id.js';
-	import { watch } from "$lib/vendor/runed/watch.svelte.js";
+	import { watch } from "$lib/vendor/watch.svelte.js";
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 
 	const uid = $props.id();

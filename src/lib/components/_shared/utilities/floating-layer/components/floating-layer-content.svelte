@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import { FloatingContentState } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte.js";
 	import type { ContentImplProps } from "$lib/components/_shared/utilities/floating-layer/components/index.js";
 	import { useId } from "$lib/internal/use-id.js";

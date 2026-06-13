@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import { boxWith, mergeProps } from '$lib/vendor/index.js';
 	import type { CommandGroupProps } from '$lib/components/command/primitive/index.js';
 	import {
 		CommandGroupContainerState,

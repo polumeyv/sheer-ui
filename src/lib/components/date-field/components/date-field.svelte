@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { watch } from "$lib/vendor/runed/watch.svelte.js";
-	import { boxWith } from "$lib/vendor/toolbelt/index.js";
+	import { watch } from "$lib/vendor/watch.svelte.js";
+	import { boxWith } from "$lib/vendor/index.js";
 	import { DateFieldRootState } from "$lib/components/date-field/date-field.svelte.js";
 	import type { DateFieldRootProps } from "$lib/components/date-field/index.js";
 	import { getDefaultDate } from "$lib/internal/date-time/utils.js";

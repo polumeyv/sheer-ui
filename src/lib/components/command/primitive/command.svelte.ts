@@ -9,7 +9,6 @@ import { kbd } from '$lib/internal/kbd.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { getFirstNonCommentChild } from '$lib/internal/dom.js';
 import { computeCommandScore } from '$lib/components/command/primitive/index.js';
-import { cssEscape } from 'css.escape';
 
 const COMMAND_VALUE_ATTR = 'data-value';
 
@@ -250,7 +249,7 @@ export class CommandRootState {
 		const sortedGroups = groups.sort((a, b) => b[1] - a[1]);
 
 		for (const group of sortedGroups) {
-			const element = listInsertionElement?.querySelector(`${COMMAND_GROUP_SELECTOR}[${COMMAND_VALUE_ATTR}="${cssEscape(group[0])}"]`);
+			const element = listInsertionElement?.querySelector(`${COMMAND_GROUP_SELECTOR}[${COMMAND_VALUE_ATTR}="${CSS.escape(group[0])}"]`);
 			element?.parentElement?.appendChild(element);
 		}
 
@@ -1273,7 +1272,7 @@ export class CommandInputState {
 	readonly attachment: RefAttachment;
 	readonly #selectedItemId = $derived.by(() => {
 		const item = this.root.viewportNode?.querySelector<HTMLElement>(
-			`${COMMAND_ITEM_SELECTOR}[${COMMAND_VALUE_ATTR}="${cssEscape(this.root.opts.value.current)}"]`,
+			`${COMMAND_ITEM_SELECTOR}[${COMMAND_VALUE_ATTR}="${CSS.escape(this.root.opts.value.current)}"]`,
 		);
 		if (item === undefined || item === null) return;
 		return item.getAttribute('id') ?? undefined;

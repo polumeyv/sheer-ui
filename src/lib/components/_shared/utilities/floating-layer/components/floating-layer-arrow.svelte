@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import { FloatingArrowState } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte.js";
 	import { Arrow, type ArrowProps } from "$lib/components/_shared/utilities/arrow/index.js";
 	import { useId } from "$lib/internal/use-id.js";

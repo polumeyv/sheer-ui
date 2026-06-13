@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { RatingGroupRootProps } from "$lib/components/rating-group/index.js";
 	import { RatingGroupRootState } from "$lib/components/rating-group/rating-group.svelte.js";
 	import RatingGroupInput from "$lib/components/rating-group/components/rating-group-input.svelte";

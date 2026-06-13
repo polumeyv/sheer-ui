@@ -10,7 +10,7 @@ import {
 	simpleBox,
 	boxFrom,
 } from '$lib/vendor/index.js';
-import { styleToCSS } from '$lib/vendor/utils/strings';
+import { styleToCSS } from '$lib/vendor/index.js';
 import { ElementSize } from '$lib/vendor/element-size.svelte.js';
 import { watch } from '$lib/vendor/watch.svelte.js';
 import type { Arrayable, WithRefOpts } from '$lib/internal/types.js';

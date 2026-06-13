@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getAllContexts, mount, unmount } from "svelte";
 	import { DEV } from "$lib/vendor/env.js";
-	import { watch } from "$lib/vendor/runed/watch.svelte.js";
+	import { watch } from "$lib/vendor/watch.svelte.js";
 	import PortalConsumer from "$lib/components/_shared/utilities/portal/portal-consumer.svelte";
 	import type { PortalProps } from "$lib/components/_shared/utilities/portal/index.js";
 	import { resolvePortalToProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";

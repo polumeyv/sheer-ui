@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { AlertDialogContentProps } from "$lib/components/alert-dialog/primitive/index.js";
 	import DismissibleLayer from "$lib/components/_shared/utilities/dismissible-layer/dismissible-layer.svelte";
 	import EscapeLayer from "$lib/components/_shared/utilities/escape-layer/escape-layer.svelte";

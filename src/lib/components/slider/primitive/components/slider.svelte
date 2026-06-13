@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps, type WritableBox } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps, type WritableBox } from "$lib/vendor/index.js";
 	import type { SliderRootProps } from "$lib/components/slider/primitive/index.js";
 	import { SliderRootState } from "$lib/components/slider/primitive/slider.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { watch } from "$lib/vendor/runed/watch.svelte.js";
+	import { watch } from "$lib/vendor/watch.svelte.js";
 
 	const uid = $props.id();
 

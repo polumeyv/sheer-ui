@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { watch } from "$lib/vendor/runed/watch.svelte.js";
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { watch } from "$lib/vendor/watch.svelte.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import { type DateValue } from "@internationalized/date";
 	import { CalendarRootState } from "$lib/components/calendar/calendar.svelte.js";
 	import type { CalendarRootProps } from "$lib/components/calendar/index.js";

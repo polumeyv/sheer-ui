@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tick } from "svelte";
-import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { MenuSubContentStaticProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuContentState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { SUB_CLOSE_KEYS } from "$lib/components/_shared/menu/utils.js";

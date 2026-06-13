@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith } from '$lib/vendor/toolbelt/index.js';
+	import { boxWith } from '$lib/vendor/index.js';
 	import type { LinkPreviewRootProps } from '$lib/components/link-preview/index.js';
 	import { LinkPreviewRootState } from '$lib/components/link-preview/link-preview.svelte.js';
 	import { FloatingLayer } from '$lib/components/_shared/utilities/floating-layer/index.js';

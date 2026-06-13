@@ -3,7 +3,7 @@
 	import { NavigationMenuViewportState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import PresenceLayer from '$lib/components/_shared/utilities/presence-layer/presence-layer.svelte';
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import { boxWith, mergeProps } from '$lib/vendor/index.js';
 	import { Mounted } from '$lib/components/_shared/utilities/index.js';
 	import { cn } from '../../vendor/utils';
 

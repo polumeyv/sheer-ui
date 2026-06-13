@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { MenuSubContentProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuOpenEvent, MenuContentState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { SUB_CLOSE_KEYS } from "$lib/components/_shared/menu/utils.js";

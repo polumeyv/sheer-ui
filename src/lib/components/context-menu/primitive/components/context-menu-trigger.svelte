@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { ContextMenuTriggerProps } from "$lib/components/context-menu/primitive/index.js";
 	import { ContextMenuTriggerState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { useId } from "$lib/internal/use-id.js";

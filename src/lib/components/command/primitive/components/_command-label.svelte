@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { boxWith } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith } from "$lib/vendor/index.js";
 	import { CommandLabelState } from "$lib/components/command/primitive/command.svelte.js";
 
 	import type { WithChildren } from "$lib/internal/types.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { BitsPrimitiveLabelAttributes, WithElementRef } from "$lib/shared/index.js";
 
 	const uid = $props.id();

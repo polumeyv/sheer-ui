@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { ComboboxInputProps } from "$lib/components/combobox/index.js";
 	import { useId } from "$lib/internal/use-id.js";
 	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index.js";

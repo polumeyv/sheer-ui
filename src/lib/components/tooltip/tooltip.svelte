@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts" generics="T = never">
-	import { boxWith } from '$lib/vendor/toolbelt/index.js';
+	import { boxWith } from '$lib/vendor/index.js';
 	import type { TooltipRootProps } from '$lib/components/tooltip/primitive/index.js';
 	import { TooltipRootState } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
 	import FloatingLayer from '$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte';

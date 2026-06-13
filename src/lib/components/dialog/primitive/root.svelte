@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith } from '$lib/vendor/toolbelt/index.js';
+	import { boxWith } from '$lib/vendor/index.js';
 	import { DialogRootState } from '$lib/components/dialog/primitive/dialog.svelte.js';
 	import type { DialogRootProps } from '$lib/components/dialog/primitive/index.js';
 

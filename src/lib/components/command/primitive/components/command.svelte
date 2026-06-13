@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import { CommandRootState } from "$lib/components/command/primitive/command.svelte.js";
 	import type { CommandRootProps } from "$lib/components/command/primitive/index.js";
 	import CommandLabel from "$lib/components/command/primitive/components/_command-label.svelte";

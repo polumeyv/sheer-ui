@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { MenuCheckboxItemProps } from "$lib/components/_shared/menu/index.js";
 	import { getMenuCheckboxGroupContextOr, MenuCheckboxItemState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { watch } from "$lib/vendor/runed/watch.svelte.js";
+	import { watch } from "$lib/vendor/watch.svelte.js";
 
 	const uid = $props.id();
 

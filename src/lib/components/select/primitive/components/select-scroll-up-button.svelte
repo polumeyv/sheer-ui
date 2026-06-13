@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { SelectScrollUpButtonProps } from "$lib/components/select/primitive/index.js";
 	import { SelectScrollUpButtonState } from "$lib/components/select/primitive/select.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";

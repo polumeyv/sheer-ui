@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import { boxWith, mergeProps } from '$lib/vendor/index.js';
 	import type { PaginationPrevButtonProps } from '$lib/components/pagination/primitive/index.js';
 	import { PaginationButtonState } from '$lib/components/pagination/primitive/pagination.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';

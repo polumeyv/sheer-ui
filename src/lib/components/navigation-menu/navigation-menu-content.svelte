@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import { boxWith, mergeProps } from '$lib/vendor/index.js';
 	import { NavigationMenuContentState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte.js';
 	import NavigationMenuContentImpl from '$lib/components/navigation-menu/primitive/components/navigation-menu-content-impl.svelte';
 	import { createId } from '$lib/internal/create-id.js';

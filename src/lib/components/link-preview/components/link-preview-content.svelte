@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { LinkPreviewContentProps } from "$lib/components/link-preview/index.js";
 	import { LinkPreviewContentState } from "$lib/components/link-preview/link-preview.svelte.js";
 	import PopperLayer from "$lib/components/_shared/utilities/popper-layer/popper-layer.svelte";

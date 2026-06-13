@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith } from "$lib/vendor/index.js";
 	import type { TextSelectionLayerImplProps } from "$lib/components/_shared/utilities/text-selection-layer/index.js";
 	import { TextSelectionLayerState } from "$lib/components/_shared/utilities/text-selection-layer/use-text-selection-layer.svelte.js";
 

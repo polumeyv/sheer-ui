@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { SliderThumbProps } from "$lib/components/slider/primitive/index.js";
 	import { SliderThumbState } from "$lib/components/slider/primitive/slider.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";

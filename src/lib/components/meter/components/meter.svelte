@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import type { MeterRootProps } from "$lib/components/meter/index.js";
 	import { MeterRootState } from "$lib/components/meter/meter.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";

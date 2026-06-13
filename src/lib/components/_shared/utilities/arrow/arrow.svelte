@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { mergeProps } from "$lib/vendor/index.js";
 	import type { ArrowProps } from "$lib/components/_shared/utilities/arrow/index.js";
 	import { useId } from "$lib/internal/use-id.js";
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { boxWith, mergeProps } from "$lib/vendor/index.js";
 	import { DateFieldLabelState } from "$lib/components/date-field/date-field.svelte.js";
 	import type { DateFieldLabelProps } from "$lib/components/date-field/index.js";
 	import { createId } from "$lib/internal/create-id.js";

@@ -12,7 +12,7 @@ import type { TimeFormatter } from '../formatter.js';
 import { ALL_TIME_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';
 import { getTimeSegments } from './segments.js';
 import type { TimeSegmentPart } from './types.js';
-import { styleToCSS } from '$lib/vendor/utils/strings';
+import { styleToCSS } from '$lib/vendor/index.js';
 import { useId } from '$lib/internal/use-id.js';
 import { getPlaceholder } from '../placeholders.js';
 import { isZonedDateTime } from '../utils.js';
