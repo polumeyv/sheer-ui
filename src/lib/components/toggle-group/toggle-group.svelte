@@ -21,8 +21,8 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { type WritableBox, boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { ToggleGroupRootProps } from '$lib/bits/toggle-group/types.js';
-	import { ToggleGroupRootState } from '$lib/bits/toggle-group/toggle-group.svelte.js';
+	import type { ToggleGroupRootProps } from '$lib/components/toggle-group/primitive/types.js';
+	import { ToggleGroupRootState } from '$lib/components/toggle-group/primitive/toggle-group.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { noop } from '$lib/internal/noop.js';
 	import { watch } from '$lib/vendor/runed/index.js';

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import { SelectItemState } from '$lib/bits/select/select.svelte.js';
-	import type { SelectItemProps } from '$lib/bits/select/types.js';
+	import { SelectItemState } from '$lib/components/select/primitive/select.svelte.js';
+	import type { SelectItemProps } from '$lib/components/select/primitive/types.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { noop } from '$lib/internal/noop.js';
-	import Mounted from '$lib/bits/utilities/mounted.svelte';
+	import Mounted from '$lib/components/_shared/utilities/mounted.svelte';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import { cn } from '../../utils';
 

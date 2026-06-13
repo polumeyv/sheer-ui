@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { AccordionItemProps } from '$lib/bits/accordion/types.js';
-	import { AccordionItemState } from '$lib/bits/accordion/accordion.svelte.js';
+	import type { AccordionItemProps } from '$lib/components/accordion/primitive/types.js';
+	import { AccordionItemState } from '$lib/components/accordion/primitive/accordion.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { cn } from '../../utils';
 

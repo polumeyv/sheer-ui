@@ -1,10 +1,10 @@
 <script lang="ts">
-	import FloatingLayer from '$lib/bits/utilities/floating-layer/components/floating-layer.svelte';
+	import FloatingLayer from '$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte';
 	import { noop } from '$lib/internal/noop.js';
 	import { type WritableBox, boxWith } from '$lib/vendor/toolbelt/index.js';
-	import { SelectRootState } from '$lib/bits/select/select.svelte.js';
-	import type { SelectRootProps } from '$lib/bits/select/types.js';
-	import SelectHiddenInput from '$lib/bits/select/components/select-hidden-input.svelte';
+	import { SelectRootState } from '$lib/components/select/primitive/select.svelte.js';
+	import type { SelectRootProps } from '$lib/components/select/primitive/types.js';
+	import SelectHiddenInput from '$lib/components/select/primitive/components/select-hidden-input.svelte';
 	import { watch } from '$lib/vendor/runed/index.js';
 
 	let {

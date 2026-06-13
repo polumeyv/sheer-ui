@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith } from '$lib/vendor/toolbelt/index.js';
-	import { DialogRootState } from '$lib/bits/dialog/dialog.svelte.js';
-	import type { DialogRootProps } from '$lib/bits/dialog/types.js';
+	import { DialogRootState } from '$lib/components/dialog/primitive/dialog.svelte.js';
+	import type { DialogRootProps } from '$lib/components/dialog/primitive/types.js';
 	import { noop } from '$lib/internal/noop.js';
 
 	let {

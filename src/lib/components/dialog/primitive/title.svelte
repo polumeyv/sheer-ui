@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import { DialogTitleState } from '$lib/bits/dialog/dialog.svelte.js';
-	import type { DialogTitleProps } from '$lib/bits/dialog/types.js';
+	import { DialogTitleState } from '$lib/components/dialog/primitive/dialog.svelte.js';
+	import type { DialogTitleProps } from '$lib/components/dialog/primitive/types.js';
 	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { RadioGroupRootProps } from '$lib/bits/radio-group/types.js';
-	import { RadioGroupRootState } from '$lib/bits/radio-group/radio-group.svelte.js';
-	import RadioGroupInput from '$lib/bits/radio-group/components/radio-group-input.svelte';
+	import type { RadioGroupRootProps } from '$lib/components/radio-group/primitive/types.js';
+	import { RadioGroupRootState } from '$lib/components/radio-group/primitive/radio-group.svelte.js';
+	import RadioGroupInput from '$lib/components/radio-group/primitive/components/radio-group-input.svelte';
 	import { createId } from '$lib/internal/create-id.js';
 	import { noop } from '$lib/internal/noop.js';
 	import { cn } from '../../utils.js';

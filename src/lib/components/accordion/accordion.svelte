@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { type WritableBox, boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import { AccordionRootState } from '$lib/bits/accordion/accordion.svelte.js';
-	import type { AccordionRootProps } from '$lib/bits/accordion/types.js';
+	import { AccordionRootState } from '$lib/components/accordion/primitive/accordion.svelte.js';
+	import type { AccordionRootProps } from '$lib/components/accordion/primitive/types.js';
 	import { noop } from '$lib/internal/noop.js';
 	import { watch } from '$lib/vendor/runed/index.js';
 	import { createId } from '$lib/internal/create-id.js';

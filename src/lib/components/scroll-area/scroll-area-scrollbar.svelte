@@ -1,12 +1,12 @@
 <script lang="ts">
 import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-import type { ScrollAreaScrollbarProps } from '$lib/bits/scroll-area/types.js';
-import { ScrollAreaScrollbarState } from '$lib/bits/scroll-area/scroll-area.svelte.js';
-import ScrollAreaScrollbarAuto from '$lib/bits/scroll-area/components/scroll-area-scrollbar-auto.svelte';
-import ScrollAreaScrollbarScroll from '$lib/bits/scroll-area/components/scroll-area-scrollbar-scroll.svelte';
-import ScrollAreaScrollbarHover from '$lib/bits/scroll-area/components/scroll-area-scrollbar-hover.svelte';
-import ScrollAreaScrollbarVisible from '$lib/bits/scroll-area/components/scroll-area-scrollbar-visible.svelte';
-import Thumb from '$lib/bits/scroll-area/components/scroll-area-thumb.svelte';
+import type { ScrollAreaScrollbarProps } from '$lib/components/scroll-area/primitive/types.js';
+import { ScrollAreaScrollbarState } from '$lib/components/scroll-area/primitive/scroll-area.svelte.js';
+import ScrollAreaScrollbarAuto from '$lib/components/scroll-area/primitive/components/scroll-area-scrollbar-auto.svelte';
+import ScrollAreaScrollbarScroll from '$lib/components/scroll-area/primitive/components/scroll-area-scrollbar-scroll.svelte';
+import ScrollAreaScrollbarHover from '$lib/components/scroll-area/primitive/components/scroll-area-scrollbar-hover.svelte';
+import ScrollAreaScrollbarVisible from '$lib/components/scroll-area/primitive/components/scroll-area-scrollbar-visible.svelte';
+import Thumb from '$lib/components/scroll-area/primitive/components/scroll-area-thumb.svelte';
 import { createId } from '$lib/internal/create-id.js';
 import { cn, type WithoutChild } from '../../utils';
 

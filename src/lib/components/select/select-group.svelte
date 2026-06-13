@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import { SelectGroupState } from '$lib/bits/select/select.svelte.js';
-	import type { SelectGroupProps } from '$lib/bits/select/types.js';
+	import { SelectGroupState } from '$lib/components/select/primitive/select.svelte.js';
+	import type { SelectGroupProps } from '$lib/components/select/primitive/types.js';
 	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();

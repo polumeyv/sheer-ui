@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { TabsTriggerProps } from '$lib/bits/tabs/types.js';
-	import { TabsTriggerState } from '$lib/bits/tabs/tabs.svelte.js';
+	import type { TabsTriggerProps } from '$lib/components/tabs/primitive/types.js';
+	import { TabsTriggerState } from '$lib/components/tabs/primitive/tabs.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { cn } from '../../utils.js';
 

@@ -1,0 +1,39 @@
+<script lang="ts">
+	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import type { TabsTriggerProps } from "$lib/components/tabs/primitive/types.js";
+	import { TabsTriggerState } from "$lib/components/tabs/primitive/tabs.svelte.js";
+	import { createId } from "$lib/internal/create-id.js";
+
+	const uid = $props.id();
+
+	let {
+		child,
+		children,
+		disabled = false,
+		id = createId(uid),
+		type = "button",
+		value,
+		ref = $bindable(null),
+		...restProps
+	}: TabsTriggerProps = $props();
+
+	const triggerState = TabsTriggerState.create({
+		id: boxWith(() => id),
+		disabled: boxWith(() => disabled ?? false),
+		value: boxWith(() => value),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(mergeProps(restProps, triggerState.props, { type }));
+</script>
+
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<button {...mergedProps}>
+		{@render children?.()}
+	</button>
+{/if}

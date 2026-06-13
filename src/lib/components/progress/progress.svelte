@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { ProgressRootProps } from '$lib/bits/progress/types.js';
-	import { ProgressRootState } from '$lib/bits/progress/progress.svelte.js';
+	import type { ProgressRootProps } from '$lib/components/progress/primitive/types.js';
+	import { ProgressRootState } from '$lib/components/progress/primitive/progress.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { cn, type WithoutChildrenOrChild } from '../../utils';
 

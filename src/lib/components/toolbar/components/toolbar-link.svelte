@@ -1,0 +1,35 @@
+<script lang="ts">
+	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { ToolbarLinkState } from "$lib/components/toolbar/toolbar.svelte.js";
+	import type { ToolbarLinkProps } from "$lib/components/toolbar/types.js";
+	import { createId } from "$lib/internal/create-id.js";
+
+	const uid = $props.id();
+
+	let {
+		children,
+		href,
+		child,
+		ref = $bindable(null),
+		id = createId(uid),
+		...restProps
+	}: ToolbarLinkProps = $props();
+
+	const linkState = ToolbarLinkState.create({
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(mergeProps(restProps, linkState.props));
+</script>
+
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<a {href} {...mergedProps}>
+		{@render children?.()}
+	</a>
+{/if}

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { NavigationMenuViewportProps } from '$lib/bits/navigation-menu/types.js';
-	import { NavigationMenuViewportState } from '$lib/bits/navigation-menu/navigation-menu.svelte.js';
+	import type { NavigationMenuViewportProps } from '$lib/components/navigation-menu/primitive/types.js';
+	import { NavigationMenuViewportState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { getDataTransitionAttrs } from '$lib/internal/attrs.js';
-	import PresenceLayer from '$lib/bits/utilities/presence-layer/presence-layer.svelte';
+	import PresenceLayer from '$lib/components/_shared/utilities/presence-layer/presence-layer.svelte';
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import { Mounted } from '$lib/bits/utilities/index.js';
+	import { Mounted } from '$lib/components/_shared/utilities/index.js';
 	import { cn } from '../../utils';
 
 	const uid = $props.id();

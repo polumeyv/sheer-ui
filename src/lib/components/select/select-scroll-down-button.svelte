@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { SelectScrollDownButtonProps } from '$lib/bits/select/types.js';
-	import { SelectScrollDownButtonState } from '$lib/bits/select/select.svelte.js';
+	import type { SelectScrollDownButtonProps } from '$lib/components/select/primitive/types.js';
+	import { SelectScrollDownButtonState } from '$lib/components/select/primitive/select.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { Mounted } from '$lib/bits/utilities/index.js';
+	import { Mounted } from '$lib/components/_shared/utilities/index.js';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import { cn } from '../../utils';
 

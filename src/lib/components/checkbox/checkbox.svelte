@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { CheckboxRootProps } from '$lib/bits/checkbox/types.js';
-	import { getCheckboxGroupContextOr, CheckboxRootState } from '$lib/bits/checkbox/checkbox.svelte.js';
-	import CheckboxInput from '$lib/bits/checkbox/components/checkbox-input.svelte';
+	import type { CheckboxRootProps } from '$lib/components/checkbox/primitive/types.js';
+	import { getCheckboxGroupContextOr, CheckboxRootState } from '$lib/components/checkbox/primitive/checkbox.svelte.js';
+	import CheckboxInput from '$lib/components/checkbox/primitive/components/checkbox-input.svelte';
 	import { createId } from '$lib/internal/create-id.js';
 	import { watch } from '$lib/vendor/runed/index.js';
 	import CheckIcon from '@lucide/svelte/icons/check';

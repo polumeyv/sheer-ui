@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { PaginationPageProps } from '$lib/bits/pagination/types.js';
-	import { PaginationPageState } from '$lib/bits/pagination/pagination.svelte.js';
+	import type { PaginationPageProps } from '$lib/components/pagination/primitive/types.js';
+	import { PaginationPageState } from '$lib/components/pagination/primitive/pagination.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { cn } from '../../utils';
 	import { type Props, buttonVariants } from '../button';

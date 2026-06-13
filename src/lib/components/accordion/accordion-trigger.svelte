@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { AccordionHeaderProps, AccordionTriggerProps } from '$lib/bits/accordion/types.js';
+	import type { AccordionHeaderProps, AccordionTriggerProps } from '$lib/components/accordion/primitive/types.js';
 	import {
 		AccordionHeaderState,
 		AccordionTriggerState,
-	} from '$lib/bits/accordion/accordion.svelte.js';
+	} from '$lib/components/accordion/primitive/accordion.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import { cn, type WithoutChild } from '../../utils';

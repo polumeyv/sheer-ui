@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { CommandListProps } from '$lib/bits/command/types.js';
-	import { CommandListState } from '$lib/bits/command/command.svelte.js';
+	import type { CommandListProps } from '$lib/components/command/primitive/types.js';
+	import { CommandListState } from '$lib/components/command/primitive/command.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { cn } from '../../utils';
 

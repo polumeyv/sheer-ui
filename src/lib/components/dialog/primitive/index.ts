@@ -5,7 +5,9 @@ export { default as Trigger } from './trigger.svelte';
 export { default as Close } from './close.svelte';
 export { default as Title } from './title.svelte';
 export { default as Description } from './description.svelte';
-export { default as Portal } from '$lib/bits/utilities/portal/portal.svelte';
+export { default as Portal } from '$lib/components/_shared/utilities/portal/portal.svelte';
+
+export * as Dialog from '$lib/components/dialog/primitive/exports.js';
 
 export type {
 	DialogRootProps as RootProps,
@@ -16,4 +18,4 @@ export type {
 	DialogTitleProps as TitleProps,
 	DialogDescriptionProps as DescriptionProps,
 	DialogPortalProps as PortalProps,
-} from '$lib/bits/dialog/types.js';
+} from '$lib/components/dialog/primitive/types.js';

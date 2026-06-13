@@ -1,5 +1,4 @@
 import type { MaybeGetter } from "$lib/vendor/runed/internal/types.js";
-import { isFunction } from "$lib/vendor/runed/internal/utils/is.js";
 
 /**
  * Resolves a value that may be a getter function or a direct value.
@@ -17,7 +16,7 @@ export function extract<T>(value: MaybeGetter<T>): T;
 export function extract<T>(value: MaybeGetter<T | undefined>, defaultValue: T): T;
 
 export function extract(value: unknown, defaultValue?: unknown) {
-	if (isFunction(value)) {
+	if (typeof value === "function") {
 		const getter = value;
 		const gotten = getter();
 		if (gotten === undefined) return defaultValue;

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { PopoverTriggerProps } from '$lib/bits/popover/types.js';
-	import { PopoverTriggerState } from '$lib/bits/popover/popover.svelte.js';
+	import type { PopoverTriggerProps } from '$lib/components/popover/primitive/types.js';
+	import { PopoverTriggerState } from '$lib/components/popover/primitive/popover.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import FloatingLayerAnchor from '$lib/bits/utilities/floating-layer/components/floating-layer-anchor.svelte';
+	import FloatingLayerAnchor from '$lib/components/_shared/utilities/floating-layer/components/floating-layer-anchor.svelte';
 	import { cn } from '../../utils';
 
 	const uid = $props.id();

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { PaginationNextButtonProps } from '$lib/bits/pagination/types.js';
-	import { PaginationButtonState } from '$lib/bits/pagination/pagination.svelte.js';
+	import type { PaginationNextButtonProps } from '$lib/components/pagination/primitive/types.js';
+	import { PaginationButtonState } from '$lib/components/pagination/primitive/pagination.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import { buttonVariants } from '../button';

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { PopoverContentProps } from '$lib/bits/popover/types.js';
-	import { PopoverContentState } from '$lib/bits/popover/popover.svelte.js';
-	import PopperLayer from '$lib/bits/utilities/popper-layer/popper-layer.svelte';
+	import type { PopoverContentProps } from '$lib/components/popover/primitive/types.js';
+	import { PopoverContentState } from '$lib/components/popover/primitive/popover.svelte.js';
+	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
 	import { noop } from '$lib/internal/noop.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
-	import PopperLayerForceMount from '$lib/bits/utilities/popper-layer/popper-layer-force-mount.svelte';
+	import PopperLayerForceMount from '$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte';
 	import PopoverPortal from './popover-portal.svelte';
 	import { cn, type WithoutChildrenOrChild } from '../../utils';
 	import type { ComponentProps } from 'svelte';

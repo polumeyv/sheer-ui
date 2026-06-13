@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { SwitchRootProps } from '$lib/bits/switch/types.js';
-	import { SwitchRootState, SwitchThumbState } from '$lib/bits/switch/switch.svelte.js';
-	import SwitchInput from '$lib/bits/switch/components/switch-input.svelte';
+	import type { SwitchRootProps } from '$lib/components/switch/primitive/types.js';
+	import { SwitchRootState, SwitchThumbState } from '$lib/components/switch/primitive/switch.svelte.js';
+	import SwitchInput from '$lib/components/switch/primitive/components/switch-input.svelte';
 	import { createId } from '$lib/internal/create-id.js';
 	import { noop } from '$lib/internal/noop.js';
 	import { cn, type WithoutChildrenOrChild } from '../../utils';

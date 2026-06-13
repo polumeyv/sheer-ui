@@ -9,7 +9,7 @@ import { on } from "svelte/events";
 import { watch } from "$lib/vendor/runed/index.js";
 import { boxAutoReset } from "./box-auto-reset.svelte.js";
 import { isElement, isHTMLElement } from "./is.js";
-import type { Side } from "$lib/bits/utilities/floating-layer/use-floating-layer.svelte.js";
+import type { Side } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte.js";
 
 interface GraceAreaOptions {
 	enabled: Getter<boolean>;

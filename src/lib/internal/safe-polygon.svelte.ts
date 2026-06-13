@@ -2,7 +2,7 @@ import { type Getter, getDocument } from "$lib/vendor/toolbelt/index.js";
 import { on } from "svelte/events";
 import { watch } from "$lib/vendor/runed/index.js";
 import { isElement } from "./is.js";
-import type { Side } from "$lib/bits/utilities/floating-layer/use-floating-layer.svelte.js";
+import type { Side } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte.js";
 
 type Point = [number, number];
 

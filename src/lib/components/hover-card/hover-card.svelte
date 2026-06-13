@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { boxWith } from '$lib/vendor/toolbelt/index.js';
-	import type { LinkPreviewRootProps } from '$lib/bits/link-preview/types.js';
-	import { LinkPreviewRootState } from '$lib/bits/link-preview/link-preview.svelte.js';
+	import type { LinkPreviewRootProps } from '$lib/components/link-preview/types.js';
+	import { LinkPreviewRootState } from '$lib/components/link-preview/link-preview.svelte.js';
 	import { noop } from '$lib/internal/noop.js';
-	import { FloatingLayer } from '$lib/bits/utilities/floating-layer/index.js';
+	import { FloatingLayer } from '$lib/components/_shared/utilities/floating-layer/index.js';
 
 	let {
 		disabled = false,

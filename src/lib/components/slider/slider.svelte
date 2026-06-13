@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps, type WritableBox } from '$lib/vendor/toolbelt/index.js';
-	import type { SliderRootProps } from '$lib/bits/slider/types.js';
-	import { SliderRootState, SliderRangeState } from '$lib/bits/slider/slider.svelte.js';
-	import SliderThumb from '$lib/bits/slider/components/slider-thumb.svelte';
+	import type { SliderRootProps } from '$lib/components/slider/primitive/types.js';
+	import { SliderRootState, SliderRangeState } from '$lib/components/slider/primitive/slider.svelte.js';
+	import SliderThumb from '$lib/components/slider/primitive/components/slider-thumb.svelte';
 	import { createId } from '$lib/internal/create-id.js';
 	import { noop } from '$lib/internal/noop.js';
 	import { watch } from '$lib/vendor/runed/index.js';

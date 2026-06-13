@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { CommandLoadingProps } from '$lib/bits/command/types.js';
-	import { CommandLoadingState } from '$lib/bits/command/command.svelte.js';
+	import type { CommandLoadingProps } from '$lib/components/command/primitive/types.js';
+	import { CommandLoadingState } from '$lib/components/command/primitive/command.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();

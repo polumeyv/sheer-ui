@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { AvatarRootProps } from '$lib/bits/avatar/types.js';
-	import { AvatarRootState } from '$lib/bits/avatar/avatar.svelte.js';
+	import type { AvatarRootProps } from '$lib/components/avatar/primitive/types.js';
+	import { AvatarRootState } from '$lib/components/avatar/primitive/avatar.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { cn } from '../../utils';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import { CollapsibleContentState } from '$lib/bits/collapsible/collapsible.svelte.js';
-	import type { CollapsibleContentProps } from '$lib/bits/collapsible/types.js';
+	import { CollapsibleContentState } from '$lib/components/collapsible/primitive/collapsible.svelte.js';
+	import type { CollapsibleContentProps } from '$lib/components/collapsible/primitive/types.js';
 	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();

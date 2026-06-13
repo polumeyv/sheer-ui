@@ -1,6 +1,5 @@
 import { defaultWindow, type ConfigurableWindow } from "$lib/vendor/runed/internal/configurable-globals.js";
 import type { MaybeElementGetter } from "$lib/vendor/runed/internal/types.js";
-import { get } from "$lib/vendor/runed/internal/utils/get.js";
 import { createSubscriber } from "svelte/reactivity";
 
 export type ElementSizeOptions = ConfigurableWindow & {
@@ -49,7 +48,7 @@ export class ElementSize {
 
 	// we need to use a derived here because the class will be created before the node is bound to the ref
 	#subscribe = $derived.by(() => {
-		const node$ = get(this.#node);
+		const node$ = typeof this.#node === "function" ? this.#node() : this.#node;
 		if (!node$) return;
 		return createSubscriber((update) => {
 			if (!this.#window) return;
@@ -85,7 +84,7 @@ export class ElementSize {
 	}
 
 	calculateSize() {
-		const element = get(this.#node);
+		const element = typeof this.#node === "function" ? this.#node() : this.#node;
 
 		// no element or no window, return undefined, we will return 0x0 in the getSize method
 		if (!element || !this.#window) {

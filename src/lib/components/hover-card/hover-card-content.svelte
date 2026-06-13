@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { LinkPreviewContentProps } from '$lib/bits/link-preview/types.js';
-	import { LinkPreviewContentState } from '$lib/bits/link-preview/link-preview.svelte.js';
-	import PopperLayer from '$lib/bits/utilities/popper-layer/popper-layer.svelte';
+	import type { LinkPreviewContentProps } from '$lib/components/link-preview/types.js';
+	import { LinkPreviewContentState } from '$lib/components/link-preview/link-preview.svelte.js';
+	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
 	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
-	import PopperLayerForceMount from '$lib/bits/utilities/popper-layer/popper-layer-force-mount.svelte';
-	import Mounted from '$lib/bits/utilities/mounted.svelte';
+	import PopperLayerForceMount from '$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte';
+	import Mounted from '$lib/components/_shared/utilities/mounted.svelte';
 	import { noop } from '$lib/internal/noop.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { cn, type WithoutChildrenOrChild } from '../../utils';

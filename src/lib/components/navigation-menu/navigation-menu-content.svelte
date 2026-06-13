@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import { NavigationMenuContentState } from '$lib/bits/navigation-menu/navigation-menu.svelte.js';
-	import NavigationMenuContentImpl from '$lib/bits/navigation-menu/components/navigation-menu-content-impl.svelte';
+	import { NavigationMenuContentState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte.js';
+	import NavigationMenuContentImpl from '$lib/components/navigation-menu/primitive/components/navigation-menu-content-impl.svelte';
 	import { createId } from '$lib/internal/create-id.js';
 	import { getDataTransitionAttrs } from '$lib/internal/attrs.js';
-	import type { NavigationMenuContentProps } from '$lib/bits/navigation-menu/types.js';
-	import Portal from '$lib/bits/utilities/portal/portal.svelte';
-	import PresenceLayer from '$lib/bits/utilities/presence-layer/presence-layer.svelte';
-	import Mounted from '$lib/bits/utilities/mounted.svelte';
+	import type { NavigationMenuContentProps } from '$lib/components/navigation-menu/primitive/types.js';
+	import Portal from '$lib/components/_shared/utilities/portal/portal.svelte';
+	import PresenceLayer from '$lib/components/_shared/utilities/presence-layer/presence-layer.svelte';
+	import Mounted from '$lib/components/_shared/utilities/mounted.svelte';
 	import { cn } from '../../utils';
 
 	const uid = $props.id();

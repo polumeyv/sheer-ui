@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import { CommandRootState } from '$lib/bits/command/command.svelte.js';
-	import type { CommandRootProps } from '$lib/bits/command/types.js';
-	import CommandLabel from '$lib/bits/command/components/_command-label.svelte';
+	import { CommandRootState } from '$lib/components/command/primitive/command.svelte.js';
+	import type { CommandRootProps } from '$lib/components/command/primitive/types.js';
+	import CommandLabel from '$lib/components/command/primitive/components/_command-label.svelte';
 	import { noop } from '$lib/internal/noop.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { computeCommandScore } from '$lib/bits/command/index.js';
+	import { computeCommandScore } from '$lib/components/command/primitive/index.js';
 	import { cn } from '../../utils';
 
 	const uid = $props.id();

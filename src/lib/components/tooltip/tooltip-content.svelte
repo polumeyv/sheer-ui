@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { TooltipContentProps } from '$lib/bits/tooltip/types.js';
-	import { TooltipContentState } from '$lib/bits/tooltip/tooltip.svelte.js';
+	import type { TooltipContentProps } from '$lib/components/tooltip/primitive/types.js';
+	import { TooltipContentState } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import PopperLayer from '$lib/bits/utilities/popper-layer/popper-layer.svelte';
+	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
 	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
-	import PopperLayerForceMount from '$lib/bits/utilities/popper-layer/popper-layer-force-mount.svelte';
-	import FloatingLayerArrow from '$lib/bits/utilities/floating-layer/components/floating-layer-arrow.svelte';
+	import PopperLayerForceMount from '$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte';
+	import FloatingLayerArrow from '$lib/components/_shared/utilities/floating-layer/components/floating-layer-arrow.svelte';
 	import { noop } from '$lib/internal/noop.js';
 	import { cn } from '../../utils';
 	import TooltipPortal from './tooltip-portal.svelte';

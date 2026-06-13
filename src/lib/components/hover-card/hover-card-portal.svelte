@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Portal from '$lib/bits/utilities/portal/portal.svelte';
-	import type { PortalProps } from '$lib/bits/utilities/portal/types.js';
+	import Portal from '$lib/components/_shared/utilities/portal/portal.svelte';
+	import type { PortalProps } from '$lib/components/_shared/utilities/portal/types.js';
 
 	let { ...restProps }: PortalProps = $props();
 </script>

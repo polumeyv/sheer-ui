@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { PaginationRootProps } from '$lib/bits/pagination/types.js';
-	import { PaginationRootState } from '$lib/bits/pagination/pagination.svelte.js';
+	import type { PaginationRootProps } from '$lib/components/pagination/primitive/types.js';
+	import { PaginationRootState } from '$lib/components/pagination/primitive/pagination.svelte.js';
 	import { noop } from '$lib/internal/noop.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { cn } from '../../utils';

@@ -6,11 +6,11 @@
 
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { NavigationMenuTriggerProps } from '$lib/bits/navigation-menu/types.js';
-	import { NavigationMenuTriggerState } from '$lib/bits/navigation-menu/navigation-menu.svelte.js';
+	import type { NavigationMenuTriggerProps } from '$lib/components/navigation-menu/primitive/types.js';
+	import { NavigationMenuTriggerState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import VisuallyHidden from '$lib/bits/utilities/visually-hidden/visually-hidden.svelte';
-	import Mounted from '$lib/bits/utilities/mounted.svelte';
+	import VisuallyHidden from '$lib/components/_shared/utilities/visually-hidden/visually-hidden.svelte';
+	import Mounted from '$lib/components/_shared/utilities/mounted.svelte';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
 	const uid = $props.id();

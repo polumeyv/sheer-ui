@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { NavigationMenuIndicatorProps } from '$lib/bits/navigation-menu/types.js';
-	import { NavigationMenuIndicatorState } from '$lib/bits/navigation-menu/navigation-menu.svelte.js';
-	import NavigationMenuIndicatorImpl from '$lib/bits/navigation-menu/components/navigation-menu-indicator-impl.svelte';
+	import type { NavigationMenuIndicatorProps } from '$lib/components/navigation-menu/primitive/types.js';
+	import { NavigationMenuIndicatorState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte.js';
+	import NavigationMenuIndicatorImpl from '$lib/components/navigation-menu/primitive/components/navigation-menu-indicator-impl.svelte';
 	import { createId } from '$lib/internal/create-id.js';
 	import { getDataTransitionAttrs } from '$lib/internal/attrs.js';
-	import PresenceLayer from '$lib/bits/utilities/presence-layer/presence-layer.svelte';
-	import Portal from '$lib/bits/utilities/portal/portal.svelte';
+	import PresenceLayer from '$lib/components/_shared/utilities/presence-layer/presence-layer.svelte';
+	import Portal from '$lib/components/_shared/utilities/portal/portal.svelte';
 	import { cn } from '../../utils';
 
 	const uid = $props.id();

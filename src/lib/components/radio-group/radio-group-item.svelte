@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { RadioGroupItemProps } from '$lib/bits/radio-group/types.js';
-	import { RadioGroupItemState } from '$lib/bits/radio-group/radio-group.svelte.js';
+	import type { RadioGroupItemProps } from '$lib/components/radio-group/primitive/types.js';
+	import { RadioGroupItemState } from '$lib/components/radio-group/primitive/radio-group.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import CircleIcon from '@lucide/svelte/icons/circle';
 	import { cn, type WithoutChildrenOrChild } from '../../utils.js';

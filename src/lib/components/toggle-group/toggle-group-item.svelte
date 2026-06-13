@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { ToggleGroupItemProps } from '$lib/bits/toggle-group/types.js';
-	import { ToggleGroupItemState } from '$lib/bits/toggle-group/toggle-group.svelte.js';
+	import type { ToggleGroupItemProps } from '$lib/components/toggle-group/primitive/types.js';
+	import { ToggleGroupItemState } from '$lib/components/toggle-group/primitive/toggle-group.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { getToggleGroupCtx } from './toggle-group.svelte';
 	import { cn } from '../../utils';

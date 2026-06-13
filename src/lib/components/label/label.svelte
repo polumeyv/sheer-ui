@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { LabelRootProps } from '$lib/bits/label/types.js';
-	import { LabelRootState } from '$lib/bits/label/label.svelte.js';
+	import type { LabelRootProps } from '$lib/components/label/primitive/types.js';
+	import { LabelRootState } from '$lib/components/label/primitive/label.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { cn } from '../../utils';
 

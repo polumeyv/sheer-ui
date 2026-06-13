@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import { SeparatorRootState } from '$lib/bits/separator/separator.svelte.js';
-	import type { SeparatorRootProps } from '$lib/bits/separator/types.js';
+	import { SeparatorRootState } from '$lib/components/separator/primitive/separator.svelte.js';
+	import type { SeparatorRootProps } from '$lib/components/separator/primitive/types.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { cn } from '../../utils';
 

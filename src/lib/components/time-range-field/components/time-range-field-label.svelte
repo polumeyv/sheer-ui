@@ -1,0 +1,34 @@
+<script lang="ts">
+	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { TimeRangeFieldLabelState } from "$lib/components/time-range-field/time-range-field.svelte.js";
+	import type { TimeRangeFieldLabelProps } from "$lib/components/time-range-field/types.js";
+	import { createId } from "$lib/internal/create-id.js";
+
+	const uid = $props.id();
+
+	let {
+		id = createId(uid),
+		ref = $bindable(null),
+		children,
+		child,
+		...restProps
+	}: TimeRangeFieldLabelProps = $props();
+
+	const labelState = TimeRangeFieldLabelState.create({
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(mergeProps(restProps, labelState.props));
+</script>
+
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<span {...mergedProps}>
+		{@render children?.()}
+	</span>
+{/if}

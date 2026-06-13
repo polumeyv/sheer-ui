@@ -5,8 +5,8 @@
 
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { ToggleRootProps } from '$lib/bits/toggle/types.js';
-	import { ToggleRootState } from '$lib/bits/toggle/toggle.svelte.js';
+	import type { ToggleRootProps } from '$lib/components/toggle/primitive/types.js';
+	import { ToggleRootState } from '$lib/components/toggle/primitive/toggle.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { noop } from '$lib/internal/noop.js';
 	import { cn } from '../../utils.js';

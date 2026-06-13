@@ -1,0 +1,44 @@
+<script lang="ts">
+	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import type { MenuSubTriggerProps } from "$lib/components/_shared/menu/types.js";
+	import { MenuSubTriggerState } from "$lib/components/_shared/menu/menu.svelte.js";
+	import FloatingLayerAnchor from "$lib/components/_shared/utilities/floating-layer/components/floating-layer-anchor.svelte";
+	import { noop } from "$lib/internal/noop.js";
+	import { createId } from "$lib/internal/create-id.js";
+
+	const uid = $props.id();
+
+	let {
+		id = createId(uid),
+		disabled = false,
+		ref = $bindable(null),
+		children,
+		child,
+		onSelect = noop,
+		openDelay = 0,
+		...restProps
+	}: MenuSubTriggerProps = $props();
+
+	const subTriggerState = MenuSubTriggerState.create({
+		disabled: boxWith(() => disabled),
+		onSelect: boxWith(() => onSelect),
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+		openDelay: boxWith(() => openDelay),
+	});
+
+	const mergedProps = $derived(mergeProps(restProps, subTriggerState.props));
+</script>
+
+<FloatingLayerAnchor {id} ref={subTriggerState.opts.ref}>
+	{#if child}
+		{@render child({ props: mergedProps })}
+	{:else}
+		<div {...mergedProps}>
+			{@render children?.()}
+		</div>
+	{/if}
+</FloatingLayerAnchor>

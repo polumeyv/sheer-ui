@@ -4,9 +4,9 @@
 
 <script lang="ts" generics="T = never">
 	import { boxWith } from '$lib/vendor/toolbelt/index.js';
-	import type { TooltipRootProps } from '$lib/bits/tooltip/types.js';
-	import { TooltipRootState } from '$lib/bits/tooltip/tooltip.svelte.js';
-	import FloatingLayer from '$lib/bits/utilities/floating-layer/components/floating-layer.svelte';
+	import type { TooltipRootProps } from '$lib/components/tooltip/primitive/types.js';
+	import { TooltipRootState } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
+	import FloatingLayer from '$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte';
 	import { noop } from '$lib/internal/noop.js';
 
 	let {

@@ -1,0 +1,29 @@
+<script lang="ts">
+	import { boxWith } from "$lib/vendor/toolbelt/index.js";
+	import type { DismissibleLayerImplProps } from "$lib/components/_shared/utilities/dismissible-layer/types.js";
+	import { DismissibleLayerState } from "$lib/components/_shared/utilities/dismissible-layer/use-dismissable-layer.svelte.js";
+	import { noop } from "$lib/internal/noop.js";
+
+	let {
+		interactOutsideBehavior = "close",
+		onInteractOutside = noop,
+		onFocusOutside = noop,
+		id,
+		children,
+		enabled,
+		isValidEvent = () => false,
+		ref,
+	}: DismissibleLayerImplProps = $props();
+
+	const dismissibleLayerState = DismissibleLayerState.create({
+		id: boxWith(() => id),
+		interactOutsideBehavior: boxWith(() => interactOutsideBehavior),
+		onInteractOutside: boxWith(() => onInteractOutside),
+		enabled: boxWith(() => enabled),
+		onFocusOutside: boxWith(() => onFocusOutside),
+		isValidEvent: boxWith(() => isValidEvent),
+		ref,
+	});
+</script>
+
+{@render children?.({ props: dismissibleLayerState.props })}

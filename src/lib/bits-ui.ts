@@ -45,7 +45,7 @@ export {
 	IsUsingKeyboard,
 	computeCommandScore,
 	getBitsConfig,
-} from "./bits/index.js";
+} from "$lib/components/_shared/primitives.js";
 
 export * from "./shared/index.js";
 export type * from "./shared/index.js";
