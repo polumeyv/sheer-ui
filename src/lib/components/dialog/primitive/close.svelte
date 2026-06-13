@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
 	import { DialogCloseState } from '$lib/components/dialog/primitive/dialog.svelte.js';
-	import type { DialogCloseProps } from '$lib/components/dialog/primitive/types.js';
+	import type { DialogCloseProps } from '$lib/components/dialog/primitive/index.js';
 	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();

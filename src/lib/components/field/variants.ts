@@ -1,4 +1,4 @@
-import { tv, type VariantProps } from '../../utils';
+import { tv, type VariantProps } from '../../vendor/utils';
 
 export const fieldVariants = tv({
 	base: 'data-[invalid=true]:text-destructive gap-3 group/field flex w-full',

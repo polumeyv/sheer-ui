@@ -2,7 +2,7 @@
 	import { Button } from '../../components/button';
 	import * as Tooltip from '../../components/tooltip';
 	import { UseClipboard } from './copy.svelte';
-	import { cn } from '../../utils';
+	import { cn } from '../../vendor/utils';
 	import Clipboard from '@lucide/svelte/icons/clipboard';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import type { ComponentProps } from 'svelte';

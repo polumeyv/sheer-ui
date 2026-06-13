@@ -6,4 +6,4 @@ export type {
 	AvatarRootProps as RootProps,
 	AvatarImageProps as ImageProps,
 	AvatarFallbackProps as FallbackProps,
-} from "$lib/components/avatar/primitive/types.js";
+} from "$lib/components/avatar/primitive/index.js";

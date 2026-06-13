@@ -1,18 +1,13 @@
-import { SvelteMap } from "svelte/reactivity";
-import {
-	type Getter,
-	type ReadableBox,
-	afterTick,
-	boxWith,
-	onDestroyEffect,
-} from "$lib/vendor/toolbelt/index.js";
-import type { Fn } from "./types.js";
-import { isIOS } from "./is.js";
-import { useId } from "./use-id.js";
-import { watch } from "$lib/vendor/runed/index.js";
-import { SharedState } from "./shared-state.svelte.js";
-import { BROWSER } from "$lib/vendor/env.js";
-import { on } from "svelte/events";
+import { tick } from 'svelte';
+import { SvelteMap } from 'svelte/reactivity';
+import { type Getter, type ReadableBox, boxWith } from '$lib/vendor/index.js';
+import type { Fn } from './types.js';
+import { isIOS } from './is.js';
+import { useId } from './use-id.js';
+import { watch } from '$lib/vendor/watch.svelte.js';
+import { SharedState } from './shared-state.svelte.js';
+import { BROWSER } from '$lib/vendor/env.js';
+import { on } from 'svelte/events';
 
 export interface ScrollBodyOption {
 	padding?: boolean | number;
@@ -45,8 +40,8 @@ let cleanupScheduledAt: number | null = null;
 const bodyLockStackCount = new SharedState(() => {
 	function resetBodyStyle() {
 		if (!BROWSER) return;
-		document.body.setAttribute("style", initialBodyStyle ?? "");
-		document.body.style.removeProperty("--scrollbar-width");
+		document.body.setAttribute('style', initialBodyStyle ?? '');
+		document.body.style.removeProperty('--scrollbar-width');
 		isIOS && stopTouchMoveListener?.();
 		// reset initialBodyStyle so next locker captures the correct styles
 		initialBodyStyle = null;
@@ -97,7 +92,7 @@ const bodyLockStackCount = new SharedState(() => {
 	function ensureInitialStyleCaptured() {
 		// only capture initial style once, when no locks exist and no cleanup is in progress
 		if (initialBodyStyle === null && lockMap.size === 0 && !isInCleanupTransition) {
-			initialBodyStyle = document.body.getAttribute("style");
+			initialBodyStyle = document.body.getAttribute('style');
 		}
 	}
 
@@ -116,39 +111,37 @@ const bodyLockStackCount = new SharedState(() => {
 			const bodyStyle = getComputedStyle(document.body);
 
 			// check if scrollbar-gutter: stable is already handling scrollbar space
-			const hasStableGutter =
-				htmlStyle.scrollbarGutter?.includes("stable") ||
-				bodyStyle.scrollbarGutter?.includes("stable");
+			const hasStableGutter = htmlStyle.scrollbarGutter?.includes('stable') || bodyStyle.scrollbarGutter?.includes('stable');
 
 			// TODO: account for RTL direction, etc.
 			const verticalScrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-			const paddingRight = Number.parseInt(bodyStyle.paddingRight ?? "0", 10);
+			const paddingRight = Number.parseInt(bodyStyle.paddingRight ?? '0', 10);
 
 			const config = {
 				padding: paddingRight + verticalScrollbarWidth,
-				margin: Number.parseInt(bodyStyle.marginRight ?? "0", 10),
+				margin: Number.parseInt(bodyStyle.marginRight ?? '0', 10),
 			};
 
 			// only add padding compensation if stable gutter isn't handling it
 			if (verticalScrollbarWidth > 0 && !hasStableGutter) {
 				document.body.style.paddingRight = `${config.padding}px`;
 				document.body.style.marginRight = `${config.margin}px`;
-				document.body.style.setProperty("--scrollbar-width", `${verticalScrollbarWidth}px`);
+				document.body.style.setProperty('--scrollbar-width', `${verticalScrollbarWidth}px`);
 			}
-			document.body.style.overflow = "hidden";
+			document.body.style.overflow = 'hidden';
 
 			if (isIOS) {
 				// IOS devices are special and require a touchmove listener to prevent scrolling
 				stopTouchMoveListener = on(
 					document,
-					"touchmove",
+					'touchmove',
 					(e) => {
 						if (e.target !== document.documentElement) return;
 
 						if (e.touches.length > 1) return;
 						e.preventDefault();
 					},
-					{ passive: false }
+					{ passive: false },
 				);
 			}
 
@@ -160,14 +153,14 @@ const bodyLockStackCount = new SharedState(() => {
 			 * this avoids race conditions where pointer-events could be set too early and break
 			 * focus/interaction.
 			 */
-			afterTick(() => {
-				document.body.style.pointerEvents = "none";
-				document.body.style.overflow = "hidden";
+			tick().then(() => {
+				document.body.style.pointerEvents = 'none';
+				document.body.style.overflow = 'hidden';
 			});
-		}
+		},
 	);
 
-	onDestroyEffect(() => {
+	$effect(() => () => {
 		return () => {
 			stopTouchMoveListener?.();
 		};
@@ -191,10 +184,7 @@ export class BodyScrollLock {
 	readonly #countState: ReturnType<typeof bodyLockStackCount.get>;
 	readonly locked: ReadableBox<boolean> | undefined;
 
-	constructor(
-		initialState?: boolean | undefined,
-		restoreScrollDelay: Getter<number | null> = () => null
-	) {
+	constructor(initialState?: boolean | undefined, restoreScrollDelay: Getter<number | null> = () => null) {
 		this.#initialState = initialState;
 		this.#restoreScrollDelay = restoreScrollDelay;
 		this.#countState = bodyLockStackCount.get();
@@ -217,10 +207,10 @@ export class BodyScrollLock {
 
 		this.locked = boxWith(
 			() => this.#countState.lockMap.get(this.#id) ?? false,
-			(v) => this.#countState.lockMap.set(this.#id, v)
+			(v) => this.#countState.lockMap.set(this.#id, v),
 		);
 
-		onDestroyEffect(() => {
+		$effect(() => () => {
 			this.#countState.lockMap.delete(this.#id);
 
 			// if not the last lock, we don't need to do anything

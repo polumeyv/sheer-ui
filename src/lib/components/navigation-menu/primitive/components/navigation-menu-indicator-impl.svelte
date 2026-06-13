@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { NavigationMenuIndicatorProps } from "$lib/components/navigation-menu/primitive/types.js";
+	import type { NavigationMenuIndicatorProps } from "$lib/components/navigation-menu/primitive/index.js";
 	import { NavigationMenuIndicatorImplState } from "$lib/components/navigation-menu/primitive/navigation-menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 

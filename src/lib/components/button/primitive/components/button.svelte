@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ButtonRootProps } from "$lib/components/button/primitive/types.js";
+	import type { ButtonRootProps } from "$lib/components/button/primitive/index.js";
 
 	let {
 		href,

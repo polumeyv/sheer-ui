@@ -1,10 +1,10 @@
-import { attachRef } from "$lib/vendor/toolbelt/index.js";
-import type { BitsMouseEvent, RefAttachment, WithRefOpts } from "$lib/internal/types.js";
-import { createBitsAttrs } from "$lib/internal/attrs.js";
+import { attachRef } from '$lib/vendor/index.js';
+import type { BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
 
 const labelAttrs = createBitsAttrs({
-	component: "label",
-	parts: ["root"],
+	component: 'label',
+	parts: ['root'],
 });
 
 interface LabelRootStateOpts extends WithRefOpts {}
@@ -31,9 +31,9 @@ export class LabelRootState {
 		() =>
 			({
 				id: this.opts.id.current,
-				[labelAttrs.root]: "",
+				[labelAttrs.root]: '',
 				onmousedown: this.onmousedown,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }

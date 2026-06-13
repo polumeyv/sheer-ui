@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { DateRangePickerTriggerProps } from "$lib/components/date-range-picker/types.js";
+	import type { DateRangePickerTriggerProps } from "$lib/components/date-range-picker/index.js";
 	import PopoverTrigger from "$lib/components/popover/primitive/components/popover-trigger.svelte";
 	import { dateRangeFieldAttrs } from "$lib/components/date-range-field/date-range-field.svelte.js";
 	import {

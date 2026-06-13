@@ -2,7 +2,7 @@
 	import { Button } from '../components/button';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import Plus from '@lucide/svelte/icons/plus';
-	import { cn } from '../utils.js';
+	import { cn } from '../vendor/utils.js';
 
 	interface Props {
 		navLinks: { href: string; label: string; children?: { href: string; label: string }[] }[];

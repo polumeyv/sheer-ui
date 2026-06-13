@@ -1,14 +1,12 @@
-import { getContext, hasContext, setContext } from "svelte";
-import { boxWith, type ReadableBox, type ReadableBoxedValues } from "$lib/vendor/toolbelt/index.js";
-import type { BitsConfigPropsWithoutChildren } from "$lib/components/_shared/utilities/config/types.js";
+import { getContext, hasContext, setContext } from 'svelte';
+import { boxWith, type ReadableBox, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import type { BitsConfigPropsWithoutChildren } from '$lib/components/_shared/utilities/config/index.js';
 
 type BitsConfigStateProps = ReadableBoxedValues<BitsConfigPropsWithoutChildren>;
 
-const bitsConfigContextKey = Symbol("BitsConfig");
+const bitsConfigContextKey = Symbol('BitsConfig');
 function getBitsConfigContextOr<T>(fallback: T): BitsConfigState | T {
-	return hasContext(bitsConfigContextKey)
-		? getContext<BitsConfigState>(bitsConfigContextKey)
-		: fallback;
+	return hasContext(bitsConfigContextKey) ? getContext<BitsConfigState>(bitsConfigContextKey) : fallback;
 }
 function setBitsConfigContext(state: BitsConfigState): BitsConfigState {
 	return setContext(bitsConfigContextKey, state);
@@ -94,10 +92,7 @@ type ConfigOptionResolver = <T>(getter: ConfigOptionGetter<T>) => ReadableBox<T 
  * // even when child didn't specify `defaultPortalTo`
  * ```
  */
-function createConfigResolver(
-	parent: BitsConfigState | null,
-	currentOpts: BitsConfigStateProps
-): ConfigOptionResolver {
+function createConfigResolver(parent: BitsConfigState | null, currentOpts: BitsConfigStateProps): ConfigOptionResolver {
 	return <T>(getter: ConfigOptionGetter<T>) => {
 		const configOption = boxWith(() => {
 			// try current opts first

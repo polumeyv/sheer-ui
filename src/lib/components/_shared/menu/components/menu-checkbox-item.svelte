@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { MenuCheckboxItemProps } from "$lib/components/_shared/menu/types.js";
+	import type { MenuCheckboxItemProps } from "$lib/components/_shared/menu/index.js";
 	import { getMenuCheckboxGroupContextOr, MenuCheckboxItemState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
-	import { watch } from "$lib/vendor/runed/index.js";
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
 
 	const uid = $props.id();
 
@@ -14,12 +13,12 @@
 		ref = $bindable(null),
 		checked = $bindable(false),
 		id = createId(uid),
-		onCheckedChange = noop,
+		onCheckedChange = (() => {}),
 		disabled = false,
-		onSelect = noop,
+		onSelect = (() => {}),
 		closeOnSelect = true,
 		indeterminate = $bindable(false),
-		onIndeterminateChange = noop,
+		onIndeterminateChange = (() => {}),
 		value = "",
 		...restProps
 	}: MenuCheckboxItemProps = $props();

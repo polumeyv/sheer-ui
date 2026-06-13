@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { ContextMenuContentStaticProps } from "$lib/components/context-menu/primitive/types.js";
+	import type { ContextMenuContentStaticProps } from "$lib/components/context-menu/primitive/index.js";
 	import { CONTEXT_MENU_TRIGGER_ATTR, MenuContentState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { useId } from "$lib/internal/use-id.js";
-	import { noop } from "$lib/internal/noop.js";
 	import PopperLayer from "$lib/components/_shared/utilities/popper-layer/popper-layer.svelte";
 	import { getFloatingContentCSSVars } from "$lib/internal/floating-svelte/floating-utils.svelte.js";
 	import PopperLayerForceMount from "$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte";
@@ -14,12 +13,12 @@
 		children,
 		ref = $bindable(null),
 		loop = true,
-		onInteractOutside = noop,
-		onCloseAutoFocus = noop,
+		onInteractOutside = (() => {}),
+		onCloseAutoFocus = (() => {}),
 		preventScroll = true,
 		// we need to explicitly pass this prop to the PopperLayer to override
 		// the default menu behavior of handling outside interactions on the trigger
-		onEscapeKeydown = noop,
+		onEscapeKeydown = (() => {}),
 		forceMount = false,
 		style,
 		...restProps

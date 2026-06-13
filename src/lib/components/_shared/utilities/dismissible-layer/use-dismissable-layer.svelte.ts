@@ -1,33 +1,17 @@
-import {
-	type ReadableBox,
-	type WritableBox,
-	afterSleep,
-	afterTick,
-	executeCallbacks,
-	onDestroyEffect,
-	type ReadableBoxedValues,
-} from "$lib/vendor/toolbelt/index.js";
-import { watch } from "$lib/vendor/runed/index.js";
-import { on } from "svelte/events";
-import type { DismissibleLayerImplProps, InteractOutsideBehaviorType } from "$lib/components/_shared/utilities/dismissible-layer/types.js";
-import { type EventCallback } from "$lib/internal/events.js";
-import { debounce } from "$lib/internal/debounce.js";
-import { noop } from "$lib/internal/noop.js";
-import { getOwnerDocument, isOrContainsTarget } from "$lib/internal/elements.js";
-import { isElementOrSVGElement } from "$lib/internal/is.js";
-import { isClickTrulyOutside } from "$lib/internal/dom.js";
-import {
-	CONTEXT_MENU_CONTENT_ATTR,
-	CONTEXT_MENU_TRIGGER_ATTR,
-} from "$lib/components/_shared/menu/menu.svelte.js";
+import { tick } from 'svelte';
+import { executeCallbacks } from '$lib/vendor/index.js';
+import { type ReadableBox, type WritableBox, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { watch } from '$lib/vendor/watch.svelte.js';
+import { on } from 'svelte/events';
+import type { DismissibleLayerImplProps, InteractOutsideBehaviorType } from '$lib/components/_shared/utilities/dismissible-layer/index.js';
+import { type EventCallback } from '$lib/internal/events.js';
+import { debounce } from '$lib/internal/debounce.js';
+import { isClickTrulyOutside } from '$lib/internal/dom.js';
+import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '$lib/components/_shared/menu/menu.svelte.js';
 
-globalThis.bitsDismissableLayers ??= new Map<
-	DismissibleLayerState,
-	ReadableBox<InteractOutsideBehaviorType>
->();
+globalThis.bitsDismissableLayers ??= new Map<DismissibleLayerState, ReadableBox<InteractOutsideBehaviorType>>();
 
-interface DismissibleLayerStateOpts
-	extends ReadableBoxedValues<Required<Omit<DismissibleLayerImplProps, "children" | "ref">>> {
+interface DismissibleLayerStateOpts extends ReadableBoxedValues<Required<Omit<DismissibleLayerImplProps, 'children' | 'ref'>>> {
 	ref: WritableBox<HTMLElement | null>;
 }
 
@@ -44,8 +28,8 @@ export class DismissibleLayerState {
 	#isResponsibleLayer = false;
 	#isFocusInsideDOMTree = false;
 	#documentObj = undefined as unknown as Document;
-	#onFocusOutside: DismissibleLayerStateOpts["onFocusOutside"];
-	#unsubClickListener = noop;
+	#onFocusOutside: DismissibleLayerStateOpts['onFocusOutside'];
+	#unsubClickListener = () => {};
 
 	constructor(opts: DismissibleLayerStateOpts) {
 		this.opts = opts;
@@ -55,10 +39,10 @@ export class DismissibleLayerState {
 		this.#onFocusOutside = opts.onFocusOutside;
 
 		$effect(() => {
-			this.#documentObj = getOwnerDocument(this.opts.ref.current);
+			this.#documentObj = this.opts.ref.current?.ownerDocument ?? document;
 		});
 
-		let unsubEvents = noop;
+		let unsubEvents = () => {};
 
 		const cleanup = () => {
 			this.#resetState();
@@ -69,17 +53,17 @@ export class DismissibleLayerState {
 
 		watch([() => this.opts.enabled.current, () => this.opts.ref.current], () => {
 			if (!this.opts.enabled.current || !this.opts.ref.current) return;
-			afterSleep(1, () => {
+			setTimeout(() => {
 				if (!this.opts.ref.current) return;
 				globalThis.bitsDismissableLayers.set(this, this.#behaviorType);
 
 				unsubEvents();
 				unsubEvents = this.#addEventListeners();
-			});
+			}, 1);
 			return cleanup;
 		});
 
-		onDestroyEffect(() => {
+		$effect(() => () => {
 			this.#resetState.destroy();
 			globalThis.bitsDismissableLayers.delete(this);
 			this.#handleInteractOutside.destroy();
@@ -91,9 +75,8 @@ export class DismissibleLayerState {
 	#handleFocus = (event: FocusEvent) => {
 		if (event.defaultPrevented) return;
 		if (!this.opts.ref.current) return;
-		afterTick(() => {
-			if (!this.opts.ref.current || this.#isTargetWithinLayer(event.target as HTMLElement))
-				return;
+		tick().then(() => {
+			if (!this.opts.ref.current || this.#isTargetWithinLayer(event.target as HTMLElement)) return;
 
 			if (event.target && !this.#isFocusInsideDOMTree) {
 				this.#onFocusOutside.current?.(event);
@@ -110,28 +93,19 @@ export class DismissibleLayerState {
 			 * to avoid checking if is responsible layer during interaction end
 			 * when a new floating element may have been opened.
 			 */
-			on(
-				this.#documentObj,
-				"pointerdown",
-				executeCallbacks(this.#markInterceptedEvent, this.#markResponsibleLayer),
-				{ capture: true }
-			),
+			on(this.#documentObj, 'pointerdown', executeCallbacks(this.#markInterceptedEvent, this.#markResponsibleLayer), { capture: true }),
 
 			/**
 			 * BUBBLE INTERACTION START
 			 * Mark interaction-start event as non-intercepted. Debounce `onInteractOutsideStart`
 			 * to avoid prematurely checking if other events were intercepted.
 			 */
-			on(
-				this.#documentObj,
-				"pointerdown",
-				executeCallbacks(this.#markNonInterceptedEvent, this.#handleInteractOutside)
-			),
+			on(this.#documentObj, 'pointerdown', executeCallbacks(this.#markNonInterceptedEvent, this.#handleInteractOutside)),
 
 			/**
 			 * HANDLE FOCUS OUTSIDE
 			 */
-			on(this.#documentObj, "focusin", this.#handleFocus)
+			on(this.#documentObj, 'focusin', this.#handleFocus),
 		);
 	}
 
@@ -148,9 +122,7 @@ export class DismissibleLayerState {
 			this.#unsubClickListener();
 			return;
 		}
-		const isEventValid =
-			this.opts.isValidEvent.current(e, this.opts.ref.current) ||
-			isValidEvent(e, this.opts.ref.current);
+		const isEventValid = this.opts.isValidEvent.current(e, this.opts.ref.current) || isValidEvent(e, this.opts.ref.current);
 
 		if (!this.#isResponsibleLayer || this.#isAnyEventIntercepted() || !isEventValid) {
 			this.#unsubClickListener();
@@ -162,18 +134,15 @@ export class DismissibleLayerState {
 			event = createWrappedEvent(event);
 		}
 
-		if (
-			this.#behaviorType.current !== "close" &&
-			this.#behaviorType.current !== "defer-otherwise-close"
-		) {
+		if (this.#behaviorType.current !== 'close' && this.#behaviorType.current !== 'defer-otherwise-close') {
 			this.#unsubClickListener();
 			return;
 		}
 
-		if (e.pointerType === "touch") {
+		if (e.pointerType === 'touch') {
 			this.#unsubClickListener();
 
-			this.#unsubClickListener = on(this.#documentObj, "click", this.#handleDismiss, {
+			this.#unsubClickListener = on(this.#documentObj, 'click', this.#handleDismiss, {
 				once: true,
 			});
 		} else {
@@ -196,7 +165,7 @@ export class DismissibleLayerState {
 
 	#isTargetWithinLayer = (target: HTMLElement) => {
 		if (!this.opts.ref.current) return false;
-		return isOrContainsTarget(this.opts.ref.current, target);
+		return this.opts.ref.current === target || this.opts.ref.current.contains(target);
 	};
 
 	#resetState = debounce(() => {
@@ -226,13 +195,9 @@ export class DismissibleLayerState {
 }
 
 export function getTopMostDismissableLayer(
-	layersArr: [DismissibleLayerState, ReadableBox<InteractOutsideBehaviorType>][] = [
-		...globalThis.bitsDismissableLayers,
-	]
+	layersArr: [DismissibleLayerState, ReadableBox<InteractOutsideBehaviorType>][] = [...globalThis.bitsDismissableLayers],
 ) {
-	return layersArr.findLast(
-		([_, { current: behaviorType }]) => behaviorType === "close" || behaviorType === "ignore"
-	);
+	return layersArr.findLast(([_, { current: behaviorType }]) => behaviorType === 'close' || behaviorType === 'ignore');
 }
 
 function isResponsibleLayer(node: HTMLElement): boolean {
@@ -251,22 +216,20 @@ function isResponsibleLayer(node: HTMLElement): boolean {
 
 function isValidEvent(e: PointerEvent, node: HTMLElement): boolean {
 	const target = e.target;
-	if (!isElementOrSVGElement(target)) return false;
+	if (!(target instanceof Element || target instanceof SVGElement)) return false;
 
 	const targetIsContextMenuTrigger = Boolean(target.closest(`[${CONTEXT_MENU_TRIGGER_ATTR}]`));
 	const nodeIsContextMenu = Boolean(node.closest(`[${CONTEXT_MENU_CONTENT_ATTR}]`));
 
-	if ("button" in e && e.button > 0 && !targetIsContextMenuTrigger) return false;
-	if ("button" in e && e.button === 0 && targetIsContextMenuTrigger && nodeIsContextMenu) {
+	if ('button' in e && e.button > 0 && !targetIsContextMenuTrigger) return false;
+	if ('button' in e && e.button === 0 && targetIsContextMenuTrigger && nodeIsContextMenu) {
 		return true;
 	}
 	if (targetIsContextMenuTrigger && nodeIsContextMenu) return false;
 
-	const ownerDocument = getOwnerDocument(target);
+	const ownerDocument = target?.ownerDocument ?? document;
 	const isValid =
-		ownerDocument.documentElement.contains(target) &&
-		!isOrContainsTarget(node, target) &&
-		isClickTrulyOutside(e, node);
+		ownerDocument.documentElement.contains(target) && !(node === target || node.contains(target)) && isClickTrulyOutside(e, node);
 	return isValid;
 }
 
@@ -281,7 +244,7 @@ function createWrappedEvent(e: PointerEvent | MouseEvent): PointerEvent {
 	if (e instanceof PointerEvent) {
 		newEvent = new PointerEvent(e.type, e);
 	} else {
-		newEvent = new PointerEvent("pointerdown", e);
+		newEvent = new PointerEvent('pointerdown', e);
 	}
 
 	// track the prevented state separately
@@ -290,21 +253,21 @@ function createWrappedEvent(e: PointerEvent | MouseEvent): PointerEvent {
 	// Create a proxy to intercept property access and method calls
 	const wrappedEvent = new Proxy(newEvent, {
 		get: (target, prop) => {
-			if (prop === "currentTarget") {
+			if (prop === 'currentTarget') {
 				return capturedCurrentTarget;
 			}
-			if (prop === "target") {
+			if (prop === 'target') {
 				return capturedTarget;
 			}
-			if (prop === "preventDefault") {
+			if (prop === 'preventDefault') {
 				return () => {
 					isPrevented = true;
-					if (typeof target.preventDefault === "function") {
+					if (typeof target.preventDefault === 'function') {
 						target.preventDefault();
 					}
 				};
 			}
-			if (prop === "defaultPrevented") {
+			if (prop === 'defaultPrevented') {
 				return isPrevented;
 			}
 			if (prop in target) {

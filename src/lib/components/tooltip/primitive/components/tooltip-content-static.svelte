@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { TooltipContentStaticProps } from "$lib/components/tooltip/primitive/types.js";
-	import { TooltipContentState } from "$lib/components/tooltip/primitive/tooltip.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import PopperLayer from "$lib/components/_shared/utilities/popper-layer/popper-layer.svelte";
-	import { getFloatingContentCSSVars } from "$lib/internal/floating-svelte/floating-utils.svelte.js";
-	import PopperLayerForceMount from "$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte";
-	import { noop } from "$lib/internal/noop.js";
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { TooltipContentStaticProps } from '$lib/components/tooltip/primitive/index.js';
+	import { TooltipContentState } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
+	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
+	import PopperLayerForceMount from '$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte';
 
 	const uid = $props.id();
 
@@ -15,8 +14,8 @@
 		child,
 		id = createId(uid),
 		ref = $bindable(null),
-		onInteractOutside = noop,
-		onEscapeKeydown = noop,
+		onInteractOutside = () => {},
+		onEscapeKeydown = () => {},
 		forceMount = false,
 		style,
 		...restProps
@@ -26,7 +25,7 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		onInteractOutside: boxWith(() => onInteractOutside),
 		onEscapeKeydown: boxWith(() => onEscapeKeydown),
@@ -48,14 +47,9 @@
 		forceMount={true}
 		ref={contentState.opts.ref}
 		tooltip={true}
-		shouldRender={contentState.shouldRender}
-	>
+		shouldRender={contentState.shouldRender}>
 		{#snippet popper({ props })}
-			{@const finalProps = mergeProps(
-				props,
-				{ style: getFloatingContentCSSVars("tooltip") },
-				{ style }
-			)}
+			{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('tooltip') }, { style })}
 			{#if child}
 				{@render child({ props: finalProps, ...contentState.snippetProps })}
 			{:else}
@@ -78,14 +72,9 @@
 		preventScroll={false}
 		forceMount={false}
 		ref={contentState.opts.ref}
-		shouldRender={contentState.shouldRender}
-	>
+		shouldRender={contentState.shouldRender}>
 		{#snippet popper({ props })}
-			{@const finalProps = mergeProps(
-				props,
-				{ style: getFloatingContentCSSVars("tooltip") },
-				{ style }
-			)}
+			{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('tooltip') }, { style })}
 			{#if child}
 				{@render child({ props: finalProps, ...contentState.snippetProps })}
 			{:else}

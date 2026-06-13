@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { getAllContexts, mount, unmount } from "svelte";
 	import { DEV } from "$lib/vendor/env.js";
-	import { watch } from "$lib/vendor/runed/index.js";
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
 	import PortalConsumer from "$lib/components/_shared/utilities/portal/portal-consumer.svelte";
-	import type { PortalProps } from "$lib/components/_shared/utilities/portal/types.js";
-	import { isBrowser } from "$lib/internal/is.js";
+	import type { PortalProps } from "$lib/components/_shared/utilities/portal/index.js";
 	import { resolvePortalToProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
 
 	let { to: toProp, children, disabled }: PortalProps = $props();
@@ -15,7 +14,7 @@
 	let target = $derived(getTarget());
 
 	function getTarget() {
-		if (!isBrowser || disabled) return null;
+		if (!(typeof document !== "undefined") || disabled) return null;
 
 		let localTarget: Element | null = null;
 

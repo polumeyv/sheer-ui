@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { NavigationMenuIndicatorProps } from "$lib/components/navigation-menu/primitive/types.js";
+	import type { NavigationMenuIndicatorProps } from "$lib/components/navigation-menu/primitive/index.js";
 	import { NavigationMenuIndicatorState } from "$lib/components/navigation-menu/primitive/navigation-menu.svelte.js";
 	import NavigationMenuIndicatorImpl from "$lib/components/navigation-menu/primitive/components/navigation-menu-indicator-impl.svelte";
 	import { createId } from "$lib/internal/create-id.js";
-	import { getDataTransitionAttrs } from "$lib/internal/attrs.js";
 	import PresenceLayer from "$lib/components/_shared/utilities/presence-layer/presence-layer.svelte";
 	import Portal from "$lib/components/_shared/utilities/portal/portal.svelte";
 
@@ -28,7 +27,7 @@
 		<PresenceLayer open={forceMount || indicatorState.isVisible} ref={boxWith(() => ref)}>
 			{#snippet presence({ transitionStatus })}
 				<NavigationMenuIndicatorImpl
-					{...mergeProps(mergedProps, getDataTransitionAttrs(transitionStatus))}
+					{...mergeProps(mergedProps, { "data-starting-style": transitionStatus === "starting" ? "" : undefined, "data-ending-style": transitionStatus === "ending" ? "" : undefined })}
 					{children}
 					{child}
 					{id}

@@ -1,4 +1,4 @@
-import { tv, type VariantProps } from '../../utils';
+import { tv, type VariantProps } from '../../vendor/utils';
 
 export const sheetVariants = tv({
 	base: 'bg-background fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500',

@@ -1,13 +1,12 @@
-import { watch } from "$lib/vendor/runed/index.js";
-import { onDestroyEffect, type ReadableBoxedValues } from "$lib/vendor/toolbelt/index.js";
-import { AnimationsComplete } from "./animations-complete.js";
-import type { TransitionState } from "./attrs.js";
+import { watch } from '$lib/vendor/watch.svelte.js';
+import { type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { AnimationsComplete } from './animations-complete.js';
+import type { TransitionState } from './attrs.js';
 
-interface PresenceManagerOpts
-	extends ReadableBoxedValues<{
-		open: boolean;
-		ref: HTMLElement | null;
-	}> {
+interface PresenceManagerOpts extends ReadableBoxedValues<{
+	open: boolean;
+	ref: HTMLElement | null;
+}> {
 	onComplete?: () => void;
 	enabled?: boolean;
 	shouldSkipExitAnimation?: () => boolean;
@@ -30,7 +29,7 @@ export class PresenceManager {
 			ref: this.#opts.ref,
 			afterTick: this.#opts.open,
 		});
-		onDestroyEffect(() => this.#clearTransitionFrame());
+		$effect(() => () => this.#clearTransitionFrame());
 
 		watch(
 			() => this.#opts.open.current,
@@ -50,7 +49,7 @@ export class PresenceManager {
 				}
 
 				if (isOpen) this.#shouldRender = true;
-				this.#transitionStatus = isOpen ? "starting" : "ending";
+				this.#transitionStatus = isOpen ? 'starting' : 'ending';
 				if (isOpen) {
 					this.#transitionFrame = window.requestAnimationFrame(() => {
 						this.#transitionFrame = null;
@@ -78,7 +77,7 @@ export class PresenceManager {
 						this.#opts.onComplete?.();
 					}
 				});
-			}
+			},
 		);
 	}
 

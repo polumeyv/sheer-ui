@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Calendar as CalendarPrimitive } from '$lib/bits-ui.js';
+	import { Calendar as CalendarPrimitive } from "$lib/components/_shared/primitives.js";
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import { buttonVariants, type ButtonVariant } from '../../components/button/index.js';
-	import { cn } from '../../utils.js';
+	import { cn } from '../../vendor/utils.js';
 
 	let {
 		ref = $bindable(null),

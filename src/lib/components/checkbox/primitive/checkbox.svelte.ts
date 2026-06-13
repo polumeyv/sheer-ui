@@ -1,32 +1,20 @@
-import { createContext, getContext, hasContext, setContext } from "svelte";
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/vendor/toolbelt/index.js";
-import type { HTMLButtonAttributes } from "svelte/elements";
-import { watch } from "$lib/vendor/runed/index.js";
-import type {
-	BitsFocusEvent,
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	OnChangeFn,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import {
-	boolToStr,
-	createBitsAttrs,
-	getAriaChecked,
-	boolToEmptyStrOrUndef,
-} from "$lib/internal/attrs.js";
-import { kbd } from "$lib/internal/kbd.js";
-import { arraysAreEqual } from "$lib/internal/arrays.js";
-import { isHTMLElement } from "$lib/internal/is.js";
+import { createContext, getContext, hasContext, setContext } from 'svelte';
+import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
+import type { HTMLButtonAttributes } from 'svelte/elements';
+import { watch } from '$lib/vendor/watch.svelte.js';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import { kbd } from '$lib/internal/kbd.js';
+import { arraysAreEqual } from '$lib/internal/arrays.js';
 
 const checkboxAttrs = createBitsAttrs({
-	component: "checkbox",
-	parts: ["root", "group", "group-label", "input"],
+	component: 'checkbox',
+	parts: ['root', 'group', 'group-label', 'input'],
 });
 
 interface CheckboxGroupStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			name: string | undefined;
 			disabled: boolean;
@@ -38,15 +26,13 @@ interface CheckboxGroupStateOpts
 			value: string[];
 		}> {}
 
-const checkboxGroupContextKey = Symbol("Checkbox.Group");
+const checkboxGroupContextKey = Symbol('Checkbox.Group');
 export function getCheckboxGroupContext(): CheckboxGroupState {
 	if (!hasContext(checkboxGroupContextKey)) throw new Error('Context "Checkbox.Group" not found');
 	return getContext<CheckboxGroupState>(checkboxGroupContextKey);
 }
 export function getCheckboxGroupContextOr<T>(fallback: T): CheckboxGroupState | T {
-	return hasContext(checkboxGroupContextKey)
-		? getContext<CheckboxGroupState>(checkboxGroupContextKey)
-		: fallback;
+	return hasContext(checkboxGroupContextKey) ? getContext<CheckboxGroupState>(checkboxGroupContextKey) : fallback;
 }
 export function setCheckboxGroupContext(state: CheckboxGroupState): CheckboxGroupState {
 	return setContext(checkboxGroupContextKey, state);
@@ -90,12 +76,12 @@ export class CheckboxGroupState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "group",
-				"aria-labelledby": this.labelId,
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-				[checkboxAttrs.group]: "",
+				role: 'group',
+				'aria-labelledby': this.labelId,
+				'data-disabled': this.opts.disabled.current ? '' : undefined,
+				[checkboxAttrs.group]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -120,7 +106,7 @@ export class CheckboxGroupLabelState {
 			() => this.opts.id.current,
 			(id) => {
 				this.group.labelId = id;
-			}
+			},
 		);
 	}
 
@@ -128,24 +114,25 @@ export class CheckboxGroupLabelState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-disabled": boolToEmptyStrOrUndef(this.group.opts.disabled.current),
-				[checkboxAttrs["group-label"]]: "",
+				'data-disabled': this.group.opts.disabled.current ? '' : undefined,
+				[checkboxAttrs['group-label']]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 const [getCheckboxRootContext, setCheckboxRootContext] = createContext<CheckboxRootState>();
 
 interface CheckboxRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 			required: boolean;
 			readonly: boolean;
 			name: string | undefined;
 			value: string | undefined;
-			type: HTMLButtonAttributes["type"];
+			type: HTMLButtonAttributes['type'];
 		}>,
 		WritableBoxedValues<{
 			checked: boolean;
@@ -184,13 +171,10 @@ export class CheckboxRootState {
 		this.onkeydown = this.onkeydown.bind(this);
 		this.onclick = this.onclick.bind(this);
 
-		watch.pre(
-			[() => $state.snapshot(this.group?.opts.value.current), () => this.opts.value.current],
-			([groupValue, value]) => {
-				if (!groupValue || !value) return;
-				this.opts.checked.current = groupValue.includes(value);
-			}
-		);
+		watch.pre([() => $state.snapshot(this.group?.opts.value.current), () => this.opts.value.current], ([groupValue, value]) => {
+			if (!groupValue || !value) return;
+			this.opts.checked.current = groupValue.includes(value);
+		});
 
 		watch.pre(
 			() => this.opts.checked.current,
@@ -201,7 +185,7 @@ export class CheckboxRootState {
 				} else {
 					this.group?.removeValue(this.opts.value.current);
 				}
-			}
+			},
 		);
 	}
 
@@ -209,8 +193,8 @@ export class CheckboxRootState {
 		if (this.trueDisabled || this.trueReadonly) return;
 		if (e.key === kbd.ENTER) {
 			e.preventDefault();
-			if (this.opts.type.current === "submit") {
-				const form = e.currentTarget.closest("form");
+			if (this.opts.type.current === 'submit') {
+				const form = e.currentTarget.closest('form');
 				form?.requestSubmit();
 			}
 			return;
@@ -232,7 +216,7 @@ export class CheckboxRootState {
 
 	onclick(e: BitsMouseEvent) {
 		if (this.trueDisabled || this.trueReadonly) return;
-		if (this.opts.type.current === "submit") {
+		if (this.opts.type.current === 'submit') {
 			this.#toggle();
 			return;
 		}
@@ -249,27 +233,21 @@ export class CheckboxRootState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "checkbox",
+				role: 'checkbox',
 				type: this.opts.type.current,
 				disabled: this.trueDisabled,
-				"aria-checked": getAriaChecked(
-					this.opts.checked.current,
-					this.opts.indeterminate.current
-				),
-				"aria-required": boolToStr(this.trueRequired),
-				"aria-readonly": boolToStr(this.trueReadonly),
-				"data-disabled": boolToEmptyStrOrUndef(this.trueDisabled),
-				"data-readonly": boolToEmptyStrOrUndef(this.trueReadonly),
-				"data-state": getCheckboxDataState(
-					this.opts.checked.current,
-					this.opts.indeterminate.current
-				),
-				[checkboxAttrs.root]: "",
+				'aria-checked': this.opts.indeterminate.current ? 'mixed' : this.opts.checked.current ? 'true' : 'false',
+				'aria-required': this.trueRequired ? 'true' : 'false',
+				'aria-readonly': this.trueReadonly ? 'true' : 'false',
+				'data-disabled': this.trueDisabled ? '' : undefined,
+				'data-readonly': this.trueReadonly ? '' : undefined,
+				'data-state': getCheckboxDataState(this.opts.checked.current, this.opts.indeterminate.current),
+				[checkboxAttrs.root]: '',
 				//
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -281,10 +259,7 @@ export class CheckboxInputState {
 	readonly root: CheckboxRootState;
 	readonly trueChecked = $derived.by(() => {
 		if (!this.root.group) return this.root.opts.checked.current;
-		if (
-			this.root.opts.value.current !== undefined &&
-			this.root.group.opts.value.current.includes(this.root.opts.value.current)
-		) {
+		if (this.root.opts.value.current !== undefined && this.root.group.opts.value.current.includes(this.root.opts.value.current)) {
 			return true;
 		}
 		return false;
@@ -297,14 +272,14 @@ export class CheckboxInputState {
 	}
 
 	onfocus(_: BitsFocusEvent) {
-		if (!isHTMLElement(this.root.opts.ref.current)) return;
+		if (!(this.root.opts.ref.current instanceof HTMLElement)) return;
 		this.root.opts.ref.current.focus();
 	}
 
 	readonly props = $derived.by(
 		() =>
 			({
-				type: "checkbox",
+				type: 'checkbox',
 				checked: this.root.opts.checked.current === true,
 				disabled: this.root.trueDisabled,
 				required: this.root.trueRequired,
@@ -312,11 +287,11 @@ export class CheckboxInputState {
 				value: this.root.opts.value.current,
 				readonly: this.root.trueReadonly,
 				onfocus: this.onfocus,
-			}) as const
+			}) as const,
 	);
 }
 
 function getCheckboxDataState(checked: boolean, indeterminate: boolean) {
-	if (indeterminate) return "indeterminate";
-	return checked ? "checked" : "unchecked";
+	if (indeterminate) return 'indeterminate';
+	return checked ? 'checked' : 'unchecked';
 }

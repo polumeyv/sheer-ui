@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { AccordionHeaderProps, AccordionTriggerProps } from '$lib/components/accordion/primitive/types.js';
+	import { mergeProps } from '$lib/internal/merge-props.js';
+	import type { AccordionHeaderProps, AccordionTriggerProps } from '$lib/components/accordion/primitive/index.js';
 	import {
 		AccordionHeaderState,
 		AccordionTriggerState,
 	} from '$lib/components/accordion/primitive/accordion.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
-	import { cn, type WithoutChild } from '../../utils';
+	import { cn, type WithoutChild } from '../../vendor/utils';
 
 	const uid = $props.id();
 
@@ -28,22 +28,50 @@
 	let headerRef = $state<HTMLElement | null>(null);
 
 	const headerState = AccordionHeaderState.create({
-		id: boxWith(() => headerId),
-		level: boxWith(() => level),
-		ref: boxWith(
-			() => headerRef,
-			(v) => (headerRef = v)
-		),
+		id: {
+			get current() {
+				return headerId;
+			},
+		},
+		level: {
+			get current() {
+				return level;
+			},
+		},
+		ref: {
+			get current() {
+				return headerRef;
+			},
+			set current(v) {
+				headerRef = v;
+			},
+		},
 	});
 
 	const triggerState = AccordionTriggerState.create({
-		disabled: boxWith(() => disabled),
-		id: boxWith(() => id),
-		tabindex: boxWith(() => tabindex ?? 0),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		disabled: {
+			get current() {
+				return disabled;
+			},
+		},
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		tabindex: {
+			get current() {
+				return tabindex ?? 0;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const headerProps = $derived(mergeProps({ class: 'flex' }, headerState.props));

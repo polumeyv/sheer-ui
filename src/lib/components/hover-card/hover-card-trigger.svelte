@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { LinkPreviewTriggerProps } from '$lib/components/link-preview/types.js';
+	import type { LinkPreviewTriggerProps } from '$lib/components/link-preview/index.js';
 	import { LinkPreviewTriggerState } from '$lib/components/link-preview/link-preview.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { FloatingLayer } from '$lib/components/_shared/utilities/floating-layer/index.js';

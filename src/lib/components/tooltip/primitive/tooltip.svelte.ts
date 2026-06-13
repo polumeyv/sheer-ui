@@ -1,26 +1,12 @@
-import { createContext } from "svelte";
-import {
-	onMountEffect,
-	onDestroyEffect,
-	attachRef,
-	DOMContext,
-	type WritableBoxedValues,
-	type ReadableBoxedValues,
-	simpleBox,
-	boxWith,
-} from "$lib/vendor/toolbelt/index.js";
-import { on } from "svelte/events";
-import { watch } from "$lib/vendor/runed/index.js";
-import { isElement, isFocusVisible } from "$lib/internal/is.js";
-import {
-	createBitsAttrs,
-	boolToEmptyStrOrUndef,
-	getDataTransitionAttrs,
-} from "$lib/internal/attrs.js";
-import type { AnyFn, OnChangeFn, RefAttachment, WithRefOpts } from "$lib/internal/types.js";
-import type { FocusEventHandler, MouseEventHandler, PointerEventHandler } from "svelte/elements";
-import { SafePolygon } from "$lib/internal/safe-polygon.svelte.js";
-import { PresenceManager } from "$lib/internal/presence-manager.svelte.js";
+import { createContext, untrack } from 'svelte';
+import { attachRef, DOMContext, type WritableBoxedValues, type ReadableBoxedValues, simpleBox, boxWith } from '$lib/vendor/index.js';
+import { on } from 'svelte/events';
+import { watch } from '$lib/vendor/watch.svelte.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import type { AnyFn, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { FocusEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
+import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
+import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 
 class TimeoutFn<T extends AnyFn> {
 	readonly #interval: number;
@@ -34,7 +20,7 @@ class TimeoutFn<T extends AnyFn> {
 		this.stop = this.stop.bind(this);
 		this.start = this.start.bind(this);
 
-		onDestroyEffect(this.stop);
+		$effect(() => this.stop);
 	}
 
 	#clear() {
@@ -59,8 +45,8 @@ class TimeoutFn<T extends AnyFn> {
 }
 
 export const tooltipAttrs = createBitsAttrs({
-	component: "tooltip",
-	parts: ["content", "trigger"],
+	component: 'tooltip',
+	parts: ['content', 'trigger'],
 });
 const [getTooltipProviderContext, setTooltipProviderContext] = createContext<TooltipProviderState>();
 const [getTooltipRootContext, setTooltipRootContext] = createContext<TooltipRootState>();
@@ -180,15 +166,14 @@ export function createTooltipTether<Payload = never>() {
 	return new TooltipTether<Payload>();
 }
 
-interface TooltipProviderStateOpts
-	extends ReadableBoxedValues<{
-		delayDuration: number;
-		disableHoverableContent: boolean;
-		disableCloseOnTriggerClick: boolean;
-		disabled: boolean;
-		ignoreNonKeyboardFocus: boolean;
-		skipDelayDuration: number;
-	}> {}
+interface TooltipProviderStateOpts extends ReadableBoxedValues<{
+	delayDuration: number;
+	disableHoverableContent: boolean;
+	disableCloseOnTriggerClick: boolean;
+	disabled: boolean;
+	ignoreNonKeyboardFocus: boolean;
+	skipDelayDuration: number;
+}> {}
 
 export class TooltipProviderState {
 	static create(opts: TooltipProviderStateOpts) {
@@ -206,20 +191,22 @@ export class TooltipProviderState {
 			this.isOpenDelayed = true;
 		}, this.opts.skipDelayDuration.current);
 
-		onMountEffect(() =>
-			on(window, "scroll", (e) => {
-				const activeTooltip = this.#openTooltip;
-				if (!activeTooltip) return;
-				const triggerNode = activeTooltip.triggerNode;
-				if (!triggerNode) return;
+		$effect(() =>
+			untrack(() =>
+				on(window, 'scroll', (e) => {
+					const activeTooltip = this.#openTooltip;
+					if (!activeTooltip) return;
+					const triggerNode = activeTooltip.triggerNode;
+					if (!triggerNode) return;
 
-				const target = e.target;
-				if (!(target instanceof Element || target instanceof Document)) return;
+					const target = e.target;
+					if (!(target instanceof Element || target instanceof Document)) return;
 
-				if (target.contains(triggerNode)) {
-					activeTooltip.handleClose();
-				}
-			})
+					if (target.contains(triggerNode)) {
+						activeTooltip.handleClose();
+					}
+				}),
+			),
 		);
 	}
 
@@ -262,7 +249,8 @@ export class TooltipProviderState {
 }
 
 interface TooltipRootStateOpts
-	extends ReadableBoxedValues<{
+	extends
+		ReadableBoxedValues<{
 			delayDuration: number | undefined;
 			disableHoverableContent: boolean | undefined;
 			disableCloseOnTriggerClick: boolean | undefined;
@@ -282,26 +270,16 @@ export class TooltipRootState {
 	}
 	readonly opts: TooltipRootStateOpts;
 	readonly provider: TooltipProviderState;
-	readonly delayDuration = $derived.by(
-		() => this.opts.delayDuration.current ?? this.provider.opts.delayDuration.current
-	);
+	readonly delayDuration = $derived.by(() => this.opts.delayDuration.current ?? this.provider.opts.delayDuration.current);
 	readonly disableHoverableContent = $derived.by(
-		() =>
-			this.opts.disableHoverableContent.current ??
-			this.provider.opts.disableHoverableContent.current
+		() => this.opts.disableHoverableContent.current ?? this.provider.opts.disableHoverableContent.current,
 	);
 	readonly disableCloseOnTriggerClick = $derived.by(
-		() =>
-			this.opts.disableCloseOnTriggerClick.current ??
-			this.provider.opts.disableCloseOnTriggerClick.current
+		() => this.opts.disableCloseOnTriggerClick.current ?? this.provider.opts.disableCloseOnTriggerClick.current,
 	);
-	readonly disabled = $derived.by(
-		() => this.opts.disabled.current ?? this.provider.opts.disabled.current
-	);
+	readonly disabled = $derived.by(() => this.opts.disabled.current ?? this.provider.opts.disabled.current);
 	readonly ignoreNonKeyboardFocus = $derived.by(
-		() =>
-			this.opts.ignoreNonKeyboardFocus.current ??
-			this.provider.opts.ignoreNonKeyboardFocus.current
+		() => this.opts.ignoreNonKeyboardFocus.current ?? this.provider.opts.ignoreNonKeyboardFocus.current,
 	);
 	readonly registry: TooltipTriggerRegistryState;
 	readonly tether: TooltipTetherState | null;
@@ -310,8 +288,8 @@ export class TooltipRootState {
 	#wasOpenDelayed = $state(false);
 	#timerFn: TimeoutFn<() => void>;
 	readonly stateAttr = $derived.by(() => {
-		if (!this.opts.open.current) return "closed";
-		return this.#wasOpenDelayed ? "delayed-open" : "instant-open";
+		if (!this.opts.open.current) return 'closed';
+		return this.#wasOpenDelayed ? 'delayed-open' : 'instant-open';
 	});
 
 	constructor(opts: TooltipRootStateOpts, provider: TooltipProviderState) {
@@ -326,13 +304,15 @@ export class TooltipRootState {
 
 		if (this.tether) {
 			this.tether.root = this;
-			onMountEffect(() => {
-				return () => {
-					if (this.tether?.root === this) {
-						this.tether.root = null;
-					}
-				};
-			});
+			$effect(() =>
+				untrack(() => {
+					return () => {
+						if (this.tether?.root === this) {
+							this.tether.root = null;
+						}
+					};
+				}),
+			);
 		}
 
 		this.contentPresence = new PresenceManager({
@@ -351,7 +331,7 @@ export class TooltipRootState {
 					this.#wasOpenDelayed = true;
 					this.opts.open.current = true;
 				}, this.delayDuration);
-			}
+			},
 		);
 
 		watch(
@@ -364,7 +344,7 @@ export class TooltipRootState {
 					this.provider.onClose(this);
 				}
 			},
-			{ lazy: true }
+			{ lazy: true },
 		);
 
 		watch(
@@ -372,7 +352,7 @@ export class TooltipRootState {
 			(triggerId) => {
 				if (triggerId === this.registry.activeTriggerId) return;
 				this.registry.setActiveTrigger(triggerId);
-			}
+			},
 		);
 
 		watch(
@@ -380,7 +360,7 @@ export class TooltipRootState {
 			(activeTriggerId) => {
 				if (this.opts.triggerId.current === activeTriggerId) return;
 				this.opts.triggerId.current = activeTriggerId;
-			}
+			},
 		);
 	}
 
@@ -426,17 +406,11 @@ export class TooltipRootState {
 	};
 
 	ensureActiveTrigger = () => {
-		if (
-			this.registry.activeTriggerId !== null &&
-			this.registry.has(this.registry.activeTriggerId)
-		) {
+		if (this.registry.activeTriggerId !== null && this.registry.has(this.registry.activeTriggerId)) {
 			return;
 		}
 
-		if (
-			this.opts.triggerId.current !== null &&
-			this.registry.has(this.opts.triggerId.current)
-		) {
+		if (this.opts.triggerId.current !== null && this.registry.has(this.opts.triggerId.current)) {
 			this.registry.setActiveTrigger(this.opts.triggerId.current);
 			return;
 		}
@@ -452,11 +426,7 @@ export class TooltipRootState {
 	registerTrigger = (trigger: TooltipTriggerRecord) => {
 		this.registry.register(trigger);
 
-		if (
-			trigger.disabled &&
-			this.registry.activeTriggerId === trigger.id &&
-			this.opts.open.current
-		) {
+		if (trigger.disabled && this.registry.activeTriggerId === trigger.id && this.opts.open.current) {
 			this.handleClose();
 		}
 	};
@@ -464,11 +434,7 @@ export class TooltipRootState {
 	updateTrigger = (trigger: TooltipTriggerRecord) => {
 		this.registry.update(trigger);
 
-		if (
-			trigger.disabled &&
-			this.registry.activeTriggerId === trigger.id &&
-			this.opts.open.current
-		) {
+		if (trigger.disabled && this.registry.activeTriggerId === trigger.id && this.opts.open.current) {
 			this.handleClose();
 		}
 	};
@@ -500,7 +466,8 @@ export class TooltipRootState {
 }
 
 interface TooltipTriggerStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 			tabindex: number;
@@ -526,11 +493,7 @@ export class TooltipTriggerState {
 	#mounted = false;
 	#lastRegisteredId: string | null = null;
 
-	constructor(
-		opts: TooltipTriggerStateOpts,
-		root: TooltipRootState | null,
-		tether: TooltipTetherState | null
-	) {
+	constructor(opts: TooltipTriggerStateOpts, root: TooltipRootState | null, tether: TooltipTetherState | null) {
 		this.opts = opts;
 		this.root = root;
 		this.tether = tether;
@@ -541,39 +504,41 @@ export class TooltipTriggerState {
 			() => this.opts.id.current,
 			() => {
 				this.#register(this.opts.ref.current);
-			}
+			},
 		);
 		watch(
 			() => this.opts.payload.current,
 			() => {
 				this.#register(this.opts.ref.current);
-			}
+			},
 		);
 		watch(
 			() => this.opts.disabled.current,
 			() => {
 				this.#register(this.opts.ref.current);
-			}
+			},
 		);
 
-		onMountEffect(() => {
-			this.#mounted = true;
-			this.#register(this.opts.ref.current);
+		$effect(() =>
+			untrack(() => {
+				this.#mounted = true;
+				this.#register(this.opts.ref.current);
 
-			return () => {
-				const root = this.#getRoot();
-				const id = this.#lastRegisteredId;
-				if (id) {
-					if (this.tether) {
-						this.tether.registry.unregister(id);
-					} else {
-						root?.unregisterTrigger(id);
+				return () => {
+					const root = this.#getRoot();
+					const id = this.#lastRegisteredId;
+					if (id) {
+						if (this.tether) {
+							this.tether.registry.unregister(id);
+						} else {
+							root?.unregisterTrigger(id);
+						}
 					}
-				}
-				this.#lastRegisteredId = null;
-				this.#mounted = false;
-			};
-		});
+					this.#lastRegisteredId = null;
+					this.#mounted = false;
+				};
+			}),
+		);
 	}
 
 	#getRoot = () => {
@@ -615,11 +580,7 @@ export class TooltipTriggerState {
 				this.tether.registry.register(triggerRecord);
 			}
 
-			if (
-				disabled &&
-				this.tether.registry.activeTriggerId === id &&
-				root?.opts.open.current
-			) {
+			if (disabled && this.tether.registry.activeTriggerId === id && root?.opts.open.current) {
 				root.handleClose();
 			}
 		} else {
@@ -654,11 +615,11 @@ export class TooltipTriggerState {
 		this.#isPointerDown.current = true;
 
 		this.domContext.getDocument().addEventListener(
-			"pointerup",
+			'pointerup',
 			() => {
 				this.handlePointerUp();
 			},
-			{ once: true }
+			{ once: true },
 		);
 	};
 
@@ -671,7 +632,7 @@ export class TooltipTriggerState {
 			}
 			return;
 		}
-		if (e.pointerType === "touch") return;
+		if (e.pointerType === 'touch') return;
 
 		// if in transit, wait briefly to see if user is actually heading to old content or staying here
 		if (root.provider.isPointerInTransit.current) {
@@ -700,7 +661,7 @@ export class TooltipTriggerState {
 			}
 			return;
 		}
-		if (e.pointerType === "touch") return;
+		if (e.pointerType === 'touch') return;
 		if (this.#hasPointerMoveOpened) return;
 
 		// moving within trigger means we're definitely not in transit anymore
@@ -726,7 +687,7 @@ export class TooltipTriggerState {
 		// the sibling's enter handler will switch the active trigger instantly.
 		// if skipDelayDuration is 0 there's no grace period, so close now and let
 		// the sibling wait through the full delay (and re-animate).
-		if (isElement(relatedTarget)) {
+		if (relatedTarget instanceof Element) {
 			for (const record of root.registry.triggers.values()) {
 				if (record.node !== relatedTarget) continue;
 				if (root.provider.opts.skipDelayDuration.current > 0) {
@@ -754,7 +715,7 @@ export class TooltipTriggerState {
 			return;
 		}
 
-		if (root.ignoreNonKeyboardFocus && !isFocusVisible(e.currentTarget)) return;
+		if (root.ignoreNonKeyboardFocus && !e.currentTarget.matches(':focus-visible')) return;
 		root.setActiveTrigger(this.opts.id.current);
 		root.handleOpen();
 	};
@@ -773,18 +734,16 @@ export class TooltipTriggerState {
 
 	readonly props = $derived.by(() => {
 		const root = this.#getRoot();
-		const isOpenForTrigger = Boolean(
-			root?.opts.open.current && root.isActiveTrigger(this.opts.id.current)
-		);
+		const isOpenForTrigger = Boolean(root?.opts.open.current && root.isActiveTrigger(this.opts.id.current));
 		const isDisabled = this.#isDisabled();
 
 		return {
 			id: this.opts.id.current,
-			"aria-describedby": isOpenForTrigger ? root?.contentNode?.id : undefined,
-			"data-state": isOpenForTrigger ? root?.stateAttr : "closed",
-			"data-disabled": boolToEmptyStrOrUndef(isDisabled),
-			"data-delay-duration": `${root?.delayDuration ?? 0}`,
-			[tooltipAttrs.trigger]: "",
+			'aria-describedby': isOpenForTrigger ? root?.contentNode?.id : undefined,
+			'data-state': isOpenForTrigger ? root?.stateAttr : 'closed',
+			'data-disabled': isDisabled ? '' : undefined,
+			'data-delay-duration': `${root?.delayDuration ?? 0}`,
+			[tooltipAttrs.trigger]: '',
 			tabindex: isDisabled ? undefined : this.opts.tabindex.current,
 			disabled: this.opts.disabled.current,
 			onpointerup: this.#onpointerup,
@@ -801,7 +760,8 @@ export class TooltipTriggerState {
 }
 
 interface TooltipContentStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			onInteractOutside: (e: PointerEvent) => void;
 			onEscapeKeydown: (e: KeyboardEvent) => void;
@@ -846,11 +806,7 @@ export class TooltipContentState {
 	}
 
 	onInteractOutside = (e: PointerEvent) => {
-		if (
-			isElement(e.target) &&
-			this.root.triggerNode?.contains(e.target) &&
-			this.root.disableCloseOnTriggerClick
-		) {
+		if (e.target instanceof Element && this.root.triggerNode?.contains(e.target) && this.root.disableCloseOnTriggerClick) {
 			e.preventDefault();
 			return;
 		}
@@ -883,15 +839,18 @@ export class TooltipContentState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-state": this.root.stateAttr,
-				"data-disabled": boolToEmptyStrOrUndef(this.root.disabled),
-				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
-				style: {
-					outline: "none",
+				'data-state': this.root.stateAttr,
+				'data-disabled': this.root.disabled ? '' : undefined,
+				...{
+					'data-starting-style': this.root.contentPresence.transitionStatus === 'starting' ? '' : undefined,
+					'data-ending-style': this.root.contentPresence.transitionStatus === 'ending' ? '' : undefined,
 				},
-				[tooltipAttrs.content]: "",
+				style: {
+					outline: 'none',
+				},
+				[tooltipAttrs.content]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 
 	readonly popperProps = {

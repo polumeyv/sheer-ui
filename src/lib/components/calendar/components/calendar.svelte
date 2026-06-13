@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { watch } from "$lib/vendor/runed/index.js";
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
 	import { type DateValue } from "@internationalized/date";
 	import { CalendarRootState } from "$lib/components/calendar/calendar.svelte.js";
-	import type { CalendarRootProps } from "$lib/components/calendar/types.js";
+	import type { CalendarRootProps } from "$lib/components/calendar/index.js";
 	import { useId } from "$lib/internal/use-id.js";
-	import { noop } from "$lib/internal/noop.js";
 	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
 	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
 
@@ -15,9 +14,9 @@
 		id = useId(),
 		ref = $bindable(null),
 		value = $bindable(),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		placeholder = $bindable(),
-		onPlaceholderChange = noop,
+		onPlaceholderChange = (() => {}),
 		weekdayFormat = "narrow",
 		weekStartsOn,
 		pagedNavigation = false,

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '../../utils.js';
+	import { cn } from '../../vendor/utils.js';
 	import * as Select from '../../components/select/index.js';
 	import { Button } from '../../components/button/index.js';
 
@@ -107,7 +107,7 @@
 			<span class="flex-1 text-center">{display || placeholder}</span>
 		</Select.Trigger>
 		<Select.Content class="max-h-50!">
-			{#each slots as slot}
+			{#each slots as slot (slot)}
 				<Select.Item value={slot} label={slot} />
 			{/each}
 		</Select.Content>

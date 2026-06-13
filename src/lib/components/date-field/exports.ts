@@ -9,4 +9,4 @@ export type {
 	DateFieldLabelProps as LabelProps,
 	DateFieldSegmentProps as SegmentProps,
 	// DateFieldDescriptionProps as DescriptionProps,
-} from "$lib/components/date-field/types.js";
+} from "$lib/components/date-field/index.js";

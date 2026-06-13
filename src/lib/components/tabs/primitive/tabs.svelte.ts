@@ -1,41 +1,31 @@
-import { createContext } from "svelte";
-import { SvelteMap } from "svelte/reactivity";
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/vendor/toolbelt/index.js";
-import { watch } from "$lib/vendor/runed/index.js";
-import type { TabsActivationMode } from "$lib/components/tabs/primitive/types.js";
-import {
-	createBitsAttrs,
-	boolToStr,
-	boolToEmptyStrOrUndef,
-	boolToTrueOrUndef,
-} from "$lib/internal/attrs.js";
-import { kbd } from "$lib/internal/kbd.js";
-import type {
-	BitsFocusEvent,
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import type { Orientation } from "$lib/shared/index.js";
-import { RovingFocusGroup } from "$lib/internal/roving-focus-group.js";
+import { createContext, untrack } from 'svelte';
+import { SvelteMap } from 'svelte/reactivity';
+import { attachRef, type RefAttachment } from '$lib/internal/attach-ref.js';
+import type { TabsActivationMode } from '$lib/components/tabs/primitive/index.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import { kbd } from '$lib/internal/kbd.js';
+import type { ReadableProps, WithRefProps, WritableProps } from '$lib/vendor/utils.js';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent } from '$lib/internal/types.js';
+import type { Orientation } from '$lib/shared/index.js';
+import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
 
 const tabsAttrs = createBitsAttrs({
-	component: "tabs",
-	parts: ["root", "list", "trigger", "content"],
+	component: 'tabs',
+	parts: ['root', 'list', 'trigger', 'content'],
 });
 
 const [getTabsRootContext, setTabsRootContext] = createContext<TabsRootState>();
 
 interface TabsRootStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			orientation: Orientation;
 			loop: boolean;
 			activationMode: TabsActivationMode;
 			disabled: boolean;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			value: string;
 		}> {}
 
@@ -54,7 +44,7 @@ export class TabsRootState {
 
 	constructor(opts: TabsRootStateOpts) {
 		this.opts = opts;
-		this.attachment = attachRef(opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref.current = v));
 		this.rovingFocusGroup = new RovingFocusGroup({
 			candidateAttr: tabsAttrs.trigger,
 			rootNode: this.opts.ref,
@@ -91,14 +81,14 @@ export class TabsRootState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-orientation": this.opts.orientation.current,
-				[tabsAttrs.root]: "",
+				'data-orientation': this.opts.orientation.current,
+				[tabsAttrs.root]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
-interface TabsListStateOpts extends WithRefOpts {}
+interface TabsListStateOpts extends WithRefProps {}
 
 export class TabsListState {
 	static create(opts: TabsListStateOpts) {
@@ -112,26 +102,27 @@ export class TabsListState {
 	constructor(opts: TabsListStateOpts, root: TabsRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref.current = v));
 	}
 
 	readonly props = $derived.by(
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "tablist",
-				"aria-orientation": this.root.opts.orientation.current,
-				"data-orientation": this.root.opts.orientation.current,
-				[tabsAttrs.list]: "",
-				"data-disabled": boolToEmptyStrOrUndef(this.#isDisabled),
+				role: 'tablist',
+				'aria-orientation': this.root.opts.orientation.current,
+				'data-orientation': this.root.opts.orientation.current,
+				[tabsAttrs.list]: '',
+				'data-disabled': this.#isDisabled ? '' : undefined,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface TabsTriggerStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			value: string;
 			disabled: boolean;
 		}> {}
@@ -143,33 +134,24 @@ export class TabsTriggerState {
 	readonly opts: TabsTriggerStateOpts;
 	readonly root: TabsRootState;
 	readonly attachment: RefAttachment;
-	#tabIndex = $state(0);
-	readonly #isActive = $derived.by(
-		() => this.root.opts.value.current === this.opts.value.current
-	);
-	readonly #isDisabled = $derived.by(
-		() => this.opts.disabled.current || this.root.opts.disabled.current
-	);
-	readonly #ariaControls = $derived.by(() =>
-		this.root.valueToContentId.get(this.opts.value.current)
-	);
+	readonly #isActive = $derived.by(() => this.root.opts.value.current === this.opts.value.current);
+	// Roving tabindex: the active trigger — or every trigger while nothing is selected yet — is focusable.
+	readonly #tabIndex = $derived.by(() => (this.#isActive || !this.root.opts.value.current ? 0 : -1));
+	readonly #isDisabled = $derived.by(() => this.opts.disabled.current || this.root.opts.disabled.current);
+	readonly #ariaControls = $derived.by(() => this.root.valueToContentId.get(this.opts.value.current));
 
 	constructor(opts: TabsTriggerStateOpts, root: TabsRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(opts.ref);
-		watch([() => this.opts.id.current, () => this.opts.value.current], ([id, value]) => {
-			return this.root.registerTrigger(id, value);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref.current = v));
+		// register/deregister with the root; untrack the body so the triggerIds
+		// mutation inside registerTrigger isn't tracked as a dependency
+		$effect(() => {
+			const id = this.opts.id.current;
+			const value = this.opts.value.current;
+			return untrack(() => this.root.registerTrigger(id, value));
 		});
 
-		$effect(() => {
-			this.root.triggerIds.length;
-			if (this.#isActive || !this.root.opts.value.current) {
-				this.#tabIndex = 0;
-			} else {
-				this.#tabIndex = -1;
-			}
-		});
 		this.onfocus = this.onfocus.bind(this);
 		this.onclick = this.onclick.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);
@@ -181,7 +163,7 @@ export class TabsTriggerState {
 	}
 
 	onfocus(_: BitsFocusEvent) {
-		if (this.root.opts.activationMode.current !== "automatic" || this.#isDisabled) return;
+		if (this.root.opts.activationMode.current !== 'automatic' || this.#isDisabled) return;
 		this.#activate();
 	}
 
@@ -204,28 +186,29 @@ export class TabsTriggerState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "tab",
-				"data-state": getTabDataState(this.#isActive),
-				"data-value": this.opts.value.current,
-				"data-orientation": this.root.opts.orientation.current,
-				"data-disabled": boolToEmptyStrOrUndef(this.#isDisabled),
-				"aria-selected": boolToStr(this.#isActive),
-				"aria-controls": this.#ariaControls,
-				[tabsAttrs.trigger]: "",
-				disabled: boolToTrueOrUndef(this.#isDisabled),
+				role: 'tab',
+				'data-state': getTabDataState(this.#isActive),
+				'data-value': this.opts.value.current,
+				'data-orientation': this.root.opts.orientation.current,
+				'data-disabled': this.#isDisabled ? '' : undefined,
+				'aria-selected': this.#isActive ? 'true' : 'false',
+				'aria-controls': this.#ariaControls,
+				[tabsAttrs.trigger]: '',
+				disabled: this.#isDisabled ? true : undefined,
 				tabindex: this.#tabIndex,
 				//
 				onclick: this.onclick,
 				onfocus: this.onfocus,
 				onkeydown: this.onkeydown,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface TabsContentStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			value: string;
 		}> {}
 
@@ -236,19 +219,17 @@ export class TabsContentState {
 	readonly opts: TabsContentStateOpts;
 	readonly root: TabsRootState;
 	readonly attachment: RefAttachment;
-	readonly #isActive = $derived.by(
-		() => this.root.opts.value.current === this.opts.value.current
-	);
-	readonly #ariaLabelledBy = $derived.by(() =>
-		this.root.valueToTriggerId.get(this.opts.value.current)
-	);
+	readonly #isActive = $derived.by(() => this.root.opts.value.current === this.opts.value.current);
+	readonly #ariaLabelledBy = $derived.by(() => this.root.valueToTriggerId.get(this.opts.value.current));
 
 	constructor(opts: TabsContentStateOpts, root: TabsRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(opts.ref);
-		watch([() => this.opts.id.current, () => this.opts.value.current], ([id, value]) => {
-			return this.root.registerContent(id, value);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref.current = v));
+		$effect(() => {
+			const id = this.opts.id.current;
+			const value = this.opts.value.current;
+			return untrack(() => this.root.registerContent(id, value));
 		});
 	}
 
@@ -256,19 +237,19 @@ export class TabsContentState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "tabpanel",
-				hidden: boolToTrueOrUndef(!this.#isActive),
+				role: 'tabpanel',
+				hidden: !this.#isActive ? true : undefined,
 				tabindex: 0,
-				"data-value": this.opts.value.current,
-				"data-state": getTabDataState(this.#isActive),
-				"aria-labelledby": this.#ariaLabelledBy,
-				"data-orientation": this.root.opts.orientation.current,
-				[tabsAttrs.content]: "",
+				'data-value': this.opts.value.current,
+				'data-state': getTabDataState(this.#isActive),
+				'aria-labelledby': this.#ariaLabelledBy,
+				'data-orientation': this.root.opts.orientation.current,
+				[tabsAttrs.content]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
-function getTabDataState(condition: boolean): "active" | "inactive" {
-	return condition ? "active" : "inactive";
+function getTabDataState(condition: boolean): 'active' | 'inactive' {
+	return condition ? 'active' : 'inactive';
 }

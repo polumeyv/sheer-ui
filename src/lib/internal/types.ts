@@ -1,8 +1,8 @@
 // oxlint-disable no-explicit-any
-import type { Snippet } from "svelte";
+import type { Snippet } from 'svelte';
 
-import type { attachRef, Box, ReadableBoxedValues, WritableBoxedValues } from "$lib/vendor/toolbelt/index.js";
-import type { StyleProperties } from "$lib/shared/index.js";
+import type { attachRef, Box, ReadableBoxedValues, WritableBoxedValues } from '$lib/vendor/index.js';
+import type { StyleProperties } from '$lib/shared/index.js';
 
 export type OnChangeFn<T> = (value: T) => void;
 
@@ -23,7 +23,7 @@ export type WithChild<
 	 * programmatically interact with the element.
 	 */
 	Ref = HTMLElement,
-> = Omit<Props, "child" | "children"> & {
+> = Omit<Props, 'child' | 'children'> & {
 	child?: SnippetProps extends { _default: never }
 		? Snippet<[{ props: Record<string, unknown> }]>
 		: Snippet<[SnippetProps & { props: Record<string, unknown> }]>;
@@ -47,7 +47,7 @@ export type WithChildNoChildrenSnippetProps<
 	 * programmatically interact with the element.
 	 */
 	Ref = HTMLElement,
-> = Omit<Props, "child" | "children"> & {
+> = Omit<Props, 'child' | 'children'> & {
 	child?: SnippetProps extends { _default: never }
 		? Snippet<[{ props: Record<string, unknown> }]>
 		: Snippet<[SnippetProps & { props: Record<string, unknown> }]>;
@@ -77,9 +77,7 @@ export type Arrayable<T> = T[] | T;
 export type Fn = () => void;
 export type AnyFn = (...args: any[]) => any;
 
-export type WithRefOpts<T = {}> = T &
-	ReadableBoxedValues<{ id: string }> &
-	WritableBoxedValues<{ ref: HTMLElement | null }>;
+export type WithRefOpts<T = {}> = T & ReadableBoxedValues<{ id: string }> & WritableBoxedValues<{ ref: HTMLElement | null }>;
 
 export type BitsEvent<T extends Event = Event, U extends HTMLElement = HTMLElement> = T & {
 	currentTarget: U;

@@ -1,41 +1,24 @@
-import { createContext } from "svelte";
-import {
-	afterTick,
-	attachRef,
-	boxWith,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from "$lib/vendor/toolbelt/index.js";
-import { watch } from "$lib/vendor/runed/index.js";
-import {
-	createBitsAttrs,
-	boolToStr,
-	boolToEmptyStrOrUndef,
-	getDataOpenClosed,
-	getDataTransitionAttrs,
-} from "$lib/internal/attrs.js";
-import { kbd } from "$lib/internal/kbd.js";
-import type {
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	OnChangeFn,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import { on } from "svelte/events";
-import { PresenceManager } from "$lib/internal/presence-manager.svelte.js";
+import { createContext, tick } from 'svelte';
+import { on } from 'svelte/events';
+import { attachRef, type RefAttachment } from '$lib/internal/attach-ref.js';
+import { Presence } from '$lib/internal/presence.svelte.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import { kbd } from '$lib/internal/kbd.js';
+import type { ReadableProps, WithRefProps, WritableProps } from '$lib/vendor/utils.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn } from '$lib/internal/types.js';
 
 const collapsibleAttrs = createBitsAttrs({
-	component: "collapsible",
-	parts: ["root", "content", "trigger"],
+	component: 'collapsible',
+	parts: ['root', 'content', 'trigger'],
 });
 
 interface CollapsibleRootStateOpts
-	extends WithRefOpts,
-		WritableBoxedValues<{
+	extends
+		WithRefProps,
+		WritableProps<{
 			open: boolean;
 		}>,
-		ReadableBoxedValues<{
+		ReadableProps<{
 			disabled: boolean;
 			onOpenChangeComplete: OnChangeFn<boolean>;
 		}> {}
@@ -50,17 +33,17 @@ export class CollapsibleRootState {
 	readonly opts: CollapsibleRootStateOpts;
 	readonly attachment: RefAttachment;
 	contentNode = $state<HTMLElement | null>(null);
-	contentPresence: PresenceManager;
+	contentPresence: Presence;
 	contentId = $state<string | undefined>(undefined);
 
 	constructor(opts: CollapsibleRootStateOpts) {
 		this.opts = opts;
 		this.toggleOpen = this.toggleOpen.bind(this);
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (this.opts.ref.current = v));
 
-		this.contentPresence = new PresenceManager({
-			ref: boxWith(() => this.contentNode),
-			open: this.opts.open,
+		this.contentPresence = new Presence({
+			open: () => this.opts.open.current,
+			ref: () => this.contentNode,
 			onComplete: () => {
 				this.opts.onOpenChangeComplete.current(this.opts.open.current);
 			},
@@ -75,17 +58,18 @@ export class CollapsibleRootState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-state": getDataOpenClosed(this.opts.open.current),
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-				[collapsibleAttrs.root]: "",
+				'data-state': this.opts.open.current ? 'open' : 'closed',
+				'data-disabled': this.opts.disabled.current ? '' : undefined,
+				[collapsibleAttrs.root]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface CollapsibleContentStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			forceMount: boolean;
 			hiddenUntilFound: boolean;
 		}> {}
@@ -113,63 +97,61 @@ export class CollapsibleContentState {
 		this.root = root;
 		this.#isMountAnimationPrevented = root.opts.open.current;
 		this.root.contentId = this.opts.id.current;
-		this.attachment = attachRef(this.opts.ref, (v) => (this.root.contentNode = v));
-
-		watch.pre(
-			() => this.opts.id.current,
-			(id) => {
-				this.root.contentId = id;
-			}
+		this.attachment = attachRef<HTMLElement>(
+			(v) => (this.opts.ref.current = v),
+			(v) => (this.root.contentNode = v),
 		);
+
+		// runed watch.pre was non-lazy: keep contentId in sync, initial run included.
+		$effect.pre(() => {
+			this.root.contentId = this.opts.id.current;
+		});
 
 		$effect.pre(() => {
 			const rAF = requestAnimationFrame(() => {
 				this.#isMountAnimationPrevented = false;
 			});
-
-			return () => {
-				cancelAnimationFrame(rAF);
-			};
+			return () => cancelAnimationFrame(rAF);
 		});
 
-		watch.pre(
-			[() => this.opts.ref.current, () => this.opts.hiddenUntilFound.current],
-			([node, hiddenUntilFound]) => {
-				if (!node || !hiddenUntilFound) return;
+		$effect.pre(() => {
+			const node = this.opts.ref.current;
+			const hiddenUntilFound = this.opts.hiddenUntilFound.current;
+			if (!node || !hiddenUntilFound) return;
 
-				const handleBeforeMatch = () => {
-					if (this.root.opts.open.current) return;
-					// we need to defer opening until after browser completes search highlighting
-					// otherwise the browser will immediately open the collapsible
-					// and the search highlighting will not be visible
-					requestAnimationFrame(() => {
-						this.root.opts.open.current = true;
-					});
-				};
+			const handleBeforeMatch = () => {
+				if (this.root.opts.open.current) return;
+				// defer opening until the browser finishes search highlighting,
+				// otherwise it opens immediately and the highlight isn't visible
+				requestAnimationFrame(() => {
+					this.root.opts.open.current = true;
+				});
+			};
 
-				return on(node, "beforematch", handleBeforeMatch);
-			}
-		);
+			return on(node, 'beforematch', handleBeforeMatch);
+		});
 
-		watch([() => this.opts.ref.current, () => this.present], ([node]) => {
+		// re-measure whenever the node or presence changes
+		$effect(() => {
+			const node = this.opts.ref.current;
+			void this.present;
 			if (!node) return;
-			afterTick(() => {
+			tick().then(() => {
 				if (!this.opts.ref.current) return;
-				// get the dimensions of the element
 				this.#originalStyles = this.#originalStyles || {
 					transitionDuration: node.style.transitionDuration,
 					animationName: node.style.animationName,
 				};
 
-				// block any animations/transitions so the element renders at full dimensions
-				node.style.transitionDuration = "0s";
-				node.style.animationName = "none";
+				// block animations/transitions so the element renders at full dimensions
+				node.style.transitionDuration = '0s';
+				node.style.animationName = 'none';
 
 				const rect = node.getBoundingClientRect();
 				this.#height = rect.height;
 				this.#width = rect.width;
 
-				// unblock any animations/transitions that were originally set if not the initial render
+				// restore the originals unless this is the initial render
 				if (!this.#isMountAnimationPrevented) {
 					const { animationName, transitionDuration } = this.#originalStyles;
 					node.style.transitionDuration = transitionDuration;
@@ -192,21 +174,15 @@ export class CollapsibleContentState {
 			({
 				id: this.opts.id.current,
 				style: {
-					"--bits-collapsible-content-height": this.#height
-						? `${this.#height}px`
-						: undefined,
-					"--bits-collapsible-content-width": this.#width
-						? `${this.#width}px`
-						: undefined,
+					'--bits-collapsible-content-height': this.#height ? `${this.#height}px` : undefined,
+					'--bits-collapsible-content-width': this.#width ? `${this.#width}px` : undefined,
 				},
-				hidden:
-					this.opts.hiddenUntilFound.current && !this.root.opts.open.current
-						? "until-found"
-						: undefined,
-				"data-state": getDataOpenClosed(this.root.opts.open.current),
-				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
-				"data-disabled": boolToEmptyStrOrUndef(this.root.opts.disabled.current),
-				[collapsibleAttrs.content]: "",
+				hidden: this.opts.hiddenUntilFound.current && !this.root.opts.open.current ? 'until-found' : undefined,
+				'data-state': this.root.opts.open.current ? 'open' : 'closed',
+				'data-starting-style': this.root.contentPresence.transitionStatus === 'starting' ? '' : undefined,
+				'data-ending-style': this.root.contentPresence.transitionStatus === 'ending' ? '' : undefined,
+				'data-disabled': this.root.opts.disabled.current ? '' : undefined,
+				[collapsibleAttrs.content]: '',
 				...(this.opts.hiddenUntilFound.current && !this.shouldRender
 					? {}
 					: {
@@ -217,13 +193,14 @@ export class CollapsibleContentState {
 									: !this.shouldRender,
 						}),
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface CollapsibleTriggerStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean | null | undefined;
 		}> {}
 
@@ -240,7 +217,7 @@ export class CollapsibleTriggerState {
 	constructor(opts: CollapsibleTriggerStateOpts, root: CollapsibleRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (this.opts.ref.current = v));
 		this.onclick = this.onclick.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);
 	}
@@ -264,17 +241,17 @@ export class CollapsibleTriggerState {
 		() =>
 			({
 				id: this.opts.id.current,
-				type: "button",
+				type: 'button',
 				disabled: this.#isDisabled,
-				"aria-controls": this.root.contentId,
-				"aria-expanded": boolToStr(this.root.opts.open.current),
-				"data-state": getDataOpenClosed(this.root.opts.open.current),
-				"data-disabled": boolToEmptyStrOrUndef(this.#isDisabled),
-				[collapsibleAttrs.trigger]: "",
+				'aria-controls': this.root.contentId,
+				'aria-expanded': this.root.opts.open.current ? 'true' : 'false',
+				'data-state': this.root.opts.open.current ? 'open' : 'closed',
+				'data-disabled': this.#isDisabled ? '' : undefined,
+				[collapsibleAttrs.trigger]: '',
 				//
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }

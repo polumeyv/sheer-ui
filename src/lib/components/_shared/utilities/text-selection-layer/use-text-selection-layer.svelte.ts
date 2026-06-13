@@ -1,27 +1,16 @@
-import {
-	DOMContext,
-	type ReadableBox,
-	type ReadableBoxedValues,
-	composeHandlers,
-	contains,
-	executeCallbacks,
-} from "$lib/vendor/toolbelt/index.js";
-import { watch } from "$lib/vendor/runed/index.js";
-import { on } from "svelte/events";
-import type { PointerHandler, TextSelectionLayerImplProps } from "$lib/components/_shared/utilities/text-selection-layer/types.js";
-import { noop } from "$lib/internal/noop.js";
-import { isHTMLElement } from "$lib/internal/is.js";
+import { DOMContext, type ReadableBox, type ReadableBoxedValues, composeHandlers, contains } from '$lib/vendor/index.js';
+import { executeCallbacks } from '$lib/vendor/index.js';
+import { watch } from '$lib/vendor/watch.svelte.js';
+import { on } from 'svelte/events';
+import type { PointerHandler, TextSelectionLayerImplProps } from '$lib/components/_shared/utilities/text-selection-layer/index.js';
 
 const noopPointer: PointerHandler = () => {};
 
-interface TextSelectionLayerStateOpts
-	extends ReadableBoxedValues<
-		Required<
-			Omit<TextSelectionLayerImplProps, "children" | "preventOverflowTextSelection" | "ref">
-		> & {
-			ref: HTMLElement | null;
-		}
-	> {}
+interface TextSelectionLayerStateOpts extends ReadableBoxedValues<
+	Required<Omit<TextSelectionLayerImplProps, 'children' | 'preventOverflowTextSelection' | 'ref'>> & {
+		ref: HTMLElement | null;
+	}
+> {}
 
 globalThis.bitsTextSelectionLayers ??= new Map<TextSelectionLayerState, ReadableBox<boolean>>();
 
@@ -31,7 +20,7 @@ export class TextSelectionLayerState {
 	}
 	readonly opts: TextSelectionLayerStateOpts;
 	readonly domContext: DOMContext;
-	#unsubSelectionLock = noop;
+	#unsubSelectionLock = () => {};
 	#enabledSnapshot = false;
 	#onPointerDownSnapshot: PointerHandler = noopPointer;
 	#onPointerUpSnapshot: PointerHandler = noopPointer;
@@ -40,15 +29,10 @@ export class TextSelectionLayerState {
 		this.opts = opts;
 		this.domContext = new DOMContext(opts.ref);
 
-		let unsubEvents = noop;
+		let unsubEvents = () => {};
 
 		watch(
-			() =>
-				[
-					this.opts.enabled.current,
-					this.opts.onPointerDown.current,
-					this.opts.onPointerUp.current,
-				] as const,
+			() => [this.opts.enabled.current, this.opts.onPointerDown.current, this.opts.onPointerUp.current] as const,
 			([enabled, onPointerDown, onPointerUp]) => {
 				this.#enabledSnapshot = enabled;
 				this.#onPointerDownSnapshot = onPointerDown;
@@ -65,18 +49,14 @@ export class TextSelectionLayerState {
 					this.#resetSelectionLock();
 					globalThis.bitsTextSelectionLayers.delete(this);
 				};
-			}
+			},
 		);
 	}
 
 	#addEventListeners() {
 		return executeCallbacks(
-			on(this.domContext.getDocument(), "pointerdown", this.#pointerdown),
-			on(
-				this.domContext.getDocument(),
-				"pointerup",
-				composeHandlers(this.#resetSelectionLock, this.#pointerupUserHandler)
-			)
+			on(this.domContext.getDocument(), 'pointerdown', this.#pointerdown),
+			on(this.domContext.getDocument(), 'pointerup', composeHandlers(this.#resetSelectionLock, this.#pointerupUserHandler)),
 		);
 	}
 
@@ -87,7 +67,7 @@ export class TextSelectionLayerState {
 	#pointerdown = (e: PointerEvent) => {
 		const node = this.opts.ref.current;
 		const target = e.target;
-		if (!isHTMLElement(node) || !isHTMLElement(target) || !this.#enabledSnapshot) return;
+		if (!(node instanceof HTMLElement) || !(target instanceof HTMLElement) || !this.#enabledSnapshot) return;
 		/**
 		 * We only lock user-selection overflow if layer is the top most layer and
 		 * pointerdown occurred inside the node. You are still allowed to select text
@@ -96,15 +76,12 @@ export class TextSelectionLayerState {
 		if (!isHighestLayer(this) || !contains(node, target)) return;
 		this.#onPointerDownSnapshot(e);
 		if (e.defaultPrevented) return;
-		this.#unsubSelectionLock = preventTextSelectionOverflow(
-			node,
-			this.domContext.getDocument().body
-		);
+		this.#unsubSelectionLock = preventTextSelectionOverflow(node, this.domContext.getDocument().body);
 	};
 
 	#resetSelectionLock = () => {
 		this.#unsubSelectionLock();
-		this.#unsubSelectionLock = noop;
+		this.#unsubSelectionLock = () => {};
 	};
 }
 
@@ -113,8 +90,8 @@ const getUserSelect = (node: HTMLElement) => node.style.userSelect || node.style
 function preventTextSelectionOverflow(node: HTMLElement, body: HTMLElement) {
 	const originalBodyUserSelect = getUserSelect(body);
 	const originalNodeUserSelect = getUserSelect(node);
-	setUserSelect(body, "none");
-	setUserSelect(node, "text");
+	setUserSelect(body, 'none');
+	setUserSelect(node, 'text');
 	return () => {
 		setUserSelect(body, originalBodyUserSelect);
 		setUserSelect(node, originalNodeUserSelect);

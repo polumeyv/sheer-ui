@@ -1,21 +1,20 @@
 <script lang="ts">
 	import { type WritableBox, boxWith } from "$lib/vendor/toolbelt/index.js";
-	import type { ComboboxRootProps } from "$lib/components/combobox/types.js";
-	import { noop } from "$lib/internal/noop.js";
+	import type { ComboboxRootProps } from "$lib/components/combobox/index.js";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
 	import { SelectRootState } from "$lib/components/select/primitive/select.svelte.js";
 	import ListboxHiddenInput from "$lib/components/select/primitive/components/select-hidden-input.svelte";
-	import { watch } from "$lib/vendor/runed/index.js";
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
 
 	let {
 		value = $bindable(),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		name = "",
 		disabled = false,
 		type,
 		open = $bindable(false),
-		onOpenChange = noop,
-		onOpenChangeComplete = noop,
+		onOpenChange = (() => {}),
+		onOpenChangeComplete = (() => {}),
 		loop = false,
 		scrollAlignment = "nearest",
 		required = false,

@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { boxWith } from "$lib/vendor/toolbelt/index.js";
-	import type { MenubarMenuProps } from "$lib/components/menubar/primitive/types.js";
+	import type { MenubarMenuProps } from "$lib/components/menubar/primitive/index.js";
 	import { MenubarMenuState } from "$lib/components/menubar/primitive/menubar.svelte.js";
 	import Menu from "$lib/components/_shared/menu/components/menu.svelte";
-	import { noop } from "$lib/internal/noop.js";
 	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();
 
-	let { value = createId(uid), onOpenChange = noop, ...restProps }: MenubarMenuProps = $props();
+	let { value = createId(uid), onOpenChange = (() => {}), ...restProps }: MenubarMenuProps = $props();
 
 	const menuState = MenubarMenuState.create({
 		value: boxWith(() => value),

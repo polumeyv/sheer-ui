@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { ToggleGroupItemProps } from "$lib/components/toggle-group/primitive/types.js";
-	import { ToggleGroupItemState } from "$lib/components/toggle-group/primitive/toggle-group.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/internal/merge-props.js';
+	import type { ToggleGroupItemProps } from '$lib/components/toggle-group/primitive/index.js';
+	import { ToggleGroupItemState } from '$lib/components/toggle-group/primitive/toggle-group.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -13,18 +13,34 @@
 		value,
 		disabled = false,
 		id = createId(uid),
-		type = "button",
+		type = 'button',
 		...restProps
 	}: ToggleGroupItemProps = $props();
 
 	const itemState = ToggleGroupItemState.create({
-		id: boxWith(() => id),
-		value: boxWith(() => value),
-		disabled: boxWith(() => disabled ?? false),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		value: {
+			get current() {
+				return value;
+			},
+		},
+		disabled: {
+			get current() {
+				return disabled ?? false;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, itemState.props, { type }));

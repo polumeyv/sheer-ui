@@ -1,6 +1,6 @@
 <script lang="ts" module>
-	import { getContext, setContext } from 'svelte';
-	import type { VariantProps } from '../../utils.js';
+	import { createContext } from 'svelte';
+	import type { VariantProps } from '../../vendor/utils.js';
 	import { toggleVariants } from '../toggle';
 
 	type ToggleVariants = VariantProps<typeof toggleVariants>;
@@ -9,24 +9,17 @@
 		spacing?: number;
 	}
 
-	export function setToggleGroupCtx(props: ToggleGroupContext) {
-		setContext('toggleGroup', props);
-	}
-
-	export function getToggleGroupCtx() {
-		return getContext<Required<ToggleGroupContext>>('toggleGroup');
-	}
+	export const [getToggleGroupCtx, setToggleGroupCtx] = createContext<Required<ToggleGroupContext>>();
 </script>
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { type WritableBox, boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { ToggleGroupRootProps } from '$lib/components/toggle-group/primitive/types.js';
+	import { mergeProps } from '$lib/internal/merge-props.js';
+	import type { WritableProp } from '$lib/vendor/utils.js';
+	import type { ToggleGroupRootProps } from '$lib/components/toggle-group/primitive/index.js';
 	import { ToggleGroupRootState } from '$lib/components/toggle-group/primitive/toggle-group.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { noop } from '$lib/internal/noop.js';
-	import { watch } from '$lib/vendor/runed/index.js';
-	import { cn } from '../../utils.js';
+	import { cn } from '../../vendor/utils.js';
 
 	const uid = $props.id();
 
@@ -34,7 +27,7 @@
 		id = createId(uid),
 		ref = $bindable(null),
 		value = $bindable(),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		type,
 		disabled = false,
 		loop = true,
@@ -60,32 +53,56 @@
 	// SSR
 	handleDefaultValue();
 
-	watch.pre(
-		() => value,
-		() => {
-			handleDefaultValue();
-		}
-	);
+	$effect.pre(() => {
+		void value;
+		untrack(() => handleDefaultValue());
+	});
 
 	const rootState = ToggleGroupRootState.create({
-		id: boxWith(() => id),
-		value: boxWith(
-			() => value!,
-			(v) => {
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		value: {
+			get current() {
+				return value!;
+			},
+			set current(v) {
 				value = v;
 				// @ts-expect-error - we know
 				onValueChange(v);
-			}
-		) as WritableBox<string> | WritableBox<string[]>,
-		disabled: boxWith(() => disabled),
-		loop: boxWith(() => loop),
-		orientation: boxWith(() => orientation),
-		rovingFocus: boxWith(() => rovingFocus),
+			},
+		} as WritableProp<string> | WritableProp<string[]>,
+		disabled: {
+			get current() {
+				return disabled;
+			},
+		},
+		loop: {
+			get current() {
+				return loop;
+			},
+		},
+		orientation: {
+			get current() {
+				return orientation;
+			},
+		},
+		rovingFocus: {
+			get current() {
+				return rovingFocus;
+			},
+		},
 		type,
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(

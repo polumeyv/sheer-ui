@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { MenubarContentProps } from "$lib/components/menubar/primitive/types.js";
+	import type { MenubarContentProps } from "$lib/components/menubar/primitive/index.js";
 	import { MenubarContentState } from "$lib/components/menubar/primitive/menubar.svelte.js";
 	import MenuContent from "$lib/components/_shared/menu/components/menu-content.svelte";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
 
 	const uid = $props.id();
 
@@ -12,10 +11,10 @@
 		ref = $bindable(null),
 		interactOutsideBehavior = "close",
 		id = createId(uid),
-		onInteractOutside = noop,
-		onFocusOutside = noop,
-		onCloseAutoFocus = noop,
-		onOpenAutoFocus = noop,
+		onInteractOutside = (() => {}),
+		onFocusOutside = (() => {}),
+		onCloseAutoFocus = (() => {}),
+		onOpenAutoFocus = (() => {}),
 		...restProps
 	}: MenubarContentProps = $props();
 

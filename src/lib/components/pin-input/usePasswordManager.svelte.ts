@@ -1,23 +1,21 @@
-import { getWindow, type DOMContext, type ReadableBox, type WritableBox } from "$lib/vendor/toolbelt/index.js";
-import type { PinInputRootPropsWithoutHTML } from "$lib/components/pin-input/types.js";
+import { getWindow, type DOMContext, type ReadableBox, type WritableBox } from '$lib/vendor/index.js';
+import type { PinInputRootPropsWithoutHTML } from '$lib/components/pin-input/index.js';
 
 const PWM_BADGE_MARGIN_RIGHT = 18;
 const PWM_BADGE_SPACE_WIDTH_PX = 40;
 const PWM_BADGE_SPACE_WIDTH = `${PWM_BADGE_SPACE_WIDTH_PX}px` as const;
 
 const PASSWORD_MANAGER_SELECTORS = [
-	"[data-lastpass-icon-root]", // LastPass,
-	"com-1password-button", // 1Password,
-	"[data-dashlanecreated]", // Dashlane,
+	'[data-lastpass-icon-root]', // LastPass,
+	'com-1password-button', // 1Password,
+	'[data-dashlanecreated]', // Dashlane,
 	'[style$="2147483647 !important;"]', // Bitwarden
-].join(",");
+].join(',');
 
 type UsePasswordManagerBadgeProps = {
 	containerRef: WritableBox<HTMLElement | null>;
 	inputRef: WritableBox<HTMLInputElement | null>;
-	pushPasswordManagerStrategy: ReadableBox<
-		PinInputRootPropsWithoutHTML["pushPasswordManagerStrategy"]
-	>;
+	pushPasswordManagerStrategy: ReadableBox<PinInputRootPropsWithoutHTML['pushPasswordManagerStrategy']>;
 	isFocused: ReadableBox<boolean>;
 	domContext: DOMContext;
 };
@@ -35,9 +33,9 @@ export function usePasswordManagerBadge({
 
 	function willPushPwmBadge() {
 		const strategy = pushPasswordManagerStrategy.current;
-		if (strategy === "none") return false;
+		if (strategy === 'none') return false;
 
-		const increaseWidthCase = strategy === "increase-width" && hasPwmBadge && hasPwmBadgeSpace;
+		const increaseWidthCase = strategy === 'increase-width' && hasPwmBadge && hasPwmBadgeSpace;
 
 		return increaseWidthCase;
 	}
@@ -45,16 +43,14 @@ export function usePasswordManagerBadge({
 	function trackPwmBadge() {
 		const container = containerRef.current;
 		const input = inputRef.current;
-		if (!container || !input || done || pushPasswordManagerStrategy.current === "none") return;
+		if (!container || !input || done || pushPasswordManagerStrategy.current === 'none') return;
 
 		const elementToCompare = container;
 
 		// get the top right-center point of the container
 		// that is usually where most password managers place their badge
-		const rightCornerX =
-			elementToCompare.getBoundingClientRect().left + elementToCompare.offsetWidth;
-		const centeredY =
-			elementToCompare.getBoundingClientRect().top + elementToCompare.offsetHeight / 2;
+		const rightCornerX = elementToCompare.getBoundingClientRect().left + elementToCompare.offsetWidth;
+		const centeredY = elementToCompare.getBoundingClientRect().top + elementToCompare.offsetHeight / 2;
 		const x = rightCornerX - PWM_BADGE_MARGIN_RIGHT;
 		const y = centeredY;
 
@@ -77,7 +73,7 @@ export function usePasswordManagerBadge({
 
 	$effect(() => {
 		const container = containerRef.current;
-		if (!container || pushPasswordManagerStrategy.current === "none") return;
+		if (!container || pushPasswordManagerStrategy.current === 'none') return;
 
 		// check if the pwm area is fully visible
 		function checkHasSpace() {
@@ -97,7 +93,7 @@ export function usePasswordManagerBadge({
 	$effect(() => {
 		const focused = isFocused.current || domContext.getActiveElement() === inputRef.current;
 
-		if (pushPasswordManagerStrategy.current === "none" || !focused) return;
+		if (pushPasswordManagerStrategy.current === 'none' || !focused) return;
 
 		const t1 = setTimeout(trackPwmBadge, 0);
 		const t2 = setTimeout(trackPwmBadge, 2000);

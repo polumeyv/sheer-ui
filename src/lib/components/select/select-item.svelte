@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
 	import { SelectItemState } from '$lib/components/select/primitive/select.svelte.js';
-	import type { SelectItemProps } from '$lib/components/select/primitive/types.js';
+	import type { SelectItemProps } from '$lib/components/select/primitive/index.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { noop } from '$lib/internal/noop.js';
 	import Mounted from '$lib/components/_shared/utilities/mounted.svelte';
 	import CheckIcon from '@lucide/svelte/icons/check';
-	import { cn } from '../../utils';
+	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();
 
@@ -18,8 +17,8 @@
 		disabled = false,
 		children: childrenProp,
 		child,
-		onHighlight = noop,
-		onUnhighlight = noop,
+		onHighlight = (() => {}),
+		onUnhighlight = (() => {}),
 		class: className,
 		...restProps
 	}: SelectItemProps = $props();

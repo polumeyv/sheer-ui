@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { MenuGroupProps } from "$lib/components/_shared/menu/types.js";
+	import type { MenuGroupProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuGroupState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 

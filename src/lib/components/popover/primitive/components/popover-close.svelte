@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { PopoverCloseProps } from "$lib/components/popover/primitive/types.js";
+	import type { PopoverCloseProps } from "$lib/components/popover/primitive/index.js";
 	import { PopoverCloseState } from "$lib/components/popover/primitive/popover.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 

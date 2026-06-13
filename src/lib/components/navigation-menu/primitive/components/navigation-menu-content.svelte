@@ -3,8 +3,7 @@
 	import { NavigationMenuContentState } from "$lib/components/navigation-menu/primitive/navigation-menu.svelte.js";
 	import NavigationMenuContentImpl from "$lib/components/navigation-menu/primitive/components/navigation-menu-content-impl.svelte";
 	import { createId } from "$lib/internal/create-id.js";
-	import { getDataTransitionAttrs } from "$lib/internal/attrs.js";
-	import type { NavigationMenuContentProps } from "$lib/types.js";
+	import type { NavigationMenuContentProps } from "$lib/components/navigation-menu/primitive/index.js";
 	import Portal from "$lib/components/_shared/utilities/portal/portal.svelte";
 	import PresenceLayer from "$lib/components/_shared/utilities/presence-layer/presence-layer.svelte";
 	import Mounted from "$lib/components/_shared/utilities/mounted.svelte";
@@ -41,7 +40,7 @@
 	>
 		{#snippet presence({ transitionStatus })}
 			<NavigationMenuContentImpl
-				{...mergeProps(mergedProps, getDataTransitionAttrs(transitionStatus))}
+				{...mergeProps(mergedProps, { "data-starting-style": transitionStatus === "starting" ? "" : undefined, "data-ending-style": transitionStatus === "ending" ? "" : undefined })}
 				{children}
 				{child}
 			/>

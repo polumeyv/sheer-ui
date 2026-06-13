@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ContextMenu as ContextMenuPrimitive } from '$lib/bits-ui.js';
+import { ContextMenu as ContextMenuPrimitive } from "$lib/components/_shared/primitives.js";
 
 let { ref = $bindable(null), value = $bindable(''), ...restProps }: ContextMenuPrimitive.RadioGroupProps = $props();
 </script>

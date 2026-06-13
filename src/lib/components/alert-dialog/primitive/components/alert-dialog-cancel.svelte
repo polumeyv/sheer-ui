@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { AlertDialogCancelProps } from "$lib/components/alert-dialog/primitive/types.js";
+	import type { AlertDialogCancelProps } from "$lib/components/alert-dialog/primitive/index.js";
 	import { AlertDialogCancelState } from "$lib/components/dialog/primitive/dialog.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 

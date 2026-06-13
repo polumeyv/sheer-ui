@@ -24,4 +24,4 @@ export type {
 	CommandListProps as ListProps,
 	CommandLoadingProps as LoadingProps,
 	CommandViewportProps as ViewportProps,
-} from "$lib/components/command/primitive/types.js";
+} from "$lib/components/command/primitive/index.js";

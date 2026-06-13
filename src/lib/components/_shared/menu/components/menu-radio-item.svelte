@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { MenuRadioItemProps } from "$lib/components/_shared/menu/types.js";
+	import type { MenuRadioItemProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuRadioItemState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
 
 	const uid = $props.id();
 
@@ -12,7 +11,7 @@
 		child,
 		ref = $bindable(null),
 		value,
-		onSelect = noop,
+		onSelect = (() => {}),
 		id = createId(uid),
 		disabled = false,
 		closeOnSelect = true,

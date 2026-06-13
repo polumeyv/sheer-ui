@@ -1,10 +1,12 @@
-import { afterTick, onDestroyEffect, type ReadableBoxedValues } from "$lib/vendor/toolbelt/index.js";
+import { tick } from 'svelte';
+import type { ReadableProps } from '$lib/vendor/utils.js';
 
-interface AnimationsCompleteOpts
-	extends ReadableBoxedValues<{
-		ref: HTMLElement | null;
-		afterTick: boolean;
-	}> {}
+// Accepts plain `{ readonly current }` accessors. A box satisfies that shape too,
+// so the old box-based callers keep type-checking unchanged.
+interface AnimationsCompleteOpts extends ReadableProps<{
+	ref: HTMLElement | null;
+	afterTick: boolean;
+}> {}
 
 export class AnimationsComplete {
 	#opts: AnimationsCompleteOpts;
@@ -14,7 +16,7 @@ export class AnimationsComplete {
 
 	constructor(opts: AnimationsCompleteOpts) {
 		this.#opts = opts;
-		onDestroyEffect(() => this.#cleanup());
+		$effect(() => () => this.#cleanup());
 	}
 
 	#cleanup(): void {
@@ -33,7 +35,7 @@ export class AnimationsComplete {
 		const node = this.#opts.ref.current;
 		if (!node) return;
 
-		if (typeof node.getAnimations !== "function") {
+		if (typeof node.getAnimations !== 'function') {
 			this.#executeCallback(fn);
 			return;
 		}
@@ -61,9 +63,7 @@ export class AnimationsComplete {
 				.catch(() => {
 					if (runId !== this.#runId) return;
 					const currentAnimations = node.getAnimations();
-					const hasRunningAnimations = currentAnimations.some(
-						(animation) => animation.pending || animation.playState !== "finished"
-					);
+					const hasRunningAnimations = currentAnimations.some((animation) => animation.pending || animation.playState !== 'finished');
 
 					if (hasRunningAnimations) {
 						waitForAnimations();
@@ -88,7 +88,7 @@ export class AnimationsComplete {
 
 		this.#currentFrame = window.requestAnimationFrame(() => {
 			this.#currentFrame = null;
-			const startingStyleAttr = "data-starting-style";
+			const startingStyleAttr = 'data-starting-style';
 
 			if (!node.hasAttribute(startingStyleAttr)) {
 				requestWaitForAnimations();
@@ -117,7 +117,7 @@ export class AnimationsComplete {
 		};
 
 		if (this.#opts.afterTick) {
-			afterTick(execute);
+			tick().then(execute);
 		} else {
 			execute();
 		}

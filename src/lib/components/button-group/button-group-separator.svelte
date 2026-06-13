@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '../../utils';
+	import { cn } from '../../vendor/utils';
 	import type { ComponentProps } from 'svelte';
 	import { Separator } from '../separator';
 	let { ref = $bindable(null), class: className, orientation = 'vertical', ...restProps }: ComponentProps<typeof Separator> = $props();

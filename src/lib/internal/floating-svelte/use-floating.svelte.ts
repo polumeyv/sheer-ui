@@ -1,7 +1,7 @@
-import { computePosition } from "@floating-ui/dom";
-import { simpleBox } from "$lib/vendor/toolbelt/index.js";
-import type { UseFloatingOptions, UseFloatingReturn } from "./types.js";
-import { get, getDPR, roundByDPR } from "./floating-utils.svelte.js";
+import { computePosition } from '@floating-ui/dom';
+import { simpleBox } from '$lib/vendor/index.js';
+import type { UseFloatingOptions, UseFloatingReturn } from './types.js';
+import { get, getDPR, roundByDPR } from './floating-utils.svelte.js';
 
 export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 	/** Options */
@@ -9,8 +9,8 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 	const openOption = $derived(get(options.open) ?? true);
 	const middlewareOption = $derived(get(options.middleware));
 	const transformOption = $derived(get(options.transform) ?? true);
-	const placementOption = $derived(get(options.placement) ?? "bottom");
-	const strategyOption = $derived(get(options.strategy) ?? "absolute");
+	const placementOption = $derived(get(options.placement) ?? 'bottom');
+	const strategyOption = $derived(get(options.strategy) ?? 'absolute');
 	const sideOffsetOption = $derived(get(options.sideOffset) ?? 0);
 	const alignOffsetOption = $derived(get(options.alignOffset) ?? 0);
 	const reference = options.reference;
@@ -37,12 +37,12 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 		if (transformOption) {
 			return {
 				position: strategy,
-				left: "0",
-				top: "0",
+				left: '0',
+				top: '0',
 				transform: `translate(${xVal}px, ${yVal}px)`,
 				...(floating.current &&
 					getDPR(floating.current) >= 1.5 && {
-						willChange: "transform",
+						willChange: 'transform',
 					}),
 			};
 		}
@@ -93,11 +93,7 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 			if (!openOption && x !== 0 && y !== 0) {
 				// if we had a good position and now getting coordinates near
 				// the expected offset bounds during close, ignore it
-				const maxExpectedOffset = Math.max(
-					Math.abs(sideOffsetOption),
-					Math.abs(alignOffsetOption),
-					15
-				);
+				const maxExpectedOffset = Math.max(Math.abs(sideOffsetOption), Math.abs(alignOffsetOption), 15);
 				if (position.x <= maxExpectedOffset && position.y <= maxExpectedOffset) return;
 			}
 
@@ -111,7 +107,7 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 	}
 
 	function cleanup() {
-		if (typeof whileElementsMountedCleanup === "function") {
+		if (typeof whileElementsMountedCleanup === 'function') {
 			whileElementsMountedCleanup();
 			whileElementsMountedCleanup = undefined;
 		}
@@ -130,11 +126,7 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 
 		if (reference.current === null || floating.current === null) return;
 
-		whileElementsMountedCleanup = whileElementsMountedOption(
-			reference.current,
-			floating.current,
-			update
-		);
+		whileElementsMountedCleanup = whileElementsMountedOption(reference.current, floating.current, update);
 	}
 
 	function reset() {
@@ -144,14 +136,7 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 	}
 
 	function trackWhileMountedDeps() {
-		return [
-			middlewareOption,
-			placementOption,
-			strategyOption,
-			sideOffsetOption,
-			alignOffsetOption,
-			openOption,
-		] as const;
+		return [middlewareOption, placementOption, strategyOption, sideOffsetOption, alignOffsetOption, openOption] as const;
 	}
 
 	$effect(() => {

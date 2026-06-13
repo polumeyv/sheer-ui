@@ -1,60 +1,40 @@
-import { createContext } from "svelte";
-import {
-	afterTick,
-	attachRef,
-	boxWith,
-	type Box,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from "$lib/vendor/toolbelt/index.js";
-import { watch } from "$lib/vendor/runed/index.js";
-import type {
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import {
-	boolToStr,
-	boolToEmptyStrOrUndef,
-	getDataOpenClosed,
-	getDataTransitionAttrs,
-} from "$lib/internal/attrs.js";
-import { kbd } from "$lib/internal/kbd.js";
-import type { Orientation } from "$lib/shared/index.js";
-import { createBitsAttrs } from "$lib/internal/attrs.js";
-import { RovingFocusGroup } from "$lib/internal/roving-focus-group.js";
-import { on } from "svelte/events";
-import { PresenceManager } from "$lib/internal/presence-manager.svelte.js";
+import { createContext, tick } from 'svelte';
+import { on } from 'svelte/events';
+import { attachRef, type RefAttachment } from '$lib/internal/attach-ref.js';
+import { Presence } from '$lib/internal/presence.svelte.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
+import { kbd } from '$lib/internal/kbd.js';
+import type { ReadableProps, WithRefProps, WritableProp, WritableProps } from '$lib/vendor/utils.js';
+import type { BitsKeyboardEvent, BitsMouseEvent } from '$lib/internal/types.js';
+import type { Orientation } from '$lib/shared/index.js';
 
 const accordionAttrs = createBitsAttrs({
-	component: "accordion",
-	parts: ["root", "trigger", "content", "item", "header"],
+	component: 'accordion',
+	parts: ['root', 'trigger', 'content', 'item', 'header'],
 });
 
 const [getAccordionRootContext, setAccordionRootContext] = createContext<AccordionRoot>();
 const [getAccordionItemContext, setAccordionItemContext] = createContext<AccordionItemState>();
 
 interface AccordionBaseStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 			orientation: Orientation;
 			loop: boolean;
 		}> {}
 
-interface AccordionSingleStateOpts
-	extends AccordionBaseStateOpts,
-		WritableBoxedValues<{ value: string }> {}
-interface AccordionMultiStateOpts
-	extends AccordionBaseStateOpts,
-		WritableBoxedValues<{ value: string[] }> {}
+interface AccordionSingleStateOpts extends AccordionBaseStateOpts, WritableProps<{ value: string }> {}
+interface AccordionMultiStateOpts extends AccordionBaseStateOpts, WritableProps<{ value: string[] }> {}
 
 type AccordionRoot = AccordionSingleState | AccordionMultiState;
 
 interface AccordionItemStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			value: string;
 			disabled: boolean;
 		}> {
@@ -62,34 +42,38 @@ interface AccordionItemStateOpts
 }
 
 interface AccordionTriggerStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean | null | undefined;
 			tabindex: number;
 		}> {}
 
 interface AccordionContentStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			forceMount: boolean;
 			hiddenUntilFound: boolean;
 		}> {}
 
 interface AccordionHeaderStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			level: 1 | 2 | 3 | 4 | 5 | 6;
 		}> {}
 
 interface AccordionRootStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 			orientation: Orientation;
 			loop: boolean;
 		}> {
-	type: "single" | "multiple";
-	value: Box<string> | Box<string[]>;
+	type: 'single' | 'multiple';
+	value: WritableProp<string> | WritableProp<string[]>;
 }
 
 abstract class AccordionBaseState {
@@ -107,7 +91,7 @@ abstract class AccordionBaseState {
 			orientation: this.opts.orientation,
 		});
 
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (this.opts.ref.current = v));
 	}
 
 	abstract includesItem(item: string): boolean;
@@ -117,11 +101,11 @@ abstract class AccordionBaseState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-orientation": this.opts.orientation.current,
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-				[accordionAttrs.root]: "",
+				'data-orientation': this.opts.orientation.current,
+				'data-disabled': this.opts.disabled.current ? '' : undefined,
+				[accordionAttrs.root]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -141,12 +125,12 @@ class AccordionSingleState extends AccordionBaseState {
 	}
 
 	toggleItem(item: string): void {
-		this.opts.value.current = this.includesItem(item) ? "" : item;
+		this.opts.value.current = this.includesItem(item) ? '' : item;
 	}
 }
 
 class AccordionMultiState extends AccordionBaseState {
-	readonly #value: AccordionMultiStateOpts["value"];
+	readonly #value: AccordionMultiStateOpts['value'];
 	readonly isMulti = true as const;
 
 	constructor(props: AccordionMultiStateOpts) {
@@ -161,9 +145,7 @@ class AccordionMultiState extends AccordionBaseState {
 	}
 
 	toggleItem(item: string): void {
-		this.#value.current = this.includesItem(item)
-			? this.#value.current.filter((v) => v !== item)
-			: [...this.#value.current, item];
+		this.#value.current = this.includesItem(item) ? this.#value.current.filter((v) => v !== item) : [...this.#value.current, item];
 	}
 }
 
@@ -171,7 +153,7 @@ export class AccordionRootState {
 	static create(props: AccordionRootStateOpts): AccordionRoot {
 		const { type, ...rest } = props;
 		const rootState =
-			type === "single"
+			type === 'single'
 				? new AccordionSingleState(rest as AccordionSingleStateOpts)
 				: new AccordionMultiState(rest as AccordionMultiStateOpts);
 		return setAccordionRootContext(rootState);
@@ -179,31 +161,27 @@ export class AccordionRootState {
 }
 
 export class AccordionItemState {
-	static create(props: Omit<AccordionItemStateOpts, "rootState">): AccordionItemState {
-		return setAccordionItemContext(
-			new AccordionItemState({ ...props, rootState: getAccordionRootContext() })
-		);
+	static create(props: Omit<AccordionItemStateOpts, 'rootState'>): AccordionItemState {
+		return setAccordionItemContext(new AccordionItemState({ ...props, rootState: getAccordionRootContext() }));
 	}
 
 	readonly opts: AccordionItemStateOpts;
 	readonly root: AccordionRoot;
 	readonly isActive = $derived.by(() => this.root.includesItem(this.opts.value.current));
-	readonly isDisabled = $derived.by(
-		() => this.opts.disabled.current || this.root.opts.disabled.current
-	);
+	readonly isDisabled = $derived.by(() => this.opts.disabled.current || this.root.opts.disabled.current);
 	readonly attachment: RefAttachment;
 	contentNode = $state<HTMLElement | null>(null);
-	contentPresence: PresenceManager;
+	contentPresence: Presence;
 
 	constructor(opts: AccordionItemStateOpts) {
 		this.opts = opts;
 		this.root = opts.rootState;
 		this.updateValue = this.updateValue.bind(this);
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (this.opts.ref.current = v));
 
-		this.contentPresence = new PresenceManager({
-			ref: boxWith(() => this.contentNode),
-			open: boxWith(() => this.isActive),
+		this.contentPresence = new Presence({
+			ref: () => this.contentNode,
+			open: () => this.isActive,
 		});
 	}
 
@@ -215,12 +193,12 @@ export class AccordionItemState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-state": getDataOpenClosed(this.isActive),
-				"data-disabled": boolToEmptyStrOrUndef(this.isDisabled),
-				"data-orientation": this.root.opts.orientation.current,
-				[accordionAttrs.item]: "",
+				'data-state': this.isActive ? 'open' : 'closed',
+				'data-disabled': this.isDisabled ? '' : undefined,
+				'data-orientation': this.root.opts.orientation.current,
+				[accordionAttrs.item]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -229,10 +207,7 @@ export class AccordionTriggerState {
 	readonly itemState: AccordionItemState;
 	readonly #root: AccordionRoot;
 	readonly #isDisabled = $derived.by(
-		() =>
-			this.opts.disabled.current ||
-			this.itemState.opts.disabled.current ||
-			this.#root.opts.disabled.current
+		() => this.opts.disabled.current || this.itemState.opts.disabled.current || this.#root.opts.disabled.current,
 	);
 	readonly attachment: RefAttachment;
 
@@ -242,7 +217,7 @@ export class AccordionTriggerState {
 		this.#root = itemState.root;
 		this.onclick = this.onclick.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (this.opts.ref.current = v));
 	}
 
 	static create(props: AccordionTriggerStateOpts): AccordionTriggerState {
@@ -274,17 +249,17 @@ export class AccordionTriggerState {
 			({
 				id: this.opts.id.current,
 				disabled: this.#isDisabled,
-				"aria-expanded": boolToStr(this.itemState.isActive),
-				"aria-disabled": boolToStr(this.#isDisabled),
-				"data-disabled": boolToEmptyStrOrUndef(this.#isDisabled),
-				"data-state": getDataOpenClosed(this.itemState.isActive),
-				"data-orientation": this.#root.opts.orientation.current,
-				[accordionAttrs.trigger]: "",
+				'aria-expanded': this.itemState.isActive ? 'true' : 'false',
+				'aria-disabled': this.#isDisabled ? 'true' : 'false',
+				'data-disabled': this.#isDisabled ? '' : undefined,
+				'data-state': this.itemState.isActive ? 'open' : 'closed',
+				'data-orientation': this.#root.opts.orientation.current,
+				[accordionAttrs.trigger]: '',
 				tabindex: this.opts.tabindex.current,
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -306,7 +281,10 @@ export class AccordionContentState {
 		this.opts = opts;
 		this.item = item;
 		this.#isMountAnimationPrevented = this.item.isActive;
-		this.attachment = attachRef(this.opts.ref, (v) => (this.item.contentNode = v));
+		this.attachment = attachRef<HTMLElement>(
+			(v) => (this.opts.ref.current = v),
+			(v) => (this.item.contentNode = v),
+		);
 		// Prevent mount animations on initial render
 		$effect(() => {
 			const rAF = requestAnimationFrame(() => {
@@ -315,37 +293,37 @@ export class AccordionContentState {
 			return () => cancelAnimationFrame(rAF);
 		});
 
-		watch.pre(
-			[() => this.opts.ref.current, () => this.opts.hiddenUntilFound.current],
-			([node, hiddenUntilFound]) => {
-				if (!node || !hiddenUntilFound) return;
+		$effect.pre(() => {
+			const node = this.opts.ref.current;
+			const hiddenUntilFound = this.opts.hiddenUntilFound.current;
+			if (!node || !hiddenUntilFound) return;
 
-				const handleBeforeMatch = () => {
-					if (this.item.isActive) return;
-					// we need to defer opening until after browser completes search highlighting
-					// otherwise the browser will immediately open the accordion
-					// and the search highlighting will not be visible
-					requestAnimationFrame(() => {
-						this.item.updateValue();
-					});
-				};
+			const handleBeforeMatch = () => {
+				if (this.item.isActive) return;
+				// defer opening until the browser finishes search highlighting,
+				// otherwise it opens immediately and the highlight isn't visible
+				requestAnimationFrame(() => {
+					this.item.updateValue();
+				});
+			};
 
-				return on(node, "beforematch", handleBeforeMatch);
-			}
-		);
+			return on(node, 'beforematch', handleBeforeMatch);
+		});
 
-		// Handle dimension updates
-		watch([() => this.open, () => this.opts.ref.current], this.#updateDimensions);
+		// re-measure on open/node change
+		$effect(() => {
+			this.#updateDimensions([this.open, this.opts.ref.current]);
+		});
 	}
 
 	static create(props: AccordionContentStateOpts): AccordionContentState {
 		return new AccordionContentState(props, getAccordionItemContext());
 	}
 
-	#updateDimensions = ([_, node]: [boolean, HTMLElement | null]): void => {
+	#updateDimensions = ([, node]: [boolean, HTMLElement | null]): void => {
 		if (!node) return;
 
-		afterTick(() => {
+		tick().then(() => {
 			const element = this.opts.ref.current;
 			if (!element) return;
 
@@ -356,8 +334,8 @@ export class AccordionContentState {
 			};
 
 			// temporarily disable animations for measurement
-			element.style.transitionDuration = "0s";
-			element.style.animationName = "none";
+			element.style.transitionDuration = '0s';
+			element.style.animationName = 'none';
 
 			const rect = element.getBoundingClientRect();
 			this.#dimensions = { width: rect.width, height: rect.height };
@@ -380,19 +358,17 @@ export class AccordionContentState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-state": getDataOpenClosed(this.item.isActive),
-				...getDataTransitionAttrs(this.item.contentPresence.transitionStatus),
-				"data-disabled": boolToEmptyStrOrUndef(this.item.isDisabled),
-				"data-orientation": this.item.root.opts.orientation.current,
-				[accordionAttrs.content]: "",
+				'data-state': this.item.isActive ? 'open' : 'closed',
+				'data-starting-style': this.item.contentPresence.transitionStatus === 'starting' ? '' : undefined,
+				'data-ending-style': this.item.contentPresence.transitionStatus === 'ending' ? '' : undefined,
+				'data-disabled': this.item.isDisabled ? '' : undefined,
+				'data-orientation': this.item.root.opts.orientation.current,
+				[accordionAttrs.content]: '',
 				style: {
-					"--bits-accordion-content-height": `${this.#dimensions.height}px`,
-					"--bits-accordion-content-width": `${this.#dimensions.width}px`,
+					'--bits-accordion-content-height': `${this.#dimensions.height}px`,
+					'--bits-accordion-content-width': `${this.#dimensions.width}px`,
 				},
-				hidden:
-					this.opts.hiddenUntilFound.current && !this.item.isActive
-						? "until-found"
-						: undefined,
+				hidden: this.opts.hiddenUntilFound.current && !this.item.isActive ? 'until-found' : undefined,
 				...(this.opts.hiddenUntilFound.current && !this.shouldRender
 					? {}
 					: {
@@ -403,7 +379,7 @@ export class AccordionContentState {
 									: !this.shouldRender,
 						}),
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -415,7 +391,7 @@ export class AccordionHeaderState {
 	constructor(opts: AccordionHeaderStateOpts, item: AccordionItemState) {
 		this.opts = opts;
 		this.item = item;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (this.opts.ref.current = v));
 	}
 
 	static create(props: AccordionHeaderStateOpts): AccordionHeaderState {
@@ -426,13 +402,13 @@ export class AccordionHeaderState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "heading",
-				"aria-level": this.opts.level.current,
-				"data-heading-level": this.opts.level.current,
-				"data-state": getDataOpenClosed(this.item.isActive),
-				"data-orientation": this.item.root.opts.orientation.current,
-				[accordionAttrs.header]: "",
+				role: 'heading',
+				'aria-level': this.opts.level.current,
+				'data-heading-level': this.opts.level.current,
+				'data-state': this.item.isActive ? 'open' : 'closed',
+				'data-orientation': this.item.root.opts.orientation.current,
+				[accordionAttrs.header]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }

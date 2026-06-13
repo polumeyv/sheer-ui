@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { watch } from "$lib/vendor/runed/index.js";
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
 	import { boxWith } from "$lib/vendor/toolbelt/index.js";
 	import { DateFieldRootState } from "$lib/components/date-field/date-field.svelte.js";
-	import type { DateFieldRootProps } from "$lib/components/date-field/types.js";
-	import { noop } from "$lib/internal/noop.js";
+	import type { DateFieldRootProps } from "$lib/components/date-field/index.js";
 	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
 	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
 
@@ -15,10 +14,10 @@
 		locale,
 		maxValue,
 		minValue,
-		onPlaceholderChange = noop,
-		onValueChange = noop,
-		validate = noop,
-		onInvalid = noop,
+		onPlaceholderChange = (() => {}),
+		onValueChange = (() => {}),
+		validate = (() => {}),
+		onInvalid = (() => {}),
 		placeholder = $bindable(),
 		value = $bindable(),
 		readonly = false,

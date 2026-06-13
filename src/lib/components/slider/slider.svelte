@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { boxWith, mergeProps, type WritableBox } from '$lib/vendor/toolbelt/index.js';
-	import type { SliderRootProps } from '$lib/components/slider/primitive/types.js';
+	import type { SliderRootProps } from '$lib/components/slider/primitive/index.js';
 	import { SliderRootState, SliderRangeState } from '$lib/components/slider/primitive/slider.svelte.js';
 	import SliderThumb from '$lib/components/slider/primitive/components/slider-thumb.svelte';
 	import { createId } from '$lib/internal/create-id.js';
-	import { noop } from '$lib/internal/noop.js';
-	import { watch } from '$lib/vendor/runed/index.js';
-	import { cn, type WithoutChildrenOrChild } from '../../utils';
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
+	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 
 	const uid = $props.id();
 
@@ -15,8 +14,8 @@
 		id = createId(uid),
 		value = $bindable(),
 		type,
-		onValueChange = noop,
-		onValueCommit = noop,
+		onValueChange = (() => {}),
+		onValueCommit = (() => {}),
 		disabled = false,
 		min: minProp,
 		max: maxProp,

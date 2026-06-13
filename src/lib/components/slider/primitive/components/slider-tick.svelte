@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { SliderTickProps } from "$lib/components/slider/primitive/types.js";
+	import type { SliderTickProps } from "$lib/components/slider/primitive/index.js";
 	import { SliderTickState } from "$lib/components/slider/primitive/slider.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 

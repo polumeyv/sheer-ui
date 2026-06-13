@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { MenuItemProps } from "$lib/components/_shared/menu/types.js";
+	import type { MenuItemProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuItemState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
 
 	const uid = $props.id();
 
@@ -13,7 +12,7 @@
 		ref = $bindable(null),
 		id = createId(uid),
 		disabled = false,
-		onSelect = noop,
+		onSelect = (() => {}),
 		closeOnSelect = true,
 		...restProps
 	}: MenuItemProps = $props();

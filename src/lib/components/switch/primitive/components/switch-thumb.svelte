@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { SwitchThumbProps } from "$lib/components/switch/primitive/types.js";
+	import { mergeProps } from "$lib/internal/merge-props.js";
+	import type { SwitchThumbProps } from "$lib/components/switch/primitive/index.js";
 	import { SwitchThumbState } from "$lib/components/switch/primitive/switch.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 
@@ -15,11 +15,19 @@
 	}: SwitchThumbProps = $props();
 
 	const thumbState = SwitchThumbState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, thumbState.props));

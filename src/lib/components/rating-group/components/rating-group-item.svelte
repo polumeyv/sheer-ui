@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { RatingGroupItemProps } from "$lib/components/rating-group/types.js";
+	import type { RatingGroupItemProps } from "$lib/components/rating-group/index.js";
 	import { RatingGroupItemState } from "$lib/components/rating-group/rating-group.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 

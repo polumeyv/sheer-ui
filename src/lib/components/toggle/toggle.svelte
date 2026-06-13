@@ -4,12 +4,11 @@
 </script>
 
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { ToggleRootProps } from '$lib/components/toggle/primitive/types.js';
+	import { mergeProps } from '$lib/internal/merge-props.js';
+	import type { ToggleRootProps } from '$lib/components/toggle/primitive/index.js';
 	import { ToggleRootState } from '$lib/components/toggle/primitive/toggle.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { noop } from '$lib/internal/noop.js';
-	import { cn } from '../../utils.js';
+	import { cn } from '../../vendor/utils.js';
 
 	const uid = $props.id();
 
@@ -17,7 +16,7 @@
 		ref = $bindable(null),
 		id = createId(uid),
 		pressed = $bindable(false),
-		onPressedChange = noop,
+		onPressedChange = (() => {}),
 		disabled = false,
 		type = 'button',
 		children,
@@ -32,19 +31,33 @@
 	} = $props();
 
 	const toggleState = ToggleRootState.create({
-		pressed: boxWith(
-			() => pressed,
-			(v) => {
+		pressed: {
+			get current() {
+				return pressed;
+			},
+			set current(v) {
 				pressed = v;
 				onPressedChange(v);
-			}
-		),
-		disabled: boxWith(() => disabled ?? false),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+			},
+		},
+		disabled: {
+			get current() {
+				return disabled ?? false;
+			},
+		},
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(

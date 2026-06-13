@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { RatingGroupRootProps } from "$lib/components/rating-group/types.js";
+	import type { RatingGroupRootProps } from "$lib/components/rating-group/index.js";
 	import { RatingGroupRootState } from "$lib/components/rating-group/rating-group.svelte.js";
 	import RatingGroupInput from "$lib/components/rating-group/components/rating-group-input.svelte";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
 
 	const uid = $props.id();
 
@@ -22,7 +21,7 @@
 		allowHalf = false,
 		readonly = false,
 		id = createId(uid),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		"aria-label": ariaLabel,
 		"aria-valuetext": ariaValuetextProp,
 		hoverPreview = true,

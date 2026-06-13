@@ -1,16 +1,15 @@
 <script lang="ts">
 	import { boxWith } from "$lib/vendor/toolbelt/index.js";
-	import type { MenuRootProps } from "$lib/components/_shared/menu/types.js";
+	import type { MenuRootProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuMenuState, MenuRootState } from "$lib/components/_shared/menu/menu.svelte.js";
-	import { noop } from "$lib/internal/noop.js";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
 
 	let {
 		open = $bindable(false),
 		dir = "ltr",
 		// debugMode = false,
-		onOpenChange = noop,
-		onOpenChangeComplete = noop,
+		onOpenChange = (() => {}),
+		onOpenChangeComplete = (() => {}),
 		_internal_variant: variant = "dropdown-menu",
 		_internal_should_skip_exit_animation: shouldSkipExitAnimation = undefined,
 		children,

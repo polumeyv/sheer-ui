@@ -1,71 +1,54 @@
-import { createContext, getContext, hasContext, setContext } from "svelte";
-import {
-	afterSleep,
-	afterTick,
-	srOnlyStyles,
-	attachRef,
-	type WritableBoxedValues,
-	type ReadableBoxedValues,
-} from "$lib/vendor/toolbelt/index.js";
-import { watch } from "$lib/vendor/runed/index.js";
-import { findNextSibling, findPreviousSibling } from "$lib/components/command/primitive/utils.js";
-import type { CommandState } from "$lib/components/command/primitive/types.js";
-import type {
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	BitsPointerEvent,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import { kbd } from "$lib/internal/kbd.js";
-import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef } from "$lib/internal/attrs.js";
-import { getFirstNonCommentChild } from "$lib/internal/dom.js";
-import { computeCommandScore } from "$lib/components/command/primitive/index.js";
-import { cssEscape } from "$lib/internal/css-escape.js";
+import { tick } from 'svelte';
+import { createContext, getContext, hasContext, setContext } from 'svelte';
+import { srOnlyStyles, attachRef, type WritableBoxedValues, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { watch } from '$lib/vendor/watch.svelte.js';
+import { findNextSibling, findPreviousSibling } from '$lib/components/command/primitive/utils.js';
+import type { CommandState } from '$lib/components/command/primitive/index.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { kbd } from '$lib/internal/kbd.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import { getFirstNonCommentChild } from '$lib/internal/dom.js';
+import { computeCommandScore } from '$lib/components/command/primitive/index.js';
+import { cssEscape } from 'css.escape';
 
-const COMMAND_VALUE_ATTR = "data-value";
+const COMMAND_VALUE_ATTR = 'data-value';
 
 const commandAttrs = createBitsAttrs({
-	component: "command",
+	component: 'command',
 	parts: [
-		"root",
-		"list",
-		"input",
-		"separator",
-		"loading",
-		"empty",
-		"group",
-		"group-items",
-		"group-heading",
-		"item",
-		"viewport",
-		"input-label",
+		'root',
+		'list',
+		'input',
+		'separator',
+		'loading',
+		'empty',
+		'group',
+		'group-items',
+		'group-heading',
+		'item',
+		'viewport',
+		'input-label',
 	],
 });
 
 // selectors
-const COMMAND_GROUP_SELECTOR = commandAttrs.selector("group");
-const COMMAND_GROUP_ITEMS_SELECTOR = commandAttrs.selector("group-items");
-const COMMAND_GROUP_HEADING_SELECTOR = commandAttrs.selector("group-heading");
-const COMMAND_ITEM_SELECTOR = commandAttrs.selector("item");
-const COMMAND_VALID_ITEM_SELECTOR = `${commandAttrs.selector("item")}:not([aria-disabled="true"])`;
+const COMMAND_GROUP_SELECTOR = commandAttrs.selector('group');
+const COMMAND_GROUP_ITEMS_SELECTOR = commandAttrs.selector('group-items');
+const COMMAND_GROUP_HEADING_SELECTOR = commandAttrs.selector('group-heading');
+const COMMAND_ITEM_SELECTOR = commandAttrs.selector('item');
+const COMMAND_VALID_ITEM_SELECTOR = `${commandAttrs.selector('item')}:not([aria-disabled="true"])`;
 
 const [getCommandRootContext, setCommandRootContext] = createContext<CommandRootState>();
 const [getCommandListContext, setCommandListContext] = createContext<CommandListState>();
-const commandGroupContainerContextKey = Symbol("Command.Group");
+const commandGroupContainerContextKey = Symbol('Command.Group');
 function getCommandGroupContainerContext(): CommandGroupContainerState {
-	if (!hasContext(commandGroupContainerContextKey))
-		throw new Error('Context "Command.Group" not found');
+	if (!hasContext(commandGroupContainerContextKey)) throw new Error('Context "Command.Group" not found');
 	return getContext<CommandGroupContainerState>(commandGroupContainerContextKey);
 }
 function getCommandGroupContainerContextOr<T>(fallback: T): CommandGroupContainerState | T {
-	return hasContext(commandGroupContainerContextKey)
-		? getContext<CommandGroupContainerState>(commandGroupContainerContextKey)
-		: fallback;
+	return hasContext(commandGroupContainerContextKey) ? getContext<CommandGroupContainerState>(commandGroupContainerContextKey) : fallback;
 }
-function setCommandGroupContainerContext(
-	state: CommandGroupContainerState
-): CommandGroupContainerState {
+function setCommandGroupContainerContext(state: CommandGroupContainerState): CommandGroupContainerState {
 	return setContext(commandGroupContainerContextKey, state);
 }
 
@@ -78,7 +61,8 @@ interface GridItem {
 type ItemsGrid = GridItem[][];
 
 interface CommandRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			filter: (value: string, search: string, keywords?: string[]) => number;
 			shouldFilter: boolean;
@@ -95,9 +79,9 @@ interface CommandRootStateOpts
 
 const defaultState = {
 	/** Value of the search query */
-	search: "",
+	search: '',
 	/** Currently selected item value */
-	value: "",
+	value: '',
 	filtered: {
 		/** The count of all visible items. */
 		count: 0,
@@ -139,7 +123,7 @@ export class CommandRootState {
 		if (this.#updateScheduled) return;
 		this.#updateScheduled = true;
 
-		afterTick(() => {
+		tick().then(() => {
 			this.#updateScheduled = false;
 
 			const currentState = this.#snapshot();
@@ -152,20 +136,16 @@ export class CommandRootState {
 		});
 	}
 
-	setState<K extends keyof CommandState>(
-		key: K,
-		value: CommandState[K],
-		preventScroll?: boolean
-	) {
+	setState<K extends keyof CommandState>(key: K, value: CommandState[K], preventScroll?: boolean) {
 		if (Object.is(this._commandState[key], value)) return;
 
 		this._commandState[key] = value;
 
-		if (key === "search") {
+		if (key === 'search') {
 			// Filter synchronously before emitting back to children
 			this.#filterItems();
 			this.#sort();
-		} else if (key === "value") {
+		} else if (key === 'value') {
 			if (!preventScroll) this.#scrollSelectedIntoView();
 		}
 
@@ -176,7 +156,7 @@ export class CommandRootState {
 		this.opts = opts;
 		this.attachment = attachRef(this.opts.ref);
 
-		const defaults = { ...this._commandState, value: this.opts.value.current ?? "" };
+		const defaults = { ...this._commandState, value: this.opts.value.current ?? '' };
 
 		this._commandState = defaults;
 		this.commandState = defaults;
@@ -242,8 +222,8 @@ export class CommandRootState {
 		const listInsertionElement = this.viewportNode;
 
 		const sorted = this.getValidItems().sort((a, b) => {
-			const valueA = a.getAttribute("data-value");
-			const valueB = b.getAttribute("data-value");
+			const valueA = a.getAttribute('data-value');
+			const valueB = b.getAttribute('data-value');
 			const scoresA = scores.get(valueA!) ?? 0;
 			const scoresB = scores.get(valueB!) ?? 0;
 			return scoresB - scoresA;
@@ -253,19 +233,13 @@ export class CommandRootState {
 			const group = item.closest(COMMAND_GROUP_ITEMS_SELECTOR);
 
 			if (group) {
-				const itemToAppend =
-					item.parentElement === group
-						? item
-						: item.closest(`${COMMAND_GROUP_ITEMS_SELECTOR} > *`);
+				const itemToAppend = item.parentElement === group ? item : item.closest(`${COMMAND_GROUP_ITEMS_SELECTOR} > *`);
 
 				if (itemToAppend) {
 					group.appendChild(itemToAppend);
 				}
 			} else {
-				const itemToAppend =
-					item.parentElement === listInsertionElement
-						? item
-						: item.closest(`${COMMAND_GROUP_ITEMS_SELECTOR} > *`);
+				const itemToAppend = item.parentElement === listInsertionElement ? item : item.closest(`${COMMAND_GROUP_ITEMS_SELECTOR} > *`);
 
 				if (itemToAppend) {
 					listInsertionElement?.appendChild(itemToAppend);
@@ -276,9 +250,7 @@ export class CommandRootState {
 		const sortedGroups = groups.sort((a, b) => b[1] - a[1]);
 
 		for (const group of sortedGroups) {
-			const element = listInsertionElement?.querySelector(
-				`${COMMAND_GROUP_SELECTOR}[${COMMAND_VALUE_ATTR}="${cssEscape(group[0])}"]`
-			);
+			const element = listInsertionElement?.querySelector(`${COMMAND_GROUP_SELECTOR}[${COMMAND_VALUE_ATTR}="${cssEscape(group[0])}"]`);
 			element?.parentElement?.appendChild(element);
 		}
 
@@ -291,12 +263,12 @@ export class CommandRootState {
 	 * @param value - New value to set
 	 */
 	setValue(value: string, opts?: boolean) {
-		if (value !== this.opts.value.current && value === "") {
-			afterTick(() => {
+		if (value !== this.opts.value.current && value === '') {
+			tick().then(() => {
 				this.key++;
 			});
 		}
-		this.setState("value", value, opts);
+		this.setState('value', value, opts);
 		this.opts.value.current = value;
 	}
 
@@ -304,14 +276,11 @@ export class CommandRootState {
 	 * Selects first non-disabled item on next tick.
 	 */
 	#selectFirstItem(): void {
-		afterTick(() => {
-			const item = this.getValidItems().find(
-				(item) => item.getAttribute("aria-disabled") !== "true"
-			);
+		tick().then(() => {
+			const item = this.getValidItems().find((item) => item.getAttribute('aria-disabled') !== 'true');
 			const value = item?.getAttribute(COMMAND_VALUE_ATTR);
-			const shouldPreventScroll =
-				this.#isInitialMount && this.opts.disableInitialScroll.current;
-			this.setValue(value ?? "", shouldPreventScroll);
+			const shouldPreventScroll = this.#isInitialMount && this.opts.disableInitialScroll.current;
+			this.setValue(value ?? '', shouldPreventScroll);
 			this.#isInitialMount = false;
 		});
 	}
@@ -321,7 +290,7 @@ export class CommandRootState {
 	 * Called during initial mount when a value is provided.
 	 */
 	#scrollInitialValue(): void {
-		afterTick(() => {
+		tick().then(() => {
 			const shouldPreventScroll = this.opts.disableInitialScroll.current;
 			if (!shouldPreventScroll) {
 				this.#scrollSelectedIntoView();
@@ -346,7 +315,7 @@ export class CommandRootState {
 
 		// Check which items should be included
 		for (const id of this.allItems) {
-			const value = this.allIds.get(id)?.value ?? "";
+			const value = this.allIds.get(id)?.value ?? '';
 			const keywords = this.allIds.get(id)?.keywords ?? [];
 			const rank = this.#score(value, keywords);
 			this._commandState.filtered.items.set(id, rank);
@@ -377,9 +346,7 @@ export class CommandRootState {
 	getValidItems(): HTMLElement[] {
 		const node = this.opts.ref.current;
 		if (!node) return [];
-		const validItems = Array.from(
-			node.querySelectorAll<HTMLElement>(COMMAND_VALID_ITEM_SELECTOR)
-		).filter((el): el is HTMLElement => !!el);
+		const validItems = Array.from(node.querySelectorAll<HTMLElement>(COMMAND_VALID_ITEM_SELECTOR)).filter((el): el is HTMLElement => !!el);
 		return validItems;
 	}
 
@@ -392,9 +359,7 @@ export class CommandRootState {
 	getVisibleItems(): HTMLElement[] {
 		const node = this.opts.ref.current;
 		if (!node) return [];
-		const visibleItems = Array.from(
-			node.querySelectorAll<HTMLElement>(COMMAND_ITEM_SELECTOR)
-		).filter((el): el is HTMLElement => !!el);
+		const visibleItems = Array.from(node.querySelectorAll<HTMLElement>(COMMAND_ITEM_SELECTOR)).filter((el): el is HTMLElement => !!el);
 		return visibleItems;
 	}
 
@@ -413,13 +378,13 @@ export class CommandRootState {
 
 		const grid: ItemsGrid = [[]];
 
-		let currentGroup = items[0]?.getAttribute("data-group");
+		let currentGroup = items[0]?.getAttribute('data-group');
 		let column = 0;
 		let row = 0;
 
 		for (let i = 0; i < items.length; i++) {
 			const item = items[i];
-			const itemGroup = item?.getAttribute("data-group");
+			const itemGroup = item?.getAttribute('data-group');
 
 			if (currentGroup !== itemGroup) {
 				currentGroup = itemGroup;
@@ -454,9 +419,7 @@ export class CommandRootState {
 	#getSelectedItem(): HTMLElement | undefined {
 		const node = this.opts.ref.current;
 		if (!node) return;
-		const selectedNode = node.querySelector<HTMLElement>(
-			`${COMMAND_VALID_ITEM_SELECTOR}[data-selected]`
-		);
+		const selectedNode = node.querySelector<HTMLElement>(`${COMMAND_VALID_ITEM_SELECTOR}[data-selected]`);
 		if (!selectedNode) return;
 		return selectedNode;
 	}
@@ -466,7 +429,7 @@ export class CommandRootState {
 	 * Special handling for first items in groups.
 	 */
 	#scrollSelectedIntoView(): void {
-		afterTick(() => {
+		tick().then(() => {
 			const item = this.#getSelectedItem();
 			if (!item) return;
 			const grandparent = item.parentElement?.parentElement;
@@ -476,35 +439,26 @@ export class CommandRootState {
 				const isFirstRowOfGroup = this.#itemIsFirstRowOfGroup(item);
 
 				// ensure item is visible
-				item.scrollIntoView({ block: "nearest" });
+				item.scrollIntoView({ block: 'nearest' });
 
 				if (isFirstRowOfGroup) {
-					const closestGroupHeader = item
-						?.closest(COMMAND_GROUP_SELECTOR)
-						?.querySelector(COMMAND_GROUP_HEADING_SELECTOR);
-					closestGroupHeader?.scrollIntoView({ block: "nearest" });
+					const closestGroupHeader = item?.closest(COMMAND_GROUP_SELECTOR)?.querySelector(COMMAND_GROUP_HEADING_SELECTOR);
+					closestGroupHeader?.scrollIntoView({ block: 'nearest' });
 
 					return;
 				}
 			} else {
-				const firstChildOfParent = getFirstNonCommentChild(
-					grandparent
-				) as HTMLElement | null;
+				const firstChildOfParent = getFirstNonCommentChild(grandparent) as HTMLElement | null;
 
-				if (
-					firstChildOfParent &&
-					firstChildOfParent.dataset?.value === item.dataset?.value
-				) {
-					const closestGroupHeader = item
-						?.closest(COMMAND_GROUP_SELECTOR)
-						?.querySelector(COMMAND_GROUP_HEADING_SELECTOR);
-					closestGroupHeader?.scrollIntoView({ block: "nearest" });
+				if (firstChildOfParent && firstChildOfParent.dataset?.value === item.dataset?.value) {
+					const closestGroupHeader = item?.closest(COMMAND_GROUP_SELECTOR)?.querySelector(COMMAND_GROUP_HEADING_SELECTOR);
+					closestGroupHeader?.scrollIntoView({ block: 'nearest' });
 
 					return;
 				}
 			}
 
-			item.scrollIntoView({ block: "nearest" });
+			item.scrollIntoView({ block: 'nearest' });
 		});
 	}
 
@@ -547,7 +501,7 @@ export class CommandRootState {
 	updateSelectedToIndex(index: number) {
 		const item = this.getValidItems()[index];
 		if (!item) return;
-		this.setValue(item.getAttribute(COMMAND_VALUE_ATTR) ?? "");
+		this.setValue(item.getAttribute(COMMAND_VALUE_ATTR) ?? '');
 	}
 
 	/**
@@ -579,16 +533,11 @@ export class CommandRootState {
 		let newSelected = items[index + change];
 
 		if (this.opts.loop.current) {
-			newSelected =
-				index + change < 0
-					? items[items.length - 1]
-					: index + change === items.length
-						? items[0]
-						: items[index + change];
+			newSelected = index + change < 0 ? items[items.length - 1] : index + change === items.length ? items[0] : items[index + change];
 		}
 
 		if (newSelected) {
-			this.setValue(newSelected.getAttribute(COMMAND_VALUE_ATTR) ?? "");
+			this.setValue(newSelected.getAttribute(COMMAND_VALUE_ATTR) ?? '');
 		}
 	}
 
@@ -610,15 +559,12 @@ export class CommandRootState {
 		let item: HTMLElement | null | undefined;
 
 		while (group && !item) {
-			group =
-				change > 0
-					? findNextSibling(group, COMMAND_GROUP_SELECTOR)
-					: findPreviousSibling(group, COMMAND_GROUP_SELECTOR);
+			group = change > 0 ? findNextSibling(group, COMMAND_GROUP_SELECTOR) : findPreviousSibling(group, COMMAND_GROUP_SELECTOR);
 			item = group?.querySelector(COMMAND_VALID_ITEM_SELECTOR);
 		}
 
 		if (item) {
-			this.setValue(item.getAttribute(COMMAND_VALUE_ATTR) ?? "");
+			this.setValue(item.getAttribute(COMMAND_VALUE_ATTR) ?? '');
 		} else {
 			this.updateSelectedByItem(change);
 		}
@@ -642,7 +588,7 @@ export class CommandRootState {
 		// Schedule sorting to run after this tick when all items are added not each time an item is added
 		if (!this.sortAfterTick) {
 			this.sortAfterTick = true;
-			afterTick(() => {
+			tick().then(() => {
 				this.#sort();
 				this.sortAfterTick = false;
 			});
@@ -676,7 +622,7 @@ export class CommandRootState {
 		// Schedule sorting and filtering to run after this tick when all items are added not each time an item is added
 		if (!this.sortAndFilterAfterTick) {
 			this.sortAndFilterAfterTick = true;
-			afterTick(() => {
+			tick().then(() => {
 				this.#filterItems();
 				this.#sort();
 				this.sortAndFilterAfterTick = false;
@@ -693,7 +639,7 @@ export class CommandRootState {
 
 			// The item removed have been the selected one,
 			// so selection should be moved to the first
-			if (selectedItem?.getAttribute("id") === id) {
+			if (selectedItem?.getAttribute('id') === id) {
 				this.#selectFirstItem();
 			}
 
@@ -761,10 +707,7 @@ export class CommandRootState {
 		}
 	}
 
-	#getColumn(
-		item: HTMLElement,
-		grid: ItemsGrid
-	): { columnIndex: number; rowIndex: number } | null {
+	#getColumn(item: HTMLElement, grid: ItemsGrid): { columnIndex: number; rowIndex: number } | null {
 		if (grid.length === 0) return null;
 
 		for (let r = 0; r < grid.length; r++) {
@@ -1038,8 +981,8 @@ export class CommandRootState {
 	onkeydown(e: BitsKeyboardEvent) {
 		const isVim = this.opts.vimBindings.current && e.ctrlKey;
 		switch (e.key) {
-			case kbd.n:
-			case kbd.j: {
+			case 'n':
+			case 'j': {
 				// vim down
 				if (isVim) {
 					if (this.isGrid) {
@@ -1050,7 +993,7 @@ export class CommandRootState {
 				}
 				break;
 			}
-			case kbd.l: {
+			case 'l': {
 				// vim right
 				if (isVim) {
 					if (this.isGrid) {
@@ -1072,8 +1015,8 @@ export class CommandRootState {
 				this.#next(e);
 
 				break;
-			case kbd.p:
-			case kbd.k: {
+			case 'p':
+			case 'k': {
 				// vim up
 				if (isVim) {
 					if (this.isGrid) {
@@ -1084,7 +1027,7 @@ export class CommandRootState {
 				}
 				break;
 			}
-			case kbd.h: {
+			case 'h': {
 				// vim left
 				if (isVim && this.isGrid) {
 					this.#prev(e);
@@ -1134,21 +1077,22 @@ export class CommandRootState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "application",
-				[commandAttrs.root]: "",
+				role: 'application',
+				[commandAttrs.root]: '',
 				tabindex: -1,
 				onkeydown: this.onkeydown,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 function itemIsDisabled(item: HTMLElement) {
-	return item.getAttribute("aria-disabled") === "true";
+	return item.getAttribute('aria-disabled') === 'true';
 }
 
 interface CommandEmptyStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			forceMount: boolean;
 		}> {}
@@ -1162,10 +1106,7 @@ export class CommandEmptyState {
 	readonly root: CommandRootState;
 	readonly attachment: RefAttachment;
 	readonly shouldRender = $derived.by(() => {
-		return (
-			(this.root._commandState.filtered.count === 0 && this.#isInitialRender === false) ||
-			this.opts.forceMount.current
-		);
+		return (this.root._commandState.filtered.count === 0 && this.#isInitialRender === false) || this.opts.forceMount.current;
 	});
 	#isInitialRender = true;
 
@@ -1183,15 +1124,16 @@ export class CommandEmptyState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "presentation",
-				[commandAttrs.empty]: "",
+				role: 'presentation',
+				[commandAttrs.empty]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface CommandGroupContainerStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			value: string;
 			forceMount: boolean;
@@ -1199,9 +1141,7 @@ interface CommandGroupContainerStateOpts
 
 export class CommandGroupContainerState {
 	static create(opts: CommandGroupContainerStateOpts) {
-		return setCommandGroupContainerContext(
-			new CommandGroupContainerState(opts, getCommandRootContext())
-		);
+		return setCommandGroupContainerContext(new CommandGroupContainerState(opts, getCommandRootContext()));
 	}
 
 	readonly opts: CommandGroupContainerStateOpts;
@@ -1215,7 +1155,7 @@ export class CommandGroupContainerState {
 	});
 
 	headingNode = $state<HTMLElement | null>(null);
-	trueValue = $state("");
+	trueValue = $state('');
 
 	constructor(opts: CommandGroupContainerStateOpts, root: CommandRootState) {
 		this.opts = opts;
@@ -1227,7 +1167,7 @@ export class CommandGroupContainerState {
 			() => this.trueValue,
 			() => {
 				return this.root.registerGroup(this.trueValue);
-			}
+			},
 		);
 
 		$effect(() => {
@@ -1248,12 +1188,12 @@ export class CommandGroupContainerState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "presentation",
+				role: 'presentation',
 				hidden: this.shouldRender ? undefined : true,
-				"data-value": this.trueValue,
-				[commandAttrs.group]: "",
+				'data-value': this.trueValue,
+				[commandAttrs.group]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -1278,9 +1218,9 @@ export class CommandGroupHeadingState {
 		() =>
 			({
 				id: this.opts.id.current,
-				[commandAttrs["group-heading"]]: "",
+				[commandAttrs['group-heading']]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -1305,16 +1245,17 @@ export class CommandGroupItemsState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "group",
-				[commandAttrs["group-items"]]: "",
-				"aria-labelledby": this.group.headingNode?.id ?? undefined,
+				role: 'group',
+				[commandAttrs['group-items']]: '',
+				'aria-labelledby': this.group.headingNode?.id ?? undefined,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface CommandInputStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		WritableBoxedValues<{
 			value: string;
 		}>,
@@ -1332,10 +1273,10 @@ export class CommandInputState {
 	readonly attachment: RefAttachment;
 	readonly #selectedItemId = $derived.by(() => {
 		const item = this.root.viewportNode?.querySelector<HTMLElement>(
-			`${COMMAND_ITEM_SELECTOR}[${COMMAND_VALUE_ATTR}="${cssEscape(this.root.opts.value.current)}"]`
+			`${COMMAND_ITEM_SELECTOR}[${COMMAND_VALUE_ATTR}="${cssEscape(this.root.opts.value.current)}"]`,
 		);
 		if (item === undefined || item === null) return;
-		return item.getAttribute("id") ?? undefined;
+		return item.getAttribute('id') ?? undefined;
 	});
 
 	constructor(opts: CommandInputStateOpts, root: CommandRootState) {
@@ -1347,18 +1288,18 @@ export class CommandInputState {
 			() => {
 				const node = this.opts.ref.current;
 				if (node && this.opts.autofocus.current) {
-					afterSleep(10, () => node.focus());
+					setTimeout(() => node.focus(), 10);
 				}
-			}
+			},
 		);
 
 		watch(
 			() => this.opts.value.current,
 			() => {
 				if (this.root.commandState.search !== this.opts.value.current) {
-					this.root.setState("search", this.opts.value.current);
+					this.root.setState('search', this.opts.value.current);
 				}
-			}
+			},
 		);
 	}
 
@@ -1366,24 +1307,25 @@ export class CommandInputState {
 		() =>
 			({
 				id: this.opts.id.current,
-				type: "text",
-				[commandAttrs.input]: "",
-				autocomplete: "off",
-				autocorrect: "off",
+				type: 'text',
+				[commandAttrs.input]: '',
+				autocomplete: 'off',
+				autocorrect: 'off',
 				spellcheck: false,
-				"aria-autocomplete": "list",
-				role: "combobox",
-				"aria-expanded": boolToStr(true),
-				"aria-controls": this.root.viewportNode?.id ?? undefined,
-				"aria-labelledby": this.root.labelNode?.id ?? undefined,
-				"aria-activedescendant": this.#selectedItemId,
+				'aria-autocomplete': 'list',
+				role: 'combobox',
+				'aria-expanded': true ? 'true' : 'false',
+				'aria-controls': this.root.viewportNode?.id ?? undefined,
+				'aria-labelledby': this.root.labelNode?.id ?? undefined,
+				'aria-activedescendant': this.#selectedItemId,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface CommandItemStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			value: string;
 			disabled: boolean;
@@ -1395,7 +1337,7 @@ interface CommandItemStateOpts
 }
 
 export class CommandItemState {
-	static create(opts: Omit<CommandItemStateOpts, "group">) {
+	static create(opts: Omit<CommandItemStateOpts, 'group'>) {
 		const group = getCommandGroupContainerContextOr(null);
 		return new CommandItemState({ ...opts, group }, getCommandRootContext());
 	}
@@ -1408,11 +1350,7 @@ export class CommandItemState {
 	});
 	readonly shouldRender = $derived.by(() => {
 		this.opts.ref.current;
-		if (
-			this.#trueForceMount ||
-			this.root.opts.shouldFilter.current === false ||
-			!this.root.commandState.search
-		) {
+		if (this.#trueForceMount || this.root.opts.shouldFilter.current === false || !this.root.commandState.search) {
 			return true;
 		}
 		const currentScore = this.root.commandState.filtered.items.get(this.trueValue);
@@ -1420,10 +1358,8 @@ export class CommandItemState {
 		return currentScore > 0;
 	});
 
-	readonly isSelected = $derived.by(
-		() => this.root.opts.value.current === this.trueValue && this.trueValue !== ""
-	);
-	trueValue = $state("");
+	readonly isSelected = $derived.by(() => this.root.opts.value.current === this.trueValue && this.trueValue !== '');
+	trueValue = $state('');
 
 	constructor(opts: CommandItemStateOpts, root: CommandRootState) {
 		this.opts = opts;
@@ -1432,17 +1368,10 @@ export class CommandItemState {
 		this.trueValue = opts.value.current;
 		this.attachment = attachRef(this.opts.ref);
 
-		watch(
-			[
-				() => this.trueValue,
-				() => this.#group?.trueValue,
-				() => this.opts.forceMount.current,
-			],
-			() => {
-				if (this.opts.forceMount.current || !this.trueValue) return;
-				return this.root.registerItem(this.trueValue, this.#group?.trueValue);
-			}
-		);
+		watch([() => this.trueValue, () => this.#group?.trueValue, () => this.opts.forceMount.current], () => {
+			if (this.opts.forceMount.current || !this.trueValue) return;
+			return this.root.registerItem(this.trueValue, this.#group?.trueValue);
+		});
 
 		watch([() => this.opts.value.current, () => this.opts.ref.current], () => {
 			if (this.opts.value.current) {
@@ -1454,7 +1383,7 @@ export class CommandItemState {
 			if (this.trueValue) {
 				this.root.registerValue(
 					this.trueValue,
-					opts.keywords.current.map((kw) => kw.trim())
+					opts.keywords.current.map((kw) => kw.trim()),
 				);
 				this.opts.ref.current?.setAttribute(COMMAND_VALUE_ATTR, this.trueValue);
 			}
@@ -1490,23 +1419,24 @@ export class CommandItemState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"aria-disabled": boolToStr(this.opts.disabled.current),
-				"aria-selected": boolToStr(this.isSelected),
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-				"data-selected": boolToEmptyStrOrUndef(this.isSelected),
-				"data-value": this.trueValue,
-				"data-group": this.#group?.trueValue,
-				[commandAttrs.item]: "",
-				role: "option",
+				'aria-disabled': this.opts.disabled.current ? 'true' : 'false',
+				'aria-selected': this.isSelected ? 'true' : 'false',
+				'data-disabled': this.opts.disabled.current ? '' : undefined,
+				'data-selected': this.isSelected ? '' : undefined,
+				'data-value': this.trueValue,
+				'data-group': this.#group?.trueValue,
+				[commandAttrs.item]: '',
+				role: 'option',
 				onpointermove: this.onpointermove,
 				onclick: this.onclick,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface CommandLoadingStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			progress: number;
 		}> {}
@@ -1527,19 +1457,20 @@ export class CommandLoadingState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "progressbar",
-				"aria-valuenow": this.opts.progress.current,
-				"aria-valuemin": 0,
-				"aria-valuemax": 100,
-				"aria-label": "Loading...",
-				[commandAttrs.loading]: "",
+				role: 'progressbar',
+				'aria-valuenow': this.opts.progress.current,
+				'aria-valuemin': 0,
+				'aria-valuemax': 100,
+				'aria-label': 'Loading...',
+				[commandAttrs.loading]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface CommandSeparatorStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			forceMount: boolean;
 		}> {}
@@ -1552,9 +1483,7 @@ export class CommandSeparatorState {
 	readonly opts: CommandSeparatorStateOpts;
 	readonly root: CommandRootState;
 	readonly attachment: RefAttachment;
-	readonly shouldRender = $derived.by(
-		() => !this.root._commandState.search || this.opts.forceMount.current
-	);
+	readonly shouldRender = $derived.by(() => !this.root._commandState.search || this.opts.forceMount.current);
 
 	constructor(opts: CommandSeparatorStateOpts, root: CommandRootState) {
 		this.opts = opts;
@@ -1567,15 +1496,16 @@ export class CommandSeparatorState {
 			({
 				id: this.opts.id.current,
 				// role="separator" cannot belong to a role="listbox"
-				"aria-hidden": "true",
-				[commandAttrs.separator]: "",
+				'aria-hidden': 'true',
+				[commandAttrs.separator]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface CommandListStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			ariaLabel: string;
 		}> {}
@@ -1599,16 +1529,17 @@ export class CommandListState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "listbox",
-				"aria-label": this.opts.ariaLabel.current,
-				[commandAttrs.list]: "",
+				role: 'listbox',
+				'aria-label': this.opts.ariaLabel.current,
+				[commandAttrs.list]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface CommandLabelStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			for?: string;
 		}> {}
@@ -1630,11 +1561,11 @@ export class CommandLabelState {
 		() =>
 			({
 				id: this.opts.id.current,
-				[commandAttrs["input-label"]]: "",
+				[commandAttrs['input-label']]: '',
 				for: this.opts.for?.current,
 				style: srOnlyStyles,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -1652,38 +1583,32 @@ export class CommandViewportState {
 		this.opts = opts;
 		this.list = list;
 		this.attachment = attachRef(this.opts.ref, (v) => (this.list.root.viewportNode = v));
-		watch(
-			[() => this.opts.ref.current, () => this.list.opts.ref.current],
-			([node, listNode]) => {
-				if (node === null || listNode === null) return;
-				let aF: number;
+		watch([() => this.opts.ref.current, () => this.list.opts.ref.current], ([node, listNode]) => {
+			if (node === null || listNode === null) return;
+			let aF: number;
 
-				const observer = new ResizeObserver(() => {
-					aF = requestAnimationFrame(() => {
-						const height = node.offsetHeight;
-						listNode.style.setProperty(
-							"--bits-command-list-height",
-							`${height.toFixed(1)}px`
-						);
-					});
+			const observer = new ResizeObserver(() => {
+				aF = requestAnimationFrame(() => {
+					const height = node.offsetHeight;
+					listNode.style.setProperty('--bits-command-list-height', `${height.toFixed(1)}px`);
 				});
+			});
 
-				observer.observe(node);
+			observer.observe(node);
 
-				return () => {
-					cancelAnimationFrame(aF);
-					observer.unobserve(node);
-				};
-			}
-		);
+			return () => {
+				cancelAnimationFrame(aF);
+				observer.unobserve(node);
+			};
+		});
 	}
 
 	readonly props = $derived.by(
 		() =>
 			({
 				id: this.opts.id.current,
-				[commandAttrs.viewport]: "",
+				[commandAttrs.viewport]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }

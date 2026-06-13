@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { afterSleep, boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { AlertDialogContentProps } from "$lib/components/alert-dialog/primitive/types.js";
+	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import type { AlertDialogContentProps } from "$lib/components/alert-dialog/primitive/index.js";
 	import DismissibleLayer from "$lib/components/_shared/utilities/dismissible-layer/dismissible-layer.svelte";
 	import EscapeLayer from "$lib/components/_shared/utilities/escape-layer/escape-layer.svelte";
 	import FocusScope from "$lib/components/_shared/utilities/focus-scope/focus-scope.svelte";
 	import TextSelectionLayer from "$lib/components/_shared/utilities/text-selection-layer/text-selection-layer.svelte";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
 	import ScrollLock from "$lib/components/_shared/utilities/scroll-lock/scroll-lock.svelte";
 	import { DialogContentState } from "$lib/components/dialog/primitive/dialog.svelte.js";
 
@@ -19,10 +18,10 @@
 		ref = $bindable(null),
 		forceMount = false,
 		interactOutsideBehavior = "ignore",
-		onCloseAutoFocus = noop,
-		onEscapeKeydown = noop,
-		onOpenAutoFocus = noop,
-		onInteractOutside = noop,
+		onCloseAutoFocus = (() => {}),
+		onEscapeKeydown = (() => {}),
+		onOpenAutoFocus = (() => {}),
+		onInteractOutside = (() => {}),
 		preventScroll = true,
 		trapFocus = true,
 		restoreScrollDelay = null,
@@ -51,7 +50,7 @@
 			onOpenAutoFocus(e);
 			if (e.defaultPrevented) return;
 			e.preventDefault();
-			afterSleep(0, () => contentState.opts.ref.current?.focus());
+			setTimeout(() => contentState.opts.ref.current?.focus(), 0);
 		}}
 	>
 		{#snippet focusScope({ props: focusScopeProps })}

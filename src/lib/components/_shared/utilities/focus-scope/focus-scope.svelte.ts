@@ -1,20 +1,20 @@
-import { onDestroyEffect, type ReadableBoxedValues } from "$lib/vendor/toolbelt/index.js";
-import { FocusScopeManager } from "$lib/components/_shared/utilities/focus-scope/focus-scope-manager.js";
-import { focusable, isFocusable, tabbable } from "$lib/vendor/tabbable/index.js";
-import { on } from "svelte/events";
-import { watch } from "$lib/vendor/runed/index.js";
+import { type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { FocusScopeManager } from '$lib/components/_shared/utilities/focus-scope/focus-scope-manager.js';
+import { focusable, isFocusable, tabbable } from 'tabbable';
+import { on } from 'svelte/events';
+import { watch } from '$lib/vendor/watch.svelte.js';
 
-interface FocusScopeOpts
-	extends ReadableBoxedValues<{
-		onOpenAutoFocus: (event: Event) => void;
-		onCloseAutoFocus: (event: Event) => void;
-		trap: boolean;
-	}> {
+interface FocusScopeOpts extends ReadableBoxedValues<{
+	onOpenAutoFocus: (event: Event) => void;
+	onCloseAutoFocus: (event: Event) => void;
+	trap: boolean;
+}> {
 	loop: boolean;
 }
 
 interface FocusScopeUseOpts
-	extends FocusScopeOpts,
+	extends
+		FocusScopeOpts,
 		ReadableBoxedValues<{
 			enabled: boolean;
 			ref: HTMLElement | null;
@@ -78,7 +78,7 @@ export class FocusScope {
 	#handleOpenAutoFocus() {
 		if (!this.#container) return;
 
-		const event = new CustomEvent("focusScope.onOpenAutoFocus", {
+		const event = new CustomEvent('focusScope.onOpenAutoFocus', {
 			bubbles: false,
 			cancelable: true,
 		});
@@ -99,7 +99,7 @@ export class FocusScope {
 	}
 
 	#handleCloseAutoFocus() {
-		const event = new CustomEvent("focusScope.onCloseAutoFocus", {
+		const event = new CustomEvent('focusScope.onCloseAutoFocus', {
 			bubbles: false,
 			cancelable: true,
 		});
@@ -154,7 +154,7 @@ export class FocusScope {
 		};
 
 		const handleKeydown = (e: KeyboardEvent) => {
-			if (!this.#opts.loop || this.#paused || e.key !== "Tab") return;
+			if (!this.#opts.loop || this.#paused || e.key !== 'Tab') return;
 			if (!this.#manager.isActiveScope(this)) return;
 
 			const tabbables = this.#getTabbables();
@@ -172,10 +172,7 @@ export class FocusScope {
 			}
 		};
 
-		this.#cleanupFns.push(
-			on(doc, "focusin", handleFocus, { capture: true }),
-			on(container, "keydown", handleKeydown)
-		);
+		this.#cleanupFns.push(on(doc, 'focusin', handleFocus, { capture: true }), on(container, 'keydown', handleKeydown));
 
 		const observer = new MutationObserver(() => {
 			const lastFocused = this.#manager.getFocusMemory(this);
@@ -241,7 +238,7 @@ export class FocusScope {
 			}
 		});
 
-		onDestroyEffect(() => {
+		$effect(() => () => {
 			scope?.unmount();
 		});
 

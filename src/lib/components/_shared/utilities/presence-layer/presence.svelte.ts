@@ -1,13 +1,12 @@
-import { onDestroyEffect, type ReadableBox, type ReadableBoxedValues } from "$lib/vendor/toolbelt/index.js";
-import { watch } from "$lib/vendor/runed/index.js";
-import { AnimationsComplete } from "$lib/internal/animations-complete.js";
-import type { TransitionState } from "$lib/internal/attrs.js";
+import { type ReadableBox, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { watch } from '$lib/vendor/watch.svelte.js';
+import { AnimationsComplete } from '$lib/internal/animations-complete.js';
+import type { TransitionState } from '$lib/internal/attrs.js';
 
-export interface PresenceOptions
-	extends ReadableBoxedValues<{
-		open: boolean;
-		ref: HTMLElement | null;
-	}> {}
+export interface PresenceOptions extends ReadableBoxedValues<{
+	open: boolean;
+	ref: HTMLElement | null;
+}> {}
 
 export class Presence {
 	readonly opts: PresenceOptions;
@@ -26,7 +25,7 @@ export class Presence {
 			ref: this.opts.ref,
 			afterTick: this.opts.open,
 		});
-		onDestroyEffect(() => this.#clearTransitionFrame());
+		$effect(() => () => this.#clearTransitionFrame());
 
 		watch(
 			() => this.present.current,
@@ -42,7 +41,7 @@ export class Presence {
 					this.#isPresent = true;
 				}
 
-				this.#transitionStatus = isOpen ? "starting" : "ending";
+				this.#transitionStatus = isOpen ? 'starting' : 'ending';
 				if (isOpen) {
 					this.#transitionFrame = window.requestAnimationFrame(() => {
 						this.#transitionFrame = null;
@@ -59,7 +58,7 @@ export class Presence {
 					}
 					this.#transitionStatus = undefined;
 				});
-			}
+			},
 		);
 	}
 

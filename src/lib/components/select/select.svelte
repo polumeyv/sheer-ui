@@ -1,21 +1,20 @@
 <script lang="ts">
 	import FloatingLayer from '$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte';
-	import { noop } from '$lib/internal/noop.js';
 	import { type WritableBox, boxWith } from '$lib/vendor/toolbelt/index.js';
 	import { SelectRootState } from '$lib/components/select/primitive/select.svelte.js';
-	import type { SelectRootProps } from '$lib/components/select/primitive/types.js';
+	import type { SelectRootProps } from '$lib/components/select/primitive/index.js';
 	import SelectHiddenInput from '$lib/components/select/primitive/components/select-hidden-input.svelte';
-	import { watch } from '$lib/vendor/runed/index.js';
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
 
 	let {
 		value = $bindable(),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		name = '',
 		disabled = false,
 		type,
 		open = $bindable(false),
-		onOpenChange = noop,
-		onOpenChangeComplete = noop,
+		onOpenChange = (() => {}),
+		onOpenChangeComplete = (() => {}),
 		loop = false,
 		scrollAlignment = 'nearest',
 		required = false,

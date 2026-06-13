@@ -1,11 +1,10 @@
 <script lang="ts">
 	// Date Picker composes the DateField, Popover, and Calendar components
-	import { watch } from "$lib/vendor/runed/index.js";
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
 	import { boxWith } from "$lib/vendor/toolbelt/index.js";
 	import type { DateValue } from "@internationalized/date";
 	import { DatePickerRootState } from "$lib/components/date-picker/date-picker.svelte.js";
-	import type { DatePickerRootProps } from "$lib/components/date-picker/types.js";
-	import { noop } from "$lib/internal/noop.js";
+	import type { DatePickerRootProps } from "$lib/components/date-picker/index.js";
 	import { PopoverRootState } from "$lib/components/popover/primitive/popover.svelte.js";
 	import { DateFieldRootState } from "$lib/components/date-field/date-field.svelte.js";
 	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index.js";
@@ -14,15 +13,15 @@
 
 	let {
 		open = $bindable(false),
-		onOpenChange = noop,
-		onOpenChangeComplete = noop,
+		onOpenChange = (() => {}),
+		onOpenChangeComplete = (() => {}),
 		value = $bindable(),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		placeholder = $bindable(),
-		onPlaceholderChange = noop,
+		onPlaceholderChange = (() => {}),
 		isDateUnavailable = () => false,
-		validate = noop,
-		onInvalid = noop,
+		validate = (() => {}),
+		onInvalid = (() => {}),
 		minValue,
 		maxValue,
 		disabled = false,

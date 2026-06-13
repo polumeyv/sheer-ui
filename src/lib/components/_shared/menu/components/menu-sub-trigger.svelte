@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { MenuSubTriggerProps } from "$lib/components/_shared/menu/types.js";
+	import type { MenuSubTriggerProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuSubTriggerState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import FloatingLayerAnchor from "$lib/components/_shared/utilities/floating-layer/components/floating-layer-anchor.svelte";
-	import { noop } from "$lib/internal/noop.js";
 	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();
@@ -14,7 +13,7 @@
 		ref = $bindable(null),
 		children,
 		child,
-		onSelect = noop,
+		onSelect = (() => {}),
 		openDelay = 0,
 		...restProps
 	}: MenuSubTriggerProps = $props();

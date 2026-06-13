@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
 	import { SelectTriggerState } from '$lib/components/select/primitive/select.svelte.js';
-	import type { SelectTriggerProps } from '$lib/components/select/primitive/types.js';
+	import type { SelectTriggerProps } from '$lib/components/select/primitive/index.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { FloatingLayer } from '$lib/components/_shared/utilities/floating-layer/index.js';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
-	import { cn } from '../../utils';
+	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();
 

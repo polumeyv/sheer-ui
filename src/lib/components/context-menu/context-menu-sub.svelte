@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ContextMenu as ContextMenuPrimitive } from '$lib/bits-ui.js';
+import { ContextMenu as ContextMenuPrimitive } from "$lib/components/_shared/primitives.js";
 
 let { open = $bindable(false), ...restProps }: ContextMenuPrimitive.SubProps = $props();
 </script>

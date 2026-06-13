@@ -3,7 +3,7 @@
 	import type { Table } from '@tanstack/table-core';
 	import * as DropdownMenu from '@polumeyv/ui/dropdown-menu';
 	import { buttonVariants } from '@polumeyv/ui/button';
-	import { cn } from '../../utils';
+	import { cn } from '../../vendor/utils';
 	let { table }: { table: Table<TData> } = $props();
 </script>
 

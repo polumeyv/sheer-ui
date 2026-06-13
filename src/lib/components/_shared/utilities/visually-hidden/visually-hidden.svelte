@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { VisuallyHiddenProps } from "$lib/components/_shared/utilities/visually-hidden/types.js";
+	import type { VisuallyHiddenProps } from "$lib/components/_shared/utilities/visually-hidden/index.js";
 	import type { StyleProperties } from "$lib/shared/index.js";
 
 	let { children, child, ...restProps }: VisuallyHiddenProps = $props();

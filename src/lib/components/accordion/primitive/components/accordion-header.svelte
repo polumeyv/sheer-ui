@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { AccordionHeaderProps } from "$lib/components/accordion/primitive/types.js";
+	import { mergeProps } from "$lib/internal/merge-props.js";
+	import type { AccordionHeaderProps } from "$lib/components/accordion/primitive/index.js";
 	import { AccordionHeaderState } from "$lib/components/accordion/primitive/accordion.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 
@@ -16,12 +16,24 @@
 	}: AccordionHeaderProps = $props();
 
 	const headerState = AccordionHeaderState.create({
-		id: boxWith(() => id),
-		level: boxWith(() => level),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		level: {
+			get current() {
+				return level;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, headerState.props));

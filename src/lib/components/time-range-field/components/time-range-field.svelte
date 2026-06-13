@@ -6,12 +6,11 @@
 </script>
 
 <script lang="ts" generics="T extends TimeValue = Time">
-	import { watch } from "$lib/vendor/runed/index.js";
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
 	import { TimeRangeFieldRootState } from "$lib/components/time-range-field/time-range-field.svelte.js";
-	import type { TimeRangeFieldRootProps } from "$lib/components/time-range-field/types.js";
+	import type { TimeRangeFieldRootProps } from "$lib/components/time-range-field/index.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
 	import { getDefaultTime } from "$lib/internal/date-time/utils.js";
 	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
 
@@ -21,9 +20,9 @@
 		id = createId(uid),
 		ref = $bindable(null),
 		value = $bindable(),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		placeholder = $bindable(),
-		onPlaceholderChange = noop,
+		onPlaceholderChange = (() => {}),
 		disabled = false,
 		readonly = false,
 		required = false,
@@ -31,15 +30,15 @@
 		granularity,
 		locale,
 		hideTimeZone = false,
-		validate = noop,
-		onInvalid = noop,
+		validate = (() => {}),
+		onInvalid = (() => {}),
 		maxValue,
 		minValue,
 		readonlySegments = [],
 		children,
 		child,
-		onStartValueChange = noop,
-		onEndValueChange = noop,
+		onStartValueChange = (() => {}),
+		onEndValueChange = (() => {}),
 		errorMessageId,
 		...restProps
 	}: TimeRangeFieldRootProps<T> = $props();

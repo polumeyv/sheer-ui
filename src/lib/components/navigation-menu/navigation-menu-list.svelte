@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { NavigationMenuListProps } from '$lib/components/navigation-menu/primitive/types.js';
+	import type { NavigationMenuListProps } from '$lib/components/navigation-menu/primitive/index.js';
 	import { NavigationMenuListState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import Mounted from '$lib/components/_shared/utilities/mounted.svelte';
-	import { cn } from '../../utils';
+	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();
 

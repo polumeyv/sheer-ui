@@ -1,44 +1,29 @@
-import { createContext } from "svelte";
-import type { Time } from "@internationalized/date";
-import {
-	boxWith,
-	onDestroyEffect,
-	attachRef,
-	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from "$lib/vendor/toolbelt/index.js";
-import { watch } from "$lib/vendor/runed/index.js";
-import { TimeFieldRootState } from "$lib/components/time-field/time-field.svelte.js";
-import { TimeFieldInputState } from "$lib/components/time-field/time-field.svelte.js";
-import { useId } from "$lib/internal/use-id.js";
-import type { TimeSegmentPart } from "$lib/shared/index.js";
-import type { RefAttachment, WithRefOpts } from "$lib/internal/types.js";
-import { createBitsAttrs, boolToEmptyStrOrUndef } from "$lib/internal/attrs.js";
-import type {
-	TimeGranularity,
-	TimeOnInvalid,
-	TimeRange,
-	TimeRangeValidator,
-	TimeValue,
-} from "$lib/shared/date/types.js";
-import { type TimeFormatter, createTimeFormatter } from "$lib/internal/date-time/formatter.js";
-import { removeDescriptionElement } from "$lib/internal/date-time/field/helpers.js";
-import { getFirstSegment } from "$lib/internal/date-time/field/segments.js";
-import {
-	convertTimeValueToTime,
-	isTimeBefore,
-} from "$lib/internal/date-time/field/time-helpers.js";
+import { createContext } from 'svelte';
+import type { Time } from '@internationalized/date';
+import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
+import { watch } from '$lib/vendor/watch.svelte.js';
+import { TimeFieldRootState } from '$lib/components/time-field/time-field.svelte.js';
+import { TimeFieldInputState } from '$lib/components/time-field/time-field.svelte.js';
+import { useId } from '$lib/internal/use-id.js';
+import type { TimeSegmentPart } from '$lib/shared/index.js';
+import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import type { TimeGranularity, TimeOnInvalid, TimeRange, TimeRangeValidator, TimeValue } from '$lib/shared/date/types.js';
+import { type TimeFormatter, createTimeFormatter } from '$lib/internal/date-time/formatter.js';
+import { removeDescriptionElement } from '$lib/internal/date-time/field/helpers.js';
+import { getFirstSegment } from '$lib/internal/date-time/field/segments.js';
+import { convertTimeValueToTime, isTimeBefore } from '$lib/internal/date-time/field/time-helpers.js';
 
 export const timeRangeFieldAttrs = createBitsAttrs({
-	component: "time-range-field",
-	parts: ["root", "label"],
+	component: 'time-range-field',
+	parts: ['root', 'label'],
 });
 
 export const [getTimeRangeFieldRootContext, setTimeRangeFieldRootContext] = createContext<TimeRangeFieldRootState>();
 
 interface TimeRangeFieldRootStateOpts<T extends TimeValue = Time>
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		WritableBoxedValues<{
 			value: TimeRange<T>;
 			placeholder: TimeValue;
@@ -63,9 +48,7 @@ interface TimeRangeFieldRootStateOpts<T extends TimeValue = Time>
 
 export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 	static create<T extends TimeValue = Time>(opts: TimeRangeFieldRootStateOpts<T>) {
-		return setTimeRangeFieldRootContext(
-			new TimeRangeFieldRootState(opts) as unknown as TimeRangeFieldRootState
-		);
+		return setTimeRangeFieldRootContext(new TimeRangeFieldRootState(opts) as unknown as TimeRangeFieldRootState);
 	}
 	readonly opts: TimeRangeFieldRootStateOpts<T>;
 	readonly attachment: RefAttachment;
@@ -106,7 +89,7 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 		this.formatter = createTimeFormatter(this.opts.locale.current);
 		this.domContext = new DOMContext(this.opts.ref);
 		this.attachment = attachRef(this.opts.ref, (v) => (this.fieldNode = v));
-		onDestroyEffect(() => {
+		$effect(() => () => {
 			removeDescriptionElement(this.descriptionId, this.domContext.getDocument());
 		});
 
@@ -132,7 +115,7 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 					this.opts.startValue.current = undefined;
 					this.opts.endValue.current = undefined;
 				}
-			}
+			},
 		);
 
 		/**
@@ -145,40 +128,29 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 				if (startValue && this.opts.placeholder.current !== startValue) {
 					this.opts.placeholder.current = startValue;
 				}
-			}
+			},
 		);
 
-		watch(
-			[() => this.opts.startValue.current, () => this.opts.endValue.current],
-			([startValue, endValue]) => {
-				if (
-					this.opts.value.current &&
-					this.opts.value.current.start === startValue &&
-					this.opts.value.current.end === endValue
-				) {
-					return;
-				}
-
-				if (startValue && endValue) {
-					this.#updateValue((prev) => {
-						if (prev.start === startValue && prev.end === endValue) {
-							return prev;
-						}
-						return {
-							start: startValue,
-							end: endValue,
-						};
-					});
-				} else if (
-					this.opts.value.current &&
-					this.opts.value.current.start &&
-					this.opts.value.current.end
-				) {
-					this.opts.value.current.start = undefined;
-					this.opts.value.current.end = undefined;
-				}
+		watch([() => this.opts.startValue.current, () => this.opts.endValue.current], ([startValue, endValue]) => {
+			if (this.opts.value.current && this.opts.value.current.start === startValue && this.opts.value.current.end === endValue) {
+				return;
 			}
-		);
+
+			if (startValue && endValue) {
+				this.#updateValue((prev) => {
+					if (prev.start === startValue && prev.end === endValue) {
+						return prev;
+					}
+					return {
+						start: startValue,
+						end: endValue,
+					};
+				});
+			} else if (this.opts.value.current && this.opts.value.current.start && this.opts.value.current.end) {
+				this.opts.value.current.start = undefined;
+				this.opts.value.current.end = undefined;
+			}
+		});
 	}
 
 	readonly validationStatus = $derived.by(() => {
@@ -193,28 +165,20 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 
 		if (msg) {
 			return {
-				reason: "custom",
+				reason: 'custom',
 				message: msg,
 			} as const;
 		}
 
-		if (
-			this.minValueTime &&
-			this.startValueTime &&
-			isTimeBefore(this.startValueTime, this.minValueTime)
-		) {
+		if (this.minValueTime && this.startValueTime && isTimeBefore(this.startValueTime, this.minValueTime)) {
 			return {
-				reason: "min",
+				reason: 'min',
 			} as const;
 		}
 
-		if (
-			this.maxValueTime &&
-			this.endValueTime &&
-			isTimeBefore(this.maxValueTime, this.endValueTime)
-		) {
+		if (this.maxValueTime && this.endValueTime && isTimeBefore(this.maxValueTime, this.endValueTime)) {
 			return {
-				reason: "max",
+				reason: 'max',
 			} as const;
 		}
 
@@ -236,11 +200,11 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "group",
-				[timeRangeFieldAttrs.root]: "",
-				"data-invalid": boolToEmptyStrOrUndef(this.isInvalid),
+				role: 'group',
+				[timeRangeFieldAttrs.root]: '',
+				'data-invalid': this.isInvalid ? '' : undefined,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -271,17 +235,18 @@ export class TimeRangeFieldLabelState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-invalid": boolToEmptyStrOrUndef(this.root.isInvalid),
-				"data-disabled": boolToEmptyStrOrUndef(this.root.opts.disabled.current),
-				[timeRangeFieldAttrs.label]: "",
+				'data-invalid': this.root.isInvalid ? '' : undefined,
+				'data-disabled': this.root.opts.disabled.current ? '' : undefined,
+				[timeRangeFieldAttrs.label]: '',
 				onclick: this.#onclick,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface TimeRangeFieldInputStateOpts<T extends TimeValue = Time>
-	extends WritableBoxedValues<{
+	extends
+		WritableBoxedValues<{
 			value: T | undefined;
 		}>,
 		ReadableBoxedValues<{
@@ -290,11 +255,11 @@ interface TimeRangeFieldInputStateOpts<T extends TimeValue = Time>
 		WithRefOpts {}
 
 export class TimeRangeFieldInputState {
-	static create(opts: Omit<TimeRangeFieldInputStateOpts, "value">, type: "start" | "end") {
+	static create(opts: Omit<TimeRangeFieldInputStateOpts, 'value'>, type: 'start' | 'end') {
 		const root = getTimeRangeFieldRootContext();
 		const fieldState = TimeFieldRootState.create(
 			{
-				value: type === "start" ? root.opts.startValue : root.opts.endValue,
+				value: type === 'start' ? root.opts.startValue : root.opts.endValue,
 				disabled: root.opts.disabled,
 				readonly: root.opts.readonly,
 				readonlySegments: root.opts.readonlySegments,
@@ -311,7 +276,7 @@ export class TimeRangeFieldInputState {
 				errorMessageId: root.opts.errorMessageId,
 				isInvalidProp: boxWith(() => root.isInvalid),
 			},
-			root
+			root,
 		);
 
 		return new TimeFieldInputState({ name: opts.name, id: opts.id, ref: opts.ref }, fieldState);

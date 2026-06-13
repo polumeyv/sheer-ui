@@ -25,7 +25,7 @@ export type {
 	MenubarContentProps as ContentProps,
 	MenubarContentStaticProps as ContentStaticProps,
 	MenubarPortalProps as PortalProps,
-} from "$lib/components/menubar/primitive/types.js";
+} from "$lib/components/menubar/primitive/index.js";
 
 export type {
 	MenuSubPropsWithoutHTML as SubProps,
@@ -41,4 +41,4 @@ export type {
 	MenuCheckboxItemProps as CheckboxItemProps,
 	MenuSubContentStaticProps as SubContentStaticProps,
 	MenuCheckboxGroupProps as CheckboxGroupProps,
-} from "$lib/components/_shared/menu/types.js";
+} from "$lib/components/_shared/menu/index.js";

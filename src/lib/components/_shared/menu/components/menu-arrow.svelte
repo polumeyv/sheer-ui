@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { MenuArrowProps } from "$lib/components/_shared/menu/types.js";
+	import type { MenuArrowProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuArrowState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import FloatingLayerArrow from "$lib/components/_shared/utilities/floating-layer/components/floating-layer-arrow.svelte";
 

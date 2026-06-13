@@ -1,16 +1,15 @@
 <script lang="ts">
 	import { boxWith } from "$lib/vendor/toolbelt/index.js";
-	import type { ContextMenuRootProps } from "$lib/components/context-menu/primitive/types.js";
+	import type { ContextMenuRootProps } from "$lib/components/context-menu/primitive/index.js";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
-	import { noop } from "$lib/internal/noop.js";
 	import { MenuMenuState, MenuRootState } from "$lib/components/_shared/menu/menu.svelte.js";
 
 	let {
 		open = $bindable(false),
 		dir = "ltr",
 		// debugMode = false,
-		onOpenChange = noop,
-		onOpenChangeComplete = noop,
+		onOpenChange = (() => {}),
+		onOpenChangeComplete = (() => {}),
 		children,
 	}: ContextMenuRootProps = $props();
 

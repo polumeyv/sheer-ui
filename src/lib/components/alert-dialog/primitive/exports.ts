@@ -18,4 +18,4 @@ export type {
 	AlertDialogOverlayProps as OverlayProps,
 	AlertDialogTriggerProps as TriggerProps,
 	AlertDialogDescriptionProps as DescriptionProps,
-} from "$lib/components/alert-dialog/primitive/types.js";
+} from "$lib/components/alert-dialog/primitive/index.js";

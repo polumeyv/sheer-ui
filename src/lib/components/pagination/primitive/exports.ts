@@ -8,4 +8,4 @@ export type {
 	PaginationPrevButtonProps as PrevButtonProps,
 	PaginationNextButtonProps as NextButtonProps,
 	PaginationPageProps as PageProps,
-} from "$lib/components/pagination/primitive/types.js";
+} from "$lib/components/pagination/primitive/index.js";

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { CheckboxRootProps } from "$lib/components/checkbox/primitive/types.js";
+	import type { CheckboxRootProps } from "$lib/components/checkbox/primitive/index.js";
 	import { getCheckboxGroupContextOr, CheckboxRootState } from "$lib/components/checkbox/primitive/checkbox.svelte.js";
 	import CheckboxInput from "$lib/components/checkbox/primitive/components/checkbox-input.svelte";
 	import { createId } from "$lib/internal/create-id.js";
-	import { watch } from "$lib/vendor/runed/index.js";
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
 
 	const uid = $props.id();
 

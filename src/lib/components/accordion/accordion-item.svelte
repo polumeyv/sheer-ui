@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { AccordionItemProps } from '$lib/components/accordion/primitive/types.js';
+	import { mergeProps } from '$lib/internal/merge-props.js';
+	import type { AccordionItemProps } from '$lib/components/accordion/primitive/index.js';
 	import { AccordionItemState } from '$lib/components/accordion/primitive/accordion.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '../../utils';
+	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();
 	const defaultId = createId(uid);
@@ -20,13 +20,29 @@
 	}: AccordionItemProps = $props();
 
 	const itemState = AccordionItemState.create({
-		value: boxWith(() => value),
-		disabled: boxWith(() => disabled),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		value: {
+			get current() {
+				return value;
+			},
+		},
+		disabled: {
+			get current() {
+				return disabled;
+			},
+		},
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(

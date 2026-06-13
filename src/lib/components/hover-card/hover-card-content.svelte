@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { LinkPreviewContentProps } from '$lib/components/link-preview/types.js';
+	import type { LinkPreviewContentProps } from '$lib/components/link-preview/index.js';
 	import { LinkPreviewContentState } from '$lib/components/link-preview/link-preview.svelte.js';
 	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
 	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
 	import PopperLayerForceMount from '$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte';
 	import Mounted from '$lib/components/_shared/utilities/mounted.svelte';
-	import { noop } from '$lib/internal/noop.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn, type WithoutChildrenOrChild } from '../../utils';
+	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 	import HoverCardPortal from './hover-card-portal.svelte';
 	import type { ComponentProps } from 'svelte';
 
@@ -29,8 +28,8 @@
 		sticky = 'partial',
 		hideWhenDetached = false,
 		collisionPadding = 0,
-		onInteractOutside = noop,
-		onEscapeKeydown = noop,
+		onInteractOutside = (() => {}),
+		onEscapeKeydown = (() => {}),
 		forceMount = false,
 		style,
 		...restProps

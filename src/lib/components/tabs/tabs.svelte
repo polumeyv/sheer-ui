@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { TabsRootProps } from '$lib/components/tabs/primitive/types.js';
+	import { mergeProps } from '$lib/internal/merge-props.js';
+	import type { TabsRootProps } from '$lib/components/tabs/primitive/index.js';
 	import { TabsRootState } from '$lib/components/tabs/primitive/tabs.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { noop } from '$lib/internal/noop.js';
-	import { cn } from '../../utils.js';
+	import { cn } from '../../vendor/utils.js';
 
 	const uid = $props.id();
 
@@ -12,7 +11,7 @@
 		id = createId(uid),
 		ref = $bindable(null),
 		value = $bindable(''),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		orientation = 'horizontal',
 		loop = true,
 		activationMode = 'automatic',
@@ -24,22 +23,48 @@
 	}: TabsRootProps = $props();
 
 	const rootState = TabsRootState.create({
-		id: boxWith(() => id),
-		value: boxWith(
-			() => value,
-			(v) => {
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		value: {
+			get current() {
+				return value;
+			},
+			set current(v) {
 				value = v;
 				onValueChange(v);
-			}
-		),
-		orientation: boxWith(() => orientation),
-		loop: boxWith(() => loop),
-		activationMode: boxWith(() => activationMode),
-		disabled: boxWith(() => disabled),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+			},
+		},
+		orientation: {
+			get current() {
+				return orientation;
+			},
+		},
+		loop: {
+			get current() {
+				return loop;
+			},
+		},
+		activationMode: {
+			get current() {
+				return activationMode;
+			},
+		},
+		disabled: {
+			get current() {
+				return disabled;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(

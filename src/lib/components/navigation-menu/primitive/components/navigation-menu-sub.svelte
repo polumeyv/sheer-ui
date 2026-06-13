@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { NavigationMenuSubProps } from "$lib/components/navigation-menu/primitive/types.js";
+	import type { NavigationMenuSubProps } from "$lib/components/navigation-menu/primitive/index.js";
 	import { NavigationMenuSubState } from "$lib/components/navigation-menu/primitive/navigation-menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
 
 	const uid = $props.id();
 
@@ -13,7 +12,7 @@
 		id = createId(uid),
 		ref = $bindable(null),
 		value = $bindable(""),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		orientation = "horizontal",
 		...restProps
 	}: NavigationMenuSubProps = $props();

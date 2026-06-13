@@ -36,4 +36,4 @@ export type {
 	MenuRadioItemProps as RadioItemProps,
 	MenuSubTriggerProps as SubTriggerProps,
 	MenuPortalProps as PortalProps,
-} from "$lib/components/_shared/menu/types.js";
+} from "$lib/components/_shared/menu/index.js";

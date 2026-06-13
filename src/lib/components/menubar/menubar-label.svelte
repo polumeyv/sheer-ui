@@ -1,6 +1,6 @@
 <script lang="ts">
-import { cn } from '../../utils';
-import { type WithElementRef } from '$lib/bits-ui.js';
+import { cn } from '../../vendor/utils';
+import { type WithElementRef } from "$lib/shared/index.js";
 import type { HTMLAttributes } from 'svelte/elements';
 
 let {

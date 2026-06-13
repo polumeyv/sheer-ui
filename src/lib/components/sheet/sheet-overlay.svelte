@@ -1,6 +1,6 @@
 <script lang="ts">
 import * as SheetPrimitive from '../dialog/primitive/index.js';
-import { cn } from '../../utils';
+import { cn } from '../../vendor/utils.js';
 
 let { ref = $bindable(null), class: className, ...restProps }: SheetPrimitive.OverlayProps = $props();
 </script>

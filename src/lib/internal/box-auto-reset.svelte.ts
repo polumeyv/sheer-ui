@@ -1,5 +1,4 @@
-import { type WritableBox, boxWith } from "$lib/vendor/toolbelt/index.js";
-import { noop } from "./noop.js";
+import { type WritableBox, boxWith } from '$lib/vendor/index.js';
 
 type BoxAutoResetOptions<T> = {
 	afterMs?: number;
@@ -9,7 +8,7 @@ type BoxAutoResetOptions<T> = {
 
 const defaultOptions: Partial<BoxAutoResetOptions<unknown>> = {
 	afterMs: 10000,
-	onChange: noop,
+	onChange: () => {},
 };
 
 /**
@@ -44,6 +43,6 @@ export function boxAutoReset<T>(defaultValue: T, options: BoxAutoResetOptions<T>
 			onChange?.(v);
 			if (timeout) getWindow().clearTimeout(timeout);
 			timeout = resetAfter();
-		}
+		},
 	);
 }

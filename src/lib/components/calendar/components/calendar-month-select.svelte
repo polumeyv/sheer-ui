@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { CalendarMonthSelectProps } from "$lib/components/calendar/types.js";
+	import type { CalendarMonthSelectProps } from "$lib/components/calendar/index.js";
 	import { CalendarMonthSelectState } from "$lib/components/calendar/calendar.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 

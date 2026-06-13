@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { attachRef, boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { MenubarTriggerProps } from "$lib/components/menubar/primitive/types.js";
+	import type { MenubarTriggerProps } from "$lib/components/menubar/primitive/index.js";
 	import { MenubarTriggerState } from "$lib/components/menubar/primitive/menubar.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 	import FloatingLayerAnchor from "$lib/components/_shared/utilities/floating-layer/components/floating-layer-anchor.svelte";

@@ -326,18 +326,21 @@
 		"effect": "catalog:infra"
 	},
 	"dependencies": {
-		"@lucide/svelte": "^1.7.0",
-		"@tanstack/table-core": "^8.21.3",
 		"@floating-ui/dom": "^1.7.1",
+		"@lucide/svelte": "^1.7.0",
+		"@stripe/stripe-js": "^9.8.0",
+		"@tanstack/table-core": "^8.21.3",
 		"d3-scale": "^4.0.2",
 		"embla-carousel-svelte": "^8.6.0",
 		"layerchart": "2.0.0-next.64",
 		"mode-watcher": "^1.1.0",
+		"overrule": "^0.4.4",
 		"paneforge": "^1.0.2",
+		"style-to-object": "^1.0.14",
 		"svelte-sonner": "^1.1.1",
-		"overrule": "^0.3.1",
+		"tabbable": "^6.4.0",
 		"vaul-svelte": "1.0.0-next.7",
-		"@stripe/stripe-js": "^9.8.0"
+		"css.escape" :"1.5.1"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^7.0.1",

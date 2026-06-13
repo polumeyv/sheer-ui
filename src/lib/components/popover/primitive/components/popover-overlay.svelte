@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
 	import { PopoverOverlayState } from "$lib/components/popover/primitive/popover.svelte.js";
-	import type { PopoverOverlayProps } from "$lib/components/popover/primitive/types.js";
+	import type { PopoverOverlayProps } from "$lib/components/popover/primitive/index.js";
 	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();

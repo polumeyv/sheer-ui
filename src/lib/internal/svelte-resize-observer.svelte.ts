@@ -1,4 +1,4 @@
-import type { Getter } from "$lib/vendor/toolbelt/index.js";
+import type { Getter } from '$lib/vendor/index.js';
 
 export class SvelteResizeObserver {
 	#node: Getter<HTMLElement | null>;

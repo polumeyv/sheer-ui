@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
 	import { untrack, type Snippet } from "svelte";
-	import type { NavigationMenuContentProps } from "$lib/components/navigation-menu/primitive/types.js";
+	import type { NavigationMenuContentProps } from "$lib/components/navigation-menu/primitive/index.js";
 	import {
 		setNavigationMenuItemContext,
 		NavigationMenuItemState,
 		NavigationMenuContentImplState,
 	} from "$lib/components/navigation-menu/primitive/navigation-menu.svelte.js";
-	import { noop } from "$lib/internal/noop.js";
 	import { createId } from "$lib/internal/create-id.js";
 	import DismissibleLayer from "$lib/components/_shared/utilities/dismissible-layer/dismissible-layer.svelte";
 	import EscapeLayer from "$lib/components/_shared/utilities/escape-layer/escape-layer.svelte";
@@ -19,9 +18,9 @@
 		id = createId(uid),
 		child: childProp,
 		children: childrenProp,
-		onInteractOutside = noop,
-		onFocusOutside = noop,
-		onEscapeKeydown = noop,
+		onInteractOutside = (() => {}),
+		onFocusOutside = (() => {}),
+		onEscapeKeydown = (() => {}),
 		escapeKeydownBehavior = "close",
 		interactOutsideBehavior = "close",
 		itemState,

@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { type WritableBox, boxWith } from "$lib/vendor/toolbelt/index.js";
-	import { mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { ToolbarGroupProps } from "$lib/components/toolbar/types.js";
-	import { ToolbarGroupState } from "$lib/components/toolbar/toolbar.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
-	import { watch } from "$lib/vendor/runed/index.js";
+	import { untrack } from 'svelte';
+	import { mergeProps } from '$lib/internal/merge-props.js';
+	import type { WritableProp } from '$lib/vendor/utils.js';
+	import type { ToolbarGroupProps } from '$lib/components/toolbar/index.js';
+	import { ToolbarGroupState } from '$lib/components/toolbar/toolbar.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -13,7 +12,7 @@
 		id = createId(uid),
 		ref = $bindable(null),
 		value = $bindable(),
-		onValueChange = noop,
+		onValueChange = () => {},
 		type,
 		disabled = false,
 		child,
@@ -23,35 +22,47 @@
 
 	function handleDefaultValue() {
 		if (value !== undefined) return;
-		value = type === "single" ? "" : [];
+		value = type === 'single' ? '' : [];
 	}
 
 	// SSR
 	handleDefaultValue();
 
-	watch.pre(
-		() => value,
-		() => {
-			handleDefaultValue();
-		}
-	);
+	$effect.pre(() => {
+		void value;
+		untrack(() => handleDefaultValue());
+	});
 
 	const groupState = ToolbarGroupState.create({
-		id: boxWith(() => id),
-		disabled: boxWith(() => disabled),
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		disabled: {
+			get current() {
+				return disabled;
+			},
+		},
 		type,
-		value: boxWith(
-			() => value!,
-			(v) => {
+		value: {
+			get current() {
+				return value!;
+			},
+			set current(v) {
 				value = v;
 				// @ts-expect-error - we know
 				onValueChange(v);
-			}
-		) as WritableBox<string> | WritableBox<string[]>,
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+			},
+		} as WritableProp<string> | WritableProp<string[]>,
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, groupState.props));

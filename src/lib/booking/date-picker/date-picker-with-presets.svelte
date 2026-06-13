@@ -2,7 +2,7 @@
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import { addDays, todayIn, localTimeZone } from '@polumeyv/lib/public';
 	import type { DateString } from '@polumeyv/lib/schemas';
-	import { cn } from '../../utils.js';
+	import { cn } from '../../vendor/utils.js';
 	import { buttonVariants } from '../../components/button/index.js';
 	import { Calendar } from '../calendar/index.js';
 	import * as Popover from '../../components/popover/index.js';

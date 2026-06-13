@@ -1,5 +1,5 @@
 <script lang="ts">
-import { cn } from '../../utils';
+import { cn } from '../../vendor/utils';
 import { Textarea } from '../textarea';
 import type { ComponentProps } from 'svelte';
 

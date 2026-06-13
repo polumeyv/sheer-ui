@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { SelectContentProps } from "$lib/components/select/primitive/types.js";
+	import type { SelectContentProps } from "$lib/components/select/primitive/index.js";
 	import { SelectContentState } from "$lib/components/select/primitive/select.svelte.js";
 	import PopperLayer from "$lib/components/_shared/utilities/popper-layer/popper-layer.svelte";
-	import { noop } from "$lib/internal/noop.js";
 	import PopperLayerForceMount from "$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte";
 	import { createId } from "$lib/internal/create-id.js";
 
@@ -14,8 +13,8 @@
 		ref = $bindable(null),
 		forceMount = false,
 		side = "bottom",
-		onInteractOutside = noop,
-		onEscapeKeydown = noop,
+		onInteractOutside = (() => {}),
+		onEscapeKeydown = (() => {}),
 		children,
 		child,
 		preventScroll = false,

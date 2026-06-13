@@ -8,4 +8,4 @@ export type {
 	FloatingLayerContentImplProps as ContentImplProps,
 	FloatingLayerContentProps as ContentProps,
 	FloatingLayerAnchorProps as AnchorProps,
-} from "$lib/components/_shared/utilities/floating-layer/types.js";
+} from "$lib/components/_shared/utilities/floating-layer/index.js";

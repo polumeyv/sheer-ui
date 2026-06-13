@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { SelectScrollDownButtonProps } from "$lib/components/select/primitive/types.js";
+	import type { SelectScrollDownButtonProps } from "$lib/components/select/primitive/index.js";
 	import { SelectScrollDownButtonState } from "$lib/components/select/primitive/select.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 	import { Mounted } from "$lib/components/_shared/utilities/index.js";

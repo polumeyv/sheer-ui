@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { boxWith } from "$lib/vendor/toolbelt/index.js";
-	import type { TextSelectionLayerImplProps } from "$lib/components/_shared/utilities/text-selection-layer/types.js";
+	import type { TextSelectionLayerImplProps } from "$lib/components/_shared/utilities/text-selection-layer/index.js";
 	import { TextSelectionLayerState } from "$lib/components/_shared/utilities/text-selection-layer/use-text-selection-layer.svelte.js";
-	import { noop } from "$lib/internal/noop.js";
 
 	let {
 		preventOverflowTextSelection = true,
-		onPointerDown = noop,
-		onPointerUp = noop,
+		onPointerDown = (() => {}),
+		onPointerUp = (() => {}),
 		id,
 		children,
 		enabled,

@@ -1,15 +1,16 @@
-import { attachRef, type ReadableBoxedValues } from "$lib/vendor/toolbelt/index.js";
-import { createBitsAttrs, boolToStrTrueOrUndef } from "$lib/internal/attrs.js";
-import type { RefAttachment, WithRefOpts } from "$lib/internal/types.js";
-import type { Orientation } from "$lib/shared/index.js";
+import { attachRef, type ReadableBoxedValues } from '$lib/vendor/index.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { Orientation } from '$lib/shared/index.js';
 
 const separatorAttrs = createBitsAttrs({
-	component: "separator",
-	parts: ["root"],
+	component: 'separator',
+	parts: ['root'],
 });
 
 interface SeparatorRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			orientation: Orientation;
 			decorative: boolean;
@@ -31,12 +32,12 @@ export class SeparatorRootState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: this.opts.decorative.current ? "none" : "separator",
-				"aria-orientation": this.opts.orientation.current,
-				"aria-hidden": boolToStrTrueOrUndef(this.opts.decorative.current),
-				"data-orientation": this.opts.orientation.current,
-				[separatorAttrs.root]: "",
+				role: this.opts.decorative.current ? 'none' : 'separator',
+				'aria-orientation': this.opts.orientation.current,
+				'aria-hidden': this.opts.decorative.current ? 'true' : undefined,
+				'data-orientation': this.opts.orientation.current,
+				[separatorAttrs.root]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }

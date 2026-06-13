@@ -4,16 +4,15 @@
 
 <script lang="ts" generics="T = never">
 	import { boxWith } from '$lib/vendor/toolbelt/index.js';
-	import type { TooltipRootProps } from '$lib/components/tooltip/primitive/types.js';
+	import type { TooltipRootProps } from '$lib/components/tooltip/primitive/index.js';
 	import { TooltipRootState } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
 	import FloatingLayer from '$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte';
-	import { noop } from '$lib/internal/noop.js';
 
 	let {
 		open = $bindable(false),
 		triggerId = $bindable<string | null>(null),
-		onOpenChange = noop,
-		onOpenChangeComplete = noop,
+		onOpenChange = (() => {}),
+		onOpenChangeComplete = (() => {}),
 		disabled,
 		delayDuration,
 		disableCloseOnTriggerClick,

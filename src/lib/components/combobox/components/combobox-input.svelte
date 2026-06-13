@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { ComboboxInputProps } from "$lib/components/combobox/types.js";
+	import type { ComboboxInputProps } from "$lib/components/combobox/index.js";
 	import { useId } from "$lib/internal/use-id.js";
 	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index.js";
 	import { SelectInputState } from "$lib/components/select/primitive/select.svelte.js";

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { RadioGroupItemProps } from '$lib/components/radio-group/primitive/types.js';
+	import { mergeProps } from '$lib/internal/merge-props.js';
+	import type { RadioGroupItemProps } from '$lib/components/radio-group/primitive/index.js';
 	import { RadioGroupItemState } from '$lib/components/radio-group/primitive/radio-group.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import CircleIcon from '@lucide/svelte/icons/circle';
-	import { cn, type WithoutChildrenOrChild } from '../../utils.js';
+	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils.js';
 
 	const uid = $props.id();
 
@@ -18,13 +18,29 @@
 	}: WithoutChildrenOrChild<RadioGroupItemProps> = $props();
 
 	const itemState = RadioGroupItemState.create({
-		value: boxWith(() => value),
-		disabled: boxWith(() => disabled ?? false),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		value: {
+			get current() {
+				return value;
+			},
+		},
+		disabled: {
+			get current() {
+				return disabled ?? false;
+			},
+		},
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(

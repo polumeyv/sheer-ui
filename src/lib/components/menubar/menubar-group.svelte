@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Menubar as MenubarPrimitive } from '$lib/bits-ui.js';
+import { Menubar as MenubarPrimitive } from "$lib/components/_shared/primitives.js";
 
 let {
 	ref = $bindable(null),

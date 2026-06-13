@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '../../utils';
+	import { cn, type WithElementRef } from '../../vendor/utils';
 	import type { HTMLOptionAttributes } from 'svelte/elements';
 	import CheckIcon from '@lucide/svelte/icons/check';
 

@@ -1,4 +1,4 @@
-import type { PinInputCellProps } from '$lib/components/pin-input/types.js';
+import type { PinInputCellProps } from '$lib/components/pin-input/index.js';
 export { REGEXP_ONLY_DIGITS, REGEXP_ONLY_DIGITS_AND_CHARS } from '$lib/components/pin-input/pin-input.svelte.js';
 import Root from './input-otp.svelte';
 import Group from './input-otp-group.svelte';

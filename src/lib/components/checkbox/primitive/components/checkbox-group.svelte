@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { CheckboxGroupProps } from "$lib/components/checkbox/primitive/types.js";
+	import type { CheckboxGroupProps } from "$lib/components/checkbox/primitive/index.js";
 	import { CheckboxGroupState } from "$lib/components/checkbox/primitive/checkbox.svelte.js";
-	import { noop } from "$lib/internal/noop.js";
 	import { createId } from "$lib/internal/create-id.js";
 	import { arraysAreEqual } from "$lib/internal/arrays.js";
 
@@ -12,7 +11,7 @@
 		ref = $bindable(null),
 		id = createId(uid),
 		value = $bindable([]),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		name,
 		required,
 		disabled,

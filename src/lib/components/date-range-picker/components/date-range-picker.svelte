@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { watch } from "$lib/vendor/runed/index.js";
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
 	import type { DateValue } from "@internationalized/date";
 	import { DateRangePickerRootState } from "$lib/components/date-range-picker/date-range-picker.svelte.js";
-	import type { DateRangePickerRootProps } from "$lib/components/date-range-picker/types.js";
-	import { noop } from "$lib/internal/noop.js";
+	import type { DateRangePickerRootProps } from "$lib/components/date-range-picker/index.js";
 	import { PopoverRootState } from "$lib/components/popover/primitive/popover.svelte.js";
 	import { DateRangeFieldRootState } from "$lib/components/date-range-field/date-range-field.svelte.js";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
@@ -15,16 +14,16 @@
 
 	let {
 		open = $bindable(false),
-		onOpenChange = noop,
-		onOpenChangeComplete = noop,
+		onOpenChange = (() => {}),
+		onOpenChangeComplete = (() => {}),
 		value = $bindable(),
 		id = useId(),
 		ref = $bindable(null),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		placeholder = $bindable(),
-		onPlaceholderChange = noop,
+		onPlaceholderChange = (() => {}),
 		isDateUnavailable = () => false,
-		onInvalid = noop,
+		onInvalid = (() => {}),
 		minValue,
 		maxValue,
 		disabled = false,
@@ -45,9 +44,9 @@
 		fixedWeeks = false,
 		numberOfMonths = 1,
 		closeOnRangeSelect = true,
-		onStartValueChange = noop,
-		onEndValueChange = noop,
-		validate = noop,
+		onStartValueChange = (() => {}),
+		onEndValueChange = (() => {}),
+		validate = (() => {}),
 		errorMessageId,
 		minDays,
 		maxDays,

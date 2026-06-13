@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { boxWith } from '$lib/vendor/toolbelt/index.js';
 	import { DialogRootState } from '$lib/components/dialog/primitive/dialog.svelte.js';
-	import type { DialogRootProps } from '$lib/components/dialog/primitive/types.js';
-	import { noop } from '$lib/internal/noop.js';
+	import type { DialogRootProps } from '$lib/components/dialog/primitive/index.js';
 
 	let {
 		open = $bindable(false),
-		onOpenChange = noop,
-		onOpenChangeComplete = noop,
+		onOpenChange = (() => {}),
+		onOpenChangeComplete = (() => {}),
 		variant = 'dialog',
 		children,
 	}: DialogRootProps & { variant?: 'dialog' | 'alert-dialog' } = $props();

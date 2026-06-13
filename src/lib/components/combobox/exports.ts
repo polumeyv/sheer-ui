@@ -27,4 +27,4 @@ export type {
 	ComboboxScrollDownButtonProps as ScrollDownButtonProps,
 	ComboboxScrollUpButtonProps as ScrollUpButtonProps,
 	ComboboxViewportProps as ViewportProps,
-} from "$lib/components/combobox/types.js";
+} from "$lib/components/combobox/index.js";

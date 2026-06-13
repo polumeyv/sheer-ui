@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
 	import { CommandGroupHeadingState } from "$lib/components/command/primitive/command.svelte.js";
-	import type { CommandGroupHeadingProps } from "$lib/components/command/primitive/types.js";
+	import type { CommandGroupHeadingProps } from "$lib/components/command/primitive/index.js";
 	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();

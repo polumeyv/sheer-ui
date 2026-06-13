@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { DateRangeFieldInputProps } from "$lib/components/date-range-field/types.js";
+	import type { DateRangeFieldInputProps } from "$lib/components/date-range-field/index.js";
 	import { DateRangeFieldInputState } from "$lib/components/date-range-field/date-range-field.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 	import DateFieldHiddenInput from "$lib/components/date-field/components/date-field-hidden-input.svelte";

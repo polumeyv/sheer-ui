@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PopperLayerImplProps } from "$lib/components/_shared/utilities/popper-layer/types.js";
+	import type { PopperLayerImplProps } from "$lib/components/_shared/utilities/popper-layer/index.js";
 	import PopperLayerInner from "$lib/components/_shared/utilities/popper-layer/popper-layer-inner.svelte";
 
 	let {

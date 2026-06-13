@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
 	import { DateFieldInputState } from "$lib/components/date-field/date-field.svelte.js";
-	import type { DateFieldInputProps } from "$lib/components/date-field/types.js";
+	import type { DateFieldInputProps } from "$lib/components/date-field/index.js";
 	import DateFieldHiddenInput from "$lib/components/date-field/components/date-field-hidden-input.svelte";
 	import { createId } from "$lib/internal/create-id.js";
 

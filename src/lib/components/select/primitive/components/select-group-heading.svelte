@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { SelectGroupHeadingProps } from "$lib/components/select/primitive/types.js";
+	import type { SelectGroupHeadingProps } from "$lib/components/select/primitive/index.js";
 	import { SelectGroupHeadingState } from "$lib/components/select/primitive/select.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 

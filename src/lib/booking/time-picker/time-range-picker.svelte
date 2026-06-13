@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Clock from '@lucide/svelte/icons/clock';
-	import { cn } from '../../utils.js';
+	import { cn } from '../../vendor/utils.js';
 	import { buttonVariants } from '../../components/button/index.js';
 	import * as Select from '../../components/select/index.js';
 	import * as Popover from '../../components/popover/index.js';

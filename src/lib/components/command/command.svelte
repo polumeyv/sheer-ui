@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
 	import { CommandRootState } from '$lib/components/command/primitive/command.svelte.js';
-	import type { CommandRootProps } from '$lib/components/command/primitive/types.js';
+	import type { CommandRootProps } from '$lib/components/command/primitive/index.js';
 	import CommandLabel from '$lib/components/command/primitive/components/_command-label.svelte';
-	import { noop } from '$lib/internal/noop.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { computeCommandScore } from '$lib/components/command/primitive/index.js';
-	import { cn } from '../../utils';
+	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();
 
@@ -14,8 +13,8 @@
 		id = createId(uid),
 		ref = $bindable(null),
 		value = $bindable(''),
-		onValueChange = noop,
-		onStateChange = noop,
+		onValueChange = (() => {}),
+		onStateChange = (() => {}),
 		loop = false,
 		shouldFilter = true,
 		filter = computeCommandScore,

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { TabsContentProps } from "$lib/components/tabs/primitive/types.js";
+	import { mergeProps } from "$lib/internal/merge-props.js";
+	import type { TabsContentProps } from "$lib/components/tabs/primitive/index.js";
 	import { TabsContentState } from "$lib/components/tabs/primitive/tabs.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 
@@ -16,12 +16,24 @@
 	}: TabsContentProps = $props();
 
 	const contentState = TabsContentState.create({
-		value: boxWith(() => value),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		value: {
+			get current() {
+				return value;
+			},
+		},
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, contentState.props));

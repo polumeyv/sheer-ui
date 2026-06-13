@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { NavigationMenuLinkProps } from '$lib/components/navigation-menu/primitive/types.js';
+	import type { NavigationMenuLinkProps } from '$lib/components/navigation-menu/primitive/index.js';
 	import { NavigationMenuLinkState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { noop } from '$lib/internal/noop.js';
-	import { cn } from '../../utils';
+	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();
 
@@ -14,7 +13,7 @@
 		child,
 		children,
 		active = false,
-		onSelect = noop,
+		onSelect = (() => {}),
 		tabindex = 0,
 		class: className,
 		...restProps

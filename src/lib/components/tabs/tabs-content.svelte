@@ -1,29 +1,33 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { TabsContentProps } from '$lib/components/tabs/primitive/types.js';
+	import { mergeProps } from '$lib/internal/merge-props.js';
+	import type { TabsContentProps } from '$lib/components/tabs/primitive/index.js';
 	import { TabsContentState } from '$lib/components/tabs/primitive/tabs.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '../../utils.js';
+	import { cn } from '../../vendor/utils.js';
 
 	const uid = $props.id();
 
-	let {
-		children,
-		child,
-		id = createId(uid),
-		ref = $bindable(null),
-		value,
-		class: className,
-		...restProps
-	}: TabsContentProps = $props();
+	let { children, child, id = createId(uid), ref = $bindable(null), value, class: className, ...restProps }: TabsContentProps = $props();
 
 	const contentState = TabsContentState.create({
-		value: boxWith(() => value),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		value: {
+			get current() {
+				return value;
+			},
+		},
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(
@@ -33,8 +37,8 @@
 				class: cn('flex-1 outline-none', className),
 			},
 			restProps,
-			contentState.props
-		)
+			contentState.props,
+		),
 	);
 </script>
 

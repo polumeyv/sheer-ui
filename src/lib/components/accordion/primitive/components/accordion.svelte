@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { type WritableBox, boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
+	import { untrack } from "svelte";
+	import { mergeProps } from "$lib/internal/merge-props.js";
+	import type { WritableProp } from "$lib/vendor/utils.js";
 	import { AccordionRootState } from "$lib/components/accordion/primitive/accordion.svelte.js";
-	import type { AccordionRootProps } from "$lib/components/accordion/primitive/types.js";
-	import { noop } from "$lib/internal/noop.js";
-	import { watch } from "$lib/vendor/runed/index.js";
+	import type { AccordionRootProps } from "$lib/components/accordion/primitive/index.js";
 	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();
@@ -16,7 +16,7 @@
 		value = $bindable(),
 		ref = $bindable(null),
 		id = createId(uid),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		loop = true,
 		orientation = "vertical",
 		...restProps
@@ -30,31 +30,51 @@
 	// SSR
 	handleDefaultValue();
 
-	watch.pre(
-		() => value,
-		() => {
-			handleDefaultValue();
-		}
-	);
+	$effect.pre(() => {
+		void value;
+		untrack(() => handleDefaultValue());
+	});
 
 	const rootState = AccordionRootState.create({
 		type,
-		value: boxWith(
-			() => value!,
-			(v) => {
+		value: {
+			get current() {
+				return value!;
+			},
+			set current(v) {
 				value = v;
 				// oxlint-disable-next-line no-explicit-any
 				onValueChange(v as any);
-			}
-		) as WritableBox<string> | WritableBox<string[]>,
-		id: boxWith(() => id),
-		disabled: boxWith(() => disabled),
-		loop: boxWith(() => loop),
-		orientation: boxWith(() => orientation),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+			},
+		} as WritableProp<string> | WritableProp<string[]>,
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		disabled: {
+			get current() {
+				return disabled;
+			},
+		},
+		loop: {
+			get current() {
+				return loop;
+			},
+		},
+		orientation: {
+			get current() {
+				return orientation;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, rootState.props));

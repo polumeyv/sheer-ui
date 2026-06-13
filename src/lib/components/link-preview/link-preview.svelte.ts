@@ -1,42 +1,23 @@
-import { createContext } from "svelte";
-import {
-	afterSleep,
-	onDestroyEffect,
-	attachRef,
-	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	boxWith,
-} from "$lib/vendor/toolbelt/index.js";
-import { watch } from "$lib/vendor/runed/index.js";
-import { on } from "svelte/events";
-import {
-	createBitsAttrs,
-	boolToStr,
-	getDataOpenClosed,
-	getDataTransitionAttrs,
-} from "$lib/internal/attrs.js";
-import { isElement, isFocusVisible, isTouch } from "$lib/internal/is.js";
-import type {
-	BitsFocusEvent,
-	BitsPointerEvent,
-	OnChangeFn,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import { getTabbableCandidates } from "$lib/internal/focus.js";
-import { SafePolygon } from "$lib/internal/safe-polygon.svelte.js";
-import { PresenceManager } from "$lib/internal/presence-manager.svelte.js";
+import { createContext } from 'svelte';
+import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, boxWith } from '$lib/vendor/index.js';
+import { watch } from '$lib/vendor/watch.svelte.js';
+import { on } from 'svelte/events';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { getTabbableCandidates } from '$lib/internal/focus.js';
+import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
+import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 
 const linkPreviewAttrs = createBitsAttrs({
-	component: "link-preview",
-	parts: ["content", "trigger"],
+	component: 'link-preview',
+	parts: ['content', 'trigger'],
 });
 
 const [getLinkPreviewRootContext, setLinkPreviewRootContext] = createContext<LinkPreviewRootState>();
 
 interface LinkPreviewRootStateOpts
-	extends WritableBoxedValues<{
+	extends
+		WritableBoxedValues<{
 			open: boolean;
 		}>,
 		ReadableBoxedValues<{
@@ -88,29 +69,24 @@ export class LinkPreviewRootState {
 					this.containsSelection = false;
 					this.isPointerDownOnContent = false;
 
-					afterSleep(1, () => {
-						const isSelection =
-							this.domContext.getDocument().getSelection()?.toString() !== "";
+					setTimeout(() => {
+						const isSelection = this.domContext.getDocument().getSelection()?.toString() !== '';
 
 						if (isSelection) {
 							this.hasSelection = true;
 						} else {
 							this.hasSelection = false;
 						}
-					});
+					}, 1);
 				};
 
-				const unsubListener = on(
-					this.domContext.getDocument(),
-					"pointerup",
-					handlePointerUp
-				);
+				const unsubListener = on(this.domContext.getDocument(), 'pointerup', handlePointerUp);
 
 				if (!this.contentNode) return;
 				const tabCandidates = getTabbableCandidates(this.contentNode);
 
 				for (const candidate of tabCandidates) {
-					candidate.setAttribute("tabindex", "-1");
+					candidate.setAttribute('tabindex', '-1');
 				}
 
 				return () => {
@@ -118,7 +94,7 @@ export class LinkPreviewRootState {
 					this.hasSelection = false;
 					this.isPointerDownOnContent = false;
 				};
-			}
+			},
 		);
 	}
 
@@ -182,19 +158,19 @@ export class LinkPreviewTriggerState {
 	}
 
 	onpointerenter(e: BitsPointerEvent) {
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 		this.root.handleOpen();
 	}
 
 	onpointerleave(e: BitsPointerEvent) {
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 		if (!this.root.contentMounted || !this.root.opts.open.current) {
 			this.root.immediateClose();
 		}
 	}
 
 	onfocus(e: BitsFocusEvent) {
-		if (!isFocusVisible(e.currentTarget)) return;
+		if (!e.currentTarget.matches(':focus-visible')) return;
 		this.root.handleOpen();
 	}
 
@@ -206,23 +182,24 @@ export class LinkPreviewTriggerState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"aria-haspopup": "dialog",
-				"aria-expanded": boolToStr(this.root.opts.open.current),
-				"data-state": getDataOpenClosed(this.root.opts.open.current),
-				"aria-controls": this.root.contentNode?.id,
-				role: "button",
-				[linkPreviewAttrs.trigger]: "",
+				'aria-haspopup': 'dialog',
+				'aria-expanded': this.root.opts.open.current ? 'true' : 'false',
+				'data-state': this.root.opts.open.current ? 'open' : 'closed',
+				'aria-controls': this.root.contentNode?.id,
+				role: 'button',
+				[linkPreviewAttrs.trigger]: '',
 				onpointerenter: this.onpointerenter,
 				onfocus: this.onfocus,
 				onblur: this.onblur,
 				onpointerleave: this.onpointerleave,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface LinkPreviewContentStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			onInteractOutside: (e: PointerEvent) => void;
 			onEscapeKeydown: (e: KeyboardEvent) => void;
@@ -255,14 +232,14 @@ export class LinkPreviewContentState {
 			},
 		});
 
-		onDestroyEffect(() => {
+		$effect(() => () => {
 			this.root.clearTimeout();
 		});
 	}
 
 	onpointerdown(e: BitsPointerEvent) {
 		const target = e.target;
-		if (!isElement(target)) return;
+		if (!(target instanceof Element)) return;
 
 		if (e.currentTarget.contains(target)) {
 			this.root.containsSelection = true;
@@ -272,7 +249,7 @@ export class LinkPreviewContentState {
 	}
 
 	onpointerenter(e: BitsPointerEvent) {
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 		this.root.handleOpen();
 	}
 
@@ -311,14 +288,17 @@ export class LinkPreviewContentState {
 			({
 				id: this.opts.id.current,
 				tabindex: -1,
-				"data-state": getDataOpenClosed(this.root.opts.open.current),
-				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
-				[linkPreviewAttrs.content]: "",
+				'data-state': this.root.opts.open.current ? 'open' : 'closed',
+				...{
+					'data-starting-style': this.root.contentPresence.transitionStatus === 'starting' ? '' : undefined,
+					'data-ending-style': this.root.contentPresence.transitionStatus === 'ending' ? '' : undefined,
+				},
+				[linkPreviewAttrs.content]: '',
 				onpointerdown: this.onpointerdown,
 				onpointerenter: this.onpointerenter,
 				onfocusout: this.onfocusout,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 
 	readonly popperProps = {

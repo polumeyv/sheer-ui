@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { PaginationRootProps } from "$lib/components/pagination/primitive/types.js";
+	import type { PaginationRootProps } from "$lib/components/pagination/primitive/index.js";
 	import { PaginationRootState } from "$lib/components/pagination/primitive/pagination.svelte.js";
-	import { noop } from "$lib/internal/noop.js";
 	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();
@@ -14,7 +13,7 @@
 		page = $bindable(1),
 		ref = $bindable(null),
 		siblingCount = 1,
-		onPageChange = noop,
+		onPageChange = (() => {}),
 		loop = false,
 		orientation = "horizontal",
 		child,

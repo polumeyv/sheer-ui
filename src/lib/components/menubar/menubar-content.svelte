@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Menubar as MenubarPrimitive } from '$lib/bits-ui.js';
+	import { Menubar as MenubarPrimitive } from "$lib/components/_shared/primitives.js";
 	import MenubarPortal from './menubar-portal.svelte';
-	import { cn, type WithoutChildrenOrChild } from '../../utils';
+	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 	import type { ComponentProps } from 'svelte';
 
 	let {

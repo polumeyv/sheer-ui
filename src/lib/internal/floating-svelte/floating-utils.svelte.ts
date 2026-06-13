@@ -1,21 +1,16 @@
-import type { Getter, MaybeGetter } from "$lib/vendor/toolbelt/index.js";
+import type { Getter, MaybeGetter } from '$lib/vendor/index.js';
 
 export function get<T>(valueOrGetValue: MaybeGetter<T>): T {
-	return typeof valueOrGetValue === "function"
-		? (valueOrGetValue as Getter<T>)()
-		: valueOrGetValue;
+	return typeof valueOrGetValue === 'function' ? (valueOrGetValue as Getter<T>)() : valueOrGetValue;
 }
 
 export function getDPR(element: Element): number {
-	if (typeof window === "undefined") return 1;
+	if (typeof window === 'undefined') return 1;
 	const win = element.ownerDocument.defaultView || window;
 	return win.devicePixelRatio || 1;
 }
 
-export function roundByDPR(element: Element, value: number) {
-	const dpr = getDPR(element);
-	return Math.round(value * dpr) / dpr;
-}
+export const roundByDPR = (element: Element, value: number) => ((r) => Math.round(value * r) / r)(getDPR(element));
 
 export function getFloatingContentCSSVars(name: string) {
 	return {

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { CollapsibleTriggerProps } from '$lib/components/collapsible/primitive/types.js';
+	import { mergeProps } from '$lib/internal/merge-props.js';
+	import type { CollapsibleTriggerProps } from '$lib/components/collapsible/primitive/index.js';
 	import { CollapsibleTriggerState } from '$lib/components/collapsible/primitive/collapsible.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 
@@ -16,12 +16,24 @@
 	}: CollapsibleTriggerProps = $props();
 
 	const triggerState = CollapsibleTriggerState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
-		disabled: boxWith(() => disabled),
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
+		disabled: {
+			get current() {
+				return disabled;
+			},
+		},
 	});
 
 	const mergedProps = $derived(

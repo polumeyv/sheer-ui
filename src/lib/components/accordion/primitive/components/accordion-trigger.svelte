@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { AccordionTriggerProps } from "$lib/components/accordion/primitive/types.js";
+	import { mergeProps } from "$lib/internal/merge-props.js";
+	import type { AccordionTriggerProps } from "$lib/components/accordion/primitive/index.js";
 	import { AccordionTriggerState } from "$lib/components/accordion/primitive/accordion.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 
@@ -17,13 +17,29 @@
 	}: AccordionTriggerProps = $props();
 
 	const triggerState = AccordionTriggerState.create({
-		disabled: boxWith(() => disabled),
-		id: boxWith(() => id),
-		tabindex: boxWith(() => tabindex ?? 0),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		disabled: {
+			get current() {
+				return disabled;
+			},
+		},
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		tabindex: {
+			get current() {
+				return tabindex ?? 0;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, triggerState.props));

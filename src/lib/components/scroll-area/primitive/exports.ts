@@ -10,4 +10,4 @@ export type {
 	ScrollAreaScrollbarProps as ScrollbarProps,
 	ScrollAreaThumbProps as ThumbProps,
 	ScrollAreaCornerProps as CornerProps,
-} from "$lib/components/scroll-area/primitive/types.js";
+} from "$lib/components/scroll-area/primitive/index.js";

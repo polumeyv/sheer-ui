@@ -1,37 +1,27 @@
-import { createContext } from "svelte";
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/vendor/toolbelt/index.js";
-import {
-	getAriaChecked,
-	boolToStr,
-	getDataChecked,
-	boolToTrueOrUndef,
-	createBitsAttrs,
-	boolToEmptyStrOrUndef,
-} from "$lib/internal/attrs.js";
-import { kbd } from "$lib/internal/kbd.js";
-import type {
-	BitsKeyboardEvent,
-	BitsPointerEvent,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
+import { createContext } from 'svelte';
+import { attachRef, type RefAttachment } from '$lib/internal/attach-ref.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import { kbd } from '$lib/internal/kbd.js';
+import type { ReadableProps, WithRefProps, WritableProps } from '$lib/vendor/utils.js';
+import type { BitsKeyboardEvent, BitsPointerEvent } from '$lib/internal/types.js';
 
 const switchAttrs = createBitsAttrs({
-	component: "switch",
-	parts: ["root", "thumb"],
+	component: 'switch',
+	parts: ['root', 'thumb'],
 });
 
 const [getSwitchRootContext, setSwitchRootContext] = createContext<SwitchRootState>();
 
 interface SwitchRootStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 			required: boolean;
 			name: string | undefined;
 			value: string;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			checked: boolean;
 		}> {}
 export class SwitchRootState {
@@ -43,7 +33,7 @@ export class SwitchRootState {
 
 	constructor(opts: SwitchRootStateOpts) {
 		this.opts = opts;
-		this.attachment = attachRef(opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref.current = v));
 
 		this.onkeydown = this.onkeydown.bind(this);
 		this.onclick = this.onclick.bind(this);
@@ -65,9 +55,9 @@ export class SwitchRootState {
 	}
 
 	readonly sharedProps = $derived.by(() => ({
-		"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-		"data-state": getDataChecked(this.opts.checked.current),
-		"data-required": boolToEmptyStrOrUndef(this.opts.required.current),
+		'data-disabled': this.opts.disabled.current ? '' : undefined,
+		'data-state': this.opts.checked.current ? 'checked' : 'unchecked',
+		'data-required': this.opts.required.current ? '' : undefined,
 	}));
 
 	readonly snippetProps = $derived.by(() => ({
@@ -79,16 +69,16 @@ export class SwitchRootState {
 			({
 				...this.sharedProps,
 				id: this.opts.id.current,
-				role: "switch",
-				disabled: boolToTrueOrUndef(this.opts.disabled.current),
-				"aria-checked": getAriaChecked(this.opts.checked.current, false),
-				"aria-required": boolToStr(this.opts.required.current),
-				[switchAttrs.root]: "",
+				role: 'switch',
+				disabled: this.opts.disabled.current ? true : undefined,
+				'aria-checked': this.opts.checked.current ? 'true' : 'false',
+				'aria-required': this.opts.required.current ? 'true' : 'false',
+				[switchAttrs.root]: '',
 				//
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -106,17 +96,17 @@ export class SwitchInputState {
 	readonly props = $derived.by(
 		() =>
 			({
-				type: "checkbox",
+				type: 'checkbox',
 				name: this.root.opts.name.current,
 				value: this.root.opts.value.current,
 				checked: this.root.opts.checked.current,
 				disabled: this.root.opts.disabled.current,
 				required: this.root.opts.required.current,
-			}) as const
+			}) as const,
 	);
 }
 
-interface SwitchThumbStateOpts extends WithRefOpts {}
+interface SwitchThumbStateOpts extends WithRefProps {}
 
 export class SwitchThumbState {
 	static create(opts: SwitchThumbStateOpts) {
@@ -129,7 +119,7 @@ export class SwitchThumbState {
 	constructor(opts: SwitchThumbStateOpts, root: SwitchRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref.current = v));
 	}
 
 	readonly snippetProps = $derived.by(() => ({
@@ -141,8 +131,8 @@ export class SwitchThumbState {
 			({
 				...this.root.sharedProps,
 				id: this.opts.id.current,
-				[switchAttrs.thumb]: "",
+				[switchAttrs.thumb]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }

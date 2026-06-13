@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { MenuContentProps } from "$lib/components/_shared/menu/types.js";
+	import type { MenuContentProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuContentState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
 	import PopperLayer from "$lib/components/_shared/utilities/popper-layer/popper-layer.svelte";
 	import { getFloatingContentCSSVars } from "$lib/internal/floating-svelte/floating-utils.svelte.js";
 	import PopperLayerForceMount from "$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte";
@@ -16,9 +15,9 @@
 		children,
 		ref = $bindable(null),
 		loop = true,
-		onInteractOutside = noop,
-		onEscapeKeydown = noop,
-		onCloseAutoFocus: onCloseAutoFocusProp = noop,
+		onInteractOutside = (() => {}),
+		onEscapeKeydown = (() => {}),
+		onCloseAutoFocus: onCloseAutoFocusProp = (() => {}),
 		forceMount = false,
 		style,
 		...restProps

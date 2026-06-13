@@ -5,11 +5,10 @@
 </script>
 
 <script lang="ts" generics="T extends TimeValue = Time">
-	import { watch } from "$lib/vendor/runed/index.js";
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
 	import { boxWith } from "$lib/vendor/toolbelt/index.js";
 	import { TimeFieldRootState } from "$lib/components/time-field/time-field.svelte.js";
-	import type { TimeFieldRootProps } from "$lib/components/time-field/types.js";
-	import { noop } from "$lib/internal/noop.js";
+	import type { TimeFieldRootProps } from "$lib/components/time-field/index.js";
 	import { getDefaultTime } from "$lib/internal/date-time/utils.js";
 	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
 
@@ -21,10 +20,10 @@
 		locale,
 		maxValue,
 		minValue,
-		onPlaceholderChange = noop,
-		onValueChange = noop,
-		validate = noop,
-		onInvalid = noop,
+		onPlaceholderChange = (() => {}),
+		onValueChange = (() => {}),
+		validate = (() => {}),
+		onInvalid = (() => {}),
 		placeholder = $bindable(),
 		value = $bindable(),
 		readonly = false,

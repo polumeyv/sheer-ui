@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { SwitchRootProps } from "$lib/components/switch/primitive/types.js";
+	import { mergeProps } from "$lib/internal/merge-props.js";
+	import type { SwitchRootProps } from "$lib/components/switch/primitive/index.js";
 	import { SwitchRootState } from "$lib/components/switch/primitive/switch.svelte.js";
 	import SwitchInput from "$lib/components/switch/primitive/components/switch-input.svelte";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
 
 	const uid = $props.id();
 
@@ -19,27 +18,53 @@
 		value = "on",
 		name = undefined,
 		type = "button",
-		onCheckedChange = noop,
+		onCheckedChange = (() => {}),
 		...restProps
 	}: SwitchRootProps = $props();
 
 	const rootState = SwitchRootState.create({
-		checked: boxWith(
-			() => checked,
-			(v) => {
+		checked: {
+			get current() {
+				return checked;
+			},
+			set current(v) {
 				checked = v;
 				onCheckedChange?.(v);
-			}
-		),
-		disabled: boxWith(() => disabled ?? false),
-		required: boxWith(() => required),
-		value: boxWith(() => value),
-		name: boxWith(() => name),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+			},
+		},
+		disabled: {
+			get current() {
+				return disabled ?? false;
+			},
+		},
+		required: {
+			get current() {
+				return required;
+			},
+		},
+		value: {
+			get current() {
+				return value;
+			},
+		},
+		name: {
+			get current() {
+				return name;
+			},
+		},
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, rootState.props, { type }));

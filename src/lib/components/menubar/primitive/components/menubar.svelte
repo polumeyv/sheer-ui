@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { MenubarRootProps } from "$lib/components/menubar/primitive/types.js";
+	import type { MenubarRootProps } from "$lib/components/menubar/primitive/index.js";
 	import { MenubarRootState } from "$lib/components/menubar/primitive/menubar.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
 
 	const uid = $props.id();
 
@@ -15,7 +14,7 @@
 		value = $bindable(""),
 		dir = "ltr",
 		loop = true,
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		...restProps
 	}: MenubarRootProps = $props();
 

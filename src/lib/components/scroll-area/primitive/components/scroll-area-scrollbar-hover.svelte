@@ -4,7 +4,7 @@
 		ScrollAreaScrollbarAutoState,
 		ScrollAreaScrollbarHoverState,
 	} from "$lib/components/scroll-area/primitive/scroll-area.svelte.js";
-	import type { _ScrollbarStubProps } from "$lib/components/scroll-area/primitive/types.js";
+	import type { _ScrollbarStubProps } from "$lib/components/scroll-area/primitive/index.js";
 	import ScrollAreaScrollbarVisible from "$lib/components/scroll-area/primitive/components/scroll-area-scrollbar-visible.svelte";
 	import PresenceLayer from "$lib/components/_shared/utilities/presence-layer/presence-layer.svelte";
 

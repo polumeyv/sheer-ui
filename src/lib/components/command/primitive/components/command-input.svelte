@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { CommandInputProps } from "$lib/components/command/primitive/types.js";
+	import type { CommandInputProps } from "$lib/components/command/primitive/index.js";
 	import { CommandInputState } from "$lib/components/command/primitive/command.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 

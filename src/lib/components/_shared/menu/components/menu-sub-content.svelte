@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { MenuSubContentProps } from "$lib/components/_shared/menu/types.js";
+	import type { MenuSubContentProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuOpenEvent, MenuContentState } from "$lib/components/_shared/menu/menu.svelte.js";
 	import { SUB_CLOSE_KEYS } from "$lib/components/_shared/menu/utils.js";
 	import { createId } from "$lib/internal/create-id.js";
 	import PopperLayer from "$lib/components/_shared/utilities/popper-layer/popper-layer.svelte";
-	import { noop } from "$lib/internal/noop.js";
-	import { isHTMLElement } from "$lib/internal/is.js";
 	import { getFloatingContentCSSVars } from "$lib/internal/floating-svelte/floating-utils.svelte.js";
 	import PopperLayerForceMount from "$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte";
 
@@ -18,14 +16,14 @@
 		children,
 		child,
 		loop = true,
-		onInteractOutside = noop,
+		onInteractOutside = (() => {}),
 		forceMount = false,
-		onEscapeKeydown = noop,
+		onEscapeKeydown = (() => {}),
 		interactOutsideBehavior = "defer-otherwise-close",
 		escapeKeydownBehavior = "defer-otherwise-close",
-		onOpenAutoFocus: onOpenAutoFocusProp = noop,
-		onCloseAutoFocus: onCloseAutoFocusProp = noop,
-		onFocusOutside = noop,
+		onOpenAutoFocus: onOpenAutoFocusProp = (() => {}),
+		onCloseAutoFocus: onCloseAutoFocusProp = (() => {}),
+		onFocusOutside = (() => {}),
 		side = "right",
 		trapFocus = false,
 		style,
@@ -99,7 +97,7 @@
 	function handleOnFocusOutside(e: FocusEvent) {
 		onFocusOutside(e);
 		if (e.defaultPrevented) return;
-		if (!isHTMLElement(e.target)) return;
+		if (!(e.target instanceof HTMLElement)) return;
 		if (e.target.id === subContentState.parentMenu.triggerNode?.id) return;
 		const parentContent = subContentState.parentMenu.parentMenu?.contentNode;
 		if (parentContent?.contains(e.target)) {

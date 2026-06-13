@@ -1,5 +1,6 @@
-import { Previous, watch } from "$lib/vendor/runed/index.js";
-import { onMount } from "svelte";
+import { Previous } from '$lib/vendor/previous.svelte.js';
+import { watch } from '$lib/vendor/watch.svelte.js';
+import { onMount } from 'svelte';
 import {
 	type WritableBox,
 	attachRef,
@@ -7,31 +8,25 @@ import {
 	type ReadableBoxedValues,
 	type WritableBoxedValues,
 	simpleBox,
-} from "$lib/vendor/toolbelt/index.js";
-import { usePasswordManagerBadge } from "$lib/components/pin-input/usePasswordManager.svelte.js";
-import type { PinInputCell, PinInputRootProps as RootComponentProps } from "$lib/components/pin-input/types.js";
-import type {
-	BitsEvent,
-	BitsFocusEvent,
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import { createBitsAttrs, boolToTrueOrUndef } from "$lib/internal/attrs.js";
-import { on } from "svelte/events";
+} from '$lib/vendor/index.js';
+import { usePasswordManagerBadge } from '$lib/components/pin-input/usePasswordManager.svelte.js';
+import type { PinInputCell, PinInputRootProps as RootComponentProps } from '$lib/components/pin-input/index.js';
+import type { BitsEvent, BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import { on } from 'svelte/events';
 
-export const REGEXP_ONLY_DIGITS = "^\\d+$";
-export const REGEXP_ONLY_CHARS = "^[a-zA-Z]+$";
-export const REGEXP_ONLY_DIGITS_AND_CHARS = "^[a-zA-Z0-9]+$";
+export const REGEXP_ONLY_DIGITS = '^\\d+$';
+export const REGEXP_ONLY_CHARS = '^[a-zA-Z]+$';
+export const REGEXP_ONLY_DIGITS_AND_CHARS = '^[a-zA-Z0-9]+$';
 
 const pinInputAttrs = createBitsAttrs({
-	component: "pin-input",
-	parts: ["root", "cell"],
+	component: 'pin-input',
+	parts: ['root', 'cell'],
 });
 
 interface PinInputRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		WritableBoxedValues<{
 			value: string;
 			inputRef: HTMLInputElement | null;
@@ -45,14 +40,14 @@ interface PinInputRootStateOpts
 			// oxlint-disable-next-line no-explicit-any
 			pattern: any;
 			maxLength: number;
-			pushPasswordManagerStrategy: "increase-width" | "none";
-			textAlign: RootComponentProps["textalign"];
-			autocomplete: RootComponentProps["autocomplete"];
-			inputmode: RootComponentProps["inputmode"];
+			pushPasswordManagerStrategy: 'increase-width' | 'none';
+			textAlign: RootComponentProps['textalign'];
+			autocomplete: RootComponentProps['autocomplete'];
+			inputmode: RootComponentProps['inputmode'];
 		}> {}
 
 interface PrevInputMetadata {
-	prev: [number | null, number | null, "none" | "forward" | "backward"];
+	prev: [number | null, number | null, 'none' | 'forward' | 'backward'];
 	willSyntheticBlur: boolean;
 }
 interface InitialLoad {
@@ -61,20 +56,20 @@ interface InitialLoad {
 }
 
 const KEYS_TO_IGNORE = [
-	"Backspace",
-	"Delete",
-	"ArrowLeft",
-	"ArrowRight",
-	"ArrowUp",
-	"ArrowDown",
-	"Home",
-	"End",
-	"Escape",
-	"Enter",
-	"Tab",
-	"Shift",
-	"Control",
-	"Meta",
+	'Backspace',
+	'Delete',
+	'ArrowLeft',
+	'ArrowRight',
+	'ArrowUp',
+	'ArrowDown',
+	'Home',
+	'End',
+	'Escape',
+	'Enter',
+	'Tab',
+	'Shift',
+	'Control',
+	'Meta',
 ];
 
 export class PinInputRootState {
@@ -90,17 +85,17 @@ export class PinInputRootState {
 	#mirrorSelectionStart = $state<number | null>(null);
 	#mirrorSelectionEnd = $state<number | null>(null);
 
-	#previousValue = new Previous(() => this.opts.value.current ?? "");
+	#previousValue = new Previous(() => this.opts.value.current ?? '');
 
 	readonly #regexPattern = $derived.by(() => {
-		if (typeof this.opts.pattern.current === "string") {
+		if (typeof this.opts.pattern.current === 'string') {
 			return new RegExp(this.opts.pattern.current);
 		} else {
 			return this.opts.pattern.current;
 		}
 	});
 	#prevInputMetadata = $state<PrevInputMetadata>({
-		prev: [null, null, "none"],
+		prev: [null, null, 'none'],
 		willSyntheticBlur: false,
 	});
 	#pwmb: ReturnType<typeof usePasswordManagerBadge>;
@@ -115,9 +110,7 @@ export class PinInputRootState {
 
 		this.#initialLoad = {
 			value: this.opts.value,
-			isIOS:
-				typeof window !== "undefined" &&
-				window?.CSS?.supports("-webkit-touch-callout", "none"),
+			isIOS: typeof window !== 'undefined' && window?.CSS?.supports('-webkit-touch-callout', 'none'),
 		};
 
 		this.#pwmb = usePasswordManagerBadge({
@@ -138,36 +131,24 @@ export class PinInputRootState {
 				this.opts.value.current = input.value;
 			}
 
-			this.#prevInputMetadata.prev = [
-				input.selectionStart,
-				input.selectionEnd,
-				input.selectionDirection ?? "none",
-			];
+			this.#prevInputMetadata.prev = [input.selectionStart, input.selectionEnd, input.selectionDirection ?? 'none'];
 
-			const unsub = on(
-				this.domContext.getDocument(),
-				"selectionchange",
-				this.#onDocumentSelectionChange,
-				{
-					capture: true,
-				}
-			);
+			const unsub = on(this.domContext.getDocument(), 'selectionchange', this.#onDocumentSelectionChange, {
+				capture: true,
+			});
 
 			this.#onDocumentSelectionChange();
 			if (this.domContext.getActiveElement() === input) {
 				this.#isFocused.current = true;
 			}
 
-			if (!this.domContext.getElementById("pin-input-style")) {
+			if (!this.domContext.getElementById('pin-input-style')) {
 				this.#applyStyles();
 			}
 
 			const updateRootHeight = () => {
 				if (container) {
-					container.style.setProperty(
-						"--bits-pin-input-root-height",
-						`${input.clientHeight}px`
-					);
+					container.style.setProperty('--bits-pin-input-root-height', `${input.clientHeight}px`);
 				}
 			};
 			updateRootHeight();
@@ -186,12 +167,12 @@ export class PinInputRootState {
 				const input = this.opts.inputRef.current;
 				if (!input) return;
 				// forcefully remove :autofill state
-				input.dispatchEvent(new Event("input"));
+				input.dispatchEvent(new Event('input'));
 
 				// update selection state
 				const start = input.selectionStart;
 				const end = input.selectionEnd;
-				const dir = input.selectionDirection ?? "none";
+				const dir = input.selectionDirection ?? 'none';
 				if (start !== null && end !== null) {
 					this.#mirrorSelectionStart = start;
 					this.#mirrorSelectionEnd = end;
@@ -226,90 +207,80 @@ export class PinInputRootState {
 	};
 
 	readonly #rootStyles = $derived.by(() => ({
-		position: "relative",
-		cursor: this.opts.disabled.current ? "default" : "text",
-		userSelect: "none",
-		WebkitUserSelect: "none",
-		pointerEvents: "none",
+		position: 'relative',
+		cursor: this.opts.disabled.current ? 'default' : 'text',
+		userSelect: 'none',
+		WebkitUserSelect: 'none',
+		pointerEvents: 'none',
 	}));
 
 	readonly rootProps = $derived.by(
 		() =>
 			({
 				id: this.opts.id.current,
-				[pinInputAttrs.root]: "",
+				[pinInputAttrs.root]: '',
 				style: this.#rootStyles,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 
 	readonly inputWrapperProps = $derived.by(
 		() =>
 			({
 				style: {
-					position: "absolute",
+					position: 'absolute',
 					inset: 0,
-					pointerEvents: "none",
+					pointerEvents: 'none',
 				},
-			}) as const
+			}) as const,
 	);
 
 	readonly #inputStyle = $derived.by(() => ({
-		position: "absolute",
+		position: 'absolute',
 		inset: 0,
-		width: this.#pwmb.willPushPwmBadge
-			? `calc(100% + ${this.#pwmb.PWM_BADGE_SPACE_WIDTH})`
-			: "100%",
-		clipPath: this.#pwmb.willPushPwmBadge
-			? `inset(0 ${this.#pwmb.PWM_BADGE_SPACE_WIDTH} 0 0)`
-			: undefined,
-		height: "100%",
-		display: "flex",
+		width: this.#pwmb.willPushPwmBadge ? `calc(100% + ${this.#pwmb.PWM_BADGE_SPACE_WIDTH})` : '100%',
+		clipPath: this.#pwmb.willPushPwmBadge ? `inset(0 ${this.#pwmb.PWM_BADGE_SPACE_WIDTH} 0 0)` : undefined,
+		height: '100%',
+		display: 'flex',
 		textAlign: this.opts.textAlign.current,
-		opacity: "1",
-		color: "transparent",
-		pointerEvents: "all",
-		background: "transparent",
-		caretColor: "transparent",
-		border: "0 solid transparent",
-		outline: "0 solid transparent",
-		boxShadow: "none",
-		lineHeight: "1",
-		letterSpacing: "-.5em",
-		fontSize: "var(--bits-pin-input-root-height)",
-		fontFamily: "monospace",
-		fontVariantNumeric: "tabular-nums",
+		opacity: '1',
+		color: 'transparent',
+		pointerEvents: 'all',
+		background: 'transparent',
+		caretColor: 'transparent',
+		border: '0 solid transparent',
+		outline: '0 solid transparent',
+		boxShadow: 'none',
+		lineHeight: '1',
+		letterSpacing: '-.5em',
+		fontSize: 'var(--bits-pin-input-root-height)',
+		fontFamily: 'monospace',
+		fontVariantNumeric: 'tabular-nums',
 	}));
 
 	#applyStyles() {
 		const doc = this.domContext.getDocument();
-		const styleEl = doc.createElement("style");
-		styleEl.id = "pin-input-style";
+		const styleEl = doc.createElement('style');
+		styleEl.id = 'pin-input-style';
 		doc.head.appendChild(styleEl);
 
 		if (styleEl.sheet) {
 			const autoFillStyles =
-				"background: transparent !important; color: transparent !important; border-color: transparent !important; opacity: 0 !important; box-shadow: none !important; -webkit-box-shadow: none !important; -webkit-text-fill-color: transparent !important;";
+				'background: transparent !important; color: transparent !important; border-color: transparent !important; opacity: 0 !important; box-shadow: none !important; -webkit-box-shadow: none !important; -webkit-text-fill-color: transparent !important;';
 
 			safeInsertRule(
 				styleEl.sheet,
-				"[data-pin-input-input]::selection { background: transparent !important; color: transparent !important; }"
+				'[data-pin-input-input]::selection { background: transparent !important; color: transparent !important; }',
 			);
 			safeInsertRule(styleEl.sheet, `[data-pin-input-input]:autofill { ${autoFillStyles} }`);
-			safeInsertRule(
-				styleEl.sheet,
-				`[data-pin-input-input]:-webkit-autofill { ${autoFillStyles} }`
-			);
+			safeInsertRule(styleEl.sheet, `[data-pin-input-input]:-webkit-autofill { ${autoFillStyles} }`);
 			// iOS
 			safeInsertRule(
 				styleEl.sheet,
-				`@supports (-webkit-touch-callout: none) { [data-pin-input-input] { letter-spacing: -.6em !important; font-weight: 100 !important; font-stretch: ultra-condensed; font-optical-sizing: none !important; left: -1px !important; right: 1px !important; } }`
+				`@supports (-webkit-touch-callout: none) { [data-pin-input-input] { letter-spacing: -.6em !important; font-weight: 100 !important; font-stretch: ultra-condensed; font-optical-sizing: none !important; left: -1px !important; right: 1px !important; } }`,
 			);
 			// PWM badges
-			safeInsertRule(
-				styleEl.sheet,
-				`[data-pin-input-input] + * { pointer-events: all !important; }`
-			);
+			safeInsertRule(styleEl.sheet, `[data-pin-input-input] + * { pointer-events: all !important; }`);
 		}
 	}
 
@@ -326,14 +297,14 @@ export class PinInputRootState {
 
 		const selStart = input.selectionStart;
 		const selEnd = input.selectionEnd;
-		const selDir = input.selectionDirection ?? "none";
+		const selDir = input.selectionDirection ?? 'none';
 		const maxLength = input.maxLength;
 		const val = input.value;
 		const prev = this.#prevInputMetadata.prev;
 
 		let start = -1;
 		let end = -1;
-		let direction: "forward" | "backward" | "none" | undefined;
+		let direction: 'forward' | 'backward' | 'none' | undefined;
 		if (val.length !== 0 && selStart !== null && selEnd !== null) {
 			const isSingleCaret = selStart === selEnd;
 			const isInsertMode = selStart === val.length && val.length < maxLength;
@@ -343,17 +314,17 @@ export class PinInputRootState {
 				if (c === 0) {
 					start = 0;
 					end = 1;
-					direction = "forward";
+					direction = 'forward';
 				} else if (c === maxLength) {
 					start = c - 1;
 					end = c;
-					direction = "backward";
+					direction = 'backward';
 				} else if (maxLength > 1 && val.length > 1) {
 					let offset = 0;
 					if (prev[0] !== null && prev[1] !== null) {
-						direction = c < prev[1] ? "backward" : "forward";
+						direction = c < prev[1] ? 'backward' : 'forward';
 						const wasPreviouslyInserting = prev[0] === prev[1] && prev[0] < maxLength;
-						if (direction === "backward" && !wasPreviouslyInserting) {
+						if (direction === 'backward' && !wasPreviouslyInserting) {
 							offset = -1;
 						}
 					}
@@ -384,16 +355,14 @@ export class PinInputRootState {
 			return;
 		}
 
-		const maybeHasDeleted =
-			typeof this.#previousValue.current === "string" &&
-			newValue.length < this.#previousValue.current.length;
+		const maybeHasDeleted = typeof this.#previousValue.current === 'string' && newValue.length < this.#previousValue.current.length;
 
 		if (maybeHasDeleted) {
 			// Since cutting/deleting text doesn't trigger
 			// selectionchange event, we'll have to dispatch it manually.
 			// NOTE: The following line also triggers when cmd+A then pasting
 			// a value with smaller length, which is not ideal for performance.
-			this.domContext.getDocument().dispatchEvent(new Event("selectionchange"));
+			this.domContext.getDocument().dispatchEvent(new Event('selectionchange'));
 		}
 		this.opts.value.current = newValue;
 	};
@@ -429,21 +398,16 @@ export class PinInputRootState {
 			return newValue.length > 0 && this.#regexPattern && !this.#regexPattern.test(newValue);
 		};
 
-		if (
-			!this.opts.pasteTransformer?.current &&
-			(!this.#initialLoad.isIOS || !e.clipboardData || !input)
-		) {
-			const newValue = getNewValue(e.clipboardData?.getData("text/plain"));
+		if (!this.opts.pasteTransformer?.current && (!this.#initialLoad.isIOS || !e.clipboardData || !input)) {
+			const newValue = getNewValue(e.clipboardData?.getData('text/plain'));
 			if (isValueInvalid(newValue)) {
 				e.preventDefault();
 			}
 			return;
 		}
 
-		const _content = e.clipboardData?.getData("text/plain") ?? "";
-		const content = this.opts.pasteTransformer?.current
-			? this.opts.pasteTransformer.current(_content)
-			: _content;
+		const _content = e.clipboardData?.getData('text/plain') ?? '';
+		const content = this.opts.pasteTransformer?.current ? this.opts.pasteTransformer.current(_content) : _content;
 		e.preventDefault();
 
 		const newValue = getNewValue(content);
@@ -480,15 +444,15 @@ export class PinInputRootState {
 	readonly inputProps = $derived.by(() => ({
 		id: this.opts.inputId.current,
 		style: this.#inputStyle,
-		autocomplete: this.opts.autocomplete.current || "one-time-code",
-		"data-pin-input-input": "",
-		"data-pin-input-input-mss": this.#mirrorSelectionStart,
-		"data-pin-input-input-mse": this.#mirrorSelectionEnd,
+		autocomplete: this.opts.autocomplete.current || 'one-time-code',
+		'data-pin-input-input': '',
+		'data-pin-input-input-mss': this.#mirrorSelectionStart,
+		'data-pin-input-input-mse': this.#mirrorSelectionEnd,
 		inputmode: this.opts.inputmode.current,
 		pattern: this.#regexPattern?.source,
 		maxlength: this.opts.maxLength.current,
 		value: this.opts.value.current,
-		disabled: boolToTrueOrUndef(this.opts.disabled.current),
+		disabled: this.opts.disabled.current ? true : undefined,
 		//
 		onpaste: this.onpaste,
 		oninput: this.oninput,
@@ -506,19 +470,17 @@ export class PinInputRootState {
 				this.#isFocused.current &&
 				this.#mirrorSelectionStart !== null &&
 				this.#mirrorSelectionEnd !== null &&
-				((this.#mirrorSelectionStart === this.#mirrorSelectionEnd &&
-					idx === this.#mirrorSelectionStart) ||
+				((this.#mirrorSelectionStart === this.#mirrorSelectionEnd && idx === this.#mirrorSelectionStart) ||
 					(idx >= this.#mirrorSelectionStart && idx < this.#mirrorSelectionEnd));
 
-			const char =
-				this.opts.value.current[idx] !== undefined ? this.opts.value.current[idx] : null;
+			const char = this.opts.value.current[idx] !== undefined ? this.opts.value.current[idx] : null;
 
 			return {
 				char,
 				isActive,
 				hasFakeCaret: isActive && char === null,
 			} satisfies PinInputCell;
-		})
+		}),
 	);
 
 	readonly snippetProps = $derived.by(() => ({
@@ -529,7 +491,8 @@ export class PinInputRootState {
 }
 
 interface PinInputCellStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			cell: PinInputCell;
 		}> {}
@@ -551,11 +514,11 @@ export class PinInputCellState {
 		() =>
 			({
 				id: this.opts.id.current,
-				[pinInputAttrs.cell]: "",
-				"data-active": this.opts.cell.current.isActive ? "" : undefined,
-				"data-inactive": !this.opts.cell.current.isActive ? "" : undefined,
+				[pinInputAttrs.cell]: '',
+				'data-active': this.opts.cell.current.isActive ? '' : undefined,
+				'data-inactive': !this.opts.cell.current.isActive ? '' : undefined,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -572,6 +535,6 @@ function safeInsertRule(sheet: CSSStyleSheet, rule: string) {
 		sheet.insertRule(rule);
 	} catch {
 		// oxlint-disable-next-line no-console
-		console.error("pin input could not insert CSS rule:", rule);
+		console.error('pin input could not insert CSS rule:', rule);
 	}
 }

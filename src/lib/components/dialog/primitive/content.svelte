@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
 	import { DialogContentState } from '$lib/components/dialog/primitive/dialog.svelte.js';
-	import type { DialogContentProps } from '$lib/components/dialog/primitive/types.js';
+	import type { DialogContentProps } from '$lib/components/dialog/primitive/index.js';
 	import DismissibleLayer from '$lib/components/_shared/utilities/dismissible-layer/dismissible-layer.svelte';
 	import EscapeLayer from '$lib/components/_shared/utilities/escape-layer/escape-layer.svelte';
 	import FocusScope from '$lib/components/_shared/utilities/focus-scope/focus-scope.svelte';
 	import TextSelectionLayer from '$lib/components/_shared/utilities/text-selection-layer/text-selection-layer.svelte';
 	import { createId } from '$lib/internal/create-id.js';
-	import { noop } from '$lib/internal/noop.js';
 	import ScrollLock from '$lib/components/_shared/utilities/scroll-lock/scroll-lock.svelte';
 
 	const uid = $props.id();
@@ -18,10 +17,10 @@
 		child,
 		ref = $bindable(null),
 		forceMount = false,
-		onCloseAutoFocus = noop,
-		onOpenAutoFocus = noop,
-		onEscapeKeydown = noop,
-		onInteractOutside = noop,
+		onCloseAutoFocus = (() => {}),
+		onOpenAutoFocus = (() => {}),
+		onEscapeKeydown = (() => {}),
+		onInteractOutside = (() => {}),
 		trapFocus = true,
 		preventScroll = true,
 		restoreScrollDelay = null,

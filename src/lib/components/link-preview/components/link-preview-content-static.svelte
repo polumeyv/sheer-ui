@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { LinkPreviewContentStaticProps } from "$lib/components/link-preview/types.js";
+	import type { LinkPreviewContentStaticProps } from "$lib/components/link-preview/index.js";
 	import { LinkPreviewContentState } from "$lib/components/link-preview/link-preview.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 	import PopperLayer from "$lib/components/_shared/utilities/popper-layer/popper-layer.svelte";
 	import { getFloatingContentCSSVars } from "$lib/internal/floating-svelte/floating-utils.svelte.js";
 	import PopperLayerForceMount from "$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte";
 	import Mounted from "$lib/components/_shared/utilities/mounted.svelte";
-	import { noop } from "$lib/internal/noop.js";
 
 	const uid = $props.id();
 
@@ -16,8 +15,8 @@
 		child,
 		id = createId(uid),
 		ref = $bindable(null),
-		onInteractOutside = noop,
-		onEscapeKeydown = noop,
+		onInteractOutside = (() => {}),
+		onEscapeKeydown = (() => {}),
 		forceMount = false,
 		style,
 		...restProps

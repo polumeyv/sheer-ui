@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { PopoverContentProps } from '$lib/components/popover/primitive/types.js';
+	import type { PopoverContentProps } from '$lib/components/popover/primitive/index.js';
 	import { PopoverContentState } from '$lib/components/popover/primitive/popover.svelte.js';
 	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
-	import { noop } from '$lib/internal/noop.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
 	import PopperLayerForceMount from '$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte';
 	import PopoverPortal from './popover-portal.svelte';
-	import { cn, type WithoutChildrenOrChild } from '../../utils';
+	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 	import type { ComponentProps } from 'svelte';
 
 	const uid = $props.id();
@@ -23,10 +22,10 @@
 		align = 'center',
 		portalProps,
 		forceMount = false,
-		onOpenAutoFocus = noop,
-		onCloseAutoFocus = noop,
-		onEscapeKeydown = noop,
-		onInteractOutside = noop,
+		onOpenAutoFocus = (() => {}),
+		onCloseAutoFocus = (() => {}),
+		onEscapeKeydown = (() => {}),
+		onInteractOutside = (() => {}),
 		trapFocus = true,
 		preventScroll = false,
 		customAnchor = null,

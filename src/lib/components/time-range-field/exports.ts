@@ -8,4 +8,4 @@ export type {
 	TimeRangeFieldLabelProps as LabelProps,
 	TimeRangeFieldInputProps as InputProps,
 	TimeRangeFieldSegmentProps as SegmentProps,
-} from "$lib/components/time-range-field/types.js";
+} from "$lib/components/time-range-field/index.js";

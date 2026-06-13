@@ -1,7 +1,7 @@
 <script lang="ts">
 import { untrack } from 'svelte';
 import { type CarouselAPI, type CarouselProps, type EmblaContext, setEmblaContext } from './context';
-import { cn, type WithElementRef } from '../../utils';
+import { cn, type WithElementRef } from '../../vendor/utils';
 
 let {
 	ref = $bindable(null),

@@ -1,6 +1,6 @@
-import type { WritableBox } from "$lib/vendor/toolbelt/index.js";
-import { getNextMatch } from "./arrays.js";
-import { boxAutoReset } from "./box-auto-reset.svelte.js";
+import type { WritableBox } from '$lib/vendor/index.js';
+import { getNextMatch } from './arrays.js';
+import { boxAutoReset } from './box-auto-reset.svelte.js';
 
 type DOMTypeaheadOptions = {
 	onMatch?: (item: HTMLElement) => void;
@@ -23,7 +23,7 @@ export class DOMTypeahead {
 
 	constructor(opts: DOMTypeaheadOptions) {
 		this.#opts = opts;
-		this.#search = boxAutoReset("", {
+		this.#search = boxAutoReset('', {
 			afterMs: 1000,
 			getWindow: opts.getWindow,
 		});
@@ -38,10 +38,9 @@ export class DOMTypeahead {
 		this.#search.current = this.#search.current + key;
 		const currentItem = this.#getCurrentItem();
 
-		const currentMatch =
-			candidates.find((item) => item === currentItem)?.textContent?.trim() ?? "";
+		const currentMatch = candidates.find((item) => item === currentItem)?.textContent?.trim() ?? '';
 
-		const values = candidates.map((item) => item.textContent?.trim() ?? "");
+		const values = candidates.map((item) => item.textContent?.trim() ?? '');
 		const nextMatch = getNextMatch(values, this.#search.current, currentMatch);
 		const newItem = candidates.find((item) => item.textContent?.trim() === nextMatch);
 		if (newItem) this.#onMatch(newItem);
@@ -49,7 +48,7 @@ export class DOMTypeahead {
 	}
 
 	resetTypeahead() {
-		this.#search.current = "";
+		this.#search.current = '';
 	}
 
 	get search() {

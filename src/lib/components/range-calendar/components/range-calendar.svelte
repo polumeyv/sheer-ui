@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { watch } from "$lib/vendor/runed/index.js";
+	import { watch } from "$lib/vendor/runed/watch.svelte.js";
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
 	import { type DateValue } from "@internationalized/date";
-	import type { RangeCalendarRootProps } from "$lib/components/range-calendar/types.js";
+	import type { RangeCalendarRootProps } from "$lib/components/range-calendar/index.js";
 	import { RangeCalendarRootState } from "$lib/components/range-calendar/range-calendar.svelte.js";
-	import { noop } from "$lib/internal/noop.js";
 	import { createId } from "$lib/internal/create-id.js";
 	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
 	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
@@ -17,9 +16,9 @@
 		id = createId(uid),
 		ref = $bindable(null),
 		value = $bindable(),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		placeholder = $bindable(),
-		onPlaceholderChange = noop,
+		onPlaceholderChange = (() => {}),
 		weekdayFormat = "narrow",
 		weekStartsOn,
 		pagedNavigation = false,
@@ -37,8 +36,8 @@
 		disableDaysOutsideMonth = true,
 		minDays,
 		maxDays,
-		onStartValueChange = noop,
-		onEndValueChange = noop,
+		onStartValueChange = (() => {}),
+		onEndValueChange = (() => {}),
 		excludeDisabled = false,
 		monthFormat = "long",
 		yearFormat = "numeric",

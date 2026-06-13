@@ -1,5 +1,4 @@
 import { isAnySegmentPart } from "./helpers.js";
-import { isHTMLElement } from "$lib/internal/is.js";
 import { kbd } from "$lib/internal/kbd.js";
 
 /**
@@ -10,7 +9,7 @@ import { kbd } from "$lib/internal/kbd.js";
  */
 export function handleSegmentNavigation(e: KeyboardEvent, fieldNode: HTMLElement | null) {
 	const currentTarget = e.currentTarget;
-	if (!isHTMLElement(currentTarget)) return;
+	if (!(currentTarget instanceof HTMLElement)) return;
 
 	const { prev, next } = getPrevNextSegments(currentTarget, fieldNode);
 
@@ -25,7 +24,7 @@ export function handleSegmentNavigation(e: KeyboardEvent, fieldNode: HTMLElement
 
 export function handleTimeSegmentNavigation(e: KeyboardEvent, fieldNode: HTMLElement | null) {
 	const currentTarget = e.currentTarget;
-	if (!isHTMLElement(currentTarget)) return;
+	if (!(currentTarget instanceof HTMLElement)) return;
 
 	const { prev, next } = getPrevNextTimeSegments(currentTarget, fieldNode);
 
@@ -106,7 +105,7 @@ export function getPrevNextTimeSegments(startingNode: HTMLElement, fieldNode: HT
  */
 export function moveToNextSegment(e: KeyboardEvent, fieldNode: HTMLElement | null) {
 	const node = e.currentTarget;
-	if (!isHTMLElement(node)) return;
+	if (!(node instanceof HTMLElement)) return;
 	const { next } = getPrevNextSegments(node, fieldNode);
 	if (!next) return;
 	next.focus();
@@ -114,7 +113,7 @@ export function moveToNextSegment(e: KeyboardEvent, fieldNode: HTMLElement | nul
 
 export function moveToNextTimeSegment(e: KeyboardEvent, fieldNode: HTMLElement | null) {
 	const node = e.currentTarget;
-	if (!isHTMLElement(node)) return;
+	if (!(node instanceof HTMLElement)) return;
 	const { next } = getPrevNextTimeSegments(node, fieldNode);
 	if (!next) return;
 	next.focus();
@@ -122,7 +121,7 @@ export function moveToNextTimeSegment(e: KeyboardEvent, fieldNode: HTMLElement |
 
 export function moveToPrevTimeSegment(e: KeyboardEvent, fieldNode: HTMLElement | null) {
 	const node = e.currentTarget;
-	if (!isHTMLElement(node)) return;
+	if (!(node instanceof HTMLElement)) return;
 	const { prev } = getPrevNextTimeSegments(node, fieldNode);
 	if (!prev) return;
 	prev.focus();
@@ -135,7 +134,7 @@ export function moveToPrevTimeSegment(e: KeyboardEvent, fieldNode: HTMLElement |
  */
 export function moveToPrevSegment(e: KeyboardEvent, fieldNode: HTMLElement | null) {
 	const node = e.currentTarget;
-	if (!isHTMLElement(node)) return;
+	if (!(node instanceof HTMLElement)) return;
 	const { prev } = getPrevNextSegments(node, fieldNode);
 	if (!prev) return;
 	prev.focus();
@@ -153,7 +152,7 @@ export function getSegments(fieldNode: HTMLElement | null) {
 	if (!fieldNode) return [];
 	const segments = Array.from(fieldNode.querySelectorAll("[data-segment]")).filter(
 		(el): el is HTMLElement => {
-			if (!isHTMLElement(el)) return false;
+			if (!(el instanceof HTMLElement)) return false;
 			const segment = el.dataset.segment;
 			if (segment === "trigger") return true;
 			if (!isAnySegmentPart(segment) || segment === "literal") return false;
@@ -167,7 +166,7 @@ export function getTimeSegments(fieldNode: HTMLElement | null) {
 	if (!fieldNode) return [];
 	const segments = Array.from(fieldNode.querySelectorAll("[data-segment]")).filter(
 		(el): el is HTMLElement => {
-			if (!isHTMLElement(el)) return false;
+			if (!(el instanceof HTMLElement)) return false;
 			const segment = el.dataset.segment;
 			if (segment === "trigger") return true;
 			if (segment === "literal") return false;

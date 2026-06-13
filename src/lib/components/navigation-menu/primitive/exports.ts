@@ -18,4 +18,4 @@ export type {
 	NavigationMenuContentProps as ContentProps,
 	NavigationMenuLinkProps as LinkProps,
 	NavigationMenuSubProps as SubProps,
-} from "$lib/components/navigation-menu/primitive/types.js";
+} from "$lib/components/navigation-menu/primitive/index.js";

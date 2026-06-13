@@ -1,12 +1,5 @@
-import type {
-	FloatingElement,
-	Middleware,
-	MiddlewareData,
-	Placement,
-	ReferenceElement,
-	Strategy,
-} from "@floating-ui/dom";
-import type { ReadableBox, WritableBox } from "$lib/vendor/toolbelt/index.js";
+import type { FloatingElement, Middleware, MiddlewareData, Placement, ReferenceElement, Strategy } from '@floating-ui/dom';
+import type { ReadableBox, WritableBox } from '$lib/vendor/index.js';
 
 type ValueOrGetValue<T> = T | (() => T);
 
@@ -52,11 +45,7 @@ export type UseFloatingOptions = {
 	 * Callback to handle mounting/unmounting of the elements.
 	 * @default undefined
 	 */
-	whileElementsMounted?: (
-		reference: ReferenceElement,
-		floating: FloatingElement,
-		update: () => void
-	) => () => void;
+	whileElementsMounted?: (reference: ReferenceElement, floating: FloatingElement, update: () => void) => () => void;
 
 	/**
 	 * The offset from the reference element along the side axis.

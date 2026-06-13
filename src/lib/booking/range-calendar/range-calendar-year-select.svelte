@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { RangeCalendar as RangeCalendarPrimitive } from '$lib/bits-ui.js';
-	import { cn, type WithoutChildrenOrChild } from '../../utils.js';
+	import { RangeCalendar as RangeCalendarPrimitive } from "$lib/components/_shared/primitives.js";
+	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils.js';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
 	let { ref = $bindable(null), class: className, value, ...restProps }: WithoutChildrenOrChild<RangeCalendarPrimitive.YearSelectProps> = $props();

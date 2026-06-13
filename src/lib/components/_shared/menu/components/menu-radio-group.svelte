@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { MenuRadioGroupProps } from "$lib/components/_shared/menu/types.js";
+	import type { MenuRadioGroupProps } from "$lib/components/_shared/menu/index.js";
 	import { MenuRadioGroupState } from "$lib/components/_shared/menu/menu.svelte.js";
-	import { noop } from "$lib/internal/noop.js";
 	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();
@@ -13,7 +12,7 @@
 		child,
 		ref = $bindable(null),
 		value = $bindable(""),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		...restProps
 	}: MenuRadioGroupProps = $props();
 

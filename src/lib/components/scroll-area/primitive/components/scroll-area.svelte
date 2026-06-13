@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { ScrollAreaRootProps } from "$lib/components/scroll-area/primitive/types.js";
+	import type { ScrollAreaRootProps } from "$lib/components/scroll-area/primitive/index.js";
 	import { ScrollAreaRootState } from "$lib/components/scroll-area/primitive/scroll-area.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 

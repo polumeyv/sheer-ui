@@ -1,4 +1,3 @@
-import { isBrowser, isNull } from "$lib/internal/is.js";
 import type {
 	EditableTimeSegmentPart,
 	HourCycle,
@@ -7,26 +6,26 @@ import type {
 	TimeSegmentStateMap,
 	TimeSegmentValueObj,
 	TimeValue,
-} from "$lib/shared/date/types.js";
-import { CalendarDateTime, Time, ZonedDateTime } from "@internationalized/date";
-import type { TimeFormatter } from "../formatter.js";
-import { ALL_TIME_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from "./parts.js";
-import { getTimeSegments } from "./segments.js";
-import type { TimeSegmentPart } from "./types.js";
-import { styleToString } from "$lib/vendor/toolbelt/index.js";
-import { useId } from "$lib/internal/use-id.js";
-import { getPlaceholder } from "../placeholders.js";
-import { isZonedDateTime } from "../utils.js";
-import { getDefaultHourCycle } from "./helpers.js";
+} from '$lib/shared/date/types.js';
+import { CalendarDateTime, Time, ZonedDateTime } from '@internationalized/date';
+import type { TimeFormatter } from '../formatter.js';
+import { ALL_TIME_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';
+import { getTimeSegments } from './segments.js';
+import type { TimeSegmentPart } from './types.js';
+import { styleToCSS } from '$lib/vendor/utils/strings';
+import { useId } from '$lib/internal/use-id.js';
+import { getPlaceholder } from '../placeholders.js';
+import { isZonedDateTime } from '../utils.js';
+import { getDefaultHourCycle } from './helpers.js';
 
 export function initializeSegmentValues() {
 	const initialParts = EDITABLE_TIME_SEGMENT_PARTS.map((part) => {
-		if (part === "dayPeriod") {
-			return [part, "AM"];
+		if (part === 'dayPeriod') {
+			return [part, 'AM'];
 		}
 		return [part, null];
 	}).filter(([key]) => {
-		if (key === "literal" || key === null) return false;
+		if (key === 'literal' || key === null) return false;
 		return true;
 	});
 	return Object.fromEntries(initialParts) as TimeSegmentValueObj;
@@ -54,12 +53,12 @@ function createTimeContentObj(props: CreateTimeContentObjProps) {
 
 	const content = Object.keys(segmentValues).reduce((obj, part) => {
 		if (!isEditableTimeSegmentPart(part)) return obj;
-		if (part === "dayPeriod") {
+		if (part === 'dayPeriod') {
 			const value = segmentValues[part];
-			if (!isNull(value)) {
+			if (!(value === null)) {
 				obj[part] = value;
 			} else {
-				obj[part] = getPlaceholder(part, "AM", locale);
+				obj[part] = getPlaceholder(part, 'AM', locale);
 			}
 		} else {
 			obj[part] = getPartContent(part);
@@ -70,22 +69,20 @@ function createTimeContentObj(props: CreateTimeContentObjProps) {
 
 	function getPartContent(part: TimeSegmentPart) {
 		const value = segmentValues[part];
-		const leadingZero = typeof value === "string" && value?.startsWith("0");
+		const leadingZero = typeof value === 'string' && value?.startsWith('0');
 		const intValue = value !== null ? Number.parseInt(value) : null;
 
-		if (!isNull(value) && !isNull(intValue)) {
+		if (!(value === null) && !(intValue === null)) {
 			const formatted = formatter.part(timeRef.set({ [part]: value }), part, {
-				hourCycle: props.hourCycle === 24 ? "h23" : undefined,
+				hourCycle: props.hourCycle === 24 ? 'h23' : undefined,
 			});
 
 			/**
 			 * If we're operating in a 12 hour clock and the part is an hour, we handle
 			 * the conversion to 12 hour format with 2 digit hours and leading zeros here.
 			 */
-			const is12HourMode =
-				props.hourCycle === 12 ||
-				(props.hourCycle === undefined && getDefaultHourCycle(locale) === 12);
-			if (part === "hour" && is12HourMode) {
+			const is12HourMode = props.hourCycle === 12 || (props.hourCycle === undefined && getDefaultHourCycle(locale) === 12);
+			if (part === 'hour' && is12HourMode) {
 				/**
 				 * If the value is over 12, we convert to 12 hour format and add leading
 				 * zeroes if the value is less than 10.
@@ -93,7 +90,7 @@ function createTimeContentObj(props: CreateTimeContentObjProps) {
 				if (intValue > 12) {
 					const hour = intValue - 12;
 					if (hour === 0) {
-						return "12";
+						return '12';
 					} else if (hour < 10) {
 						return `0${hour}`;
 					} else {
@@ -105,7 +102,7 @@ function createTimeContentObj(props: CreateTimeContentObjProps) {
 				 * If the value is 0, we convert to 12, since 0 is not a valid 12 hour time.
 				 */
 				if (intValue === 0) {
-					return "12";
+					return '12';
 				}
 
 				/**
@@ -126,7 +123,7 @@ function createTimeContentObj(props: CreateTimeContentObjProps) {
 			}
 			return formatted;
 		} else {
-			return getPlaceholder(part, "", locale);
+			return getPlaceholder(part, '', locale);
 		}
 	}
 
@@ -138,7 +135,7 @@ function createTimeContentArr(props: CreateTimeContentArrProps) {
 	const parts = formatter.toParts(timeRef, getOptsByGranularity(granularity, hourCycle));
 	const timeSegmentContentArr = parts
 		.map((part) => {
-			const defaultParts = ["literal", "timeZoneName", null];
+			const defaultParts = ['literal', 'timeZoneName', null];
 
 			if (defaultParts.includes(part.type) || !isEditableTimeSegmentPart(part.type)) {
 				return {
@@ -152,8 +149,8 @@ function createTimeContentArr(props: CreateTimeContentArrProps) {
 			};
 		})
 		.filter((segment): segment is { part: TimeSegmentPart; value: string } => {
-			if (isNull(segment.part) || isNull(segment.value)) return false;
-			if (segment.part === "timeZoneName" && (!isZonedDateTime(timeRef) || hideTimeZone)) {
+			if (segment.part === null || segment.value === null) return false;
+			if (segment.part === 'timeZoneName' && (!isZonedDateTime(timeRef) || hideTimeZone)) {
 				return false;
 			}
 			return true;
@@ -177,19 +174,19 @@ export function createTimeContent(props: CreateTimeContentProps) {
 
 function getOptsByGranularity(granularity: TimeGranularity, hourCycle: HourCycle | undefined) {
 	const opts: Intl.DateTimeFormatOptions = {
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
-		timeZoneName: "short",
-		hourCycle: hourCycle === 24 ? "h23" : undefined,
+		hour: '2-digit',
+		minute: '2-digit',
+		second: '2-digit',
+		timeZoneName: 'short',
+		hourCycle: hourCycle === 24 ? 'h23' : undefined,
 		hour12: hourCycle === 24 ? false : undefined,
 	};
 
-	if (granularity === "hour") {
+	if (granularity === 'hour') {
 		delete opts.minute;
 		delete opts.second;
 	}
-	if (granularity === "minute") {
+	if (granularity === 'minute') {
 		delete opts.second;
 	}
 
@@ -211,7 +208,7 @@ export function initTimeSegmentIds() {
 	return Object.fromEntries(
 		ALL_TIME_SEGMENT_PARTS.map((part) => {
 			return [part, useId()];
-		}).filter(([key]) => key !== "literal")
+		}).filter(([key]) => key !== 'literal'),
 	);
 }
 
@@ -230,7 +227,7 @@ export function isAnyTimeSegmentPart(part: unknown): part is TimeSegmentPart {
  * been filled.
  */
 function getUsedTimeSegments(fieldNode: HTMLElement | null) {
-	if (!isBrowser || !fieldNode) return [];
+	if (!(typeof document !== 'undefined') || !fieldNode) return [];
 	const usedSegments = getTimeSegments(fieldNode)
 		.map((el) => el.dataset.segment)
 		.filter((part): part is EditableTimeSegmentPart => {
@@ -245,14 +242,12 @@ type GetTimeValueFromSegments<T extends TimeValue = Time> = {
 	timeRef: T;
 };
 
-export function getTimeValueFromSegments<T extends TimeValue = Time>(
-	props: GetTimeValueFromSegments<T>
-): T {
+export function getTimeValueFromSegments<T extends TimeValue = Time>(props: GetTimeValueFromSegments<T>): T {
 	const usedSegments = getUsedTimeSegments(props.fieldNode);
 
 	for (const part of usedSegments) {
 		const value = props.segmentObj[part];
-		if (isNull(value)) continue;
+		if (value === null) continue;
 		// @ts-expect-error shhh
 		props.timeRef = props.timeRef.set({ [part]: props.segmentObj[part] });
 	}
@@ -268,10 +263,7 @@ export function getTimeValueFromSegments<T extends TimeValue = Time>(
  * @param segmentValues - The current `SegmentValueObj`
  * @param fieldNode  - The id of the date field
  */
-export function areAllTimeSegmentsFilled(
-	segmentValues: TimeSegmentValueObj,
-	fieldNode: HTMLElement | null
-) {
+export function areAllTimeSegmentsFilled(segmentValues: TimeSegmentValueObj, fieldNode: HTMLElement | null) {
 	const usedSegments = getUsedTimeSegments(fieldNode);
 	for (const part of usedSegments) {
 		if (segmentValues[part] === null) return false;
@@ -285,7 +277,7 @@ export function areAllTimeSegmentsFilled(
  */
 export function inferTimeGranularity(granularity: TimeGranularity | undefined): TimeGranularity {
 	if (granularity) return granularity;
-	return "minute";
+	return 'minute';
 }
 
 /**
@@ -296,7 +288,7 @@ export function inferTimeGranularity(granularity: TimeGranularity | undefined): 
  * @param fieldNode - The id of the date field associated with the segment
  */
 export function isFirstTimeSegment(id: string, fieldNode: HTMLElement | null) {
-	if (!isBrowser) return false;
+	if (!(typeof document !== 'undefined')) return false;
 	const segments = getTimeSegments(fieldNode);
 	return segments.length ? segments[0]!.id === id : false;
 }
@@ -317,14 +309,14 @@ type SetTimeDescriptionProps = {
  * screen readers as the user interacts with the date field.
  */
 export function setTimeDescription(props: SetTimeDescriptionProps) {
-	if (!isBrowser) return;
+	if (!(typeof document !== 'undefined')) return;
 	const valueString = props.formatter.selectedTime(props.value);
 	const el = props.doc.getElementById(props.id);
 	if (!el) {
-		const div = props.doc.createElement("div");
-		div.style.cssText = styleToString({
-			display: "none",
-		});
+		const div = props.doc.createElement('div');
+		div.style.cssText = styleToCSS({
+			display: 'none',
+		}).replace('\n', ' ');
 		div.id = props.id;
 		div.innerText = `Selected Time: ${valueString}`;
 		props.doc.body.appendChild(div);
@@ -339,7 +331,7 @@ export function setTimeDescription(props: SetTimeDescriptionProps) {
  * date field is unmounted.
  */
 export function removeTimeDescriptionElement(id: string, doc: Document) {
-	if (!isBrowser) return;
+	if (!(typeof document !== 'undefined')) return;
 	const el = doc.getElementById(id);
 	if (!el) return;
 	doc.body.removeChild(el);
@@ -347,15 +339,7 @@ export function removeTimeDescriptionElement(id: string, doc: Document) {
 
 export function convertTimeValueToDateValue(time: TimeValue): CalendarDateTime | ZonedDateTime {
 	if (time instanceof Time) {
-		return new CalendarDateTime(
-			2020,
-			1,
-			1,
-			time.hour,
-			time.minute,
-			time.second,
-			time.millisecond
-		);
+		return new CalendarDateTime(2020, 1, 1, time.hour, time.minute, time.second, time.millisecond);
 	}
 	return time;
 }

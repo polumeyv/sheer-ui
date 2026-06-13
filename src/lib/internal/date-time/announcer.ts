@@ -1,5 +1,4 @@
-import { srOnlyStylesString } from "$lib/vendor/toolbelt/index.js";
-import { isBrowser, isHTMLElement } from "$lib/internal/is.js";
+import { srOnlyStylesString } from '$lib/vendor/index.js';
 
 /**
  * Creates or gets an announcer element which is used to announce messages to screen readers.
@@ -7,26 +6,26 @@ import { isBrowser, isHTMLElement } from "$lib/internal/is.js";
  * change, as without it we get inconsistent behavior across screen readers.
  */
 function initAnnouncer(doc: Document | null) {
-	if (!isBrowser || !doc) return null;
-	let el = doc.querySelector("[data-bits-announcer]");
+	if (!(typeof document !== 'undefined') || !doc) return null;
+	let el = doc.querySelector('[data-bits-announcer]');
 
 	/**
 	 * Creates a log element for assertive or polite announcements.
 	 */
-	const createLog = (kind: "assertive" | "polite") => {
-		const log = doc.createElement("div");
-		log.role = "log";
+	const createLog = (kind: 'assertive' | 'polite') => {
+		const log = doc.createElement('div');
+		log.role = 'log';
 		log.ariaLive = kind;
-		log.setAttribute("aria-relevant", "additions");
+		log.setAttribute('aria-relevant', 'additions');
 		return log;
 	};
 
-	if (!isHTMLElement(el)) {
-		const div = doc.createElement("div");
+	if (!(el instanceof HTMLElement)) {
+		const div = doc.createElement('div');
 		div.style.cssText = srOnlyStylesString;
-		div.setAttribute("data-bits-announcer", "");
-		div.appendChild(createLog("assertive"));
-		div.appendChild(createLog("polite"));
+		div.setAttribute('data-bits-announcer', '');
+		div.appendChild(createLog('assertive'));
+		div.appendChild(createLog('polite'));
 		el = div;
 		doc.body.insertBefore(el, doc.body.firstChild);
 	}
@@ -34,10 +33,10 @@ function initAnnouncer(doc: Document | null) {
 	/**
 	 * Retrieves the log element for assertive or polite announcements.
 	 */
-	const getLog = (kind: "assertive" | "polite") => {
-		if (!isHTMLElement(el)) return null;
+	const getLog = (kind: 'assertive' | 'polite') => {
+		if (!(el instanceof HTMLElement)) return null;
 		const log = el.querySelector(`[aria-live="${kind}"]`);
-		if (!isHTMLElement(log)) return null;
+		if (!(log instanceof HTMLElement)) return null;
 		return log;
 	};
 
@@ -57,23 +56,19 @@ export function getAnnouncer(doc: Document | null) {
 	/**
 	 * Announces a message to screen readers using the specified kind of announcement.
 	 */
-	function announce(
-		value: string | null | number,
-		kind: "assertive" | "polite" = "assertive",
-		timeout = 7500
-	) {
-		if (!announcer || !isBrowser || !doc) return;
+	function announce(value: string | null | number, kind: 'assertive' | 'polite' = 'assertive', timeout = 7500) {
+		if (!announcer || !(typeof document !== 'undefined') || !doc) return;
 		const log = announcer.getLog(kind);
-		const content = doc.createElement("div");
-		if (typeof value === "number") {
+		const content = doc.createElement('div');
+		if (typeof value === 'number') {
 			value = value.toString();
 		} else if (value === null) {
-			value = "Empty";
+			value = 'Empty';
 		} else {
 			value = value.trim();
 		}
 		content.innerText = value;
-		if (kind === "assertive") {
+		if (kind === 'assertive') {
 			log?.replaceChildren(content);
 		} else {
 			log?.appendChild(content);

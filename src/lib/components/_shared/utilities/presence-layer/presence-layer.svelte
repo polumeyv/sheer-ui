@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith } from "$lib/vendor/toolbelt/index.js";
-	import type { PresenceLayerImplProps } from "$lib/components/_shared/utilities/presence-layer/types.js";
+	import type { PresenceLayerImplProps } from "$lib/components/_shared/utilities/presence-layer/index.js";
 	import { Presence } from "$lib/components/_shared/utilities/presence-layer/presence.svelte.js";
 
 	let { open, forceMount, presence, ref }: PresenceLayerImplProps = $props();

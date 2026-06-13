@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Label } from '../label/index.js';
-	import { cn } from '../../utils.js';
+	import { cn } from '../../vendor/utils.js';
 	import type { ComponentProps } from 'svelte';
 	let { ref = $bindable(null), class: className, children, ...restProps }: ComponentProps<typeof Label> = $props();
 </script>

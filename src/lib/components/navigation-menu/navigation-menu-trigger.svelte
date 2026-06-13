@@ -1,12 +1,12 @@
 <script lang="ts" module>
-	import { cn } from '../../utils';
+	import { cn } from '../../vendor/utils';
 	import { navigationMenuTriggerStyle } from './variants';
 	export { navigationMenuTriggerStyle };
 </script>
 
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { NavigationMenuTriggerProps } from '$lib/components/navigation-menu/primitive/types.js';
+	import type { NavigationMenuTriggerProps } from '$lib/components/navigation-menu/primitive/index.js';
 	import { NavigationMenuTriggerState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import VisuallyHidden from '$lib/components/_shared/utilities/visually-hidden/visually-hidden.svelte';

@@ -1,6 +1,6 @@
-import type { Getter, WritableBox } from "$lib/vendor/toolbelt/index.js";
-import { getNextMatch } from "./arrays.js";
-import { boxAutoReset } from "./box-auto-reset.svelte.js";
+import type { Getter, WritableBox } from '$lib/vendor/index.js';
+import { getNextMatch } from './arrays.js';
+import { boxAutoReset } from './box-auto-reset.svelte.js';
 
 interface DataTypeaheadOpts {
 	onMatch: (value: string) => void;
@@ -18,7 +18,7 @@ export class DataTypeahead {
 
 	constructor(opts: DataTypeaheadOpts) {
 		this.#opts = opts;
-		this.#search = boxAutoReset("", {
+		this.#search = boxAutoReset('', {
 			afterMs: 1000,
 			getWindow: this.#opts.getWindow,
 		});
@@ -32,8 +32,8 @@ export class DataTypeahead {
 
 		this.#search.current = this.#search.current + key;
 		const currentItem = this.#opts.getCurrentItem();
-		const currentMatch = this.#candidateValues.find((item) => item === currentItem) ?? "";
-		const values = this.#candidateValues.map((item) => item ?? "");
+		const currentMatch = this.#candidateValues.find((item) => item === currentItem) ?? '';
+		const values = this.#candidateValues.map((item) => item ?? '');
 		const nextMatch = getNextMatch(values, this.#search.current, currentMatch);
 		const newItem = this.#candidateValues.find((item) => item === nextMatch);
 		if (newItem) {
@@ -43,6 +43,6 @@ export class DataTypeahead {
 	}
 
 	resetTypeahead() {
-		this.#search.current = "";
+		this.#search.current = '';
 	}
 }

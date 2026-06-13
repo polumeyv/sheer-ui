@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { CommandItemProps } from "$lib/components/command/primitive/types.js";
+	import type { CommandItemProps } from "$lib/components/command/primitive/index.js";
 	import { CommandItemState } from "$lib/components/command/primitive/command.svelte.js";
-	import { noop } from "$lib/internal/noop.js";
 	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();
@@ -14,7 +13,7 @@
 		disabled = false,
 		children,
 		child,
-		onSelect = noop,
+		onSelect = (() => {}),
 		forceMount = false,
 		keywords = [],
 		...restProps

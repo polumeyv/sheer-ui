@@ -1,19 +1,8 @@
-import { createContext } from "svelte";
-import {
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	attachRef,
-	boxWith,
-	DOMContext,
-} from "$lib/vendor/toolbelt/index.js";
-import { watch } from "$lib/vendor/runed/index.js";
-import { kbd } from "$lib/internal/kbd.js";
-import {
-	createBitsAttrs,
-	boolToStr,
-	getDataOpenClosed,
-	getDataTransitionAttrs,
-} from "$lib/internal/attrs.js";
+import { createContext } from 'svelte';
+import { type ReadableBoxedValues, type WritableBoxedValues, attachRef, boxWith, DOMContext } from '$lib/vendor/index.js';
+import { watch } from '$lib/vendor/watch.svelte.js';
+import { kbd } from '$lib/internal/kbd.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
 import type {
 	BitsFocusEvent,
 	BitsKeyboardEvent,
@@ -22,22 +11,22 @@ import type {
 	OnChangeFn,
 	RefAttachment,
 	WithRefOpts,
-} from "$lib/internal/types.js";
-import { isElement, isTouch } from "$lib/internal/is.js";
-import type { Measurable } from "$lib/internal/floating-svelte/types.js";
-import { PresenceManager } from "$lib/internal/presence-manager.svelte.js";
-import { SafePolygon } from "$lib/internal/safe-polygon.svelte.js";
-import { isTabbable } from "$lib/vendor/tabbable/index.js";
+} from '$lib/internal/types.js';
+import type { Measurable } from '$lib/internal/floating-svelte/types.js';
+import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
+import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
+import { isTabbable } from 'tabbable';
 
 const popoverAttrs = createBitsAttrs({
-	component: "popover",
-	parts: ["root", "trigger", "content", "close", "overlay"],
+	component: 'popover',
+	parts: ['root', 'trigger', 'content', 'close', 'overlay'],
 });
 
 const [getPopoverRootContext, setPopoverRootContext] = createContext<PopoverRootState>();
 
 interface PopoverRootStateOpts
-	extends WritableBoxedValues<{
+	extends
+		WritableBoxedValues<{
 			open: boolean;
 		}>,
 		ReadableBoxedValues<{
@@ -88,7 +77,7 @@ export class PopoverRootState {
 					this.hasInteractedWithContent = false;
 					this.#clearCloseTimeout();
 				}
-			}
+			},
 		);
 	}
 
@@ -158,7 +147,8 @@ export class PopoverRootState {
 }
 
 interface PopoverTriggerStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 			openOnHover: boolean;
@@ -196,7 +186,7 @@ export class PopoverTriggerState {
 			() => this.opts.closeDelay.current,
 			(delay) => {
 				this.root.closeDelay = delay;
-			}
+			},
 		);
 	}
 
@@ -222,7 +212,7 @@ export class PopoverTriggerState {
 	onpointerenter(e: BitsPointerEvent) {
 		if (this.opts.disabled.current) return;
 		if (!this.opts.openOnHover.current) return;
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 
 		this.#isHovering = true;
 		this.#clearCloseTimeout();
@@ -244,7 +234,7 @@ export class PopoverTriggerState {
 	onpointerleave(e: BitsPointerEvent) {
 		if (this.opts.disabled.current) return;
 		if (!this.opts.openOnHover.current) return;
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 
 		this.#isHovering = false;
 		this.#clearOpenTimeout();
@@ -299,11 +289,11 @@ export class PopoverTriggerState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"aria-haspopup": "dialog",
-				"aria-expanded": boolToStr(this.root.opts.open.current),
-				"data-state": getDataOpenClosed(this.root.opts.open.current),
-				"aria-controls": this.#getAriaControls(),
-				[popoverAttrs.trigger]: "",
+				'aria-haspopup': 'dialog',
+				'aria-expanded': this.root.opts.open.current ? 'true' : 'false',
+				'data-state': this.root.opts.open.current ? 'open' : 'closed',
+				'aria-controls': this.#getAriaControls(),
+				[popoverAttrs.trigger]: '',
 				disabled: this.opts.disabled.current,
 				//
 				onkeydown: this.onkeydown,
@@ -311,12 +301,13 @@ export class PopoverTriggerState {
 				onpointerenter: this.onpointerenter,
 				onpointerleave: this.onpointerleave,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface PopoverContentStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			onInteractOutside: (e: PointerEvent) => void;
 			onEscapeKeydown: (e: KeyboardEvent) => void;
@@ -345,10 +336,7 @@ export class PopoverContentState {
 		new SafePolygon({
 			triggerNode: () => this.root.triggerNode,
 			contentNode: () => this.root.contentNode,
-			enabled: () =>
-				this.root.opts.open.current &&
-				this.root.openedViaHover &&
-				!this.root.hasInteractedWithContent,
+			enabled: () => this.root.opts.open.current && this.root.openedViaHover && !this.root.hasInteractedWithContent,
 			onPointerExit: () => {
 				this.root.handleDelayedHoverClose();
 			},
@@ -361,32 +349,32 @@ export class PopoverContentState {
 
 	onfocusin(e: BitsFocusEvent) {
 		const target = e.target;
-		if (isElement(target) && isTabbable(target)) {
+		if (target instanceof Element && isTabbable(target)) {
 			this.root.markInteraction();
 		}
 	}
 
 	onpointerenter(e: BitsPointerEvent) {
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 		this.root.cancelDelayedClose();
 	}
 
 	onpointerleave(e: BitsPointerEvent) {
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 		// handled by grace area
 	}
 
 	onInteractOutside = (e: PointerEvent) => {
 		this.opts.onInteractOutside.current(e);
 		if (e.defaultPrevented) return;
-		if (!isElement(e.target)) return;
+		if (!(e.target instanceof Element)) return;
 
-		const closestTrigger = e.target.closest(popoverAttrs.selector("trigger"));
+		const closestTrigger = e.target.closest(popoverAttrs.selector('trigger'));
 		if (closestTrigger && closestTrigger === this.root.triggerNode) return;
 		if (this.opts.customAnchor.current) {
-			if (isElement(this.opts.customAnchor.current)) {
+			if (this.opts.customAnchor.current instanceof Element) {
 				if (this.opts.customAnchor.current.contains(e.target)) return;
-			} else if (typeof this.opts.customAnchor.current === "string") {
+			} else if (typeof this.opts.customAnchor.current === 'string') {
 				const el = document.querySelector(this.opts.customAnchor.current);
 				if (el && el.contains(e.target)) return;
 			}
@@ -416,20 +404,23 @@ export class PopoverContentState {
 			({
 				id: this.opts.id.current,
 				tabindex: -1,
-				"data-state": getDataOpenClosed(this.root.opts.open.current),
-				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
-				[popoverAttrs.content]: "",
+				'data-state': this.root.opts.open.current ? 'open' : 'closed',
+				...{
+					'data-starting-style': this.root.contentPresence.transitionStatus === 'starting' ? '' : undefined,
+					'data-ending-style': this.root.contentPresence.transitionStatus === 'ending' ? '' : undefined,
+				},
+				[popoverAttrs.content]: '',
 				style: {
-					pointerEvents: "auto",
+					pointerEvents: 'auto',
 					// CSS containment isolates style/layout/paint calculations from the rest of the page
-					contain: "layout style",
+					contain: 'layout style',
 				},
 				onpointerdown: this.onpointerdown,
 				onfocusin: this.onfocusin,
 				onpointerenter: this.onpointerenter,
 				onpointerleave: this.onpointerleave,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 
 	readonly popperProps = {
@@ -473,10 +464,10 @@ export class PopoverCloseState {
 				id: this.opts.id.current,
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
-				type: "button",
-				[popoverAttrs.close]: "",
+				type: 'button',
+				[popoverAttrs.close]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -507,13 +498,16 @@ export class PopoverOverlayState {
 		() =>
 			({
 				id: this.opts.id.current,
-				[popoverAttrs.overlay]: "",
+				[popoverAttrs.overlay]: '',
 				style: {
-					pointerEvents: "auto",
+					pointerEvents: 'auto',
 				},
-				"data-state": getDataOpenClosed(this.root.opts.open.current),
-				...getDataTransitionAttrs(this.root.overlayPresence.transitionStatus),
+				'data-state': this.root.opts.open.current ? 'open' : 'closed',
+				...{
+					'data-starting-style': this.root.overlayPresence.transitionStatus === 'starting' ? '' : undefined,
+					'data-ending-style': this.root.overlayPresence.transitionStatus === 'ending' ? '' : undefined,
+				},
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }

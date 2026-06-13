@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ScrollAreaThumbProps } from "$lib/components/scroll-area/primitive/types.js";
+	import type { ScrollAreaThumbProps } from "$lib/components/scroll-area/primitive/index.js";
 	import { getScrollAreaScrollbarVisibleContext } from "$lib/components/scroll-area/primitive/scroll-area.svelte.js";
 	import ScrollAreaThumbImpl from "$lib/components/scroll-area/primitive/components/scroll-area-thumb-impl.svelte";
 	import { createId } from "$lib/internal/create-id.js";

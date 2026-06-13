@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { HTMLAttributes } from 'svelte/elements';
-import type { WithElementRef } from '../../utils';
+import type { WithElementRef } from '../../vendor/utils';
 import MinusIcon from '@lucide/svelte/icons/minus';
 
 let { ref = $bindable(null), children, ...restProps }: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();

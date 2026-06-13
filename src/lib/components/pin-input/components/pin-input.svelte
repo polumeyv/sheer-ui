@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { PinInputRootProps } from "$lib/components/pin-input/types.js";
+	import type { PinInputRootProps } from "$lib/components/pin-input/index.js";
 	import { PinInputRootState } from "$lib/components/pin-input/pin-input.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
 
 	const uid = $props.id();
 
@@ -16,14 +15,14 @@
 		textalign = "left",
 		pattern,
 		inputmode = "numeric",
-		onComplete = noop,
+		onComplete = (() => {}),
 		pushPasswordManagerStrategy = "increase-width",
 		class: containerClass = "",
 		children,
 		autocomplete = "one-time-code",
 		disabled = false,
 		value = $bindable(""),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		pasteTransformer,
 		...restProps
 	}: PinInputRootProps = $props();

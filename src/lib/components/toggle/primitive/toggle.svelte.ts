@@ -1,23 +1,20 @@
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/vendor/toolbelt/index.js";
-import {
-	createBitsAttrs,
-	boolToStr,
-	boolToEmptyStrOrUndef,
-	boolToTrueOrUndef,
-} from "$lib/internal/attrs.js";
-import type { BitsMouseEvent, RefAttachment, WithRefOpts } from "$lib/internal/types.js";
+import { attachRef, type RefAttachment } from '$lib/internal/attach-ref.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import type { ReadableProps, WithRefProps, WritableProps } from '$lib/vendor/utils.js';
+import type { BitsMouseEvent } from '$lib/internal/types.js';
 
 export const toggleAttrs = createBitsAttrs({
-	component: "toggle",
-	parts: ["root"],
+	component: 'toggle',
+	parts: ['root'],
 });
 
 interface ToggleRootStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{
+	extends
+		WithRefProps,
+		ReadableProps<{
 			disabled: boolean;
 		}>,
-		WritableBoxedValues<{
+		WritableProps<{
 			pressed: boolean;
 		}> {}
 
@@ -30,7 +27,7 @@ export class ToggleRootState {
 
 	constructor(opts: ToggleRootStateOpts) {
 		this.opts = opts;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (this.opts.ref.current = v));
 		this.onclick = this.onclick.bind(this);
 	}
 
@@ -46,18 +43,18 @@ export class ToggleRootState {
 	readonly props = $derived.by(
 		() =>
 			({
-				[toggleAttrs.root]: "",
+				[toggleAttrs.root]: '',
 				id: this.opts.id.current,
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-				"aria-pressed": boolToStr(this.opts.pressed.current),
-				"data-state": getToggleDataState(this.opts.pressed.current),
-				disabled: boolToTrueOrUndef(this.opts.disabled.current),
+				'data-disabled': this.opts.disabled.current ? '' : undefined,
+				'aria-pressed': this.opts.pressed.current ? 'true' : 'false',
+				'data-state': getToggleDataState(this.opts.pressed.current),
+				disabled: this.opts.disabled.current ? true : undefined,
 				onclick: this.onclick,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
-export function getToggleDataState(condition: boolean): "on" | "off" {
-	return condition ? "on" : "off";
+export function getToggleDataState(condition: boolean): 'on' | 'off' {
+	return condition ? 'on' : 'off';
 }

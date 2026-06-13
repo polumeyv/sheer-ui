@@ -1,10 +1,10 @@
-import { type Box, type ReadableBox, box } from "$lib/vendor/toolbelt/index.js";
-import { getElemDirection } from "./locale.js";
-import { getDirectionalKeys } from "./get-directional-keys.js";
-import { kbd } from "./kbd.js";
-import type { Orientation } from "$lib/shared/index.js";
-import { BROWSER } from "$lib/vendor/env.js";
-import { isHTMLElement } from "./is.js";
+import { box } from '$lib/vendor/index.js';
+import type { ReadableProp, WritableProp } from '$lib/vendor/utils.js';
+import { getElemDirection } from './locale.js';
+import { getDirectionalKeys } from './get-directional-keys.js';
+import { kbd } from './kbd.js';
+import type { Orientation } from '$lib/shared/index.js';
+import { BROWSER } from '$lib/vendor/env.js';
 
 type RovingFocusGroupOptions = (
 	| {
@@ -25,18 +25,18 @@ type RovingFocusGroupOptions = (
 	/**
 	 * The id of the root node
 	 */
-	rootNode: Box<HTMLElement | null>;
+	rootNode: WritableProp<HTMLElement | null>;
 
 	/**
 	 * Whether to loop through the candidates when reaching the end.
 	 */
-	loop: ReadableBox<boolean>;
+	loop: ReadableProp<boolean>;
 
 	/**
 	 * The orientation of the roving focus group. Used
 	 * to determine how keyboard navigation should work.
 	 */
-	orientation: ReadableBox<Orientation>;
+	orientation: ReadableProp<Orientation>;
 
 	/**
 	 * A callback function called when a candidate is focused.
@@ -56,17 +56,11 @@ export class RovingFocusGroup {
 		if (!BROWSER || !this.#opts.rootNode.current) return [];
 
 		if (this.#opts.candidateSelector) {
-			const candidates = Array.from(
-				this.#opts.rootNode.current.querySelectorAll<HTMLElement>(
-					this.#opts.candidateSelector
-				)
-			);
+			const candidates = Array.from(this.#opts.rootNode.current.querySelectorAll<HTMLElement>(this.#opts.candidateSelector));
 			return candidates;
 		} else if (this.#opts.candidateAttr) {
 			const candidates = Array.from(
-				this.#opts.rootNode.current.querySelectorAll<HTMLElement>(
-					`[${this.#opts.candidateAttr}]:not([data-disabled])`
-				)
+				this.#opts.rootNode.current.querySelectorAll<HTMLElement>(`[${this.#opts.candidateAttr}]:not([data-disabled])`),
 			);
 			return candidates;
 		}
@@ -146,7 +140,7 @@ export class RovingFocusGroup {
 		const currentTabStopId = this.#currentTabStopId.current;
 		if (!currentTabStopId) return;
 		const currentTabStop = this.#opts.rootNode.current?.querySelector(`#${currentTabStopId}`);
-		if (!currentTabStop || !isHTMLElement(currentTabStop)) return;
+		if (!currentTabStop || !(currentTabStop instanceof HTMLElement)) return;
 		currentTabStop.focus();
 	}
 }

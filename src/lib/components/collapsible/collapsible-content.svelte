@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import { mergeProps } from '$lib/internal/merge-props.js';
 	import { CollapsibleContentState } from '$lib/components/collapsible/primitive/collapsible.svelte.js';
-	import type { CollapsibleContentProps } from '$lib/components/collapsible/primitive/types.js';
+	import type { CollapsibleContentProps } from '$lib/components/collapsible/primitive/index.js';
 	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
@@ -17,13 +17,29 @@
 	}: CollapsibleContentProps = $props();
 
 	const contentState = CollapsibleContentState.create({
-		id: boxWith(() => id),
-		forceMount: boxWith(() => forceMount),
-		hiddenUntilFound: boxWith(() => hiddenUntilFound),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		forceMount: {
+			get current() {
+				return forceMount;
+			},
+		},
+		hiddenUntilFound: {
+			get current() {
+				return hiddenUntilFound;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(

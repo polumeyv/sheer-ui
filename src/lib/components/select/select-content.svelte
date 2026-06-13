@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
-	import type { SelectContentProps } from '$lib/components/select/primitive/types.js';
+	import type { SelectContentProps } from '$lib/components/select/primitive/index.js';
 	import { SelectContentState } from '$lib/components/select/primitive/select.svelte.js';
 	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
-	import { noop } from '$lib/internal/noop.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
 	import PopperLayerForceMount from '$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte';
@@ -11,7 +10,7 @@
 	import SelectPortal from './select-portal.svelte';
 	import SelectScrollUpButton from './select-scroll-up-button.svelte';
 	import SelectScrollDownButton from './select-scroll-down-button.svelte';
-	import { cn, type WithoutChild, type WithoutChildrenOrChild } from '../../utils';
+	import { cn, type WithoutChild, type WithoutChildrenOrChild } from '../../vendor/utils';
 	import type { ComponentProps } from 'svelte';
 
 	const uid = $props.id();
@@ -22,8 +21,8 @@
 		forceMount = false,
 		side = 'bottom',
 		sideOffset = 4,
-		onInteractOutside = noop,
-		onEscapeKeydown = noop,
+		onInteractOutside = (() => {}),
+		onEscapeKeydown = (() => {}),
 		children,
 		preventScroll = true,
 		portalProps,

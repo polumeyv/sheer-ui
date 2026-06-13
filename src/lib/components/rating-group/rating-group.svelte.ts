@@ -1,34 +1,21 @@
-import { createContext } from "svelte";
-import {
-	attachRef,
-	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from "$lib/vendor/toolbelt/index.js";
-import type {
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	BitsPointerEvent,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef } from "$lib/internal/attrs.js";
-import type {
-	RatingGroupAriaValuetext,
-	RatingGroupItemState as RatingGroupItemStateType,
-} from "$lib/components/rating-group/types.js";
-import type { Orientation } from "$lib/shared/index.js";
-import { kbd } from "$lib/internal/kbd.js";
+import { createContext } from 'svelte';
+import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/vendor/index.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
+import type { RatingGroupAriaValuetext, RatingGroupItemState as RatingGroupItemStateType } from '$lib/components/rating-group/index.js';
+import type { Orientation } from '$lib/shared/index.js';
+import { kbd } from '$lib/internal/kbd.js';
 
 const ratingGroupAttrs = createBitsAttrs({
-	component: "rating-group",
-	parts: ["root", "item"],
+	component: 'rating-group',
+	parts: ['root', 'item'],
 });
 
 const [getRatingGroupRootContext, setRatingGroupRootContext] = createContext<RatingGroupRootState>();
 
 interface RatingGroupRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 			required: boolean;
@@ -52,7 +39,7 @@ export class RatingGroupRootState {
 	readonly attachment: RefAttachment;
 
 	#hoverValue = $state<number | null>(null);
-	#keySequence = $state<string>("");
+	#keySequence = $state<string>('');
 	#keySequenceTimeout: number | null = null;
 	domContext: DOMContext;
 
@@ -62,11 +49,11 @@ export class RatingGroupRootState {
 		const element = this.opts.ref.current;
 		if (!element) return false;
 		const style = getComputedStyle(element);
-		return style.direction === "rtl";
+		return style.direction === 'rtl';
 	});
 
 	readonly ariaValuetext = $derived.by(() => {
-		return typeof this.opts.ariaValuetext.current === "function"
+		return typeof this.opts.ariaValuetext.current === 'function'
 			? this.opts.ariaValuetext.current(this.opts.value.current, this.opts.max.current)
 			: this.opts.ariaValuetext.current;
 	});
@@ -79,11 +66,7 @@ export class RatingGroupRootState {
 			const halfValue = itemValue - 0.5;
 
 			const state: RatingGroupItemStateType =
-				value >= itemValue
-					? "active"
-					: this.opts.allowHalf.current && value >= halfValue
-						? "partial"
-						: "inactive";
+				value >= itemValue ? 'active' : this.opts.allowHalf.current && value >= halfValue ? 'partial' : 'inactive';
 
 			return { index: i, state };
 		});
@@ -108,43 +91,27 @@ export class RatingGroupRootState {
 	}
 
 	setHoverValue(value: number | null): void {
-		if (
-			this.opts.readonly.current ||
-			this.opts.disabled.current ||
-			!this.opts.hoverPreview.current
-		)
-			return;
+		if (this.opts.readonly.current || this.opts.disabled.current || !this.opts.hoverPreview.current) return;
 
-		this.#hoverValue =
-			value === null
-				? null
-				: Math.max(this.opts.min.current, Math.min(this.opts.max.current, value));
+		this.#hoverValue = value === null ? null : Math.max(this.opts.min.current, Math.min(this.opts.max.current, value));
 	}
 
 	setValue(value: number): void {
 		if (this.opts.readonly.current || this.opts.disabled.current) return;
-		this.opts.value.current = Math.max(
-			this.opts.min.current,
-			Math.min(this.opts.max.current, value)
-		);
+		this.opts.value.current = Math.max(this.opts.min.current, Math.min(this.opts.max.current, value));
 	}
 
-	calculateRatingFromPointer(
-		itemIndex: number,
-		event: { clientX: number; clientY: number; currentTarget: HTMLElement }
-	): number {
+	calculateRatingFromPointer(itemIndex: number, event: { clientX: number; clientY: number; currentTarget: HTMLElement }): number {
 		const ratingValue = itemIndex + 1;
 		if (!this.opts.allowHalf.current) return ratingValue;
 
 		const rect = event.currentTarget.getBoundingClientRect();
 		const style = getComputedStyle(event.currentTarget);
-		const isHorizontal = this.opts.orientation.current === "horizontal";
+		const isHorizontal = this.opts.orientation.current === 'horizontal';
 
-		const position = isHorizontal
-			? (event.clientX - rect.left) / rect.width
-			: (event.clientY - rect.top) / rect.height;
+		const position = isHorizontal ? (event.clientX - rect.left) / rect.width : (event.clientY - rect.top) / rect.height;
 
-		const normalizedPosition = style.direction === "rtl" ? 1 - position : position;
+		const normalizedPosition = style.direction === 'rtl' ? 1 - position : position;
 
 		return normalizedPosition < 0.5 ? ratingValue - 0.5 : ratingValue;
 	}
@@ -205,7 +172,7 @@ export class RatingGroupRootState {
 		if (this.opts.allowHalf.current && this.#handleDecimalInput(e)) return;
 
 		// handle direct number input
-		const num = parseInt(e.key || "");
+		const num = parseInt(e.key || '');
 		if (!isNaN(num) && e.key) {
 			e.preventDefault();
 			if (num >= this.opts.min.current && num <= this.opts.max.current) {
@@ -227,13 +194,13 @@ export class RatingGroupRootState {
 	#handleDecimalInput(e: BitsKeyboardEvent): boolean {
 		if (!e.key) return false;
 
-		if (e.key === ".") {
+		if (e.key === '.') {
 			e.preventDefault();
 			this.#keySequence += e.key;
 			return true;
 		}
 
-		if (e.key === "5" && this.#keySequence.match(/^\d+\.$/)) {
+		if (e.key === '5' && this.#keySequence.match(/^\d+\.$/)) {
 			e.preventDefault();
 			this.#keySequence += e.key;
 
@@ -262,7 +229,7 @@ export class RatingGroupRootState {
 	}
 
 	#clearKeySequence(): void {
-		this.#keySequence = "";
+		this.#keySequence = '';
 		if (this.#keySequenceTimeout) {
 			this.domContext.clearTimeout(this.#keySequenceTimeout);
 			this.#keySequenceTimeout = null;
@@ -278,20 +245,20 @@ export class RatingGroupRootState {
 	readonly props = $derived.by(() => {
 		return {
 			id: this.opts.id.current,
-			role: "slider",
-			"aria-valuenow": this.opts.value.current,
-			"aria-valuemin": this.opts.min.current,
-			"aria-valuemax": this.opts.max.current,
-			"aria-valuetext": this.ariaValuetext,
-			"aria-orientation": this.opts.orientation.current,
-			"aria-required": boolToStr(this.opts.required.current),
-			"aria-disabled": this.opts.disabled.current ? "true" : undefined,
-			"aria-label": "Rating",
-			"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-			"data-readonly": this.opts.readonly.current ? "" : undefined,
-			"data-orientation": this.opts.orientation.current,
+			role: 'slider',
+			'aria-valuenow': this.opts.value.current,
+			'aria-valuemin': this.opts.min.current,
+			'aria-valuemax': this.opts.max.current,
+			'aria-valuetext': this.ariaValuetext,
+			'aria-orientation': this.opts.orientation.current,
+			'aria-required': this.opts.required.current ? 'true' : 'false',
+			'aria-disabled': this.opts.disabled.current ? 'true' : undefined,
+			'aria-label': 'Rating',
+			'data-disabled': this.opts.disabled.current ? '' : undefined,
+			'data-readonly': this.opts.readonly.current ? '' : undefined,
+			'data-orientation': this.opts.orientation.current,
 			tabindex: this.opts.disabled.current ? -1 : 0,
-			[ratingGroupAttrs.root]: "",
+			[ratingGroupAttrs.root]: '',
 			onkeydown: this.onkeydown,
 			onpointerleave: this.onpointerleave,
 			...this.attachment,
@@ -300,7 +267,8 @@ export class RatingGroupRootState {
 }
 
 interface RatingGroupItemStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 			index: number;
@@ -314,15 +282,13 @@ export class RatingGroupItemState {
 	readonly opts: RatingGroupItemStateOpts;
 	readonly root: RatingGroupRootState;
 	readonly attachment: RefAttachment;
-	readonly #isDisabled = $derived.by(
-		() => this.opts.disabled.current || this.root.opts.disabled.current
-	);
+	readonly #isDisabled = $derived.by(() => this.opts.disabled.current || this.root.opts.disabled.current);
 	readonly #isActive = $derived.by(() => this.root.isActive(this.opts.index.current));
 	readonly #isPartial = $derived.by(() => this.root.isPartial(this.opts.index.current));
 	readonly #state: RatingGroupItemStateType = $derived.by(() => {
-		if (this.#isActive) return "active";
-		if (this.#isPartial) return "partial";
-		return "inactive";
+		if (this.#isActive) return 'active';
+		if (this.#isPartial) return 'partial';
+		return 'inactive';
 	});
 
 	constructor(opts: RatingGroupItemStateOpts, root: RatingGroupRootState) {
@@ -339,11 +305,7 @@ export class RatingGroupItemState {
 
 		// handle clearing when clicking on first item (index 0) that's already
 		// active and min is 0
-		if (
-			this.opts.index.current === 0 &&
-			this.root.opts.min.current === 0 &&
-			this.root.opts.value.current > 0
-		) {
+		if (this.opts.index.current === 0 && this.root.opts.min.current === 0 && this.root.opts.value.current > 0) {
 			const newValue = this.root.calculateRatingFromPointer(this.opts.index.current, e);
 			const currentValue = this.root.opts.value.current;
 
@@ -366,15 +328,10 @@ export class RatingGroupItemState {
 	}
 
 	onpointermove(e: BitsPointerEvent) {
-		if (
-			this.#isDisabled ||
-			this.root.opts.readonly.current ||
-			!this.root.opts.hoverPreview.current
-		)
-			return;
+		if (this.#isDisabled || this.root.opts.readonly.current || !this.root.opts.hoverPreview.current) return;
 
 		// skip hover preview for touch devices
-		if (e.pointerType === "touch") return;
+		if (e.pointerType === 'touch') return;
 
 		const hoverValue = this.root.calculateRatingFromPointer(this.opts.index.current, e);
 		this.root.setHoverValue(hoverValue);
@@ -390,18 +347,18 @@ export class RatingGroupItemState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "presentation",
-				"data-value": this.opts.index.current + 1,
-				"data-orientation": this.root.opts.orientation.current,
-				"data-disabled": boolToEmptyStrOrUndef(this.#isDisabled),
-				"data-readonly": this.root.opts.readonly.current ? "" : undefined,
-				"data-state": this.#state,
-				[ratingGroupAttrs.item]: "",
+				role: 'presentation',
+				'data-value': this.opts.index.current + 1,
+				'data-orientation': this.root.opts.orientation.current,
+				'data-disabled': this.#isDisabled ? '' : undefined,
+				'data-readonly': this.root.opts.readonly.current ? '' : undefined,
+				'data-state': this.#state,
+				[ratingGroupAttrs.item]: '',
 				//
 				onclick: this.onclick,
 				onpointermove: this.onpointermove,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -418,7 +375,7 @@ export class RatingGroupHiddenInputState {
 				value: this.root.opts.value.current,
 				required: this.root.opts.required.current,
 				disabled: this.root.opts.disabled.current,
-			}) as const
+			}) as const,
 	);
 
 	constructor(root: RatingGroupRootState) {

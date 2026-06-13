@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { mergeProps } from "$lib/vendor/toolbelt/index.js";
 	import ScrollLock from "$lib/components/_shared/utilities/scroll-lock/scroll-lock.svelte";
-	import type { PopperLayerImplProps } from "$lib/components/_shared/utilities/popper-layer/types.js";
+	import type { PopperLayerImplProps } from "$lib/components/_shared/utilities/popper-layer/index.js";
 	import PopperContent from "$lib/components/_shared/utilities/popper-layer/popper-content.svelte";
 	import EscapeLayer from "$lib/components/_shared/utilities/escape-layer/escape-layer.svelte";
 	import DismissibleLayer from "$lib/components/_shared/utilities/dismissible-layer/dismissible-layer.svelte";

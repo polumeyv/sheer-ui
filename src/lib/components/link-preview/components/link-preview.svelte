@@ -1,15 +1,14 @@
 <script lang="ts">
 	import { boxWith } from "$lib/vendor/toolbelt/index.js";
-	import type { LinkPreviewRootProps } from "$lib/components/link-preview/types.js";
+	import type { LinkPreviewRootProps } from "$lib/components/link-preview/index.js";
 	import { LinkPreviewRootState } from "$lib/components/link-preview/link-preview.svelte.js";
-	import { noop } from "$lib/internal/noop.js";
 	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index.js";
 
 	let {
 		disabled = false,
 		open = $bindable(false),
-		onOpenChange = noop,
-		onOpenChangeComplete = noop,
+		onOpenChange = (() => {}),
+		onOpenChangeComplete = (() => {}),
 		openDelay = 700,
 		closeDelay = 300,
 		children,

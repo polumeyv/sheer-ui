@@ -1,6 +1,6 @@
 <script lang="ts">
-import { Menubar as MenubarPrimitive } from '$lib/bits-ui.js';
-import { cn } from '../../utils';
+import { Menubar as MenubarPrimitive } from "$lib/components/_shared/primitives.js";
+import { cn } from '../../vendor/utils';
 
 let { ref = $bindable(null), class: className, ...restProps }: MenubarPrimitive.SeparatorProps = $props();
 </script>

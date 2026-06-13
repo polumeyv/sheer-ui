@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { RadioGroupRootProps } from "$lib/components/radio-group/primitive/types.js";
+	import { mergeProps } from "$lib/internal/merge-props.js";
+	import type { RadioGroupRootProps } from "$lib/components/radio-group/primitive/index.js";
 	import { RadioGroupRootState } from "$lib/components/radio-group/primitive/radio-group.svelte.js";
 	import RadioGroupInput from "$lib/components/radio-group/primitive/components/radio-group-input.svelte";
 	import { createId } from "$lib/internal/create-id.js";
-	import { noop } from "$lib/internal/noop.js";
 
 	const uid = $props.id();
 
@@ -20,30 +19,64 @@
 		required = false,
 		readonly = false,
 		id = createId(uid),
-		onValueChange = noop,
+		onValueChange = (() => {}),
 		...restProps
 	}: RadioGroupRootProps = $props();
 
 	const rootState = RadioGroupRootState.create({
-		orientation: boxWith(() => orientation),
-		disabled: boxWith(() => disabled),
-		loop: boxWith(() => loop),
-		name: boxWith(() => name),
-		required: boxWith(() => required),
-		readonly: boxWith(() => readonly),
-		id: boxWith(() => id),
-		value: boxWith(
-			() => value,
-			(v) => {
+		orientation: {
+			get current() {
+				return orientation;
+			},
+		},
+		disabled: {
+			get current() {
+				return disabled;
+			},
+		},
+		loop: {
+			get current() {
+				return loop;
+			},
+		},
+		name: {
+			get current() {
+				return name;
+			},
+		},
+		required: {
+			get current() {
+				return required;
+			},
+		},
+		readonly: {
+			get current() {
+				return readonly;
+			},
+		},
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		value: {
+			get current() {
+				return value;
+			},
+			set current(v) {
 				if (v === value) return;
 				value = v;
 				onValueChange?.(v);
-			}
-		),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v)
-		),
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, rootState.props));

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
 	import { TimeRangeFieldLabelState } from "$lib/components/time-range-field/time-range-field.svelte.js";
-	import type { TimeRangeFieldLabelProps } from "$lib/components/time-range-field/types.js";
+	import type { TimeRangeFieldLabelProps } from "$lib/components/time-range-field/index.js";
 	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();

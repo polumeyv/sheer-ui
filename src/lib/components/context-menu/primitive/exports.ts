@@ -36,4 +36,4 @@ export type {
 	ContextMenuTriggerProps as TriggerProps,
 	ContextMenuPortalProps as PortalProps,
 	ContextMenuCheckboxGroupProps as CheckboxGroupProps,
-} from "$lib/components/context-menu/primitive/types.js";
+} from "$lib/components/context-menu/primitive/index.js";

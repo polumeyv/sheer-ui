@@ -1,5 +1,6 @@
-import { type AnyFn, executeCallbacks } from "$lib/vendor/toolbelt/index.js";
-import { on } from "svelte/events";
+import { type AnyFn } from '$lib/vendor/index.js';
+import { executeCallbacks } from '$lib/vendor/index.js';
+import { on } from 'svelte/events';
 
 // Using global state to avoid multiple listeners.
 let isUsingKeyboard = $state(false);
@@ -28,15 +29,15 @@ export class IsUsingKeyboard {
 					};
 
 					callbacksToDispose.push(
-						on(document, "pointerdown", handlePointer, {
+						on(document, 'pointerdown', handlePointer, {
 							capture: true,
 						}),
-						on(document, "pointermove", handlePointer, {
+						on(document, 'pointermove', handlePointer, {
 							capture: true,
 						}),
-						on(document, "keydown", handleKeydown, {
+						on(document, 'keydown', handleKeydown, {
 							capture: true,
-						})
+						}),
 					);
 
 					// Don't forget to spread and call twice.

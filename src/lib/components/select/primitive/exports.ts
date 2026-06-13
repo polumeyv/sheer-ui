@@ -24,4 +24,4 @@ export type {
 	SelectScrollUpButtonProps as ScrollUpButtonProps,
 	SelectScrollDownButtonProps as ScrollDownButtonProps,
 	SelectPortalProps as PortalProps,
-} from "$lib/components/select/primitive/types.js";
+} from "$lib/components/select/primitive/index.js";

@@ -1,25 +1,25 @@
-import { DateFormatter, type DateValue } from "@internationalized/date";
-import { hasTime, isZonedDateTime, toDate } from "./utils.js";
-import type { HourCycle, TimeValue } from "$lib/shared/date/types.js";
-import { convertTimeValueToDateValue } from "./field/time-helpers.js";
-import type { ReadableBox } from "$lib/vendor/toolbelt/index.js";
+import { DateFormatter, type DateValue } from '@internationalized/date';
+import { hasTime, isZonedDateTime, toDate } from './utils.js';
+import type { HourCycle, TimeValue } from '$lib/shared/date/types.js';
+import { convertTimeValueToDateValue } from './field/time-helpers.js';
+import type { ReadableBox } from '$lib/vendor/index.js';
 
 export type Formatter = ReturnType<typeof createFormatter>;
 export type TimeFormatter = ReturnType<typeof createTimeFormatter>;
 
 const defaultPartOptions: Intl.DateTimeFormatOptions = {
-	year: "numeric",
-	month: "numeric",
-	day: "numeric",
-	hour: "numeric",
-	minute: "numeric",
-	second: "numeric",
+	year: 'numeric',
+	month: 'numeric',
+	day: 'numeric',
+	hour: 'numeric',
+	minute: 'numeric',
+	second: 'numeric',
 };
 
 type CreateFormatterOptions = {
 	initialLocale: string;
-	monthFormat: ReadableBox<Intl.DateTimeFormatOptions["month"] | ((month: number) => string)>;
-	yearFormat: ReadableBox<Intl.DateTimeFormatOptions["year"] | ((year: number) => string)>;
+	monthFormat: ReadableBox<Intl.DateTimeFormatOptions['month'] | ((month: number) => string)>;
+	yearFormat: ReadableBox<Intl.DateTimeFormatOptions['year'] | ((year: number) => string)>;
 };
 
 /**
@@ -48,32 +48,29 @@ export function createFormatter(opts: CreateFormatterOptions) {
 	function selectedDate(date: DateValue, includeTime = true) {
 		if (hasTime(date) && includeTime) {
 			return custom(toDate(date), {
-				dateStyle: "long",
-				timeStyle: "long",
+				dateStyle: 'long',
+				timeStyle: 'long',
 			});
 		} else {
 			return custom(toDate(date), {
-				dateStyle: "long",
+				dateStyle: 'long',
 			});
 		}
 	}
 
 	function fullMonthAndYear(date: Date) {
-		if (
-			typeof opts.monthFormat.current !== "function" &&
-			typeof opts.yearFormat.current !== "function"
-		) {
+		if (typeof opts.monthFormat.current !== 'function' && typeof opts.yearFormat.current !== 'function') {
 			return new DateFormatter(locale, {
 				month: opts.monthFormat.current,
 				year: opts.yearFormat.current,
 			}).format(date);
 		}
 		const formattedMonth =
-			typeof opts.monthFormat.current === "function"
+			typeof opts.monthFormat.current === 'function'
 				? opts.monthFormat.current(date.getMonth() + 1)
 				: new DateFormatter(locale, { month: opts.monthFormat.current }).format(date);
 		const formattedYear =
-			typeof opts.yearFormat.current === "function"
+			typeof opts.yearFormat.current === 'function'
 				? opts.yearFormat.current(date.getFullYear())
 				: new DateFormatter(locale, { year: opts.yearFormat.current }).format(date);
 
@@ -81,11 +78,11 @@ export function createFormatter(opts: CreateFormatterOptions) {
 	}
 
 	function fullMonth(date: Date) {
-		return new DateFormatter(locale, { month: "long" }).format(date);
+		return new DateFormatter(locale, { month: 'long' }).format(date);
 	}
 
 	function fullYear(date: Date) {
-		return new DateFormatter(locale, { year: "numeric" }).format(date);
+		return new DateFormatter(locale, { year: 'numeric' }).format(date);
 	}
 
 	function toParts(date: DateValue, options?: Intl.DateTimeFormatOptions) {
@@ -99,32 +96,28 @@ export function createFormatter(opts: CreateFormatterOptions) {
 		}
 	}
 
-	function dayOfWeek(date: Date, length: Intl.DateTimeFormatOptions["weekday"] = "narrow") {
+	function dayOfWeek(date: Date, length: Intl.DateTimeFormatOptions['weekday'] = 'narrow') {
 		return new DateFormatter(locale, { weekday: length }).format(date);
 	}
 
 	function dayPeriod(date: Date, hourCycle: HourCycle | undefined = undefined) {
 		const parts = new DateFormatter(locale, {
-			hour: "numeric",
-			minute: "numeric",
-			hourCycle: hourCycle === 24 ? "h23" : undefined,
+			hour: 'numeric',
+			minute: 'numeric',
+			hourCycle: hourCycle === 24 ? 'h23' : undefined,
 		}).formatToParts(date);
-		const value = parts.find((p) => p.type === "dayPeriod")?.value;
-		if (value === "PM") {
-			return "PM";
+		const value = parts.find((p) => p.type === 'dayPeriod')?.value;
+		if (value === 'PM') {
+			return 'PM';
 		}
-		return "AM";
+		return 'AM';
 	}
 
-	function part(
-		dateObj: DateValue,
-		type: Intl.DateTimeFormatPartTypes,
-		options: Intl.DateTimeFormatOptions = {}
-	) {
+	function part(dateObj: DateValue, type: Intl.DateTimeFormatPartTypes, options: Intl.DateTimeFormatOptions = {}) {
 		const opts = { ...defaultPartOptions, ...options };
 		const parts = toParts(dateObj, opts);
 		const part = parts.find((p) => p.type === type);
-		return part ? part.value : "";
+		return part ? part.value : '';
 	}
 
 	return {
@@ -159,7 +152,7 @@ export function createTimeFormatter(initialLocale: string) {
 
 	function selectedTime(date: TimeValue) {
 		return custom(toDate(convertTimeValueToDateValue(date)), {
-			timeStyle: "long",
+			timeStyle: 'long',
 		});
 	}
 
@@ -178,24 +171,20 @@ export function createTimeFormatter(initialLocale: string) {
 
 	function dayPeriod(date: Date, hourCycle: HourCycle | undefined = undefined) {
 		const parts = new DateFormatter(locale, {
-			hour: "numeric",
-			minute: "numeric",
-			hourCycle: hourCycle === 24 ? "h23" : undefined,
+			hour: 'numeric',
+			minute: 'numeric',
+			hourCycle: hourCycle === 24 ? 'h23' : undefined,
 		}).formatToParts(date);
-		const value = parts.find((p) => p.type === "dayPeriod")?.value;
-		if (value === "PM") return "PM";
-		return "AM";
+		const value = parts.find((p) => p.type === 'dayPeriod')?.value;
+		if (value === 'PM') return 'PM';
+		return 'AM';
 	}
 
-	function part(
-		dateObj: TimeValue,
-		type: Intl.DateTimeFormatPartTypes,
-		options: Intl.DateTimeFormatOptions = {}
-	) {
+	function part(dateObj: TimeValue, type: Intl.DateTimeFormatPartTypes, options: Intl.DateTimeFormatOptions = {}) {
 		const opts = { ...defaultPartOptions, ...options };
 		const parts = toParts(dateObj, opts);
 		const part = parts.find((p) => p.type === type);
-		return part ? part.value : "";
+		return part ? part.value : '';
 	}
 
 	return {

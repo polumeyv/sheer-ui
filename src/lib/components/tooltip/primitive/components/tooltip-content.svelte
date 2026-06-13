@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/vendor/toolbelt/index.js";
-	import type { TooltipContentProps } from "$lib/components/tooltip/primitive/types.js";
-	import { TooltipContentState } from "$lib/components/tooltip/primitive/tooltip.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import PopperLayer from "$lib/components/_shared/utilities/popper-layer/popper-layer.svelte";
-	import { getFloatingContentCSSVars } from "$lib/internal/floating-svelte/floating-utils.svelte.js";
-	import PopperLayerForceMount from "$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte";
-	import { noop } from "$lib/internal/noop.js";
+	import { boxWith, mergeProps } from '$lib/vendor/toolbelt/index.js';
+	import type { TooltipContentProps } from '$lib/components/tooltip/primitive/index.js';
+	import { TooltipContentState } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
+	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
+	import PopperLayerForceMount from '$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte';
 
 	const uid = $props.id();
 
@@ -15,18 +14,18 @@
 		child,
 		id = createId(uid),
 		ref = $bindable(null),
-		side = "top",
+		side = 'top',
 		sideOffset = 0,
-		align = "center",
+		align = 'center',
 		avoidCollisions = true,
 		arrowPadding = 0,
-		sticky = "partial",
+		sticky = 'partial',
 		strategy,
 		hideWhenDetached = false,
 		customAnchor,
 		collisionPadding = 0,
-		onInteractOutside = noop,
-		onEscapeKeydown = noop,
+		onInteractOutside = () => {},
+		onEscapeKeydown = () => {},
 		forceMount = false,
 		style,
 		...restProps
@@ -36,7 +35,7 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		onInteractOutside: boxWith(() => onInteractOutside),
 		onEscapeKeydown: boxWith(() => onEscapeKeydown),
@@ -71,19 +70,14 @@
 		ref={contentState.opts.ref}
 		tooltip={true}
 		shouldRender={contentState.shouldRender}
-		contentPointerEvents={contentState.root.disableHoverableContent ? "none" : "auto"}
-	>
+		contentPointerEvents={contentState.root.disableHoverableContent ? 'none' : 'auto'}>
 		{#snippet popper({ props, wrapperProps })}
 			{@const finalWrapperProps = mergeProps(wrapperProps, {
 				style: {
-					pointerEvents: contentState.root.disableHoverableContent ? "none" : undefined,
+					pointerEvents: contentState.root.disableHoverableContent ? 'none' : undefined,
 				},
 			})}
-			{@const finalProps = mergeProps(
-				props,
-				{ style: getFloatingContentCSSVars("tooltip") },
-				{ style }
-			)}
+			{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('tooltip') }, { style })}
 			{#if child}
 				{@render child({ props: finalProps, wrapperProps: finalWrapperProps, ...contentState.snippetProps })}
 			{:else}
@@ -108,19 +102,14 @@
 		ref={contentState.opts.ref}
 		tooltip={true}
 		shouldRender={contentState.shouldRender}
-		contentPointerEvents={contentState.root.disableHoverableContent ? "none" : "auto"}
-	>
+		contentPointerEvents={contentState.root.disableHoverableContent ? 'none' : 'auto'}>
 		{#snippet popper({ props, wrapperProps })}
 			{@const finalWrapperProps = mergeProps(wrapperProps, {
 				style: {
-					pointerEvents: contentState.root.disableHoverableContent ? "none" : undefined,
+					pointerEvents: contentState.root.disableHoverableContent ? 'none' : undefined,
 				},
 			})}
-			{@const finalProps = mergeProps(
-				props,
-				{ style: getFloatingContentCSSVars("tooltip") },
-				{ style }
-			)}
+			{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('tooltip') }, { style })}
 			{#if child}
 				{@render child({ props: finalProps, wrapperProps: finalWrapperProps, ...contentState.snippetProps })}
 			{:else}

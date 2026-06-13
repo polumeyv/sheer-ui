@@ -1,6 +1,6 @@
 <script lang="ts">
 import Clock from '@lucide/svelte/icons/clock';
-import { cn } from '../../utils.js';
+import { cn } from '../../vendor/utils.js';
 import TimeInput from './time-input.svelte';
 
 interface Props {
