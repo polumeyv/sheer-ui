@@ -90,5 +90,3 @@ export type RadioGroupItemPropsWithoutHTML = WithChild<
 
 export type RadioGroupItemProps = RadioGroupItemPropsWithoutHTML &
 	Without<BitsPrimitiveButtonAttributes, RadioGroupItemPropsWithoutHTML>;
-
-export * as RadioGroup from "$lib/components/radio-group/primitive/exports";

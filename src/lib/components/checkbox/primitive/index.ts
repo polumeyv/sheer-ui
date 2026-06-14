@@ -142,5 +142,3 @@ export type CheckboxGroupLabelPropsWithoutHTML = WithChild;
 
 export type CheckboxGroupLabelProps = CheckboxGroupLabelPropsWithoutHTML &
 	Without<BitsPrimitiveSpanAttributes, CheckboxGroupLabelPropsWithoutHTML>;
-
-export * as Checkbox from "$lib/components/checkbox/primitive/exports";

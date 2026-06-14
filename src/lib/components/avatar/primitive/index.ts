@@ -44,5 +44,3 @@ export type AvatarImageProps = AvatarImagePropsWithoutHTML &
 export type AvatarFallbackPropsWithoutHTML = WithChild;
 export type AvatarFallbackProps = AvatarFallbackPropsWithoutHTML &
 	Without<BitsPrimitiveSpanAttributes, AvatarFallbackPropsWithoutHTML>;
-
-export * as Avatar from "$lib/components/avatar/primitive/exports";
