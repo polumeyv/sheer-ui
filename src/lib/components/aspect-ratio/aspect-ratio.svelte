@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { AspectRatioRootProps } from '$lib/components/aspect-ratio/primitive/index.js';
-	import { AspectRatioRootState } from '$lib/components/aspect-ratio/primitive/aspect-ratio.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { AspectRatioRootProps } from '$lib/components/aspect-ratio/primitive/index';
+	import { AspectRatioRootState } from '$lib/components/aspect-ratio/primitive/aspect-ratio.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 

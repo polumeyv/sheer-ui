@@ -1,6 +1,6 @@
-import { tv, type VariantProps } from '../../vendor/utils';
+import { declareVariants, type VariantProps } from '../../vendor/utils';
 
-export const itemVariants = tv({
+export const itemVariants = declareVariants({
 	base: 'group/item [a]:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-ring/50 flex flex-wrap items-center rounded-md border text-sm transition-colors duration-100 outline-none focus-visible:ring-[3px] [a]:transition-colors',
 	variants: {
 		variant: {
@@ -23,7 +23,7 @@ export const itemVariants = tv({
 export type ItemSize = VariantProps<typeof itemVariants>['size'];
 export type ItemVariant = VariantProps<typeof itemVariants>['variant'];
 
-export const itemMediaVariants = tv({
+export const itemMediaVariants = declareVariants({
 	base: 'flex shrink-0 items-center justify-center gap-2 group-has-[[data-slot=item-description]]/item:translate-y-0.5 group-has-[[data-slot=item-description]]/item:self-start [&_svg]:pointer-events-none',
 	variants: {
 		variant: {

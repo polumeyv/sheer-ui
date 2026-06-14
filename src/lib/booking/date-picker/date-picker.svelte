@@ -1,10 +1,10 @@
 <script lang="ts">
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import type { DateString } from '@polumeyv/lib/schemas';
-	import { cn } from '../../vendor/utils.js';
-	import { buttonVariants } from '../../components/button/index.js';
-	import { Calendar } from '../calendar/index.js';
-	import * as Popover from '../../components/popover/index.js';
+	import { cn } from '../../vendor/utils';
+	import { buttonVariants } from '../../components/button/index';
+	import { Calendar } from '../calendar/index';
+	import * as Popover from '../../components/popover/index';
 
 	interface Props {
 		/** Selected date as a branded `DateString` — every date prop and callback speaks the same type. */

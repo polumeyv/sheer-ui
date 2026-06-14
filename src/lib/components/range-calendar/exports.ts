@@ -28,4 +28,4 @@ export type {
 	RangeCalendarDayProps as DayProps,
 	RangeCalendarMonthSelectProps as MonthSelectProps,
 	RangeCalendarYearSelectProps as YearSelectProps,
-} from "$lib/components/range-calendar/index.js";
+} from "$lib/components/range-calendar/index";

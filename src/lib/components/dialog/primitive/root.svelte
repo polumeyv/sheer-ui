@@ -1,6 +1,6 @@
 <script lang="ts">
-		import { DialogRootState } from '$lib/components/dialog/primitive/dialog.svelte.js';
-	import type { DialogRootProps } from '$lib/components/dialog/primitive/index.js';
+		import { DialogRootState } from '$lib/components/dialog/primitive/dialog.svelte';
+	import type { DialogRootProps } from '$lib/components/dialog/primitive/index';
 
 	let {
 		open = $bindable(false),

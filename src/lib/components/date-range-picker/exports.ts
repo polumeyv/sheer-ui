@@ -44,4 +44,4 @@ export type {
 	DateRangePickerPrevButtonProps as PrevButtonProps,
 	DateRangePickerMonthSelectProps as MonthSelectProps,
 	DateRangePickerYearSelectProps as YearSelectProps,
-} from "$lib/components/date-range-picker/index.js";
+} from "$lib/components/date-range-picker/index";

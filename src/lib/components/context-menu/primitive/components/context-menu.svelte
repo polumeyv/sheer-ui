@@ -1,7 +1,8 @@
 <script lang="ts">
-		import type { ContextMenuRootProps } from "$lib/components/context-menu/primitive/index.js";
+		import type { ContextMenuRootProps } from "$lib/components/context-menu/primitive/index";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
-	import { MenuMenuState, MenuRootState } from "$lib/components/_shared/menu/menu.svelte.js";
+	import { MenuMenuState } from "$lib/components/_shared/menu/menu.svelte";
+	import { MenuRootState } from "$lib/components/_shared/menu/root.svelte";
 
 	let {
 		open = $bindable(false),

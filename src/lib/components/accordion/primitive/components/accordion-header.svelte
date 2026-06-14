@@ -1,19 +1,12 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/merge-props.js";
-	import type { AccordionHeaderProps } from "$lib/components/accordion/primitive/index.js";
-	import { AccordionHeaderState } from "$lib/components/accordion/primitive/accordion.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/vendor';
+	import type { AccordionHeaderProps } from '$lib/components/accordion/primitive/index';
+	import { AccordionHeaderState } from '$lib/components/accordion/primitive/accordion.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
-	let {
-		id = createId(uid),
-		level = 2,
-		children,
-		child,
-		ref = $bindable(null),
-		...restProps
-	}: AccordionHeaderProps = $props();
+	let { id = createId(uid), level = 2, children, child, ref = $bindable(null), ...restProps }: AccordionHeaderProps = $props();
 
 	const headerState = AccordionHeaderState.create({
 		id: {

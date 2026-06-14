@@ -1,6 +1,6 @@
 <script lang="ts">
 	import HiddenInput from '$lib/components/_shared/utilities/hidden-input.svelte';
-	import { SwitchInputState } from '$lib/components/switch/primitive/switch.svelte.js';
+	import { SwitchInputState } from '$lib/components/switch/primitive/switch.svelte';
 
 	const inputState = SwitchInputState.create();
 </script>

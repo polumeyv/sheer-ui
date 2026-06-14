@@ -1,12 +1,12 @@
 <script lang="ts">
 	import Clock from '@lucide/svelte/icons/clock';
-	import { cn } from '../../vendor/utils.js';
-	import { buttonVariants } from '../../components/button/index.js';
-	import * as Select from '../../components/select/index.js';
-	import * as Popover from '../../components/popover/index.js';
+	import { cn } from '../../vendor/utils';
+	import { buttonVariants } from '../../components/button/index';
+	import * as Select from '../../components/select/index';
+	import * as Popover from '../../components/popover/index';
 	import { formatTimeDisplay } from '@polumeyv/lib/public';
 	import type { TimeString } from '@polumeyv/lib/schemas';
-	import { generateTimeSlots, isTimeInRange, compareTime, getTimeDuration, formatDuration, type TimeSlot, type TimeRange, b_HOURS, EXTENDED_HOURS } from './time-slots.js';
+	import { generateTimeSlots, isTimeInRange, compareTime, getTimeDuration, formatDuration, type TimeSlot, type TimeRange, b_HOURS, EXTENDED_HOURS } from './time-slots';
 
 	// The internal TimeRange keeps plain strings ('' = unset end); every set value comes from a TimeSlot,
 	// so casting at the guarded display seam is sound.
@@ -164,15 +164,15 @@
 		<Popover.Content class={cn('flex w-auto! gap-2 p-3!', contentClass)} {align} {side}>
 			<div class="flex flex-col gap-1">
 				<span class="text-xs text-muted-foreground px-1">Start</span>
-				<Select.Root type="single" value={value?.start} onValueChange={handleStartChange}>
-					<Select.Trigger class="w-[120px]">
-						{value?.start ? fmt(value.start) : 'Start time'}
-					</Select.Trigger>
-					<Select.Content class="max-h-50!">
-						{#each startSlots as slot (slot.value)}
-							<Select.Item value={slot.value}>{slot.label}</Select.Item>
-						{/each}
-					</Select.Content>
+				<Select.Root
+					class="w-[120px]"
+					placeholder="Start time"
+					maxHeight="12.5rem"
+					value={value?.start}
+					onchange={(e) => handleStartChange(e.currentTarget.value || undefined)}>
+					{#each startSlots as slot (slot.value)}
+						<Select.Option value={slot.value}>{slot.label}</Select.Option>
+					{/each}
 				</Select.Root>
 			</div>
 
@@ -180,15 +180,16 @@
 
 			<div class="flex flex-col gap-1">
 				<span class="text-xs text-muted-foreground px-1">End</span>
-				<Select.Root type="single" value={value?.end} onValueChange={handleEndChange} disabled={!value?.start}>
-					<Select.Trigger class="w-[120px]">
-						{value?.end ? fmt(value.end) : 'End time'}
-					</Select.Trigger>
-					<Select.Content class="max-h-50!">
-						{#each endSlots as slot (slot.value)}
-							<Select.Item value={slot.value}>{slot.label}</Select.Item>
-						{/each}
-					</Select.Content>
+				<Select.Root
+					class="w-[120px]"
+					placeholder="End time"
+					maxHeight="12.5rem"
+					value={value?.end}
+					onchange={(e) => handleEndChange(e.currentTarget.value || undefined)}
+					disabled={!value?.start}>
+					{#each endSlots as slot (slot.value)}
+						<Select.Option value={slot.value}>{slot.label}</Select.Option>
+					{/each}
 				</Select.Root>
 			</div>
 		</Popover.Content>

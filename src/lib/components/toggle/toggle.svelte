@@ -4,11 +4,11 @@
 </script>
 
 <script lang="ts">
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { ToggleRootProps } from '$lib/components/toggle/primitive/index.js';
-	import { ToggleRootState } from '$lib/components/toggle/primitive/toggle.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '../../vendor/utils.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { ToggleRootProps } from '$lib/components/toggle/primitive/index';
+	import { ToggleRootState } from '$lib/components/toggle/primitive/toggle.svelte';
+	import { createId } from '$lib/vendor/create-id';
+	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();
 
@@ -16,7 +16,7 @@
 		ref = $bindable(null),
 		id = createId(uid),
 		pressed = $bindable(false),
-		onPressedChange = (() => {}),
+		onPressedChange = () => {},
 		disabled = false,
 		type = 'button',
 		children,
@@ -68,8 +68,8 @@
 			},
 			restProps,
 			toggleState.props,
-			{ type }
-		)
+			{ type },
+		),
 	);
 </script>
 

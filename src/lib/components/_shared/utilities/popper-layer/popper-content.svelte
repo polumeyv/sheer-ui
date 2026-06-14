@@ -1,7 +1,7 @@
 <script lang="ts">
 	import FloatingLayerContentStatic from "$lib/components/_shared/utilities/floating-layer/components/floating-layer-content-static.svelte";
 	import FloatingLayerContent from "$lib/components/_shared/utilities/floating-layer/components/floating-layer-content.svelte";
-	import type { FloatingLayerContentImplProps } from "$lib/components/_shared/utilities/floating-layer/index.js";
+	import type { FloatingLayerContentImplProps } from "$lib/components/_shared/utilities/floating-layer/index";
 
 	let {
 		content,

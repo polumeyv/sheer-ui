@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { ScrollAreaCornerProps } from "$lib/components/scroll-area/primitive/index.js";
-	import { getScrollAreaRootContext } from "$lib/components/scroll-area/primitive/scroll-area.svelte.js";
+	import type { ScrollAreaCornerProps } from "$lib/components/scroll-area/primitive/index";
+	import { getScrollAreaRootContext } from "$lib/components/scroll-area/primitive/scroll-area.svelte";
 	import ScrollAreaCornerImpl from "$lib/components/scroll-area/primitive/components/scroll-area-corner-impl.svelte";
-	import { createId } from "$lib/internal/create-id.js";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

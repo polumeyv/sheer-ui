@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index";
 	import {
 		ScrollAreaScrollbarAutoState,
 		ScrollAreaScrollbarHoverState,
-	} from "$lib/components/scroll-area/primitive/scroll-area.svelte.js";
-	import type { _ScrollbarStubProps } from "$lib/components/scroll-area/primitive/index.js";
+	} from "$lib/components/scroll-area/primitive/scroll-area.svelte";
+	import type { _ScrollbarStubProps } from "$lib/components/scroll-area/primitive/index";
 	import ScrollAreaScrollbarVisible from "$lib/components/scroll-area/primitive/components/scroll-area-scrollbar-visible.svelte";
 	import PresenceLayer from "$lib/components/_shared/utilities/presence-layer/presence-layer.svelte";
 

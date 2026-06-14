@@ -1,8 +1,8 @@
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
+import type { OnChangeFn, WithChild, Without } from "$lib/vendor/types";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/shared/attributes";
 
 type PaginationSnippetProps = {
 	pages: PageItem[];
@@ -99,4 +99,4 @@ export type PageItem = (Page | Ellipsis) & {
 	key: string;
 };
 
-export * as Pagination from "$lib/components/pagination/primitive/exports.js";
+export * as Pagination from "$lib/components/pagination/primitive/exports";

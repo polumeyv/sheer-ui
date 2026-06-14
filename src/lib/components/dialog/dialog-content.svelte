@@ -1,10 +1,10 @@
 <script lang="ts">
-import * as DialogPrimitive from './primitive/index.js';
+import * as DialogPrimitive from './primitive/index';
 import DialogPortal from './dialog-portal.svelte';
 import XIcon from '@lucide/svelte/icons/x';
 import type { Snippet } from 'svelte';
 import * as Dialog from './index';
-import { cn, type WithoutChildrenOrChild } from '../../vendor/utils.js';
+import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 import type { ComponentProps } from 'svelte';
 
 let {

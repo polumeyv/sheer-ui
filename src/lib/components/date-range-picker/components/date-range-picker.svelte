@@ -1,15 +1,15 @@
 <script lang="ts">import { untrack } from "svelte";
-		import { mergeProps } from "$lib/vendor/index.js";
+		import { mergeProps } from "$lib/vendor/index";
 	import type { DateValue } from "@internationalized/date";
-	import { DateRangePickerRootState } from "$lib/components/date-range-picker/date-range-picker.svelte.js";
-	import type { DateRangePickerRootProps } from "$lib/components/date-range-picker/index.js";
-	import { PopoverRootState } from "$lib/components/popover/primitive/popover.svelte.js";
-	import { DateRangeFieldRootState } from "$lib/components/date-range-field/date-range-field.svelte.js";
+	import { DateRangePickerRootState } from "$lib/components/date-range-picker/date-range-picker.svelte";
+	import type { DateRangePickerRootProps } from "$lib/components/date-range-picker/index";
+	import { PopoverRootState } from "$lib/components/popover/primitive/popover.svelte";
+	import { DateRangeFieldRootState } from "$lib/components/date-range-field/date-range-field.svelte";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
-	import { useId } from "$lib/internal/use-id.js";
-	import type { DateRange } from "$lib/shared/index.js";
-	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
-	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
+	import { useId } from "$lib/vendor/use-id";
+	import type { DateRange } from "$lib/shared/index";
+	import { getDefaultDate } from "$lib/vendor/date-time/utils";
+	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers";
 
 	let {
 		open = $bindable(false),

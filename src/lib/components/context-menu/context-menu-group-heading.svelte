@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ContextMenu as ContextMenuPrimitive } from "$lib/components/_shared/primitives.js";
+import { ContextMenu as ContextMenuPrimitive } from "$lib/components/_shared/primitives";
 import { cn } from '../../vendor/utils';
 
 let {

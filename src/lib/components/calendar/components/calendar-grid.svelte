@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import { CalendarGridState } from "$lib/components/calendar/calendar.svelte.js";
-	import type { CalendarGridProps } from "$lib/components/calendar/index.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import { CalendarGridState } from "$lib/components/calendar/calendar.svelte";
+	import type { CalendarGridProps } from "$lib/components/calendar/index";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

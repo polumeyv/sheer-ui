@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { CollapsibleRootProps } from '$lib/components/collapsible/primitive/index.js';
-	import { CollapsibleRootState } from '$lib/components/collapsible/primitive/collapsible.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { CollapsibleRootProps } from '$lib/components/collapsible/primitive/index';
+	import { CollapsibleRootState } from '$lib/components/collapsible/primitive/collapsible.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
@@ -13,8 +13,8 @@
 		ref = $bindable(null),
 		open = $bindable(false),
 		disabled = false,
-		onOpenChange = (() => {}),
-		onOpenChangeComplete = (() => {}),
+		onOpenChange = () => {},
+		onOpenChangeComplete = () => {},
 		...restProps
 	}: CollapsibleRootProps = $props();
 
@@ -53,9 +53,7 @@
 		},
 	});
 
-	const mergedProps = $derived(
-		mergeProps({ 'data-slot': 'collapsible' }, restProps, rootState.props),
-	);
+	const mergedProps = $derived(mergeProps({ 'data-slot': 'collapsible' }, restProps, rootState.props));
 </script>
 
 {#if child}

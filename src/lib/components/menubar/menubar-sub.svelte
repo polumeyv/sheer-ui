@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Menubar as MenubarPrimitive } from "$lib/components/_shared/primitives.js";
+import { Menubar as MenubarPrimitive } from "$lib/components/_shared/primitives";
 
 let { open = $bindable(false), ...restProps }: MenubarPrimitive.SubProps = $props();
 </script>

@@ -8,4 +8,4 @@ export type {
 	DateRangeFieldLabelProps as LabelProps,
 	DateRangeFieldInputProps as InputProps,
 	DateRangeFieldSegmentProps as SegmentProps,
-} from "$lib/components/date-range-field/index.js";
+} from "$lib/components/date-range-field/index";

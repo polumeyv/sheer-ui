@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { AlertDialogContentProps } from '$lib/components/alert-dialog/primitive/index.js';
-	import { DialogContentState } from '$lib/components/dialog/primitive/dialog.svelte.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { AlertDialogContentProps } from '$lib/components/alert-dialog/primitive/index';
+	import { DialogContentState } from '$lib/components/dialog/primitive/dialog.svelte';
 	import DismissibleLayer from '$lib/components/_shared/utilities/dismissible-layer/dismissible-layer.svelte';
 	import EscapeLayer from '$lib/components/_shared/utilities/escape-layer/escape-layer.svelte';
 	import FocusScope from '$lib/components/_shared/utilities/focus-scope/focus-scope.svelte';
 	import TextSelectionLayer from '$lib/components/_shared/utilities/text-selection-layer/text-selection-layer.svelte';
 	import ScrollLock from '$lib/components/_shared/utilities/scroll-lock/scroll-lock.svelte';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '$lib/vendor/create-id';
 	import AlertDialogPortal from './alert-dialog-portal.svelte';
 	import AlertDialogOverlay from './alert-dialog-overlay.svelte';
 	import { cn, type WithoutChild, type WithoutChildrenOrChild } from '../../vendor/utils';

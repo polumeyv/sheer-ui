@@ -1,6 +1,6 @@
 <script lang="ts">
-		import type { FocusScopeImplProps } from "$lib/components/_shared/utilities/focus-scope/index.js";
-	import { FocusScope } from "$lib/components/_shared/utilities/focus-scope/focus-scope.svelte.js";
+		import type { FocusScopeImplProps } from "$lib/components/_shared/utilities/focus-scope/index";
+	import { FocusScope } from "$lib/components/_shared/utilities/focus-scope/use-focus-scope.svelte";
 
 	let {
 		enabled = false,

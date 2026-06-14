@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { ArrowProps } from "$lib/components/_shared/utilities/arrow/index.js";
-	import { useId } from "$lib/internal/use-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { ArrowProps } from "$lib/components/_shared/utilities/arrow/index";
+	import { useId } from "$lib/vendor/use-id";
 
 	let {
 		id = useId(),

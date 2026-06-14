@@ -1,6 +1,6 @@
 <script lang="ts">
-		import type { DismissibleLayerImplProps } from "$lib/components/_shared/utilities/dismissible-layer/index.js";
-	import { DismissibleLayerState } from "$lib/components/_shared/utilities/dismissible-layer/use-dismissable-layer.svelte.js";
+		import type { DismissibleLayerImplProps } from "$lib/components/_shared/utilities/dismissible-layer/index";
+	import { DismissibleLayerState } from "$lib/components/_shared/utilities/dismissible-layer/use-dismissable-layer.svelte";
 
 	let {
 		interactOutsideBehavior = "close",

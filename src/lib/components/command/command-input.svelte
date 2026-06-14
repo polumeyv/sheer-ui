@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { CommandInputProps } from '$lib/components/command/primitive/index.js';
-	import { CommandInputState } from '$lib/components/command/primitive/command.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { CommandInputProps } from '$lib/components/command/primitive/index';
+	import { CommandInputState } from '$lib/components/command/primitive/command.svelte';
+	import { createId } from '$lib/vendor/create-id';
 	import SearchIcon from '@lucide/svelte/icons/search';
 	import { cn } from '../../vendor/utils';
 

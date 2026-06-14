@@ -1,7 +1,7 @@
-import { attachRef, type RefAttachment } from '$lib/internal/attach-ref.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { ReadableProps, WithRefProps, WritableProps } from '$lib/vendor/utils.js';
-import type { BitsMouseEvent } from '$lib/internal/types.js';
+import { attachRef, type RefAttachment } from '$lib/vendor/attach-ref';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import type { ReadableProps, WithRefProps, WritableProps } from '$lib/vendor/utils';
+import type { BitsMouseEvent } from '$lib/vendor/types';
 
 export const toggleAttrs = createBitsAttrs({
 	component: 'toggle',

@@ -1,5 +1,5 @@
 <script lang="ts">
-import * as SheetPrimitive from '../dialog/primitive/index.js';
+import * as SheetPrimitive from '../dialog/primitive/index';
 
 let { ref = $bindable(null), ...restProps }: SheetPrimitive.CloseProps = $props();
 </script>

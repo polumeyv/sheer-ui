@@ -1,18 +1,18 @@
 import type { DateValue } from "@internationalized/date";
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
+import type { OnChangeFn, WithChild, Without } from "$lib/vendor/types";
 import type {
 	BitsPrimitiveDivAttributes,
 	BitsPrimitiveSpanAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/shared/attributes";
 import type {
 	DateOnInvalid,
 	DateRange,
 	DateRangeValidator,
 	EditableSegmentPart,
 	SegmentPart,
-} from "$lib/shared/index.js";
-import type { DateFieldSegmentProps, DateFieldSegmentPropsWithoutHTML } from "$lib/components/date-field/index.js";
-import type { Granularity } from "$lib/shared/date/types.js";
+} from "$lib/shared/index";
+import type { DateFieldSegmentProps, DateFieldSegmentPropsWithoutHTML } from "$lib/components/date-field/index";
+import type { Granularity } from "$lib/shared/date/types";
 
 export type DateRangeFieldRootPropsWithoutHTML = WithChild<{
 	/**
@@ -193,4 +193,4 @@ export type DateRangeFieldSegmentPropsWithoutHTML = DateFieldSegmentPropsWithout
 
 export type DateRangeFieldSegmentProps = DateFieldSegmentProps;
 
-export * as DateRangeField from "$lib/components/date-range-field/exports.js";
+export * as DateRangeField from "$lib/components/date-range-field/exports";

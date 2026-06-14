@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { WritableProp } from '$lib/vendor/utils.js';
-	import type { ToggleGroupRootProps } from '$lib/components/toggle-group/primitive/index.js';
-	import { ToggleGroupRootState } from '$lib/components/toggle-group/primitive/toggle-group.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { WritableProp } from '$lib/vendor/utils';
+	import type { ToggleGroupRootProps } from '$lib/components/toggle-group/primitive/index';
+	import { ToggleGroupRootState } from '$lib/components/toggle-group/primitive/toggle-group.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 

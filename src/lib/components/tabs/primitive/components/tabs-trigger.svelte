@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/merge-props.js";
-	import type { TabsTriggerProps } from "$lib/components/tabs/primitive/index.js";
-	import { TabsTriggerState } from "$lib/components/tabs/primitive/tabs.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/vendor';
+	import type { TabsTriggerProps } from '$lib/components/tabs/primitive/index';
+	import { TabsTriggerState } from '$lib/components/tabs/primitive/tabs.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
@@ -11,7 +11,7 @@
 		children,
 		disabled = false,
 		id = createId(uid),
-		type = "button",
+		type = 'button',
 		value,
 		ref = $bindable(null),
 		...restProps

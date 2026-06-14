@@ -1,7 +1,7 @@
 import { createContext, untrack } from 'svelte';
-import { type ReadableProps, type WritableProps, attachRef, DOMContext } from '$lib/vendor/index.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
+import { type ReadableProps, type WritableProps, attachRef, DOMContext } from '$lib/vendor/index';
+import { kbd } from '$lib/vendor/kbd';
+import { createBitsAttrs } from '$lib/vendor/attrs';
 import type {
 	BitsFocusEvent,
 	BitsKeyboardEvent,
@@ -10,10 +10,10 @@ import type {
 	OnChangeFn,
 	RefAttachment,
 	WithRefProps,
-} from '$lib/internal/types.js';
-import type { Measurable } from '$lib/internal/floating-svelte/types.js';
-import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
-import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
+} from '$lib/vendor/types';
+import type { Measurable } from '$lib/vendor/floating-svelte/types';
+import { PresenceManager } from '$lib/vendor/presence-manager.svelte';
+import { SafePolygon } from '$lib/vendor/safe-polygon.svelte';
 import { isTabbable } from 'tabbable';
 
 const popoverAttrs = createBitsAttrs({

@@ -12,4 +12,4 @@ export type {
 	LinkPreviewContentStaticProps as ContentStaticProps,
 	LinkPreviewTriggerProps as TriggerProps,
 	LinkPreviewPortalProps as PortalProps,
-} from "$lib/components/link-preview/index.js";
+} from "$lib/components/link-preview/index";

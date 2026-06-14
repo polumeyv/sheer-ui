@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps, srOnlyStyles } from "$lib/vendor/index.js";
+	import { mergeProps, srOnlyStyles } from "$lib/vendor/index";
 	import type { HTMLInputAttributes } from "svelte/elements";
 
 	let { value = $bindable(), ...restProps }: HTMLInputAttributes = $props();

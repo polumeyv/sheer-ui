@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { DatePickerTriggerProps } from "$lib/components/date-picker/index.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { DatePickerTriggerProps } from "$lib/components/date-picker/index";
 	import PopoverTrigger from "$lib/components/popover/primitive/components/popover-trigger.svelte";
-	import { dateFieldAttrs } from "$lib/components/date-field/date-field.svelte.js";
+	import { dateFieldAttrs } from "$lib/components/date-field/date-field.svelte";
 	import {
 		handleSegmentNavigation,
 		isSegmentNavigationKey,
-	} from "$lib/internal/date-time/field/segments.js";
+	} from "$lib/vendor/date-time/field/segments";
 
 	let { ref = $bindable(null), onkeydown, ...restProps }: DatePickerTriggerProps = $props();
 

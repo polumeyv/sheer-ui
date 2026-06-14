@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { LabelRootProps } from '$lib/components/label/primitive/index.js';
-	import { LabelRootState } from '$lib/components/label/primitive/label.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { LabelRootProps } from '$lib/components/label/primitive/index';
+	import { LabelRootState } from '$lib/components/label/primitive/label.svelte';
+	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();

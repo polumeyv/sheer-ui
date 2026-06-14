@@ -1,6 +1,6 @@
 <script lang="ts">
 import { cn } from '../../vendor/utils';
-import { Menubar as MenubarPrimitive } from "$lib/components/_shared/primitives.js";
+import { Menubar as MenubarPrimitive } from "$lib/components/_shared/primitives";
 import type { ComponentProps } from 'svelte';
 
 let {

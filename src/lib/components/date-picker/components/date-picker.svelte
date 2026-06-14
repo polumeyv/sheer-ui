@@ -2,13 +2,13 @@
 
 	// Date Picker composes the DateField, Popover, and Calendar components
 	import type { DateValue } from "@internationalized/date";
-	import { DatePickerRootState } from "$lib/components/date-picker/date-picker.svelte.js";
-	import type { DatePickerRootProps } from "$lib/components/date-picker/index.js";
-	import { PopoverRootState } from "$lib/components/popover/primitive/popover.svelte.js";
-	import { DateFieldRootState } from "$lib/components/date-field/date-field.svelte.js";
-	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index.js";
-	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
-	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
+	import { DatePickerRootState } from "$lib/components/date-picker/date-picker.svelte";
+	import type { DatePickerRootProps } from "$lib/components/date-picker/index";
+	import { PopoverRootState } from "$lib/components/popover/primitive/popover.svelte";
+	import { DateFieldRootState } from "$lib/components/date-field/date-field.svelte";
+	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index";
+	import { getDefaultDate } from "$lib/vendor/date-time/utils";
+	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers";
 
 	let {
 		open = $bindable(false),

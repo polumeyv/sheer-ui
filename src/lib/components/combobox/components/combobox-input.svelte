@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { ComboboxInputProps } from "$lib/components/combobox/index.js";
-	import { useId } from "$lib/internal/use-id.js";
-	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index.js";
-	import { SelectInputState } from "$lib/components/select/primitive/select.svelte.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { ComboboxInputProps } from "$lib/components/combobox/index";
+	import { useId } from "$lib/vendor/use-id";
+	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index";
+	import { SelectInputState } from "$lib/components/combobox/primitive/select.svelte";
 
 	let {
 		id = useId(),

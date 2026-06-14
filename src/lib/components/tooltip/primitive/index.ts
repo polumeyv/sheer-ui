@@ -1,7 +1,7 @@
-import type { FloatingLayerContentProps } from "$lib/components/_shared/utilities/floating-layer/index.js";
-import type { ArrowProps, ArrowPropsWithoutHTML } from "$lib/components/_shared/utilities/arrow/index.js";
-import type { DismissibleLayerProps } from "$lib/components/_shared/utilities/dismissible-layer/index.js";
-import type { EscapeLayerProps } from "$lib/components/_shared/utilities/escape-layer/index.js";
+import type { FloatingLayerContentProps } from "$lib/components/_shared/utilities/floating-layer/index";
+import type { ArrowProps, ArrowPropsWithoutHTML } from "$lib/components/_shared/utilities/arrow/index";
+import type { DismissibleLayerProps } from "$lib/components/_shared/utilities/dismissible-layer/index";
+import type { EscapeLayerProps } from "$lib/components/_shared/utilities/escape-layer/index";
 import type { Snippet } from "svelte";
 import type {
 	OnChangeFn,
@@ -9,14 +9,14 @@ import type {
 	WithChildNoChildrenSnippetProps,
 	WithChildren,
 	Without,
-} from "$lib/internal/types.js";
+} from "$lib/vendor/types";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
-import type { PortalProps } from "$lib/components/_shared/utilities/portal/index.js";
-import type { FloatingContentSnippetProps, StaticContentSnippetProps } from "$lib/shared/types.js";
-import type { TooltipTether as TooltipTetherImpl } from "$lib/components/tooltip/primitive/tooltip.svelte.js";
+} from "$lib/shared/attributes";
+import type { PortalProps } from "$lib/components/_shared/utilities/portal/index";
+import type { FloatingContentSnippetProps, StaticContentSnippetProps } from "$lib/shared/types";
+import type { TooltipTether as TooltipTetherImpl } from "$lib/components/tooltip/primitive/tooltip.svelte";
 
 export type TooltipTether<Payload = never> = TooltipTetherImpl<Payload>;
 
@@ -203,4 +203,4 @@ export type TooltipTriggerPropsWithoutHTML<Payload = never> = WithChild<{
 export type TooltipTriggerProps<Payload = never> = TooltipTriggerPropsWithoutHTML<Payload> &
 	Without<BitsPrimitiveButtonAttributes, TooltipTriggerPropsWithoutHTML<Payload>>;
 
-export * as Tooltip from "$lib/components/tooltip/primitive/exports.js";
+export * as Tooltip from "$lib/components/tooltip/primitive/exports";

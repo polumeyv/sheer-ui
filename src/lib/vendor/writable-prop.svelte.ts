@@ -1,4 +1,4 @@
-import type { WritableProp } from './utils.js';
+import type { WritableProp } from './utils';
 
 /**
  * A standalone writable reactive cell exposed as a `{ current }` accessor — the

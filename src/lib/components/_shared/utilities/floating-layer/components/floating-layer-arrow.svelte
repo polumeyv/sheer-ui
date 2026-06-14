@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import { FloatingArrowState } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte.js";
-	import { Arrow, type ArrowProps } from "$lib/components/_shared/utilities/arrow/index.js";
-	import { useId } from "$lib/internal/use-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import { FloatingArrowState } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte";
+	import { Arrow, type ArrowProps } from "$lib/components/_shared/utilities/arrow/index";
+	import { useId } from "$lib/vendor/use-id";
 
 	let { id = useId(), ref = $bindable(null), ...restProps }: ArrowProps = $props();
 

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { WritableProp } from '$lib/vendor/utils.js';
-	import { AccordionRootState } from '$lib/components/accordion/primitive/accordion.svelte.js';
-	import type { AccordionRootProps } from '$lib/components/accordion/primitive/index.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { WritableProp } from '$lib/vendor/utils';
+	import { AccordionRootState } from '$lib/components/accordion/primitive/accordion.svelte';
+	import type { AccordionRootProps } from '$lib/components/accordion/primitive/index';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
@@ -16,7 +16,7 @@
 		value = $bindable(),
 		ref = $bindable(null),
 		id = createId(uid),
-		onValueChange = (() => {}),
+		onValueChange = () => {},
 		loop = true,
 		orientation = 'vertical',
 		...restProps
@@ -77,9 +77,7 @@
 		},
 	});
 
-	const mergedProps = $derived(
-		mergeProps({ 'data-slot': 'accordion' }, restProps, rootState.props),
-	);
+	const mergedProps = $derived(mergeProps({ 'data-slot': 'accordion' }, restProps, rootState.props));
 </script>
 
 {#if child}

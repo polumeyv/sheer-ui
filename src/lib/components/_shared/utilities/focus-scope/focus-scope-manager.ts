@@ -1,5 +1,5 @@
-import { writableProp } from '$lib/vendor/index.js';
-import { FocusScope } from '$lib/components/_shared/utilities/focus-scope/focus-scope.svelte.js';
+import { writableProp } from '$lib/vendor/index';
+import { FocusScope } from '$lib/components/_shared/utilities/focus-scope/use-focus-scope.svelte';
 
 export class FocusScopeManager {
 	static instance: FocusScopeManager;

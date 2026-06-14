@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { TooltipContentProps } from '$lib/components/tooltip/primitive/index.js';
-	import { TooltipContentState } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { TooltipContentProps } from '$lib/components/tooltip/primitive/index';
+	import { TooltipContentState } from '$lib/components/tooltip/primitive/tooltip.svelte';
+	import { createId } from '$lib/vendor/create-id';
 	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
-	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
-	import PopperLayerForceMount from '$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte';
+	import { getFloatingContentCSSVars } from '$lib/vendor/floating-svelte/floating-utils.svelte';
 
 	const uid = $props.id();
 
@@ -54,68 +53,34 @@
 	const mergedProps = $derived(mergeProps(restProps, floatingProps, contentState.props));
 </script>
 
-{#if forceMount}
-	<PopperLayerForceMount
-		{...mergedProps}
-		{...contentState.popperProps}
-		enabled={contentState.root.opts.open.current}
-		{id}
-		trapFocus={false}
-		loop={false}
-		preventScroll={false}
-		forceMount={true}
-		ref={contentState.opts.ref}
-		tooltip={true}
-		shouldRender={contentState.shouldRender}
-		contentPointerEvents={contentState.root.disableHoverableContent ? 'none' : 'auto'}>
-		{#snippet popper({ props, wrapperProps })}
-			{@const finalWrapperProps = mergeProps(wrapperProps, {
-				style: {
-					pointerEvents: contentState.root.disableHoverableContent ? 'none' : undefined,
-				},
-			})}
-			{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('tooltip') }, { style })}
-			{#if child}
-				{@render child({ props: finalProps, wrapperProps: finalWrapperProps, ...contentState.snippetProps })}
-			{:else}
-				<div {...finalWrapperProps}>
-					<div {...finalProps}>
-						{@render children?.()}
-					</div>
+<PopperLayer
+	{...mergedProps}
+	{...contentState.popperProps}
+	open={contentState.root.opts.open.current}
+	{id}
+	trapFocus={false}
+	loop={false}
+	preventScroll={false}
+	{forceMount}
+	ref={contentState.opts.ref}
+	tooltip={true}
+	shouldRender={contentState.shouldRender}
+	contentPointerEvents={contentState.root.disableHoverableContent ? 'none' : 'auto'}>
+	{#snippet popper({ props, wrapperProps })}
+		{@const finalWrapperProps = mergeProps(wrapperProps, {
+			style: {
+				pointerEvents: contentState.root.disableHoverableContent ? 'none' : undefined,
+			},
+		})}
+		{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('tooltip') }, { style })}
+		{#if child}
+			{@render child({ props: finalProps, wrapperProps: finalWrapperProps, ...contentState.snippetProps })}
+		{:else}
+			<div {...finalWrapperProps}>
+				<div {...finalProps}>
+					{@render children?.()}
 				</div>
-			{/if}
-		{/snippet}
-	</PopperLayerForceMount>
-{:else if !forceMount}
-	<PopperLayer
-		{...mergedProps}
-		{...contentState.popperProps}
-		open={contentState.root.opts.open.current}
-		{id}
-		trapFocus={false}
-		loop={false}
-		preventScroll={false}
-		forceMount={false}
-		ref={contentState.opts.ref}
-		tooltip={true}
-		shouldRender={contentState.shouldRender}
-		contentPointerEvents={contentState.root.disableHoverableContent ? 'none' : 'auto'}>
-		{#snippet popper({ props, wrapperProps })}
-			{@const finalWrapperProps = mergeProps(wrapperProps, {
-				style: {
-					pointerEvents: contentState.root.disableHoverableContent ? 'none' : undefined,
-				},
-			})}
-			{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('tooltip') }, { style })}
-			{#if child}
-				{@render child({ props: finalProps, wrapperProps: finalWrapperProps, ...contentState.snippetProps })}
-			{:else}
-				<div {...finalWrapperProps}>
-					<div {...finalProps}>
-						{@render children?.()}
-					</div>
-				</div>
-			{/if}
-		{/snippet}
-	</PopperLayer>
-{/if}
+			</div>
+		{/if}
+	{/snippet}
+</PopperLayer>

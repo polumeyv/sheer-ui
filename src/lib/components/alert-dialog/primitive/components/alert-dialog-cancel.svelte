@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { AlertDialogCancelProps } from "$lib/components/alert-dialog/primitive/index.js";
-	import { AlertDialogCancelState } from "$lib/components/dialog/primitive/dialog.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { AlertDialogCancelProps } from "$lib/components/alert-dialog/primitive/index";
+	import { AlertDialogCancelState } from "$lib/components/dialog/primitive/dialog.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

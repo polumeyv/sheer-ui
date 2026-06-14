@@ -1,18 +1,12 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/merge-props.js";
-	import type { TabsListProps } from "$lib/components/tabs/primitive/index.js";
-	import { TabsListState } from "$lib/components/tabs/primitive/tabs.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/vendor';
+	import type { TabsListProps } from '$lib/components/tabs/primitive/index';
+	import { TabsListState } from '$lib/components/tabs/primitive/tabs.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
-	let {
-		child,
-		children,
-		id = createId(uid),
-		ref = $bindable(null),
-		...restProps
-	}: TabsListProps = $props();
+	let { child, children, id = createId(uid), ref = $bindable(null), ...restProps }: TabsListProps = $props();
 
 	const listState = TabsListState.create({
 		id: {

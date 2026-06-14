@@ -1,11 +1,11 @@
 import { createContext, untrack } from 'svelte';
-import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
+import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index';
 import { on } from 'svelte/events';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { getTabbableCandidates } from '$lib/internal/focus.js';
-import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
-import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { getTabbableCandidates } from '$lib/vendor/focus';
+import { SafePolygon } from '$lib/vendor/safe-polygon.svelte';
+import { PresenceManager } from '$lib/vendor/presence-manager.svelte';
 
 const linkPreviewAttrs = createBitsAttrs({
 	component: 'link-preview',

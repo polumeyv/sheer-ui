@@ -1,9 +1,9 @@
 import { getContext, hasContext, setContext, untrack } from 'svelte';
-import { attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
+import { attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { kbd } from '$lib/vendor/kbd';
+import { PresenceManager } from '$lib/vendor/presence-manager.svelte';
 
 type DialogVariant = 'alert-dialog' | 'dialog';
 

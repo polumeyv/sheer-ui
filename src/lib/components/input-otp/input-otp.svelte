@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { PinInputRootProps } from '$lib/components/pin-input/index.js';
-	import { PinInputRootState } from '$lib/components/pin-input/pin-input.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { PinInputRootProps } from '$lib/components/pin-input/index';
+	import { PinInputRootState } from '$lib/components/pin-input/pin-input.svelte';
+	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();

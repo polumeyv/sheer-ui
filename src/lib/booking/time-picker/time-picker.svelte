@@ -1,11 +1,10 @@
 <script lang="ts">
 	import Clock from '@lucide/svelte/icons/clock';
-	import { cn } from '../../vendor/utils.js';
-	import { buttonVariants } from '../../components/button/index.js';
-	import * as Select from '../../components/select/index.js';
-	import { formatTimeDisplay } from '@polumeyv/lib/public';
+	import { cn } from '../../vendor/utils';
+	import { buttonVariants } from '../../components/button/index';
+	import * as Select from '../../components/select/index';
 	import type { TimeString } from '@polumeyv/lib/schemas';
-	import { compareTime, generateTimeSlots, isTimeInRange, type TimeSlot, b_HOURS, EXTENDED_HOURS } from './time-slots.js';
+	import { compareTime, generateTimeSlots, isTimeInRange, type TimeSlot, b_HOURS, EXTENDED_HOURS } from './time-slots';
 
 	type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';
 
@@ -15,7 +14,6 @@
 		disabled?: boolean;
 		class?: string;
 		triggerClass?: string;
-		contentClass?: string;
 		align?: 'start' | 'center' | 'end';
 		side?: 'top' | 'right' | 'bottom' | 'left';
 		onValueChange?: (value: TimeString | undefined) => void;
@@ -37,7 +35,6 @@
 		disabled = false,
 		class: className,
 		triggerClass,
-		contentClass,
 		align = 'start',
 		side = 'bottom',
 		onValueChange,
@@ -87,8 +84,6 @@
 		});
 	});
 
-	const displayValue = $derived(value ? formatTimeDisplay(value) : placeholder);
-
 	function handleValueChange(newValue: string | undefined) {
 		// Select erases the slot's brand to string; every selectable value is a TimeSlot.value, so it is sound.
 		value = newValue as TimeString | undefined;
@@ -97,23 +92,24 @@
 </script>
 
 <div class={cn('grid gap-2', className)}>
-	<Select.Root type="single" {value} onValueChange={handleValueChange} {disabled}>
-		<Select.Trigger
-			class={cn(
-				buttonVariants({
-					variant: 'outline',
-					class: 'w-[180px] justify-start! text-start font-normal!',
-				}),
-				!value && 'text-muted-foreground',
-				triggerClass,
-			)}>
-			<Clock class="me-2 size-4" />
-			{displayValue}
-		</Select.Trigger>
-		<Select.Content class={cn('max-h-[300px]!', contentClass)} {align} {side}>
-			{#each filteredSlots as slot (slot.value)}
-				<Select.Item value={slot.value}>{slot.label}</Select.Item>
-			{/each}
-		</Select.Content>
+	<Select.Root
+		{value}
+		onchange={(e) => handleValueChange(e.currentTarget.value || undefined)}
+		{disabled}
+		{placeholder}
+		side={side === 'top' ? 'top' : 'bottom'}
+		{align}
+		maxHeight="300px"
+		class={buttonVariants({
+			variant: 'outline',
+			class: 'w-[180px] justify-start! text-start font-normal!',
+		})}
+		triggerClass={cn('justify-start px-0', !value && 'text-muted-foreground', triggerClass)}>
+		{#snippet icon()}
+			<Clock class="size-4" />
+		{/snippet}
+		{#each filteredSlots as slot (slot.value)}
+			<Select.Option value={slot.value}>{slot.label}</Select.Option>
+		{/each}
 	</Select.Root>
 </div>

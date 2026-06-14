@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLInputAttributes, HTMLInputTypeAttribute } from 'svelte/elements';
-	import { cn, type WithElementRef } from '../../vendor/utils.js';
+	import { cn, type WithElementRef } from '../../vendor/utils';
 	type InputType = Exclude<HTMLInputTypeAttribute, 'file'>;
 	type Props = WithElementRef<Omit<HTMLInputAttributes, 'type'> & ({ type: 'file'; files?: FileList } | { type?: InputType; files?: undefined })>;
 	let { ref = $bindable(null), value = $bindable(), type, files = $bindable(), class: className, 'data-slot': dataSlot = 'input', ...restProps }: Props = $props();

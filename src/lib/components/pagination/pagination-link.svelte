@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { PaginationPageProps } from '$lib/components/pagination/primitive/index.js';
-	import { PaginationPageState } from '$lib/components/pagination/primitive/pagination.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { PaginationPageProps } from '$lib/components/pagination/primitive/index';
+	import { PaginationPageState } from '$lib/components/pagination/primitive/pagination.svelte';
+	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 	import { type Props, buttonVariants } from '../button';
 

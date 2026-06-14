@@ -1,8 +1,8 @@
 <script lang="ts">import { untrack } from "svelte";
-	import { mergeProps, type WritableProp } from "$lib/vendor/index.js";
-	import type { SliderRootProps } from "$lib/components/slider/primitive/index.js";
-	import { SliderRootState } from "$lib/components/slider/primitive/slider.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps, type WritableProp } from "$lib/vendor/index";
+	import type { SliderRootProps } from "$lib/components/slider/primitive/index";
+	import { SliderRootState } from "$lib/components/slider/primitive/slider.svelte";
+	import { createId } from "$lib/vendor/create-id";
 	const uid = $props.id();
 
 	let {

@@ -1,6 +1,6 @@
 <script lang="ts">
-		import type { MenuSubProps } from "$lib/components/_shared/menu/index.js";
-	import { MenuSubmenuState } from "$lib/components/_shared/menu/menu.svelte.js";
+		import type { MenuSubProps } from "$lib/components/_shared/menu/index";
+	import { MenuSubmenuState } from "$lib/components/_shared/menu/menu.svelte";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
 
 	let {

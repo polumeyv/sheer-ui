@@ -5,7 +5,7 @@ export { default as Trigger } from '$lib/components/tooltip/primitive/components
 export { default as Arrow } from '$lib/components/tooltip/primitive/components/tooltip-arrow.svelte';
 export { default as Provider } from '$lib/components/tooltip/primitive/components/tooltip-provider.svelte';
 export { default as Portal } from '$lib/components/_shared/utilities/portal/portal.svelte';
-export { createTooltipTether as createTether } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
+export { createTooltipTether as createTether } from '$lib/components/tooltip/primitive/tooltip.svelte';
 
 export type {
 	TooltipProviderPropsWithoutHTML as ProviderProps,
@@ -16,6 +16,6 @@ export type {
 	TooltipTriggerProps as TriggerProps,
 	TooltipTether as Tether,
 	TooltipRootSnippetProps as RootSnippetProps,
-} from '$lib/components/tooltip/primitive/index.js';
+} from '$lib/components/tooltip/primitive/index';
 
-export type { PortalProps } from '$lib/components/_shared/utilities/portal/index.js';
+export type { PortalProps } from '$lib/components/_shared/utilities/portal/index';

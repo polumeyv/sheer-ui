@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { RadioGroupRootProps } from '$lib/components/radio-group/primitive/index.js';
-	import { RadioGroupRootState } from '$lib/components/radio-group/primitive/radio-group.svelte.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { RadioGroupRootProps } from '$lib/components/radio-group/primitive/index';
+	import { RadioGroupRootState } from '$lib/components/radio-group/primitive/radio-group.svelte';
 	import RadioGroupInput from '$lib/components/radio-group/primitive/components/radio-group-input.svelte';
-	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '../../vendor/utils.js';
+	import { createId } from '$lib/vendor/create-id';
+	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();
 
@@ -20,7 +20,7 @@
 		required = false,
 		readonly = false,
 		id = createId(uid),
-		onValueChange = (() => {}),
+		onValueChange = () => {},
 		class: className,
 		...restProps
 	}: RadioGroupRootProps = $props();
@@ -88,8 +88,8 @@
 				class: cn('grid gap-3', className),
 			},
 			restProps,
-			rootState.props
-		)
+			rootState.props,
+		),
 	);
 </script>
 

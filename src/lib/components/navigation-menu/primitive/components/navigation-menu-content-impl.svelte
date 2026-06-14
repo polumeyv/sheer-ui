@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
+	import { mergeProps } from "$lib/vendor/index";
 	import { untrack, type Snippet } from "svelte";
-	import type { NavigationMenuContentProps } from "$lib/components/navigation-menu/primitive/index.js";
+	import type { NavigationMenuContentProps } from "$lib/components/navigation-menu/primitive/index";
 	import {
 		setNavigationMenuItemContext,
 		NavigationMenuItemState,
 		NavigationMenuContentImplState,
-	} from "$lib/components/navigation-menu/primitive/navigation-menu.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	} from "$lib/components/navigation-menu/primitive/navigation-menu.svelte";
+	import { createId } from "$lib/vendor/create-id";
 	import DismissibleLayer from "$lib/components/_shared/utilities/dismissible-layer/dismissible-layer.svelte";
 	import EscapeLayer from "$lib/components/_shared/utilities/escape-layer/escape-layer.svelte";
 

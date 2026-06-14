@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import { NavigationMenuContentState } from "$lib/components/navigation-menu/primitive/navigation-menu.svelte.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import { NavigationMenuContentState } from "$lib/components/navigation-menu/primitive/navigation-menu.svelte";
 	import NavigationMenuContentImpl from "$lib/components/navigation-menu/primitive/components/navigation-menu-content-impl.svelte";
-	import { createId } from "$lib/internal/create-id.js";
-	import type { NavigationMenuContentProps } from "$lib/components/navigation-menu/primitive/index.js";
+	import { createId } from "$lib/vendor/create-id";
+	import type { NavigationMenuContentProps } from "$lib/components/navigation-menu/primitive/index";
 	import Portal from "$lib/components/_shared/utilities/portal/portal.svelte";
 	import PresenceLayer from "$lib/components/_shared/utilities/presence-layer/presence-layer.svelte";
 	import Mounted from "$lib/components/_shared/utilities/mounted.svelte";

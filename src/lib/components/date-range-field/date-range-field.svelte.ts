@@ -1,16 +1,16 @@
 import { createContext, untrack } from 'svelte';
 import type { DateValue } from '@internationalized/date';
-import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import { DateFieldInputState, DateFieldRootState } from '$lib/components/date-field/date-field.svelte.js';
-import { useId } from '$lib/internal/use-id.js';
-import type { DateOnInvalid, DateRange, DateRangeValidator, SegmentPart } from '$lib/shared/index.js';
-import type { RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { Granularity } from '$lib/shared/date/types.js';
-import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
-import { removeDescriptionElement } from '$lib/internal/date-time/field/helpers.js';
-import { isBefore } from '$lib/internal/date-time/utils.js';
-import { getFirstSegment } from '$lib/internal/date-time/field/segments.js';
+import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index';
+import { DateFieldInputState, DateFieldRootState } from '$lib/components/date-field/date-field.svelte';
+import { useId } from '$lib/vendor/use-id';
+import type { DateOnInvalid, DateRange, DateRangeValidator, SegmentPart } from '$lib/shared/index';
+import type { RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import type { Granularity } from '$lib/shared/date/types';
+import { type Formatter, createFormatter } from '$lib/vendor/date-time/formatter';
+import { removeDescriptionElement } from '$lib/vendor/date-time/field/helpers';
+import { isBefore } from '$lib/vendor/date-time/utils';
+import { getFirstSegment } from '$lib/vendor/date-time/field/segments';
 
 export const dateRangeFieldAttrs = createBitsAttrs({
 	component: 'date-range-field',

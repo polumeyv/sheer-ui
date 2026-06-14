@@ -1,7 +1,7 @@
-import { attachRef, type ReadableProps } from '$lib/vendor/index.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import type { Orientation } from '$lib/shared/index.js';
+import { attachRef, type ReadableProps } from '$lib/vendor/index';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import type { RefAttachment, WithRefProps } from '$lib/vendor/types';
+import type { Orientation } from '$lib/shared/index';
 
 const separatorAttrs = createBitsAttrs({
 	component: 'separator',

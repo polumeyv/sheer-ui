@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/merge-props.js";
-	import { CollapsibleContentState } from "$lib/components/collapsible/primitive/collapsible.svelte.js";
-	import type { CollapsibleContentProps } from "$lib/components/collapsible/primitive/index.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/vendor';
+	import { CollapsibleContentState } from '$lib/components/collapsible/primitive/collapsible.svelte';
+	import type { CollapsibleContentProps } from '$lib/components/collapsible/primitive/index';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 

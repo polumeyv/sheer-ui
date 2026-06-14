@@ -1,9 +1,9 @@
 <script lang="ts">import { untrack } from "svelte";
-	import { type WritableProp } from "$lib/vendor/index.js";
-	import type { ComboboxRootProps } from "$lib/components/combobox/index.js";
+	import { type WritableProp } from "$lib/vendor/index";
+	import type { ComboboxRootProps } from "$lib/components/combobox/index";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
-	import { SelectRootState } from "$lib/components/select/primitive/select.svelte.js";
-	import ListboxHiddenInput from "$lib/components/select/primitive/components/select-hidden-input.svelte";
+	import { SelectRootState } from "$lib/components/combobox/primitive/select.svelte";
+	import ListboxHiddenInput from "$lib/components/combobox/primitive/components/select-hidden-input.svelte";
 	let {
 		value = $bindable(),
 		onValueChange = (() => {}),

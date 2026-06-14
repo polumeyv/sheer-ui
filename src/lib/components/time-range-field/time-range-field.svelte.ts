@@ -1,17 +1,17 @@
 import { createContext, untrack } from 'svelte';
 import type { Time } from '@internationalized/date';
-import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import { TimeFieldRootState } from '$lib/components/time-field/time-field.svelte.js';
-import { TimeFieldInputState } from '$lib/components/time-field/time-field.svelte.js';
-import { useId } from '$lib/internal/use-id.js';
-import type { TimeSegmentPart } from '$lib/shared/index.js';
-import type { RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { TimeGranularity, TimeOnInvalid, TimeRange, TimeRangeValidator, TimeValue } from '$lib/shared/date/types.js';
-import { type TimeFormatter, createTimeFormatter } from '$lib/internal/date-time/formatter.js';
-import { removeDescriptionElement } from '$lib/internal/date-time/field/helpers.js';
-import { getFirstSegment } from '$lib/internal/date-time/field/segments.js';
-import { convertTimeValueToTime, isTimeBefore } from '$lib/internal/date-time/field/time-helpers.js';
+import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index';
+import { TimeFieldRootState } from '$lib/components/time-field/time-field.svelte';
+import { TimeFieldInputState } from '$lib/components/time-field/time-field.svelte';
+import { useId } from '$lib/vendor/use-id';
+import type { TimeSegmentPart } from '$lib/shared/index';
+import type { RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import type { TimeGranularity, TimeOnInvalid, TimeRange, TimeRangeValidator, TimeValue } from '$lib/shared/date/types';
+import { type TimeFormatter, createTimeFormatter } from '$lib/vendor/date-time/formatter';
+import { removeDescriptionElement } from '$lib/vendor/date-time/field/helpers';
+import { getFirstSegment } from '$lib/vendor/date-time/field/segments';
+import { convertTimeValueToTime, isTimeBefore } from '$lib/vendor/date-time/field/time-helpers';
 
 export const timeRangeFieldAttrs = createBitsAttrs({
 	component: 'time-range-field',

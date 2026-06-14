@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { TabsListProps } from '$lib/components/tabs/primitive/index.js';
-	import { TabsListState } from '$lib/components/tabs/primitive/tabs.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '../../vendor/utils.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { TabsListProps } from '$lib/components/tabs/primitive/index';
+	import { TabsListState } from '$lib/components/tabs/primitive/tabs.svelte';
+	import { createId } from '$lib/vendor/create-id';
+	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();
 

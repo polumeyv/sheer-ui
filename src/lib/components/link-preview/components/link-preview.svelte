@@ -1,7 +1,7 @@
 <script lang="ts">
-		import type { LinkPreviewRootProps } from "$lib/components/link-preview/index.js";
-	import { LinkPreviewRootState } from "$lib/components/link-preview/link-preview.svelte.js";
-	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index.js";
+		import type { LinkPreviewRootProps } from "$lib/components/link-preview/index";
+	import { LinkPreviewRootState } from "$lib/components/link-preview/link-preview.svelte";
+	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index";
 
 	let {
 		disabled = false,

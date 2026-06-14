@@ -1,17 +1,17 @@
 <script lang="ts" module>
-	import type { TimeRange, TimeValue } from "$lib/shared/date/types.js";
+	import type { TimeRange, TimeValue } from "$lib/shared/date/types";
 	import type { Time } from "@internationalized/date";
 
 	type T = unknown;
 </script>
 
 <script lang="ts" generics="T extends TimeValue = Time">import { untrack } from "svelte";
-		import { mergeProps } from "$lib/vendor/index.js";
-	import { TimeRangeFieldRootState } from "$lib/components/time-range-field/time-range-field.svelte.js";
-	import type { TimeRangeFieldRootProps } from "$lib/components/time-range-field/index.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import { getDefaultTime } from "$lib/internal/date-time/utils.js";
-	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
+		import { mergeProps } from "$lib/vendor/index";
+	import { TimeRangeFieldRootState } from "$lib/components/time-range-field/time-range-field.svelte";
+	import type { TimeRangeFieldRootProps } from "$lib/components/time-range-field/index";
+	import { createId } from "$lib/vendor/create-id";
+	import { getDefaultTime } from "$lib/vendor/date-time/utils";
+	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers";
 
 	const uid = $props.id();
 

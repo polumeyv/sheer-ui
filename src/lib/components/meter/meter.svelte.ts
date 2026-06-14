@@ -1,6 +1,6 @@
-import { attachRef, type ReadableProps } from '$lib/vendor/index.js';
-import type { RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
+import { attachRef, type ReadableProps } from '$lib/vendor/index';
+import type { RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { createBitsAttrs } from '$lib/vendor/attrs';
 
 const meterAttrs = createBitsAttrs({
 	component: 'meter',

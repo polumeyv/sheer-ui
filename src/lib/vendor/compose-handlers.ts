@@ -1,5 +1,5 @@
-import type { EventCallback } from '$lib/internal/events.js';
-import type { ReadableProp } from './utils.js';
+import type { EventCallback } from '$lib/vendor/events';
+import type { ReadableProp } from './utils';
 
 /**
  * Composes event handlers into a single function that can be called with an event.

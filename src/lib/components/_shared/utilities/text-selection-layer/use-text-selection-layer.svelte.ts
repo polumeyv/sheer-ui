@@ -1,8 +1,8 @@
 import { untrack } from "svelte";
-import { DOMContext, type ReadableProp, type ReadableProps, composeHandlers, contains } from '$lib/vendor/index.js';
-import { executeCallbacks } from '$lib/vendor/index.js';
+import { DOMContext, type ReadableProp, type ReadableProps, composeHandlers, contains } from '$lib/vendor/index';
+import { executeCallbacks } from '$lib/vendor/index';
 import { on } from 'svelte/events';
-import type { PointerHandler, TextSelectionLayerImplProps } from '$lib/components/_shared/utilities/text-selection-layer/index.js';
+import type { PointerHandler, TextSelectionLayerImplProps } from '$lib/components/_shared/utilities/text-selection-layer/index';
 
 const noopPointer: PointerHandler = () => {};
 

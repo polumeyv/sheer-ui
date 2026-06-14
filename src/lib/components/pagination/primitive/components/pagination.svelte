@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { PaginationRootProps } from "$lib/components/pagination/primitive/index.js";
-	import { PaginationRootState } from "$lib/components/pagination/primitive/pagination.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { PaginationRootProps } from "$lib/components/pagination/primitive/index";
+	import { PaginationRootState } from "$lib/components/pagination/primitive/pagination.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

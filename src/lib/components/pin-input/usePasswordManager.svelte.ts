@@ -1,5 +1,5 @@
-import { getWindow, type DOMContext, type ReadableProp, type WritableProp } from '$lib/vendor/index.js';
-import type { PinInputRootPropsWithoutHTML } from '$lib/components/pin-input/index.js';
+import { getWindow, type DOMContext, type ReadableProp, type WritableProp } from '$lib/vendor/index';
+import type { PinInputRootPropsWithoutHTML } from '$lib/components/pin-input/index';
 
 const PWM_BADGE_MARGIN_RIGHT = 18;
 const PWM_BADGE_SPACE_WIDTH_PX = 40;

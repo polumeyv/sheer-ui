@@ -1,6 +1,6 @@
-import type { WithChild, Without } from "$lib/internal/types.js";
-import type { Orientation } from "$lib/shared/index.js";
-import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes.js";
+import type { WithChild, Without } from "$lib/vendor/types";
+import type { Orientation } from "$lib/shared/index";
+import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes";
 
 export type SeparatorRootPropsWithoutHTML = WithChild<{
 	/**
@@ -21,4 +21,4 @@ export type SeparatorRootPropsWithoutHTML = WithChild<{
 export type SeparatorRootProps = SeparatorRootPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, SeparatorRootPropsWithoutHTML>;
 
-export * as Separator from "$lib/components/separator/primitive/exports.js";
+export * as Separator from "$lib/components/separator/primitive/exports";

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { PopoverTriggerProps } from "$lib/components/popover/primitive/index.js";
-	import { PopoverTriggerState } from "$lib/components/popover/primitive/popover.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { PopoverTriggerProps } from "$lib/components/popover/primitive/index";
+	import { PopoverTriggerState } from "$lib/components/popover/primitive/popover.svelte";
+	import { createId } from "$lib/vendor/create-id";
 	import FloatingLayerAnchor from "$lib/components/_shared/utilities/floating-layer/components/floating-layer-anchor.svelte";
 
 	const uid = $props.id();

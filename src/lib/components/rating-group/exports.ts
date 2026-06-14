@@ -4,4 +4,4 @@ export { default as Item } from "$lib/components/rating-group/components/rating-
 export type {
 	RatingGroupRootProps as RootProps,
 	RatingGroupItemProps as ItemProps,
-} from "$lib/components/rating-group/index.js";
+} from "$lib/components/rating-group/index";

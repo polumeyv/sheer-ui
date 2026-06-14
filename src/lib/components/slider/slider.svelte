@@ -1,9 +1,9 @@
 <script lang="ts">import { untrack } from "svelte";
-	import { mergeProps, type WritableProp } from '$lib/vendor/index.js';
-	import type { SliderRootProps } from '$lib/components/slider/primitive/index.js';
-	import { SliderRootState, SliderRangeState } from '$lib/components/slider/primitive/slider.svelte.js';
+	import { mergeProps, type WritableProp } from '$lib/vendor/index';
+	import type { SliderRootProps } from '$lib/components/slider/primitive/index';
+	import { SliderRootState, SliderRangeState } from '$lib/components/slider/primitive/slider.svelte';
 	import SliderThumb from '$lib/components/slider/primitive/components/slider-thumb.svelte';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '$lib/vendor/create-id';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 
 	const uid = $props.id();

@@ -168,10 +168,6 @@
 			"types": "./dist/components/menubar/index.d.ts",
 			"svelte": "./dist/components/menubar/index.js"
 		},
-		"./native-select": {
-			"types": "./dist/components/native-select/index.d.ts",
-			"svelte": "./dist/components/native-select/index.js"
-		},
 		"./navigation-menu": {
 			"types": "./dist/components/navigation-menu/index.d.ts",
 			"svelte": "./dist/components/navigation-menu/index.js"
@@ -327,11 +323,12 @@
 	},
 	"dependencies": {
 		"@floating-ui/dom": "^1.7.1",
-		"@lucide/svelte": "^1.7.0",
+		"@lucide/svelte": "^1.18.0",
 		"@stripe/stripe-js": "^9.8.0",
 		"@tanstack/table-core": "^8.21.3",
 		"d3-scale": "^4.0.2",
-		"embla-carousel-svelte": "^8.6.0",
+		
+		"embla-carousel": "v9.0.0-rc02",
 		"layerchart": "2.0.0-next.64",
 		"mode-watcher": "^1.1.0",
 		"overrule": "^0.4.4",
@@ -340,7 +337,7 @@
 		"svelte-sonner": "^1.1.1",
 		"tabbable": "^6.4.0",
 		"vaul-svelte": "1.0.0-next.7",
-		"css.escape" :"1.5.1"
+		"css.escape": "1.5.1"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^7.0.1",
@@ -350,6 +347,8 @@
 		"@sveltejs/kit": "^2.65.0",
 		"@sveltejs/package": "^2.5.8",
 		"@sveltejs/vite-plugin-svelte": "^7.0.0",
+		"@tailwindcss/vite": "^4.3.0",
+		"tailwindcss": "^4.3.0",
 		"@types/d3-chord": "^3.0.6",
 		"@types/d3-delaunay": "^6.0.4",
 		"@types/d3-force": "^3.0.10",

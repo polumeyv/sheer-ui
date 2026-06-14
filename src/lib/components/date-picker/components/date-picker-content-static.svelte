@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { DatePickerContentStaticProps } from "$lib/components/date-picker/index.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { DatePickerContentStaticProps } from "$lib/components/date-picker/index";
 	import PopoverContentStatic from "$lib/components/popover/primitive/components/popover-content-static.svelte";
-	import { pickerOpenFocus } from "$lib/internal/date-time/calendar-helpers.svelte.js";
+	import { pickerOpenFocus } from "$lib/vendor/date-time/calendar-helpers.svelte";
 
 	let {
 		ref = $bindable(null),

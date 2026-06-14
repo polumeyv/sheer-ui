@@ -1,6 +1,6 @@
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
-import type { Orientation } from "$lib/shared/index.js";
-import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes.js";
+import type { OnChangeFn, WithChild, Without } from "$lib/vendor/types";
+import type { Orientation } from "$lib/shared/index";
+import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes";
 
 export type RatingGroupItemState = "active" | "partial" | "inactive";
 
@@ -141,4 +141,4 @@ export type RatingGroupItemPropsWithoutHTML = WithChild<
 export type RatingGroupItemProps = RatingGroupItemPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, RatingGroupItemPropsWithoutHTML>;
 
-export * as RatingGroup from "$lib/components/rating-group/exports.js";
+export * as RatingGroup from "$lib/components/rating-group/exports";

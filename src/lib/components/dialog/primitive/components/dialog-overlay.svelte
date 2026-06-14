@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import { DialogOverlayState } from "$lib/components/dialog/primitive/dialog.svelte.js";
-	import type { DialogOverlayProps } from "$lib/components/dialog/primitive/index.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import { DialogOverlayState } from "$lib/components/dialog/primitive/dialog.svelte";
+	import type { DialogOverlayProps } from "$lib/components/dialog/primitive/index";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

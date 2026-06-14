@@ -1,6 +1,6 @@
 <script lang="ts">
-import * as DialogPrimitive from '../dialog/primitive/index.js';
-import { cn } from '../../vendor/utils.js';
+import * as DialogPrimitive from '../dialog/primitive/index';
+import { cn } from '../../vendor/utils';
 
 let { ref = $bindable(null), class: className, ...restProps }: DialogPrimitive.OverlayProps = $props();
 </script>

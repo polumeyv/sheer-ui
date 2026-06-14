@@ -8,12 +8,12 @@ import {
 	type ReadableProps,
 	type WritableProps,
 	writableProp,
-} from '$lib/vendor/index.js';
+} from '$lib/vendor/index';
 import { onMount } from 'svelte';
-import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { useId } from '$lib/internal/use-id.js';
+import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import { kbd } from '$lib/vendor/kbd';
+import { useId } from '$lib/vendor/use-id';
 import type {
 	TimeSegmentObj,
 	SegmentPart,
@@ -22,13 +22,13 @@ import type {
 	TimeValidator,
 	TimeOnInvalid,
 	EditableTimeSegmentPart,
-} from '$lib/shared/date/types.js';
-import { type TimeFormatter, createTimeFormatter } from '$lib/internal/date-time/formatter.js';
-import { type Announcer, getAnnouncer } from '$lib/internal/date-time/announcer.js';
-import { EDITABLE_TIME_SEGMENT_PARTS } from '$lib/internal/date-time/field/parts.js';
-import { toDate } from '$lib/internal/date-time/utils.js';
+} from '$lib/shared/date/types';
+import { type TimeFormatter, createTimeFormatter } from '$lib/vendor/date-time/formatter';
+import { type Announcer, getAnnouncer } from '$lib/vendor/date-time/announcer';
+import { EDITABLE_TIME_SEGMENT_PARTS } from '$lib/vendor/date-time/field/parts';
+import { toDate } from '$lib/vendor/date-time/utils';
 
-import type { TimeValue } from '$lib/shared/date/types.js';
+import type { TimeValue } from '$lib/shared/date/types';
 import {
 	areAllTimeSegmentsFilled,
 	convertTimeValueToTime,
@@ -40,16 +40,16 @@ import {
 	isTimeBefore,
 	removeTimeDescriptionElement,
 	setTimeDescription,
-} from '$lib/internal/date-time/field/time-helpers.js';
+} from '$lib/vendor/date-time/field/time-helpers';
 import {
 	getFirstTimeSegment,
 	handleTimeSegmentNavigation,
 	isSegmentNavigationKey,
 	moveToNextTimeSegment,
 	moveToPrevTimeSegment,
-} from '$lib/internal/date-time/field/segments.js';
-import { getDefaultHourCycle, isAcceptableSegmentKey } from '$lib/internal/date-time/field/helpers.js';
-import type { TimeRangeFieldRootState } from '$lib/components/time-range-field/time-range-field.svelte.js';
+} from '$lib/vendor/date-time/field/segments';
+import { getDefaultHourCycle, isAcceptableSegmentKey } from '$lib/vendor/date-time/field/helpers';
+import type { TimeRangeFieldRootState } from '$lib/components/time-range-field/time-range-field.svelte';
 
 export const timeFieldAttrs = createBitsAttrs({
 	component: 'time-field',

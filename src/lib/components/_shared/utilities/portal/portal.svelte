@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { getAllContexts, mount, unmount, untrack } from "svelte";
-	import { DEV } from "$lib/vendor/env.js";
+	import { DEV } from "$lib/vendor/env";
 	import PortalConsumer from "$lib/components/_shared/utilities/portal/portal-consumer.svelte";
-	import type { PortalProps } from "$lib/components/_shared/utilities/portal/index.js";
-	import { resolvePortalToProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
+	import type { PortalProps } from "$lib/components/_shared/utilities/portal/index";
+	import { resolvePortalToProp } from "$lib/components/_shared/utilities/config/prop-resolvers";
 
 	let { to: toProp, children, disabled }: PortalProps = $props();
 

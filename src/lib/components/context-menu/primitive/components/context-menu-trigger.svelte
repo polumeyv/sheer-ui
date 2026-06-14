@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { ContextMenuTriggerProps } from "$lib/components/context-menu/primitive/index.js";
-	import { ContextMenuTriggerState } from "$lib/components/_shared/menu/menu.svelte.js";
-	import { useId } from "$lib/internal/use-id.js";
-	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { ContextMenuTriggerProps } from "$lib/components/context-menu/primitive/index";
+	import { ContextMenuTriggerState } from "$lib/components/_shared/menu/trigger.svelte";
+	import { useId } from "$lib/vendor/use-id";
+	import { FloatingLayer } from "$lib/components/_shared/utilities/floating-layer/index";
 
 	let {
 		id = useId(),

@@ -1,4 +1,4 @@
-import { Previous } from '$lib/vendor/previous.svelte.js';
+import { Previous } from '$lib/vendor/previous.svelte';
 import { onMount, untrack } from 'svelte';
 import {
 	type WritableProp,
@@ -7,11 +7,11 @@ import {
 	type ReadableProps,
 	type WritableProps,
 	writableProp,
-} from '$lib/vendor/index.js';
-import { usePasswordManagerBadge } from '$lib/components/pin-input/usePasswordManager.svelte.js';
-import type { PinInputCell, PinInputRootProps as RootComponentProps } from '$lib/components/pin-input/index.js';
-import type { BitsEvent, BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
+} from '$lib/vendor/index';
+import { usePasswordManagerBadge } from '$lib/components/pin-input/usePasswordManager.svelte';
+import type { PinInputCell, PinInputRootProps as RootComponentProps } from '$lib/components/pin-input/index';
+import type { BitsEvent, BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { createBitsAttrs } from '$lib/vendor/attrs';
 import { on } from 'svelte/events';
 
 export const REGEXP_ONLY_DIGITS = '^\\d+$';

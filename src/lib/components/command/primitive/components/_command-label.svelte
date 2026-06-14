@@ -1,10 +1,10 @@
 <script lang="ts">
-		import { CommandLabelState } from "$lib/components/command/primitive/command.svelte.js";
+		import { CommandLabelState } from "$lib/components/command/primitive/command.svelte";
 
-	import type { WithChildren } from "$lib/internal/types.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { BitsPrimitiveLabelAttributes, WithElementRef } from "$lib/shared/index.js";
+	import type { WithChildren } from "$lib/vendor/types";
+	import { createId } from "$lib/vendor/create-id";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { BitsPrimitiveLabelAttributes, WithElementRef } from "$lib/shared/index";
 
 	const uid = $props.id();
 	let {

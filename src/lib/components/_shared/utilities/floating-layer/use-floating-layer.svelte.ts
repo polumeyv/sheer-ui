@@ -8,14 +8,14 @@ import {
 	type ReadableProp,
 	type WritableProp,
 	writableProp,
-} from '$lib/vendor/index.js';
-import { styleToCSS } from '$lib/vendor/index.js';
-import { ElementSize } from '$lib/vendor/element-size.svelte.js';
-import type { Arrayable, WithRefProps } from '$lib/internal/types.js';
-import { useId } from '$lib/internal/use-id.js';
-import { useFloating } from '$lib/internal/floating-svelte/use-floating.svelte.js';
-import type { Measurable, UseFloatingReturn } from '$lib/internal/floating-svelte/types.js';
-import type { Direction, StyleProperties } from '$lib/shared/index.js';
+} from '$lib/vendor/index';
+import { styleToCSS } from '$lib/vendor/index';
+import { ElementSize } from '$lib/vendor/element-size.svelte';
+import type { Arrayable, WithRefProps } from '$lib/vendor/types';
+import { useId } from '$lib/vendor/use-id';
+import { useFloating } from '$lib/vendor/floating-svelte/use-floating.svelte';
+import type { Measurable, UseFloatingReturn } from '$lib/vendor/floating-svelte/types';
+import type { Direction, StyleProperties } from '$lib/shared/index';
 
 export const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const;
 export const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;

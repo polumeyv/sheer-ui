@@ -4,4 +4,4 @@ export { default as Item } from "$lib/components/radio-group/primitive/component
 export type {
 	RadioGroupRootProps as RootProps,
 	RadioGroupItemProps as ItemProps,
-} from "$lib/components/radio-group/primitive/index.js";
+} from "$lib/components/radio-group/primitive/index";

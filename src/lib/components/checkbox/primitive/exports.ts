@@ -5,4 +5,4 @@ export type {
 	CheckboxRootProps as RootProps,
 	CheckboxGroupProps as GroupProps,
 	CheckboxGroupLabelProps as GroupLabelProps,
-} from "$lib/components/checkbox/primitive/index.js";
+} from "$lib/components/checkbox/primitive/index";

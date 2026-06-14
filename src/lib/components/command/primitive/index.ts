@@ -4,7 +4,7 @@ import type {
 	BitsPrimitiveInputAttributes,
 	WithChild,
 	Without,
-} from "$lib/shared/index.js";
+} from "$lib/shared/index";
 
 export type CommandState = {
 	/** The value of the search query */
@@ -221,5 +221,5 @@ export type CommandViewportPropsWithoutHTML = WithChild;
 export type CommandViewportProps = CommandViewportPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, CommandViewportPropsWithoutHTML>;
 
-export * as Command from "$lib/components/command/primitive/exports.js";
-export { computeCommandScore } from "$lib/components/command/primitive/compute-command-score.js";
+export * as Command from "$lib/components/command/primitive/exports";
+export { computeCommandScore } from "$lib/components/command/primitive/compute-command-score";

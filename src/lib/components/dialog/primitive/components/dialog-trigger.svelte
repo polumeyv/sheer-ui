@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import { DialogTriggerState } from "$lib/components/dialog/primitive/dialog.svelte.js";
-	import type { DialogTriggerProps } from "$lib/components/dialog/primitive/index.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import { DialogTriggerState } from "$lib/components/dialog/primitive/dialog.svelte";
+	import type { DialogTriggerProps } from "$lib/components/dialog/primitive/index";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

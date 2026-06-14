@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import { CommandGroupHeadingState } from "$lib/components/command/primitive/command.svelte.js";
-	import type { CommandGroupHeadingProps } from "$lib/components/command/primitive/index.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import { CommandGroupHeadingState } from "$lib/components/command/primitive/command.svelte";
+	import type { CommandGroupHeadingProps } from "$lib/components/command/primitive/index";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

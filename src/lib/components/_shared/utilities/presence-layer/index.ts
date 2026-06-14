@@ -1,6 +1,6 @@
 import type { Snippet } from 'svelte';
-import type { ReadableProp } from '$lib/vendor/index.js';
-import type { TransitionState } from '$lib/internal/attrs.js';
+import type { ReadableProp } from '$lib/vendor/index';
+import type { TransitionState } from '$lib/vendor/attrs';
 
 export type PresenceLayerProps = {
 	/**

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { CalendarHeadingProps } from "$lib/components/calendar/index.js";
-	import { CalendarHeadingState } from "$lib/components/calendar/calendar.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { CalendarHeadingProps } from "$lib/components/calendar/index";
+	import { CalendarHeadingState } from "$lib/components/calendar/calendar.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

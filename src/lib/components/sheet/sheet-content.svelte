@@ -4,12 +4,12 @@ export { sheetVariants, type Side };
 </script>
 
 <script lang="ts">
-	import * as SheetPrimitive from "../dialog/primitive/index.js";
+	import * as SheetPrimitive from "../dialog/primitive/index";
 	import XIcon from "@lucide/svelte/icons/x";
 	import type { Snippet } from "svelte";
 	import SheetPortal from "./sheet-portal.svelte";
 	import SheetOverlay from "./sheet-overlay.svelte";
-	import { cn, type WithoutChildrenOrChild } from "../../vendor/utils.js";
+	import { cn, type WithoutChildrenOrChild } from "../../vendor/utils";
 	import type { ComponentProps } from "svelte";
 
 	let {

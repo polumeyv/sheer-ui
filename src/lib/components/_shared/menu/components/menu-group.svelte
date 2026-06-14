@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { MenuGroupProps } from "$lib/components/_shared/menu/index.js";
-	import { MenuGroupState } from "$lib/components/_shared/menu/menu.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { MenuGroupProps } from "$lib/components/_shared/menu/index";
+	import { MenuGroupState } from "$lib/components/_shared/menu/group.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

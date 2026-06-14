@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { createContext } from 'svelte';
-	import type { VariantProps } from '../../vendor/utils.js';
+	import type { VariantProps } from '../../vendor/utils';
 	import { toggleVariants } from '../toggle';
 
 	type ToggleVariants = VariantProps<typeof toggleVariants>;
@@ -14,12 +14,12 @@
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { WritableProp } from '$lib/vendor/utils.js';
-	import type { ToggleGroupRootProps } from '$lib/components/toggle-group/primitive/index.js';
-	import { ToggleGroupRootState } from '$lib/components/toggle-group/primitive/toggle-group.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '../../vendor/utils.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { WritableProp } from '$lib/vendor/utils';
+	import type { ToggleGroupRootProps } from '$lib/components/toggle-group/primitive/index';
+	import { ToggleGroupRootState } from '$lib/components/toggle-group/primitive/toggle-group.svelte';
+	import { createId } from '$lib/vendor/create-id';
+	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();
 
@@ -27,7 +27,7 @@
 		id = createId(uid),
 		ref = $bindable(null),
 		value = $bindable(),
-		onValueChange = (() => {}),
+		onValueChange = () => {},
 		type,
 		disabled = false,
 		loop = true,
@@ -115,12 +115,12 @@
 				style: `--gap: ${spacing}`,
 				class: cn(
 					'group/toggle-group flex w-fit items-center gap-[--spacing(var(--gap))] rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs',
-					className
+					className,
 				),
 			},
 			restProps,
-			rootState.props
-		)
+			rootState.props,
+		),
 	);
 </script>
 

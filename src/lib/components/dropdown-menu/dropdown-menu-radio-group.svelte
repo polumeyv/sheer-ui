@@ -1,5 +1,5 @@
 <script lang="ts">
-import { DropdownMenu as DropdownMenuPrimitive } from "$lib/components/_shared/primitives.js";
+import { DropdownMenu as DropdownMenuPrimitive } from "$lib/components/_shared/primitives";
 
 let { ref = $bindable(null), value = $bindable(), ...restProps }: DropdownMenuPrimitive.RadioGroupProps = $props();
 </script>

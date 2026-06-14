@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { ToggleGroupItemProps } from '$lib/components/toggle-group/primitive/index.js';
-	import { ToggleGroupItemState } from '$lib/components/toggle-group/primitive/toggle-group.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { ToggleGroupItemProps } from '$lib/components/toggle-group/primitive/index';
+	import { ToggleGroupItemState } from '$lib/components/toggle-group/primitive/toggle-group.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 

@@ -1,0 +1,4 @@
+@import 'tailwindcss';
+@import './lib/assets/layout.css';
+@source './lib';
+@source './routes';

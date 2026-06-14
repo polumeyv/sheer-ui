@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DropdownMenu as DropdownMenuPrimitive } from "$lib/components/_shared/primitives.js";
+	import { DropdownMenu as DropdownMenuPrimitive } from "$lib/components/_shared/primitives";
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import { cn } from '../../vendor/utils';
 

@@ -1,5 +1,5 @@
-import type { WithChild, Without } from "$lib/internal/types.js";
-import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes.js";
+import type { WithChild, Without } from "$lib/vendor/types";
+import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes";
 
 export type MeterRootPropsWithoutHTML = WithChild<{
 	/**
@@ -27,4 +27,4 @@ export type MeterRootPropsWithoutHTML = WithChild<{
 export type MeterRootProps = MeterRootPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, MeterRootPropsWithoutHTML>;
 
-export * as Meter from "$lib/components/meter/exports.js";
+export * as Meter from "$lib/components/meter/exports";

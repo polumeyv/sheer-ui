@@ -1,11 +1,11 @@
-import type { ArrowPropsWithoutHTML } from "$lib/components/_shared/utilities/arrow/index.js";
-import type { MenuArrowProps } from "$lib/components/_shared/menu/index.js";
-import type { OnChangeFn, WithChild, WithChildren, Without } from "$lib/internal/types.js";
+import type { ArrowPropsWithoutHTML } from "$lib/components/_shared/utilities/arrow/index";
+import type { MenuArrowProps } from "$lib/components/_shared/menu/index";
+import type { OnChangeFn, WithChild, WithChildren, Without } from "$lib/vendor/types";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
-import type { Direction } from "$lib/shared/index.js";
+} from "$lib/shared/attributes";
+import type { Direction } from "$lib/shared/index";
 
 export type MenubarRootPropsWithoutHTML = WithChild<{
 	/**
@@ -90,10 +90,10 @@ export type {
 	MenuPortalProps as MenubarPortalProps,
 	MenuCheckboxGroupPropsWithoutHTML as MenubarCheckboxGroupPropsWithoutHTML,
 	MenuCheckboxGroupProps as MenubarCheckboxGroupProps,
-} from "$lib/components/_shared/menu/index.js";
+} from "$lib/components/_shared/menu/index";
 
 export type MenubarArrowPropsWithoutHTML = ArrowPropsWithoutHTML;
 
 export type MenubarArrowProps = MenuArrowProps;
 
-export * as Menubar from "$lib/components/menubar/primitive/exports.js";
+export * as Menubar from "$lib/components/menubar/primitive/exports";

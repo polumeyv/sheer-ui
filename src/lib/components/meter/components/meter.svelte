@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { MeterRootProps } from "$lib/components/meter/index.js";
-	import { MeterRootState } from "$lib/components/meter/meter.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { MeterRootProps } from "$lib/components/meter/index";
+	import { MeterRootState } from "$lib/components/meter/meter.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

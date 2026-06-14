@@ -1,15 +1,15 @@
 import type { DateValue } from "@internationalized/date";
-import type { OnChangeFn, WithChild, WithChildren, Without } from "$lib/internal/types.js";
-import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes.js";
-import type { CalendarRootSnippetProps } from "$lib/components/calendar/index.js";
+import type { OnChangeFn, WithChild, WithChildren, Without } from "$lib/vendor/types";
+import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes";
+import type { CalendarRootSnippetProps } from "$lib/components/calendar/index";
 import type {
 	DateMatcher,
 	DateOnInvalid,
 	DateValidator,
 	EditableSegmentPart,
-} from "$lib/shared/index.js";
-import type { Granularity, WeekStartsOn } from "$lib/shared/date/types.js";
-import type { PortalProps } from "$lib/components/_shared/utilities/portal/index.js";
+} from "$lib/shared/index";
+import type { Granularity, WeekStartsOn } from "$lib/shared/date/types";
+import type { PortalProps } from "$lib/components/_shared/utilities/portal/index";
 
 export type DatePickerRootPropsWithoutHTML = WithChildren<{
 	/**
@@ -296,7 +296,7 @@ export type {
 	PopoverArrowProps as DatePickerArrowProps,
 	PopoverClosePropsWithoutHTML as DatePickerClosePropsWithoutHTML,
 	PopoverCloseProps as DatePickerCloseProps,
-} from "$lib/components/popover/primitive/index.js";
+} from "$lib/components/popover/primitive/index";
 
 export type {
 	DateFieldInputPropsWithoutHTML as DatePickerInputPropsWithoutHTML,
@@ -305,7 +305,7 @@ export type {
 	DateFieldLabelProps as DatePickerLabelProps,
 	DateFieldSegmentPropsWithoutHTML as DatePickerSegmentPropsWithoutHTML,
 	DateFieldSegmentProps as DatePickerSegmentProps,
-} from "$lib/components/date-field/index.js";
+} from "$lib/components/date-field/index";
 
 export type DatePickerCalendarPropsWithoutHTML = WithChild<{}, CalendarRootSnippetProps>;
 
@@ -342,6 +342,6 @@ export type {
 	CalendarMonthSelectPropsWithoutHTML as DatePickerMonthSelectPropsWithoutHTML,
 	CalendarYearSelectProps as DatePickerYearSelectProps,
 	CalendarYearSelectPropsWithoutHTML as DatePickerYearSelectPropsWithoutHTML,
-} from "$lib/components/calendar/index.js";
+} from "$lib/components/calendar/index";
 
-export * as DatePicker from "$lib/components/date-picker/exports.js";
+export * as DatePicker from "$lib/components/date-picker/exports";

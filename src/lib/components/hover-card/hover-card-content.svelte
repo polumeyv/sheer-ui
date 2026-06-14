@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { LinkPreviewContentProps } from '$lib/components/link-preview/index.js';
-	import { LinkPreviewContentState } from '$lib/components/link-preview/link-preview.svelte.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { LinkPreviewContentProps } from '$lib/components/link-preview/index';
+	import { LinkPreviewContentState } from '$lib/components/link-preview/link-preview.svelte';
 	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
-	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
-	import PopperLayerForceMount from '$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte';
+	import { getFloatingContentCSSVars } from '$lib/vendor/floating-svelte/floating-utils.svelte';
 	import Mounted from '$lib/components/_shared/utilities/mounted.svelte';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '$lib/vendor/create-id';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 	import HoverCardPortal from './hover-card-portal.svelte';
 	import type { ComponentProps } from 'svelte';
@@ -72,67 +71,34 @@
 </script>
 
 <HoverCardPortal {...portalProps}>
-	{#if forceMount}
-		<PopperLayerForceMount
-			{...mergedProps}
-			{...contentState.popperProps}
-			ref={contentState.opts.ref}
-			enabled={contentState.root.opts.open.current}
-			{id}
-			trapFocus={false}
-			loop={false}
-			preventScroll={false}
-			forceMount={true}
-			shouldRender={contentState.shouldRender}
-		>
-			{#snippet popper({ props, wrapperProps })}
-				{@const finalProps = mergeProps(
-					props,
-					{ style: getFloatingContentCSSVars('link-preview') },
-					{ style }
-				)}
-				{#if child}
-					{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
-				{:else}
-					<div {...wrapperProps}>
-						<div {...finalProps}>
-							{@render children?.()}
-						</div>
+	<PopperLayer
+		{...mergedProps}
+		{...contentState.popperProps}
+		ref={contentState.opts.ref}
+		open={contentState.root.opts.open.current}
+		{id}
+		trapFocus={false}
+		loop={false}
+		preventScroll={false}
+		{forceMount}
+		shouldRender={contentState.shouldRender}
+	>
+		{#snippet popper({ props, wrapperProps })}
+			{@const finalProps = mergeProps(
+				props,
+				{ style: getFloatingContentCSSVars('link-preview') },
+				{ style }
+			)}
+			{#if child}
+				{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
+			{:else}
+				<div {...wrapperProps}>
+					<div {...finalProps}>
+						{@render children?.()}
 					</div>
-				{/if}
-				<Mounted bind:mounted={contentState.root.contentMounted} />
-			{/snippet}
-		</PopperLayerForceMount>
-	{:else if !forceMount}
-		<PopperLayer
-			{...mergedProps}
-			{...contentState.popperProps}
-			ref={contentState.opts.ref}
-			open={contentState.root.opts.open.current}
-			{id}
-			trapFocus={false}
-			loop={false}
-			preventScroll={false}
-			forceMount={false}
-			shouldRender={contentState.shouldRender}
-		>
-			{#snippet popper({ props, wrapperProps })}
-				{@const finalProps = mergeProps(
-					props,
-					{ style: getFloatingContentCSSVars('link-preview') },
-					{ style }
-				)}
-				{#if child}
-					{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
-				{:else}
-					<div {...wrapperProps}>
-						<div {...finalProps}>
-							{@render children?.()}
-						</div>
-					</div>
-				{/if}
-				<Mounted bind:mounted={contentState.root.contentMounted} />
-			{/snippet}
-		</PopperLayer>
-	{/if}
+				</div>
+			{/if}
+			<Mounted bind:mounted={contentState.root.contentMounted} />
+		{/snippet}
+	</PopperLayer>
 </HoverCardPortal>

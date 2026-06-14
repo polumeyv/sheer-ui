@@ -15,21 +15,21 @@ import {
 	DOMContext,
 	getWindow,
 	writableProp
-} from '$lib/vendor/index.js';
-import { useDebounce } from '$lib/vendor/use-debounce.svelte.js';
+} from '$lib/vendor/index';
+import { useDebounce } from '$lib/vendor/use-debounce.svelte';
 import { type Snippet } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
-import { type Direction, type Orientation, useId } from '$lib/shared/index.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { getTabbableCandidates } from '$lib/internal/focus.js';
-import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment } from '$lib/internal/types.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { CustomEventDispatcher } from '$lib/internal/events.js';
-import { useArrowNavigation } from '$lib/internal/use-arrow-navigation.js';
-import { boxAutoReset } from '$lib/internal/box-auto-reset.svelte.js';
+import { type Direction, type Orientation, useId } from '$lib/shared/index';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import { getTabbableCandidates } from '$lib/vendor/focus';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment } from '$lib/vendor/types';
+import { kbd } from '$lib/vendor/kbd';
+import { CustomEventDispatcher } from '$lib/vendor/events';
+import { useArrowNavigation } from '$lib/vendor/use-arrow-navigation';
+import { boxAutoReset } from '$lib/vendor/box-auto-reset.svelte';
 import type { FocusEventHandler, KeyboardEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
-import { SvelteResizeObserver } from '$lib/internal/svelte-resize-observer.svelte.js';
+import { RovingFocusGroup } from '$lib/vendor/roving-focus-group';
+import { SvelteResizeObserver } from '$lib/vendor/svelte-resize-observer.svelte';
 
 const navigationMenuAttrs = createBitsAttrs({
 	component: 'navigation-menu',

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { PopoverCloseProps } from "$lib/components/popover/primitive/index.js";
-	import { PopoverCloseState } from "$lib/components/popover/primitive/popover.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { PopoverCloseProps } from "$lib/components/popover/primitive/index";
+	import { PopoverCloseState } from "$lib/components/popover/primitive/popover.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

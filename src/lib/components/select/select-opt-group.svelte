@@ -1,0 +1,10 @@
+<script lang="ts">
+	import type { HTMLOptgroupAttributes } from 'svelte/elements';
+	import type { WithElementRef } from '../../vendor/utils';
+
+	let { ref = $bindable(null), children, ...restProps }: WithElementRef<HTMLOptgroupAttributes> = $props();
+</script>
+
+<optgroup bind:this={ref} data-slot="select-opt-group" {...restProps}>
+	{@render children?.()}
+</optgroup>

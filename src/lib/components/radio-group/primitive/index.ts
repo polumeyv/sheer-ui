@@ -1,9 +1,9 @@
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
-import type { Orientation } from "$lib/shared/index.js";
+import type { OnChangeFn, WithChild, Without } from "$lib/vendor/types";
+import type { Orientation } from "$lib/shared/index";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/shared/attributes";
 
 export type RadioGroupRootPropsWithoutHTML = WithChild<{
 	/**
@@ -91,4 +91,4 @@ export type RadioGroupItemPropsWithoutHTML = WithChild<
 export type RadioGroupItemProps = RadioGroupItemPropsWithoutHTML &
 	Without<BitsPrimitiveButtonAttributes, RadioGroupItemPropsWithoutHTML>;
 
-export * as RadioGroup from "$lib/components/radio-group/primitive/exports.js";
+export * as RadioGroup from "$lib/components/radio-group/primitive/exports";

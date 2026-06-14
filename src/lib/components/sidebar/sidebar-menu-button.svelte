@@ -4,12 +4,12 @@
 </script>
 
 <script lang="ts">
-	import * as Tooltip from '../tooltip/index.js';
-	import { cn, type WithElementRef, type WithoutChildrenOrChild } from '../../vendor/utils.js';
-	import { mergeProps } from '$lib/vendor/index.js';
+	import * as Tooltip from '../tooltip/index';
+	import { cn, type WithElementRef, type WithoutChildrenOrChild } from '../../vendor/utils';
+	import { mergeProps } from '$lib/vendor/index';
 	import type { ComponentProps, Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useSidebar } from './context.svelte.js';
+	import { useSidebar } from './context.svelte';
 
 	let {
 		ref = $bindable(null),

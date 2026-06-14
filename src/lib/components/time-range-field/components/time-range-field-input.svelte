@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { TimeRangeFieldInputProps } from "$lib/components/time-range-field/index.js";
-	import { TimeRangeFieldInputState } from "$lib/components/time-range-field/time-range-field.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { TimeRangeFieldInputProps } from "$lib/components/time-range-field/index";
+	import { TimeRangeFieldInputState } from "$lib/components/time-range-field/time-range-field.svelte";
+	import { createId } from "$lib/vendor/create-id";
 	import TimeFieldHiddenInput from "$lib/components/time-field/components/time-field-hidden-input.svelte";
 
 	const uid = $props.id();

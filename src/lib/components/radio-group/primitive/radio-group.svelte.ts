@@ -1,11 +1,11 @@
 import { createContext, untrack } from 'svelte';
-import { attachRef, type RefAttachment } from '$lib/internal/attach-ref.js';
-import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent } from '$lib/internal/types.js';
-import type { ReadableProps, WithRefProps, WritableProps } from '$lib/vendor/utils.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { Orientation } from '$lib/shared/index.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
+import { attachRef, type RefAttachment } from '$lib/vendor/attach-ref';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent } from '$lib/vendor/types';
+import type { ReadableProps, WithRefProps, WritableProps } from '$lib/vendor/utils';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import type { Orientation } from '$lib/shared/index';
+import { kbd } from '$lib/vendor/kbd';
+import { RovingFocusGroup } from '$lib/vendor/roving-focus-group';
 
 const radioGroupAttrs = createBitsAttrs({
 	component: 'radio-group',

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Calendar as CalendarPrimitive } from "$lib/components/_shared/primitives.js";
-	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils.js';
+	import { Calendar as CalendarPrimitive } from "$lib/components/_shared/primitives";
+	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
 	let { ref = $bindable(null), class: className, value, ...restProps }: WithoutChildrenOrChild<CalendarPrimitive.YearSelectProps> = $props();

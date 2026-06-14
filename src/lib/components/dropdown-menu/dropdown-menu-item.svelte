@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { cn } from '../../vendor/utils';
-	import { DropdownMenu as DropdownMenuPrimitive } from "$lib/components/_shared/primitives.js";
+	import { DropdownMenu as DropdownMenuPrimitive } from "$lib/components/_shared/primitives";
 
 	let {
 		ref = $bindable(null),

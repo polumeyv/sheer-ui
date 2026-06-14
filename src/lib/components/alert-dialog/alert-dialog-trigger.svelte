@@ -1,5 +1,5 @@
 <script lang="ts">
-import * as DialogPrimitive from '../dialog/primitive/index.js';
+import * as DialogPrimitive from '../dialog/primitive/index';
 
 let { ref = $bindable(null), ...restProps }: DialogPrimitive.TriggerProps = $props();
 </script>

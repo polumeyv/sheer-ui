@@ -1,10 +1,10 @@
 import { createContext, getContext, hasContext, setContext, untrack } from 'svelte';
-import { attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
+import { attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index';
 import type { HTMLButtonAttributes } from 'svelte/elements';
-import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { arraysAreEqual } from '$lib/internal/arrays.js';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import { kbd } from '$lib/vendor/kbd';
+import { arraysAreEqual } from '$lib/vendor/arrays';
 
 const checkboxAttrs = createBitsAttrs({
 	component: 'checkbox',

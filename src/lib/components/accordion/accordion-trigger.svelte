@@ -1,11 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { AccordionHeaderProps, AccordionTriggerProps } from '$lib/components/accordion/primitive/index.js';
-	import {
-		AccordionHeaderState,
-		AccordionTriggerState,
-	} from '$lib/components/accordion/primitive/accordion.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { AccordionHeaderProps, AccordionTriggerProps } from '$lib/components/accordion/primitive/index';
+	import { AccordionHeaderState, AccordionTriggerState } from '$lib/components/accordion/primitive/accordion.svelte';
+	import { createId } from '$lib/vendor/create-id';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import { cn, type WithoutChild } from '../../vendor/utils';
 

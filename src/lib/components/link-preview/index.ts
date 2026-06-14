@@ -1,20 +1,20 @@
-import type { ArrowProps, ArrowPropsWithoutHTML } from "$lib/components/_shared/utilities/arrow/index.js";
-import type { DismissibleLayerProps } from "$lib/components/_shared/utilities/dismissible-layer/index.js";
-import type { EscapeLayerProps } from "$lib/components/_shared/utilities/escape-layer/index.js";
-import type { FloatingLayerContentProps } from "$lib/components/_shared/utilities/floating-layer/index.js";
-import type { PortalProps } from "$lib/components/_shared/utilities/portal/index.js";
+import type { ArrowProps, ArrowPropsWithoutHTML } from "$lib/components/_shared/utilities/arrow/index";
+import type { DismissibleLayerProps } from "$lib/components/_shared/utilities/dismissible-layer/index";
+import type { EscapeLayerProps } from "$lib/components/_shared/utilities/escape-layer/index";
+import type { FloatingLayerContentProps } from "$lib/components/_shared/utilities/floating-layer/index";
+import type { PortalProps } from "$lib/components/_shared/utilities/portal/index";
 import type {
 	BitsPrimitiveAnchorAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/shared/attributes";
 import type {
 	OnChangeFn,
 	WithChild,
 	WithChildNoChildrenSnippetProps,
 	WithChildren,
 	Without,
-} from "$lib/internal/types.js";
-import type { FloatingContentSnippetProps, StaticContentSnippetProps } from "$lib/shared/types.js";
+} from "$lib/vendor/types";
+import type { FloatingContentSnippetProps, StaticContentSnippetProps } from "$lib/shared/types";
 
 export type LinkPreviewRootPropsWithoutHTML = WithChildren<{
 	/**
@@ -125,4 +125,4 @@ export type LinkPreviewTriggerPropsWithoutHTML = WithChild;
 export type LinkPreviewTriggerProps = LinkPreviewTriggerPropsWithoutHTML &
 	Without<BitsPrimitiveAnchorAttributes, LinkPreviewTriggerPropsWithoutHTML>;
 
-export * as LinkPreview from "$lib/components/link-preview/exports.js";
+export * as LinkPreview from "$lib/components/link-preview/exports";

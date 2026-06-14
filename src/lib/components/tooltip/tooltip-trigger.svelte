@@ -3,10 +3,10 @@
 </script>
 
 <script lang="ts" generics="T = never">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { TooltipTriggerProps } from '$lib/components/tooltip/primitive/index.js';
-	import { TooltipTriggerState } from '$lib/components/tooltip/primitive/tooltip.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { TooltipTriggerProps } from '$lib/components/tooltip/primitive/index';
+	import { TooltipTriggerState } from '$lib/components/tooltip/primitive/tooltip.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { ScrollAreaViewportProps } from "$lib/components/scroll-area/primitive/index.js";
-	import { ScrollAreaViewportState } from "$lib/components/scroll-area/primitive/scroll-area.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { ScrollAreaViewportProps } from "$lib/components/scroll-area/primitive/index";
+	import { ScrollAreaViewportState } from "$lib/components/scroll-area/primitive/scroll-area.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

@@ -1,21 +1,21 @@
 import type { Snippet } from "svelte";
-import type { EscapeLayerImplProps, EscapeLayerProps } from "$lib/components/_shared/utilities/escape-layer/index.js";
+import type { EscapeLayerImplProps, EscapeLayerProps } from "$lib/components/_shared/utilities/escape-layer/index";
 import type {
 	DismissibleLayerImplProps,
 	DismissibleLayerProps,
-} from "$lib/components/_shared/utilities/dismissible-layer/index.js";
+} from "$lib/components/_shared/utilities/dismissible-layer/index";
 import type {
 	FloatingLayerContentImplProps,
 	FloatingLayerContentProps,
-} from "$lib/components/_shared/utilities/floating-layer/index.js";
+} from "$lib/components/_shared/utilities/floating-layer/index";
 import type {
 	TextSelectionLayerImplProps,
 	TextSelectionLayerProps,
-} from "$lib/components/_shared/utilities/text-selection-layer/index.js";
-import type { PresenceLayerImplProps, PresenceLayerProps } from "$lib/components/_shared/utilities/presence-layer/index.js";
-import type { FocusScopeImplProps, FocusScopeProps } from "$lib/components/_shared/utilities/focus-scope/index.js";
-import type { ScrollLockProps } from "$lib/components/_shared/utilities/scroll-lock/index.js";
-import type { Direction } from "$lib/shared/index.js";
+} from "$lib/components/_shared/utilities/text-selection-layer/index";
+import type { PresenceLayerImplProps, PresenceLayerProps } from "$lib/components/_shared/utilities/presence-layer/index";
+import type { FocusScopeImplProps, FocusScopeProps } from "$lib/components/_shared/utilities/focus-scope/index";
+import type { ScrollLockProps } from "$lib/components/_shared/utilities/scroll-lock/index";
+import type { Direction } from "$lib/shared/index";
 
 export type PopperLayerProps = EscapeLayerProps &
 	Omit<DismissibleLayerProps, "onInteractOutsideStart"> &

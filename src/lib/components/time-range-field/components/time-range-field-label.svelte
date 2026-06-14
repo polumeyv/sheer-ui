@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import { TimeRangeFieldLabelState } from "$lib/components/time-range-field/time-range-field.svelte.js";
-	import type { TimeRangeFieldLabelProps } from "$lib/components/time-range-field/index.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import { TimeRangeFieldLabelState } from "$lib/components/time-range-field/time-range-field.svelte";
+	import type { TimeRangeFieldLabelProps } from "$lib/components/time-range-field/index";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

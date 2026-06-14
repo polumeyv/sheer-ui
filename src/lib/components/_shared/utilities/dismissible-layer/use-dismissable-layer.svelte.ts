@@ -1,12 +1,12 @@
 import { tick, untrack } from 'svelte';
-import { executeCallbacks } from '$lib/vendor/index.js';
-import { type ReadableProp, type WritableProp, type ReadableProps } from '$lib/vendor/index.js';
+import { executeCallbacks } from '$lib/vendor/index';
+import { type ReadableProp, type WritableProp, type ReadableProps } from '$lib/vendor/index';
 import { on } from 'svelte/events';
-import type { DismissibleLayerImplProps, InteractOutsideBehaviorType } from '$lib/components/_shared/utilities/dismissible-layer/index.js';
-import { type EventCallback } from '$lib/internal/events.js';
-import { debounce } from '$lib/internal/debounce.js';
-import { isClickTrulyOutside } from '$lib/internal/dom.js';
-import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '$lib/components/_shared/menu/menu.svelte.js';
+import type { DismissibleLayerImplProps, InteractOutsideBehaviorType } from '$lib/components/_shared/utilities/dismissible-layer/index';
+import { type EventCallback } from '$lib/vendor/events';
+import { useDebounce } from '$lib/vendor/use-debounce.svelte';
+import { isClickTrulyOutside } from '$lib/vendor/dom.svelte';
+import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '$lib/components/_shared/menu/attrs';
 
 globalThis.bitsDismissableLayers ??= new Map<DismissibleLayerState, ReadableProp<InteractOutsideBehaviorType>>();
 
@@ -46,7 +46,7 @@ export class DismissibleLayerState {
 		const cleanup = () => {
 			this.#resetState();
 			globalThis.bitsDismissableLayers.delete(this);
-			this.#handleInteractOutside.destroy();
+			this.#handleInteractOutside.cancel();
 			unsubEvents();
 		};
 
@@ -66,9 +66,9 @@ export class DismissibleLayerState {
 		});
 
 		$effect(() => () => {
-			this.#resetState.destroy();
+			this.#resetState.cancel();
 			globalThis.bitsDismissableLayers.delete(this);
-			this.#handleInteractOutside.destroy();
+			this.#handleInteractOutside.cancel();
 			this.#unsubClickListener();
 			unsubEvents();
 		});
@@ -119,7 +119,7 @@ export class DismissibleLayerState {
 		this.#interactOutsideProp.current(e as PointerEvent);
 	};
 
-	#handleInteractOutside = debounce((e: PointerEvent) => {
+	#handleInteractOutside = useDebounce((e: PointerEvent) => {
 		if (!this.opts.ref.current) {
 			this.#unsubClickListener();
 			return;
@@ -170,7 +170,7 @@ export class DismissibleLayerState {
 		return this.opts.ref.current === target || this.opts.ref.current.contains(target);
 	};
 
-	#resetState = debounce(() => {
+	#resetState = useDebounce(() => {
 		for (const eventType in this.#interceptedEvents) {
 			this.#interceptedEvents[eventType] = false;
 		}

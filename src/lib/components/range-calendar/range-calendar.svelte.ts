@@ -1,12 +1,12 @@
 import { createContext, untrack } from 'svelte';
 import { type DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
-import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import { getCalendarRootContext, setCalendarRootContext } from '$lib/components/calendar/calendar.svelte.js';
-import type { DateRange, Month } from '$lib/shared/index.js';
-import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { useId } from '$lib/internal/use-id.js';
-import { type Announcer, getAnnouncer } from '$lib/internal/date-time/announcer.js';
-import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
+import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index';
+import { getCalendarRootContext, setCalendarRootContext } from '$lib/components/calendar/calendar.svelte';
+import type { DateRange, Month } from '$lib/shared/index';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { useId } from '$lib/vendor/use-id';
+import { type Announcer, getAnnouncer } from '$lib/vendor/date-time/announcer';
+import { type Formatter, createFormatter } from '$lib/vendor/date-time/formatter';
 import {
 	calendarAttrs,
 	createMonths,
@@ -23,9 +23,9 @@ import {
 	useEnsureNonDisabledPlaceholder,
 	useMonthViewOptionsSync,
 	useMonthViewPlaceholderSync,
-} from '$lib/internal/date-time/calendar-helpers.svelte.js';
-import { areAllDaysBetweenValid, getDateValueType, isAfter, isBefore, isBetweenInclusive, toDate } from '$lib/internal/date-time/utils.js';
-import type { WeekStartsOn } from '$lib/shared/date/types.js';
+} from '$lib/vendor/date-time/calendar-helpers.svelte';
+import { areAllDaysBetweenValid, getDateValueType, isAfter, isBefore, isBetweenInclusive, toDate } from '$lib/vendor/date-time/utils';
+import type { WeekStartsOn } from '$lib/shared/date/types';
 import { onMount } from 'svelte';
 
 const [getRangeCalendarCellContext, setRangeCalendarCellContext] = createContext<RangeCalendarCellState>();

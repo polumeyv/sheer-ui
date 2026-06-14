@@ -1,7 +1,7 @@
 <script lang="ts">
-		import { FloatingAnchorState } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte.js";
-	import type { AnchorProps } from "$lib/components/_shared/utilities/floating-layer/components/index.js";
-	import type { Measurable } from "$lib/internal/floating-svelte/types.js";
+		import { FloatingAnchorState } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte";
+	import type { AnchorProps } from "$lib/components/_shared/utilities/floating-layer/components/index";
+	import type { Measurable } from "$lib/vendor/floating-svelte/types";
 
 	let { id, children, virtualEl, ref, tooltip = false }: AnchorProps = $props();
 

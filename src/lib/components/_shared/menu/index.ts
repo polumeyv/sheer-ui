@@ -1,11 +1,11 @@
-import type { Expand } from '$lib/vendor/index.js';
-import type { PopperLayerProps, PopperLayerStaticProps } from '$lib/components/_shared/utilities/popper-layer/index.js';
-import type { ArrowProps, ArrowPropsWithoutHTML } from '$lib/components/_shared/utilities/arrow/index.js';
-import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '$lib/internal/types.js';
-import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/shared/attributes.js';
-import type { Direction } from '$lib/shared/index.js';
-import type { PortalProps } from '$lib/components/_shared/utilities/portal/index.js';
-import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/shared/types.js';
+import type { Expand } from '$lib/vendor/index';
+import type { PopperLayerProps, PopperLayerStaticProps } from '$lib/components/_shared/utilities/popper-layer/index';
+import type { ArrowProps, ArrowPropsWithoutHTML } from '$lib/components/_shared/utilities/arrow/index';
+import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '$lib/vendor/types';
+import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/shared/attributes';
+import type { Direction } from '$lib/shared/index';
+import type { PortalProps } from '$lib/components/_shared/utilities/portal/index';
+import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/shared/types';
 
 export type MenuRootPropsWithoutHTML = WithChildren<{
 	/**

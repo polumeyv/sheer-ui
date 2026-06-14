@@ -1,12 +1,12 @@
 <script lang="ts">import { untrack } from "svelte";
-		import { mergeProps } from "$lib/vendor/index.js";
+		import { mergeProps } from "$lib/vendor/index";
 	import type { DateValue } from "@internationalized/date";
-	import { DateRangeFieldRootState } from "$lib/components/date-range-field/date-range-field.svelte.js";
-	import type { DateRangeFieldRootProps } from "$lib/components/date-range-field/index.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import type { DateRange } from "$lib/shared/index.js";
-	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
-	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
+	import { DateRangeFieldRootState } from "$lib/components/date-range-field/date-range-field.svelte";
+	import type { DateRangeFieldRootProps } from "$lib/components/date-range-field/index";
+	import { createId } from "$lib/vendor/create-id";
+	import type { DateRange } from "$lib/shared/index";
+	import { getDefaultDate } from "$lib/vendor/date-time/utils";
+	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers";
 
 	const uid = $props.id();
 

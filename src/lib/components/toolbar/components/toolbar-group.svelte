@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { WritableProp } from '$lib/vendor/utils.js';
-	import type { ToolbarGroupProps } from '$lib/components/toolbar/index.js';
-	import { ToolbarGroupState } from '$lib/components/toolbar/toolbar.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { WritableProp } from '$lib/vendor/utils';
+	import type { ToolbarGroupProps } from '$lib/components/toolbar';
+	import { ToolbarGroupState } from '$lib/components/toolbar/toolbar.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 

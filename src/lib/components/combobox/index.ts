@@ -1,10 +1,10 @@
-import type { BitsPrimitiveInputAttributes } from "$lib/shared/attributes.js";
+import type { BitsPrimitiveInputAttributes } from "$lib/shared/attributes";
 import type {
 	SelectBaseRootPropsWithoutHTML,
 	SelectMultipleRootPropsWithoutHTML,
 	SelectSingleRootPropsWithoutHTML,
-} from "$lib/components/select/primitive/index.js";
-import type { WithChild, Without } from "$lib/internal/types.js";
+} from "$lib/components/combobox/primitive/index";
+import type { WithChild, Without } from "$lib/vendor/types";
 
 export type ComboboxBaseRootPropsWithoutHTML = Omit<
 	SelectBaseRootPropsWithoutHTML,
@@ -58,7 +58,7 @@ export type {
 	SelectArrowPropsWithoutHTML as ComboboxArrowPropsWithoutHTML,
 	SelectPortalProps as ComboboxPortalProps,
 	SelectPortalPropsWithoutHTML as ComboboxPortalPropsWithoutHTML,
-} from "$lib/components/select/primitive/index.js";
+} from "$lib/components/combobox/primitive/index";
 
 export type ComboboxInputPropsWithoutHTML = WithChild<{
 	/**
@@ -78,4 +78,4 @@ export type ComboboxInputPropsWithoutHTML = WithChild<{
 export type ComboboxInputProps = ComboboxInputPropsWithoutHTML &
 	Without<Omit<BitsPrimitiveInputAttributes, "value">, ComboboxInputPropsWithoutHTML>;
 
-export * as Combobox from "$lib/components/combobox/exports.js";
+export * as Combobox from "$lib/components/combobox/exports";

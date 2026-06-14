@@ -1,10 +1,10 @@
-export { writableProp } from './writable-prop.svelte.js';
-export * from './types.js';
-export { composeHandlers } from './compose-handlers.js';
-export { executeCallbacks } from './utils/execute-callbacks.js';
-export { mergeProps } from './utils/merge-props.js';
-export { pascalCase, camelCase } from './utils/strings.js';
-export { styleToCSS, srOnlyStyles, cssToStyleObj } from './utils/merge-props.js';
+export { writableProp } from './writable-prop.svelte';
+export * from './types';
+export { composeHandlers } from './compose-handlers';
+export { executeCallbacks } from './execute-callbacks';
+export { mergeProps } from './merge-props';
+export { pascalCase, camelCase } from './strings';
+export { styleToCSS, srOnlyStyles, cssToStyleObj } from './merge-props';
 export {
 	isHTMLElement,
 	isDocument,
@@ -19,5 +19,5 @@ export {
 	getActiveElement,
 	getParentNode,
 	DOMContext,
-} from './dom.svelte.js';
-export { attachRef } from './utils/attach-ref.js';
+} from './dom.svelte';
+export { attachRef } from './attach-ref';

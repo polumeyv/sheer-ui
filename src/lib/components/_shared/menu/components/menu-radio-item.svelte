@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { MenuRadioItemProps } from "$lib/components/_shared/menu/index.js";
-	import { MenuRadioItemState } from "$lib/components/_shared/menu/menu.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { MenuRadioItemProps } from "$lib/components/_shared/menu/index";
+	import { MenuRadioItemState } from "$lib/components/_shared/menu/radio.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

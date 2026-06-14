@@ -1,11 +1,11 @@
 import { createContext } from 'svelte';
-import { attachRef, type RefAttachment } from '$lib/internal/attach-ref.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import type { Orientation } from '$lib/shared/index.js';
-import type { ReadableProps, WithRefProps, WritableProp, WritableProps } from '$lib/vendor/utils.js';
-import type { BitsKeyboardEvent, BitsMouseEvent } from '$lib/internal/types.js';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
+import { attachRef, type RefAttachment } from '$lib/vendor/attach-ref';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import { kbd } from '$lib/vendor/kbd';
+import type { Orientation } from '$lib/shared/index';
+import type { ReadableProps, WithRefProps, WritableProp, WritableProps } from '$lib/vendor';
+import type { BitsKeyboardEvent, BitsMouseEvent } from '$lib/vendor/types';
+import { RovingFocusGroup } from '$lib/vendor/roving-focus-group';
 
 export const toggleGroupAttrs = createBitsAttrs({
 	component: 'toggle-group',

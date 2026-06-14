@@ -1,5 +1,5 @@
 <script lang="ts">
-import * as DialogPrimitive from '../dialog/primitive/index.js';
+import * as DialogPrimitive from '../dialog/primitive/index';
 
 let { ...restProps }: DialogPrimitive.PortalProps = $props();
 </script>

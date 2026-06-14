@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ContextMenu as ContextMenuPrimitive } from "$lib/components/_shared/primitives.js";
+	import { ContextMenu as ContextMenuPrimitive } from "$lib/components/_shared/primitives";
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 	import type { Snippet } from 'svelte';

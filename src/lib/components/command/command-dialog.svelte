@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Command as CommandPrimitive, Dialog as DialogPrimitive } from "$lib/components/_shared/primitives.js";
+import type { Command as CommandPrimitive, Dialog as DialogPrimitive } from "$lib/components/_shared/primitives";
 import type { Snippet } from 'svelte';
 import Command from './command.svelte';
 import * as Dialog from '../dialog';

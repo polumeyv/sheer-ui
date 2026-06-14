@@ -1,10 +1,10 @@
 import { createContext } from 'svelte';
-import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { RatingGroupAriaValuetext, RatingGroupItemState as RatingGroupItemStateType } from '$lib/components/rating-group/index.js';
-import type { Orientation } from '$lib/shared/index.js';
-import { kbd } from '$lib/internal/kbd.js';
+import { attachRef, DOMContext, type ReadableProps, type WritableProps } from '$lib/vendor/index';
+import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import type { RatingGroupAriaValuetext, RatingGroupItemState as RatingGroupItemStateType } from '$lib/components/rating-group/index';
+import type { Orientation } from '$lib/shared/index';
+import { kbd } from '$lib/vendor/kbd';
 
 const ratingGroupAttrs = createBitsAttrs({
 	component: 'rating-group',

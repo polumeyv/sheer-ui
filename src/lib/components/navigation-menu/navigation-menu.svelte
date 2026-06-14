@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { NavigationMenuRootProps } from '$lib/components/navigation-menu/primitive/index.js';
-	import { NavigationMenuRootState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { NavigationMenuRootProps } from '$lib/components/navigation-menu/primitive/index';
+	import { NavigationMenuRootState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte';
+	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 	import NavigationMenuViewport from './navigation-menu-viewport.svelte';
 

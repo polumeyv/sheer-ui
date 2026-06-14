@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import { TimeFieldInputState } from "$lib/components/time-field/time-field.svelte.js";
-	import type { TimeFieldInputProps } from "$lib/components/time-field/index.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import { TimeFieldInputState } from "$lib/components/time-field/time-field.svelte";
+	import type { TimeFieldInputProps } from "$lib/components/time-field/index";
 	import DateFieldHiddenInput from "$lib/components/time-field/components/time-field-hidden-input.svelte";
-	import { createId } from "$lib/internal/create-id.js";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

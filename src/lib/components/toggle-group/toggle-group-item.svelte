@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { ToggleGroupItemProps } from '$lib/components/toggle-group/primitive/index.js';
-	import { ToggleGroupItemState } from '$lib/components/toggle-group/primitive/toggle-group.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { ToggleGroupItemProps } from '$lib/components/toggle-group/primitive/index';
+	import { ToggleGroupItemState } from '$lib/components/toggle-group/primitive/toggle-group.svelte';
+	import { createId } from '$lib/vendor/create-id';
 	import { getToggleGroupCtx } from './toggle-group.svelte';
 	import { cn } from '../../vendor/utils';
 	import { type ToggleVariants, toggleVariants } from '../toggle';
@@ -64,13 +64,13 @@
 						size: ctx.size || size,
 					}),
 					'w-auto min-w-0 shrink-0 px-3 focus:z-10 focus-visible:z-10 data-[spacing=0]:rounded-none data-[spacing=0]:shadow-none data-[spacing=0]:first:rounded-l-md data-[spacing=0]:last:rounded-r-md data-[spacing=0]:data-[variant=outline]:border-l-0 data-[spacing=0]:data-[variant=outline]:first:border-l',
-					className
+					className,
 				),
 			},
 			restProps,
 			itemState.props,
-			{ type }
-		)
+			{ type },
+		),
 	);
 </script>
 

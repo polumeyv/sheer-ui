@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menubar as MenubarPrimitive } from "$lib/components/_shared/primitives.js";
+	import { Menubar as MenubarPrimitive } from "$lib/components/_shared/primitives";
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import { cn, type WithoutChild } from '../../vendor/utils';
 

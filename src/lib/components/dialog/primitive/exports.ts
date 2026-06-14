@@ -16,4 +16,4 @@ export type {
 	DialogOverlayProps as OverlayProps,
 	DialogTriggerProps as TriggerProps,
 	DialogDescriptionProps as DescriptionProps,
-} from "$lib/components/dialog/primitive/index.js";
+} from "$lib/components/dialog/primitive/index";

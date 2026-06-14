@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { PopoverContentProps } from '$lib/components/popover/primitive/index.js';
-	import { PopoverContentState } from '$lib/components/popover/primitive/popover.svelte.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { PopoverContentProps } from '$lib/components/popover/primitive/index';
+	import { PopoverContentState } from '$lib/components/popover/primitive/popover.svelte';
 	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
-	import { createId } from '$lib/internal/create-id.js';
-	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
-	import PopperLayerForceMount from '$lib/components/_shared/utilities/popper-layer/popper-layer-force-mount.svelte';
+	import { createId } from '$lib/vendor/create-id';
+	import { getFloatingContentCSSVars } from '$lib/vendor/floating-svelte/floating-utils.svelte';
 	import PopoverPortal from './popover-portal.svelte';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 	import type { ComponentProps } from 'svelte';
@@ -71,71 +70,36 @@
 </script>
 
 <PopoverPortal {...portalProps}>
-	{#if forceMount}
-		<PopperLayerForceMount
-			{...mergedProps}
-			{...contentState.popperProps}
-			ref={contentState.opts.ref}
-			enabled={contentState.root.opts.open.current}
-			{id}
-			trapFocus={effectiveTrapFocus}
-			{preventScroll}
-			loop
-			forceMount={true}
-			{customAnchor}
-			onOpenAutoFocus={handleOpenAutoFocus}
-			{onCloseAutoFocus}
-			shouldRender={contentState.shouldRender}
-		>
-			{#snippet popper({ props, wrapperProps })}
-				{@const finalProps = mergeProps(
-					props,
-					{ style: getFloatingContentCSSVars('popover') },
-					{ style }
-				)}
-				{#if child}
-					{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
-				{:else}
-					<div {...wrapperProps}>
-						<div {...finalProps}>
-							{@render children?.()}
-						</div>
+	<PopperLayer
+		{...mergedProps}
+		{...contentState.popperProps}
+		ref={contentState.opts.ref}
+		open={contentState.root.opts.open.current}
+		{id}
+		trapFocus={effectiveTrapFocus}
+		{preventScroll}
+		loop
+		{forceMount}
+		{customAnchor}
+		onOpenAutoFocus={handleOpenAutoFocus}
+		{onCloseAutoFocus}
+		shouldRender={contentState.shouldRender}
+	>
+		{#snippet popper({ props, wrapperProps })}
+			{@const finalProps = mergeProps(
+				props,
+				{ style: getFloatingContentCSSVars('popover') },
+				{ style }
+			)}
+			{#if child}
+				{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
+			{:else}
+				<div {...wrapperProps}>
+					<div {...finalProps}>
+						{@render children?.()}
 					</div>
-				{/if}
-			{/snippet}
-		</PopperLayerForceMount>
-	{:else if !forceMount}
-		<PopperLayer
-			{...mergedProps}
-			{...contentState.popperProps}
-			ref={contentState.opts.ref}
-			open={contentState.root.opts.open.current}
-			{id}
-			trapFocus={effectiveTrapFocus}
-			{preventScroll}
-			loop
-			forceMount={false}
-			{customAnchor}
-			onOpenAutoFocus={handleOpenAutoFocus}
-			{onCloseAutoFocus}
-			shouldRender={contentState.shouldRender}
-		>
-			{#snippet popper({ props, wrapperProps })}
-				{@const finalProps = mergeProps(
-					props,
-					{ style: getFloatingContentCSSVars('popover') },
-					{ style }
-				)}
-				{#if child}
-					{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
-				{:else}
-					<div {...wrapperProps}>
-						<div {...finalProps}>
-							{@render children?.()}
-						</div>
-					</div>
-				{/if}
-			{/snippet}
-		</PopperLayer>
-	{/if}
+				</div>
+			{/if}
+		{/snippet}
+	</PopperLayer>
 </PopoverPortal>

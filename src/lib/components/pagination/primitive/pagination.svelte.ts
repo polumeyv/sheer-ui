@@ -1,12 +1,12 @@
 import { createContext } from 'svelte';
-import { attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import type { Page, PageItem } from '$lib/components/pagination/primitive/index.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { getElemDirection } from '$lib/internal/locale.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { getDirectionalKeys } from '$lib/internal/get-directional-keys.js';
-import { type Orientation, useId } from '$lib/shared/index.js';
+import { attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index';
+import type { Page, PageItem } from '$lib/components/pagination/primitive/index';
+import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import { getElemDirection } from '$lib/vendor/locale';
+import { kbd } from '$lib/vendor/kbd';
+import { getDirectionalKeys } from '$lib/vendor/get-directional-keys';
+import { type Orientation, useId } from '$lib/shared/index';
 
 const paginationAttrs = createBitsAttrs({
 	component: 'pagination',

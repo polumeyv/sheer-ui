@@ -1,9 +1,9 @@
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
-import type { Orientation } from "$lib/shared/index.js";
+import type { OnChangeFn, WithChild, Without } from "$lib/vendor/types";
+import type { Orientation } from "$lib/shared/index";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/shared/attributes";
 
 export type TabsActivationMode = "manual" | "automatic";
 
@@ -85,4 +85,4 @@ export type TabsContentPropsWithoutHTML = WithChild<{
 export type TabsContentProps = TabsContentPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, TabsContentPropsWithoutHTML>;
 
-export * as Tabs from "$lib/components/tabs/primitive/exports.js";
+export * as Tabs from "$lib/components/tabs/primitive/exports";

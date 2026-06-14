@@ -1,6 +1,6 @@
-import type { OnChangeFn, WithChild, Without } from '$lib/internal/types.js';
-import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/shared/attributes.js';
-import type { Orientation } from '$lib/shared/index.js';
+import type { OnChangeFn, WithChild, Without } from '$lib/vendor/types';
+import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/shared/attributes';
+import type { Orientation } from '$lib/shared/index';
 
 export type BaseToggleGroupRootProps = {
 	/**
@@ -82,4 +82,4 @@ export type ToggleGroupItemPropsWithoutHTML = WithChild<
 export type ToggleGroupItemProps = ToggleGroupItemPropsWithoutHTML &
 	Without<BitsPrimitiveButtonAttributes, ToggleGroupItemPropsWithoutHTML>;
 
-export * as ToggleGroup from '$lib/components/toggle-group/primitive/exports.js';
+export * as ToggleGroup from '$lib/components/toggle-group/primitive/exports';

@@ -1,9 +1,9 @@
 import { createContext } from 'svelte';
-import { attachRef, type RefAttachment } from '$lib/internal/attach-ref.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import type { ReadableProps, WithRefProps, WritableProps } from '$lib/vendor/utils.js';
-import type { BitsKeyboardEvent, BitsPointerEvent } from '$lib/internal/types.js';
+import { attachRef, type RefAttachment } from '$lib/vendor/attach-ref';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import { kbd } from '$lib/vendor/kbd';
+import type { ReadableProps, WithRefProps, WritableProps } from '$lib/vendor/utils';
+import type { BitsKeyboardEvent, BitsPointerEvent } from '$lib/vendor/types';
 
 const switchAttrs = createBitsAttrs({
 	component: 'switch',

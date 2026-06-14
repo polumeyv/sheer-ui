@@ -16,4 +16,4 @@ export type {
 	PopoverCloseProps as CloseProps,
 	PopoverPortalProps as PortalProps,
 	PopoverOverlayProps as OverlayProps,
-} from "$lib/components/popover/primitive/index.js";
+} from "$lib/components/popover/primitive/index";

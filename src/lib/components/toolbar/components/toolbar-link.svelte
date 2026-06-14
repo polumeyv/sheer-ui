@@ -1,19 +1,12 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/merge-props.js";
-	import { ToolbarLinkState } from "$lib/components/toolbar/toolbar.svelte.js";
-	import type { ToolbarLinkProps } from "$lib/components/toolbar/index.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/vendor';
+	import { ToolbarLinkState } from '$lib/components/toolbar/toolbar.svelte';
+	import type { ToolbarLinkProps } from '$lib/components/toolbar/index';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
-	let {
-		children,
-		href,
-		child,
-		ref = $bindable(null),
-		id = createId(uid),
-		...restProps
-	}: ToolbarLinkProps = $props();
+	let { children, href, child, ref = $bindable(null), id = createId(uid), ...restProps }: ToolbarLinkProps = $props();
 
 	const linkState = ToolbarLinkState.create({
 		id: {

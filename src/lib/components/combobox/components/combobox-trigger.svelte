@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { ComboboxTriggerProps } from "$lib/components/combobox/index.js";
-	import { useId } from "$lib/internal/use-id.js";
-	import { SelectComboTriggerState } from "$lib/components/select/primitive/select.svelte.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { ComboboxTriggerProps } from "$lib/components/combobox/index";
+	import { useId } from "$lib/vendor/use-id";
+	import { SelectComboTriggerState } from "$lib/components/combobox/primitive/select.svelte";
 
 	let {
 		id = useId(),

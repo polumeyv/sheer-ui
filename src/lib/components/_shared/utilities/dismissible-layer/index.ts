@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { WritableProp } from '$lib/vendor/index.js';
+import type { WritableProp } from '$lib/vendor/index';
 
 export type InteractOutsideEvent = PointerEvent;
 export type InteractOutsideEventHandler = (e: PointerEvent) => void;

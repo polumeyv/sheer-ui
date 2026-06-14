@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import { DateRangeFieldLabelState } from "$lib/components/date-range-field/date-range-field.svelte.js";
-	import type { DateRangeFieldLabelProps } from "$lib/components/date-range-field/index.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import { DateRangeFieldLabelState } from "$lib/components/date-range-field/date-range-field.svelte";
+	import type { DateRangeFieldLabelProps } from "$lib/components/date-range-field/index";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

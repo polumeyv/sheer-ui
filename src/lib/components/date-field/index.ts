@@ -5,13 +5,13 @@ import type {
 	EditableSegmentPart,
 	SegmentPart,
 	WithChildren,
-} from "$lib/shared/index.js";
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
+} from "$lib/shared/index";
+import type { OnChangeFn, WithChild, Without } from "$lib/vendor/types";
 import type {
 	BitsPrimitiveDivAttributes,
 	BitsPrimitiveSpanAttributes,
-} from "$lib/shared/attributes.js";
-import type { Granularity } from "$lib/shared/date/types.js";
+} from "$lib/shared/attributes";
+import type { Granularity } from "$lib/shared/date/types";
 
 export type DateFieldRootPropsWithoutHTML = WithChildren<{
 	/**
@@ -175,4 +175,4 @@ export type DateFieldLabelPropsWithoutHTML = WithChild;
 export type DateFieldLabelProps = DateFieldLabelPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, DateFieldLabelPropsWithoutHTML>;
 
-export * as DateField from "$lib/components/date-field/exports.js";
+export * as DateField from "$lib/components/date-field/exports";

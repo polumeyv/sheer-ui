@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { ScrollLockProps } from "$lib/components/_shared/utilities/scroll-lock/index.js";
-	import { BodyScrollLock } from "$lib/internal/body-scroll-lock.svelte.js";
+	import type { ScrollLockProps } from "$lib/components/_shared/utilities/scroll-lock/index";
+	import { BodyScrollLock } from "$lib/vendor/body-scroll-lock.svelte";
 
 	let { preventScroll = true, restoreScrollDelay = null }: ScrollLockProps = $props();
 

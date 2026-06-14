@@ -1,13 +1,13 @@
 import { createContext, tick } from 'svelte';
 import { on } from 'svelte/events';
-import { attachRef, type RefAttachment } from '$lib/internal/attach-ref.js';
-import { Presence } from '$lib/internal/presence.svelte.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
-import { kbd } from '$lib/internal/kbd.js';
-import type { ReadableProps, WithRefProps, WritableProp, WritableProps } from '$lib/vendor/utils.js';
-import type { BitsKeyboardEvent, BitsMouseEvent } from '$lib/internal/types.js';
-import type { Orientation } from '$lib/shared/index.js';
+import { attachRef, type RefAttachment } from '$lib/vendor/attach-ref';
+import { Presence } from '$lib/vendor/presence.svelte';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import { RovingFocusGroup } from '$lib/vendor/roving-focus-group';
+import { kbd } from '$lib/vendor/kbd';
+import type { ReadableProps, WithRefProps, WritableProp, WritableProps } from '$lib/vendor/utils';
+import type { BitsKeyboardEvent, BitsMouseEvent } from '$lib/vendor/types';
+import type { Orientation } from '$lib/shared/index';
 
 const accordionAttrs = createBitsAttrs({
 	component: 'accordion',

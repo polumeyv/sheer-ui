@@ -1,6 +1,6 @@
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
-import type { BitsPrimitiveSpanAttributes } from "$lib/shared/attributes.js";
-import type { Direction, Orientation, SliderThumbPositioning } from "$lib/shared/index.js";
+import type { OnChangeFn, WithChild, Without } from "$lib/vendor/types";
+import type { BitsPrimitiveSpanAttributes } from "$lib/shared/attributes";
+import type { Direction, Orientation, SliderThumbPositioning } from "$lib/shared/index";
 
 export type TickItem = {
 	/**
@@ -293,4 +293,4 @@ export type SliderThumbLabelPropsWithoutHTML = WithChild<{
 export type SliderThumbLabelProps = SliderThumbLabelPropsWithoutHTML &
 	Without<BitsPrimitiveSpanAttributes, SliderThumbLabelPropsWithoutHTML>;
 
-export * as Slider from "$lib/components/slider/primitive/exports.js";
+export * as Slider from "$lib/components/slider/primitive/exports";

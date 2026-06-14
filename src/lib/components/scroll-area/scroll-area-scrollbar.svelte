@@ -1,13 +1,13 @@
 <script lang="ts">
-import { mergeProps } from '$lib/vendor/index.js';
-import type { ScrollAreaScrollbarProps } from '$lib/components/scroll-area/primitive/index.js';
-import { ScrollAreaScrollbarState } from '$lib/components/scroll-area/primitive/scroll-area.svelte.js';
+import { mergeProps } from '$lib/vendor/index';
+import type { ScrollAreaScrollbarProps } from '$lib/components/scroll-area/primitive/index';
+import { ScrollAreaScrollbarState } from '$lib/components/scroll-area/primitive/scroll-area.svelte';
 import ScrollAreaScrollbarAuto from '$lib/components/scroll-area/primitive/components/scroll-area-scrollbar-auto.svelte';
 import ScrollAreaScrollbarScroll from '$lib/components/scroll-area/primitive/components/scroll-area-scrollbar-scroll.svelte';
 import ScrollAreaScrollbarHover from '$lib/components/scroll-area/primitive/components/scroll-area-scrollbar-hover.svelte';
 import ScrollAreaScrollbarVisible from '$lib/components/scroll-area/primitive/components/scroll-area-scrollbar-visible.svelte';
 import Thumb from '$lib/components/scroll-area/primitive/components/scroll-area-thumb.svelte';
-import { createId } from '$lib/internal/create-id.js';
+import { createId } from '$lib/vendor/create-id';
 import { cn, type WithoutChild } from '../../vendor/utils';
 
 const uid = $props.id();

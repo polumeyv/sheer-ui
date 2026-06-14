@@ -1,9 +1,9 @@
 import type { Snippet } from 'svelte';
-import type { ReadableProp } from '$lib/vendor/index.js';
-import type { Align, Boundary, Side } from '$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte.js';
-import type { Arrayable } from '$lib/internal/types.js';
-import type { Direction, StyleProperties } from '$lib/shared/index.js';
-import type { Measurable } from '$lib/internal/floating-svelte/types.js';
+import type { ReadableProp } from '$lib/vendor/index';
+import type { Align, Boundary, Side } from '$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte';
+import type { Arrayable } from '$lib/vendor/types';
+import type { Direction, StyleProperties } from '$lib/shared/index';
+import type { Measurable } from '$lib/vendor/floating-svelte/types';
 
 export type FloatingLayerContentProps = {
 	/**
@@ -151,4 +151,4 @@ export type FloatingLayerAnchorProps = {
 	tooltip?: boolean;
 };
 
-export * as FloatingLayer from '$lib/components/_shared/utilities/floating-layer/components/index.js';
+export * as FloatingLayer from '$lib/components/_shared/utilities/floating-layer/components/index';

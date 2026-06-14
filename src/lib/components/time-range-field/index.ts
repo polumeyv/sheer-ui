@@ -1,14 +1,14 @@
 import type { Time } from "@internationalized/date";
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
+import type { OnChangeFn, WithChild, Without } from "$lib/vendor/types";
 import type {
 	BitsPrimitiveDivAttributes,
 	BitsPrimitiveSpanAttributes,
-} from "$lib/shared/attributes.js";
-import type { TimeSegmentPart } from "$lib/shared/index.js";
+} from "$lib/shared/attributes";
+import type { TimeSegmentPart } from "$lib/shared/index";
 import type {
 	TimeFieldSegmentProps,
 	TimeFieldSegmentPropsWithoutHTML,
-} from "$lib/components/time-field/index.js";
+} from "$lib/components/time-field/index";
 import type {
 	EditableTimeSegmentPart,
 	TimeGranularity,
@@ -16,7 +16,7 @@ import type {
 	TimeRange,
 	TimeRangeValidator,
 	TimeValue,
-} from "$lib/shared/date/types.js";
+} from "$lib/shared/date/types";
 
 export type TimeRangeFieldRootPropsWithoutHTML<T extends TimeValue = Time> = WithChild<{
 	/**
@@ -194,4 +194,4 @@ export type TimeRangeFieldSegmentPropsWithoutHTML = TimeFieldSegmentPropsWithout
 
 export type TimeRangeFieldSegmentProps = TimeFieldSegmentProps;
 
-export * as TimeRangeField from "$lib/components/time-range-field/exports.js";
+export * as TimeRangeField from "$lib/components/time-range-field/exports";

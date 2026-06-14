@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menubar as MenubarPrimitive } from "$lib/components/_shared/primitives.js";
+	import { Menubar as MenubarPrimitive } from "$lib/components/_shared/primitives";
 	import MenubarPortal from './menubar-portal.svelte';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 	import type { ComponentProps } from 'svelte';

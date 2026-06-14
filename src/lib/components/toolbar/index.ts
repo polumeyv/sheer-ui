@@ -2,14 +2,14 @@ import type {
 	ToggleGroupItemProps,
 	ToggleGroupItemPropsWithoutHTML,
 	ToggleGroupRootPropsWithoutHTML,
-} from "$lib/components/toggle-group/primitive/index.js";
-import type { Orientation } from "$lib/shared/index.js";
-import type { WithChild, Without } from "$lib/internal/types.js";
+} from "$lib/components/toggle-group/primitive/index";
+import type { Orientation } from "$lib/shared/index";
+import type { WithChild, Without } from "$lib/vendor/types";
 import type {
 	BitsPrimitiveAnchorAttributes,
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/shared/attributes";
 
 export type ToolbarRootPropsWithoutHTML = WithChild<{
 	/**
@@ -59,4 +59,4 @@ export type ToolbarLinkPropsWithoutHTML = WithChild;
 export type ToolbarLinkProps = ToolbarLinkPropsWithoutHTML &
 	Without<BitsPrimitiveAnchorAttributes, ToolbarLinkPropsWithoutHTML>;
 
-export * as Toolbar from "$lib/components/toolbar/exports.js";
+export * as Toolbar from "$lib/components/toolbar/exports";

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { DateRangeFieldInputProps } from "$lib/components/date-range-field/index.js";
-	import { DateRangeFieldInputState } from "$lib/components/date-range-field/date-range-field.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { DateRangeFieldInputProps } from "$lib/components/date-range-field/index";
+	import { DateRangeFieldInputState } from "$lib/components/date-range-field/date-range-field.svelte";
+	import { createId } from "$lib/vendor/create-id";
 	import DateFieldHiddenInput from "$lib/components/date-field/components/date-field-hidden-input.svelte";
 
 	const uid = $props.id();

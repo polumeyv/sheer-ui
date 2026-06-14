@@ -1,15 +1,15 @@
 import type { DateValue } from "@internationalized/date";
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
-import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes.js";
+import type { OnChangeFn, WithChild, Without } from "$lib/vendor/types";
+import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes";
 import type {
 	DateMatcher,
 	DateOnInvalid,
 	DateRange,
 	DateRangeValidator,
 	EditableSegmentPart,
-} from "$lib/shared/index.js";
-import type { CalendarRootSnippetProps } from "$lib/components/calendar/index.js";
-import type { Granularity, WeekStartsOn } from "$lib/shared/date/types.js";
+} from "$lib/shared/index";
+import type { CalendarRootSnippetProps } from "$lib/components/calendar/index";
+import type { Granularity, WeekStartsOn } from "$lib/shared/date/types";
 
 export type DateRangePickerRootPropsWithoutHTML = WithChild<{
 	/**
@@ -327,7 +327,7 @@ export type {
 	PopoverArrowProps as DateRangePickerArrowProps,
 	PopoverClosePropsWithoutHTML as DateRangePickerClosePropsWithoutHTML,
 	PopoverCloseProps as DateRangePickerCloseProps,
-} from "$lib/components/popover/primitive/index.js";
+} from "$lib/components/popover/primitive/index";
 
 export type {
 	DateRangeFieldInputPropsWithoutHTML as DateRangePickerInputPropsWithoutHTML,
@@ -336,7 +336,7 @@ export type {
 	DateRangeFieldLabelProps as DateRangePickerLabelProps,
 	DateRangeFieldSegmentPropsWithoutHTML as DateRangePickerSegmentPropsWithoutHTML,
 	DateRangeFieldSegmentProps as DateRangePickerSegmentProps,
-} from "$lib/components/date-range-field/index.js";
+} from "$lib/components/date-range-field/index";
 
 export type DateRangePickerCalendarPropsWithoutHTML = WithChild<{}, CalendarRootSnippetProps>;
 
@@ -370,6 +370,6 @@ export type {
 	RangeCalendarMonthSelectPropsWithoutHTML as DateRangePickerMonthSelectPropsWithoutHTML,
 	RangeCalendarYearSelectProps as DateRangePickerYearSelectProps,
 	RangeCalendarYearSelectPropsWithoutHTML as DateRangePickerYearSelectPropsWithoutHTML,
-} from "$lib/components/range-calendar/index.js";
+} from "$lib/components/range-calendar/index";
 
-export * as DateRangePicker from "$lib/components/date-range-picker/exports.js";
+export * as DateRangePicker from "$lib/components/date-range-picker/exports";

@@ -1,8 +1,8 @@
 <script lang="ts">
-import { RangeCalendar as RangeCalendarPrimitive } from "$lib/components/_shared/primitives.js";
-import * as RangeCalendar from './index.js';
-import { cn, type WithoutChildrenOrChild } from '../../vendor/utils.js';
-import type { ButtonVariant } from '../../components/button/index.js';
+import { RangeCalendar as RangeCalendarPrimitive } from "$lib/components/_shared/primitives";
+import * as RangeCalendar from './index';
+import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
+import type { ButtonVariant } from '../../components/button/index';
 import type { Snippet } from 'svelte';
 import { isEqualMonth, type DateValue } from '@internationalized/date';
 

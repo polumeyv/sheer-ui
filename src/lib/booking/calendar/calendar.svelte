@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Calendar as CalendarPrimitive } from "$lib/components/_shared/primitives.js";
-	import * as Calendar from './index.js';
-	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils.js';
-	import type { ButtonVariant } from '../../components/button/index.js';
+	import { Calendar as CalendarPrimitive } from "$lib/components/_shared/primitives";
+	import * as Calendar from './index';
+	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
+	import type { ButtonVariant } from '../../components/button/index';
 	import { isEqualMonth, parseDate, type DateValue } from '@internationalized/date';
 	import { DateString } from '@polumeyv/lib/schemas';
 	import type { Snippet } from 'svelte';

@@ -3,12 +3,12 @@ import type {
 	WithChild,
 	WithChildNoChildrenSnippetProps,
 	Without,
-} from "$lib/internal/types.js";
+} from "$lib/vendor/types";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
-import type { Orientation } from "$lib/shared/index.js";
+} from "$lib/shared/attributes";
+import type { Orientation } from "$lib/shared/index";
 
 export type BaseAccordionRootPropsWithoutHTML = {
 	/**
@@ -162,4 +162,4 @@ export type AccordionHeaderPropsWithoutHTML = WithChild<{
 
 export type AccordionHeaderProps = AccordionHeaderPropsWithoutHTML & BitsPrimitiveDivAttributes;
 
-export * as Accordion from "$lib/components/accordion/primitive/exports.js";
+export * as Accordion from "$lib/components/accordion/primitive/exports";

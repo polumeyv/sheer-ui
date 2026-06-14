@@ -1,108 +1,68 @@
-import { getContext, hasContext, setContext } from 'svelte';
-import { type ReadableProp, type ReadableProps } from '$lib/vendor/index.js';
-import type { BitsConfigPropsWithoutChildren } from '$lib/components/_shared/utilities/config/index.js';
+import { createContext } from 'svelte';
+import { type ReadableProp, type ReadableProps } from '$lib/vendor/index';
+import type { BitsConfigPropsWithoutChildren } from '$lib/components/_shared/utilities/config/index';
 
 type BitsConfigStateProps = ReadableProps<BitsConfigPropsWithoutChildren>;
 
-const bitsConfigContextKey = Symbol('BitsConfig');
-function getBitsConfigContextOr<T>(fallback: T): BitsConfigState | T {
-	return hasContext(bitsConfigContextKey) ? getContext<BitsConfigState>(bitsConfigContextKey) : fallback;
+const [getBitsConfigContext, setBitsConfigContext] = createContext<BitsConfigState>();
+
+function isMissingContextError(error: unknown) {
+	return error instanceof Error && (error.message.includes('missing_context') || error.message.includes('/e/missing_context'));
 }
-function setBitsConfigContext(state: BitsConfigState): BitsConfigState {
-	return setContext(bitsConfigContextKey, state);
+
+function getBitsConfigContextOr<T>(fallback: T): BitsConfigState | T {
+	try {
+		return getBitsConfigContext();
+	} catch (error) {
+		if (isMissingContextError(error)) return fallback;
+		throw error;
+	}
+}
+
+/**
+ * Creates and sets a new Bits UI configuration state that inherits from parent configs.
+ */
+export function useBitsConfig(opts: BitsConfigStateProps) {
+	const parent = getBitsConfigContextOr(null);
+	return setBitsConfigContext(new BitsConfigState(parent, opts));
+}
+
+export class BitsConfigState {
+	readonly opts: Required<BitsConfigStateProps>;
+
+	constructor(parent: BitsConfigState | null, opts: BitsConfigStateProps) {
+		this.opts = {
+			defaultPortalTo: resolveConfigOption(parent, opts, (config) => config.defaultPortalTo),
+			defaultLocale: resolveConfigOption(parent, opts, (config) => config.defaultLocale),
+		};
+	}
 }
 
 /**
  * Gets the current Bits UI configuration state from the context.
  *
- * Returns a default configuration (where all values are `undefined`) if no configuration is found.
+ * Returns a default configuration where all values are `undefined`
+ * if no configuration provider is found.
  */
 export function getBitsConfig() {
-	const fallback = new BitsConfigState(null, {});
-	return getBitsConfigContextOr(fallback).opts;
+	return getBitsConfigContextOr(defaultBitsConfig).opts;
 }
 
-/**
- * Creates and sets a new Bits UI configuration state that inherits from parent configs.
- *
- * @param opts - Configuration options for this level
- * @returns The configuration state instance
- *
- * @example
- * ```typescript
- * // In a component that wants to set a default portal target
- * const config = useBitsConfig({ defaultPortalTo: writableProp("#some-element") });
- *
- * // Child components will inherit this config and can override specific values
- * const childConfig = useBitsConfig({ someOtherProp: writableProp("value") });
- * // childConfig still has defaultPortalTo="#some-element" from parent
- * ```
- */
-export function useBitsConfig(opts: BitsConfigStateProps) {
-	return setBitsConfigContext(new BitsConfigState(getBitsConfigContextOr(null), opts));
-}
-
-/**
- * Configuration state that inherits from parent configurations.
- *
- * @example
- * Config resolution:
- * ```
- * Level 1: { defaultPortalTo: "#some-element", theme: "dark" }
- * Level 2: { spacing: "large" } // inherits defaultPortalTo="#some-element", theme="dark"
- * Level 3: { theme: "light" }   // inherits defaultPortalTo="#some-element", spacing="large", overrides theme="light"
- * ```
- */
-export class BitsConfigState {
-	readonly opts: Required<BitsConfigStateProps>;
-
-	constructor(parent: BitsConfigState | null, opts: BitsConfigStateProps) {
-		const resolveConfigOption = createConfigResolver(parent, opts);
-		this.opts = {
-			defaultPortalTo: resolveConfigOption((config) => config.defaultPortalTo),
-			defaultLocale: resolveConfigOption((config) => config.defaultLocale),
-		};
-	}
-}
+const defaultBitsConfig = new BitsConfigState(null, {});
 
 type ConfigOptionGetter<T> = (config: BitsConfigStateProps) => ReadableProp<T> | undefined;
-type ConfigOptionResolver = <T>(getter: ConfigOptionGetter<T>) => ReadableProp<T | undefined>;
 
-/**
- * Returns a config resolver that resolves a given config option's value.
- *
- * The resolver creates reactive boxes that resolve config option values using this priority:
- * 1. Current level's value (if defined)
- * 2. Parent level's value (if defined and current is undefined)
- * 3. `undefined` (if no value is found in either parent or child)
- *
- * @param parent - Parent configuration state (null if this is root level)
- * @param currentOpts - Current level's configuration options
- *
- * @example
- * ```typescript
- * // Given this hierarchy:
- * // Root: { defaultPortalTo: "#some-element" }
- * // Child: { someOtherProp: "value" } // no defaultPortalTo specified
- *
- * const resolveConfigOption = createConfigResolver(parent, opts);
- * const portalTo = resolveConfigOption(config => config.defaultPortalTo);
- *
- * // portalTo.current === "#some-element" (inherited from parent)
- * // even when child didn't specify `defaultPortalTo`
- * ```
- */
-function createConfigResolver(parent: BitsConfigState | null, currentOpts: BitsConfigStateProps): ConfigOptionResolver {
-	return <T>(getter: ConfigOptionGetter<T>) => {
-		const configOption = { get current() {
-        			// try current opts first
-        			const value = getter(currentOpts)?.current;
-        			if (value !== undefined) return value;
-        			// if no parent, return undefined
-        			if (parent === null) return undefined;
-        			// get value from parent (which already has its own chain resolved)
-        			return getter(parent.opts)?.current;
-        		} };
-		return configOption;
+function resolveConfigOption<T>(
+	parent: BitsConfigState | null,
+	currentOpts: BitsConfigStateProps,
+	getter: ConfigOptionGetter<T>,
+): ReadableProp<T | undefined> {
+	return {
+		get current() {
+			const value = getter(currentOpts)?.current;
+			if (value !== undefined) return value;
+
+			return parent ? getter(parent.opts)?.current : undefined;
+		},
 	};
 }

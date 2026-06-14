@@ -1,16 +1,16 @@
 import { tick, untrack } from 'svelte';
 import { createContext } from 'svelte';
-import { type ReadableProp, attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import type { InteractOutsideBehaviorType } from '$lib/components/_shared/utilities/dismissible-layer/index.js';
-import type { Direction } from '$lib/shared/index.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { wrapArray } from '$lib/internal/arrays.js';
-import type { OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
+import { type ReadableProp, attachRef, type ReadableProps, type WritableProps } from '$lib/vendor/index';
+import type { InteractOutsideBehaviorType } from '$lib/components/_shared/utilities/dismissible-layer/index';
+import type { Direction } from '$lib/shared/index';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import { kbd } from '$lib/vendor/kbd';
+import { wrapArray } from '$lib/vendor/arrays';
+import type { OnChangeFn, RefAttachment, WithRefProps } from '$lib/vendor/types';
 import { onMount } from 'svelte';
 import type { FocusEventHandler, KeyboardEventHandler, PointerEventHandler } from 'svelte/elements';
-import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
+import { getFloatingContentCSSVars } from '$lib/vendor/floating-svelte/floating-utils.svelte';
+import { RovingFocusGroup } from '$lib/vendor/roving-focus-group';
 
 const menubarAttrs = createBitsAttrs({
 	component: 'menubar',

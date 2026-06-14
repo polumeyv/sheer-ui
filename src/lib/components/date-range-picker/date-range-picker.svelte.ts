@@ -1,8 +1,8 @@
 import { createContext } from 'svelte';
 import type { DateValue } from '@internationalized/date';
-import { type ReadableProps, type WritableProps } from '$lib/vendor/index.js';
-import type { DateMatcher, DateRange, SegmentPart } from '$lib/shared/index.js';
-import type { Granularity, HourCycle, WeekStartsOn } from '$lib/shared/date/types.js';
+import { type ReadableProps, type WritableProps } from '$lib/vendor/index';
+import type { DateMatcher, DateRange, SegmentPart } from '$lib/shared/index';
+import type { Granularity, HourCycle, WeekStartsOn } from '$lib/shared/date/types';
 
 export const [getDateRangePickerRootContext, setDateRangePickerRootContext] = createContext<DateRangePickerRootState>();
 

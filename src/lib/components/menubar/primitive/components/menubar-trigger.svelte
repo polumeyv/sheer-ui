@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { attachRef, mergeProps } from "$lib/vendor/index.js";
-	import type { MenubarTriggerProps } from "$lib/components/menubar/primitive/index.js";
-	import { MenubarTriggerState } from "$lib/components/menubar/primitive/menubar.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { attachRef, mergeProps } from "$lib/vendor/index";
+	import type { MenubarTriggerProps } from "$lib/components/menubar/primitive/index";
+	import { MenubarTriggerState } from "$lib/components/menubar/primitive/menubar.svelte";
+	import { createId } from "$lib/vendor/create-id";
 	import FloatingLayerAnchor from "$lib/components/_shared/utilities/floating-layer/components/floating-layer-anchor.svelte";
-	import { DropdownMenuTriggerState } from "$lib/components/_shared/menu/menu.svelte.js";
+	import { DropdownMenuTriggerState } from "$lib/components/_shared/menu/trigger.svelte";
 
 	const uid = $props.id();
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 import Clock from '@lucide/svelte/icons/clock';
-import { cn } from '../../vendor/utils.js';
+import { cn } from '../../vendor/utils';
 import TimeInput from './time-input.svelte';
 
 interface Props {
@@ -23,10 +23,6 @@ let {
 	use24Hour = false,
 }: Props = $props();
 
-// Only one dropdown open at a time
-let startOpen = $state(false);
-let endOpen = $state(false);
-
 function setStart(v: string) {
 	value = { start: v, end: value.end };
 	onValueChange?.(value);
@@ -44,8 +40,6 @@ function setEnd(v: string) {
   <TimeInput
     bind:value={value.start}
     onValueChange={setStart}
-    open={startOpen}
-    onOpenChange={(o) => { startOpen = o; if (o) endOpen = false; }}
     {disabled}
     {interval}
     {use24Hour}
@@ -58,8 +52,6 @@ function setEnd(v: string) {
   <TimeInput
     bind:value={value.end}
     onValueChange={setEnd}
-    open={endOpen}
-    onOpenChange={(o) => { endOpen = o; if (o) startOpen = false; }}
     {disabled}
     {interval}
     {use24Hour}

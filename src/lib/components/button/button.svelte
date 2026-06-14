@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { cn, type WithElementRef } from '../../vendor/utils.js';
+	import { cn, type WithElementRef } from '../../vendor/utils';
 	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
 	import { buttonVariants, type ButtonVariant, type ButtonSize } from './variants';
 	export { buttonVariants, type ButtonVariant, type ButtonSize };

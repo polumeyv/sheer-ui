@@ -2,11 +2,11 @@
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import { addDays, todayIn, localTimeZone } from '@polumeyv/lib/public';
 	import type { DateString } from '@polumeyv/lib/schemas';
-	import { cn } from '../../vendor/utils.js';
-	import { buttonVariants } from '../../components/button/index.js';
-	import { Calendar } from '../calendar/index.js';
-	import * as Popover from '../../components/popover/index.js';
-	import * as Select from '../../components/select/index.js';
+	import { cn } from '../../vendor/utils';
+	import { buttonVariants } from '../../components/button/index';
+	import { Calendar } from '../calendar/index';
+	import * as Popover from '../../components/popover/index';
+	import * as Select from '../../components/select/index';
 
 	type PresetItem = {
 		value: number;
@@ -75,7 +75,10 @@
 		value ? new Intl.DateTimeFormat(locale, { dateStyle: dateFormat, timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`)) : placeholder,
 	);
 
-	const selectValue = $derived(value ? displayValue : '');
+	// The preset dropdown is a write-only action menu: each pick maps a relative-day
+	// offset to a date, then resets so the placeholder shows again (and the same preset
+	// can be re-picked). The chosen date itself is surfaced on the outer popover trigger.
+	let presetSelection = $state('');
 
 	function pick(next: DateString | undefined) {
 		value = next;
@@ -100,20 +103,18 @@
 		</Popover.Trigger>
 		<Popover.Content class={cn('flex w-auto! flex-col space-y-2 p-2!', contentClass)} {align} {side}>
 			<Select.Root
-				type="single"
-				value={selectValue}
-				onValueChange={(v) => {
+				class="w-full"
+				placeholder={presetsPlaceholder}
+				bind:value={presetSelection}
+				onchange={(e) => {
+					const v = e.currentTarget.value;
+					presetSelection = '';
 					if (!v) return;
 					pick(addDays(todayIn(localTimeZone()), Number.parseInt(v)));
 				}}>
-				<Select.Trigger>
-					{selectValue || presetsPlaceholder}
-				</Select.Trigger>
-				<Select.Content>
-					{#each presets as preset (preset.value)}
-						<Select.Item value={`${preset.value}`}>{preset.label}</Select.Item>
-					{/each}
-				</Select.Content>
+				{#each presets as preset (preset.value)}
+					<Select.Option value={`${preset.value}`}>{preset.label}</Select.Option>
+				{/each}
 			</Select.Root>
 			<div class="rounded-md border">
 				<Calendar

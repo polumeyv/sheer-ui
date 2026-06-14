@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/merge-props.js";
-	import type { TabsRootProps } from "$lib/components/tabs/primitive/index.js";
-	import { TabsRootState } from "$lib/components/tabs/primitive/tabs.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/vendor';
+	import type { TabsRootProps } from '$lib/components/tabs/primitive/index';
+	import { TabsRootState } from '$lib/components/tabs/primitive/tabs.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
 	let {
 		id = createId(uid),
 		ref = $bindable(null),
-		value = $bindable(""),
-		onValueChange = (() => {}),
-		orientation = "horizontal",
+		value = $bindable(''),
+		onValueChange = () => {},
+		orientation = 'horizontal',
 		loop = true,
-		activationMode = "automatic",
+		activationMode = 'automatic',
 		disabled = false,
 		children,
 		child,

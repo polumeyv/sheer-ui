@@ -17,7 +17,7 @@ export type {
 	MenuTriggerProps as DropdownMenuTriggerProps,
 	MenuPortalProps as DropdownMenuPortalProps,
 	MenuCheckboxGroupProps as DropdownMenuCheckboxGroupProps,
-} from "$lib/components/_shared/menu/index.js";
+} from "$lib/components/_shared/menu/index";
 
 export type {
 	MenuRootPropsWithoutHTML as DropdownMenuRootPropsWithoutHTML,
@@ -38,6 +38,6 @@ export type {
 	MenuTriggerPropsWithoutHTML as DropdownMenuTriggerPropsWithoutHTML,
 	MenuPortalPropsWithoutHTML as DropdownMenuPortalPropsWithoutHTML,
 	MenuCheckboxGroupPropsWithoutHTML as DropdownMenuCheckboxGroupPropsWithoutHTML,
-} from "$lib/components/_shared/menu/index.js";
+} from "$lib/components/_shared/menu/index";
 
-export * as DropdownMenu from "$lib/components/dropdown-menu/primitive/exports.js";
+export * as DropdownMenu from "$lib/components/dropdown-menu/primitive/exports";

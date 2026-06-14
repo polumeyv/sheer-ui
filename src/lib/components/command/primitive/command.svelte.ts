@@ -1,13 +1,13 @@
 import { tick, untrack } from 'svelte';
 import { createContext, getContext, hasContext, setContext } from 'svelte';
-import { srOnlyStyles, attachRef, type WritableProps, type ReadableProps } from '$lib/vendor/index.js';
-import { findNextSibling, findPreviousSibling } from '$lib/components/command/primitive/utils.js';
-import type { CommandState } from '$lib/components/command/primitive/index.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { getFirstNonCommentChild } from '$lib/internal/dom.js';
-import { computeCommandScore } from '$lib/components/command/primitive/index.js';
+import { srOnlyStyles, attachRef, type WritableProps, type ReadableProps } from '$lib/vendor/index';
+import { findNextSibling, findPreviousSibling } from '$lib/components/command/primitive/utils';
+import type { CommandState } from '$lib/components/command/primitive/index';
+import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { kbd } from '$lib/vendor/kbd';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import { getFirstNonCommentChild } from '$lib/vendor/dom.svelte';
+import { computeCommandScore } from '$lib/components/command/primitive/index';
 
 const COMMAND_VALUE_ATTR = 'data-value';
 

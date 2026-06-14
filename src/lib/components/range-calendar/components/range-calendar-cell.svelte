@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { RangeCalendarCellProps } from "$lib/components/range-calendar/index.js";
-	import { RangeCalendarCellState } from "$lib/components/range-calendar/range-calendar.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { RangeCalendarCellProps } from "$lib/components/range-calendar/index";
+	import { RangeCalendarCellState } from "$lib/components/range-calendar/range-calendar.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

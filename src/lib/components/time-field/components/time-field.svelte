@@ -1,14 +1,14 @@
 <script lang="ts" module>
-	import type { TimeValue } from "$lib/shared/date/types.js";
+	import type { TimeValue } from "$lib/shared/date/types";
 	import type { Time } from "@internationalized/date";
 	type T = unknown;
 </script>
 
 <script lang="ts" generics="T extends TimeValue = Time">import { untrack } from "svelte";
-		import { TimeFieldRootState } from "$lib/components/time-field/time-field.svelte.js";
-	import type { TimeFieldRootProps } from "$lib/components/time-field/index.js";
-	import { getDefaultTime } from "$lib/internal/date-time/utils.js";
-	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
+		import { TimeFieldRootState } from "$lib/components/time-field/time-field.svelte";
+	import type { TimeFieldRootProps } from "$lib/components/time-field/index";
+	import { getDefaultTime } from "$lib/vendor/date-time/utils";
+	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers";
 
 	let {
 		disabled = false,

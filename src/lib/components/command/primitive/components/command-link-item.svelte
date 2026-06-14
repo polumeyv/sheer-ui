@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { CommandLinkItemProps } from "$lib/components/command/primitive/index.js";
-	import { CommandItemState } from "$lib/components/command/primitive/command.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { CommandLinkItemProps } from "$lib/components/command/primitive/index";
+	import { CommandItemState } from "$lib/components/command/primitive/command.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

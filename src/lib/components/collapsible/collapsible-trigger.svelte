@@ -1,19 +1,12 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { CollapsibleTriggerProps } from '$lib/components/collapsible/primitive/index.js';
-	import { CollapsibleTriggerState } from '$lib/components/collapsible/primitive/collapsible.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { CollapsibleTriggerProps } from '$lib/components/collapsible/primitive/index';
+	import { CollapsibleTriggerState } from '$lib/components/collapsible/primitive/collapsible.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
-	let {
-		children,
-		child,
-		ref = $bindable(null),
-		id = createId(uid),
-		disabled = false,
-		...restProps
-	}: CollapsibleTriggerProps = $props();
+	let { children, child, ref = $bindable(null), id = createId(uid), disabled = false, ...restProps }: CollapsibleTriggerProps = $props();
 
 	const triggerState = CollapsibleTriggerState.create({
 		id: {
@@ -36,9 +29,7 @@
 		},
 	});
 
-	const mergedProps = $derived(
-		mergeProps({ 'data-slot': 'collapsible-trigger' }, restProps, triggerState.props),
-	);
+	const mergedProps = $derived(mergeProps({ 'data-slot': 'collapsible-trigger' }, restProps, triggerState.props));
 </script>
 
 {#if child}

@@ -28,4 +28,4 @@ export type {
 	CalendarDayProps as DayProps,
 	CalendarMonthSelectProps as MonthSelectProps,
 	CalendarYearSelectProps as YearSelectProps,
-} from "$lib/components/calendar/index.js";
+} from "$lib/components/calendar/index";

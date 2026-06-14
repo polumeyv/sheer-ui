@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { WritableProp } from '$lib/vendor/index.js';
+import type { WritableProp } from '$lib/vendor/index';
 
 export type EscapeBehaviorType = 'close' | 'defer-otherwise-close' | 'defer-otherwise-ignore' | 'ignore';
 

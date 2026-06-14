@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { MenuTriggerProps } from "$lib/components/_shared/menu/index.js";
-	import { DropdownMenuTriggerState } from "$lib/components/_shared/menu/menu.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { MenuTriggerProps } from "$lib/components/_shared/menu/index";
+	import { DropdownMenuTriggerState } from "$lib/components/_shared/menu/trigger.svelte";
+	import { createId } from "$lib/vendor/create-id";
 	import FloatingLayerAnchor from "$lib/components/_shared/utilities/floating-layer/components/floating-layer-anchor.svelte";
 
 	const uid = $props.id();

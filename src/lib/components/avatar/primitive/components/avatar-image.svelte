@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { AvatarImageProps } from "$lib/components/avatar/primitive/index.js";
-	import { AvatarImageState } from "$lib/components/avatar/primitive/avatar.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { AvatarImageProps } from "$lib/components/avatar/primitive/index";
+	import { AvatarImageState } from "$lib/components/avatar/primitive/avatar.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

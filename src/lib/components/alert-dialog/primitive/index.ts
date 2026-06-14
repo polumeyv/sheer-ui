@@ -1,4 +1,4 @@
-import type { DialogContentProps, DialogContentPropsWithoutHTML } from "$lib/components/dialog/primitive/index.js";
+import type { DialogContentProps, DialogContentPropsWithoutHTML } from "$lib/components/dialog/primitive/index";
 
 export type {
 	DialogRootPropsWithoutHTML as AlertDialogRootPropsWithoutHTML,
@@ -17,7 +17,7 @@ export type {
 	DialogDescriptionProps as AlertDialogDescriptionProps,
 	DialogTriggerPropsWithoutHTML as AlertDialogTriggerPropsWithoutHTML,
 	DialogTriggerProps as AlertDialogTriggerProps,
-} from "$lib/components/dialog/primitive/index.js";
+} from "$lib/components/dialog/primitive/index";
 
 export type AlertDialogContentPropsWithoutHTML = Omit<
 	DialogContentPropsWithoutHTML,
@@ -25,4 +25,4 @@ export type AlertDialogContentPropsWithoutHTML = Omit<
 >;
 export type AlertDialogContentProps = DialogContentProps;
 
-export * as AlertDialog from "$lib/components/alert-dialog/primitive/exports.js";
+export * as AlertDialog from "$lib/components/alert-dialog/primitive/exports";

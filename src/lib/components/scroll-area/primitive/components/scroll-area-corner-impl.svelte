@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { ScrollAreaCornerProps } from "$lib/components/scroll-area/primitive/index.js";
-	import { ScrollAreaCornerImplState } from "$lib/components/scroll-area/primitive/scroll-area.svelte.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { ScrollAreaCornerProps } from "$lib/components/scroll-area/primitive/index";
+	import { ScrollAreaCornerImplState } from "$lib/components/scroll-area/primitive/scroll-area.svelte";
 
 	let {
 		ref = $bindable(null),

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { MenuCheckboxGroupProps } from "$lib/components/_shared/menu/index.js";
-	import { MenuCheckboxGroupState } from "$lib/components/_shared/menu/menu.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/vendor/index';
+	import type { MenuCheckboxGroupProps } from '$lib/components/_shared/menu/index';
+	import { MenuCheckboxGroupState } from '$lib/components/_shared/menu/checkbox.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
@@ -12,15 +12,38 @@
 		child,
 		ref = $bindable(null),
 		value = $bindable([]),
-		onValueChange = (() => {}),
+		onValueChange = () => {},
 		...restProps
 	}: MenuCheckboxGroupProps = $props();
 
 	const checkboxGroupState = MenuCheckboxGroupState.create({
-		value: { get current() { return $state.snapshot(value); }, set current(v) { value = $state.snapshot(v); onValueChange(v); } },
-		onValueChange: { get current() { return onValueChange; } },
-		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
-		id: { get current() { return id; } },
+		value: {
+			get current() {
+				return $state.snapshot(value);
+			},
+			set current(v) {
+				value = $state.snapshot(v);
+				onValueChange(v);
+			},
+		},
+		onValueChange: {
+			get current() {
+				return onValueChange;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
+		id: {
+			get current() {
+				return id;
+			},
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, checkboxGroupState.props));

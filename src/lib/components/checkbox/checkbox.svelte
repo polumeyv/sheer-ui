@@ -1,9 +1,9 @@
 <script lang="ts">import { untrack } from "svelte";
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { CheckboxRootProps } from '$lib/components/checkbox/primitive/index.js';
-	import { getCheckboxGroupContextOr, CheckboxRootState } from '$lib/components/checkbox/primitive/checkbox.svelte.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { CheckboxRootProps } from '$lib/components/checkbox/primitive/index';
+	import { getCheckboxGroupContextOr, CheckboxRootState } from '$lib/components/checkbox/primitive/checkbox.svelte';
 	import CheckboxInput from '$lib/components/checkbox/primitive/components/checkbox-input.svelte';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '$lib/vendor/create-id';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';

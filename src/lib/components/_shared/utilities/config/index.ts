@@ -1,5 +1,5 @@
-import type { WithChildren } from "$lib/internal/types.js";
-import type { PortalTarget } from "$lib/components/_shared/utilities/portal/index.js";
+import type { WithChildren } from "$lib/vendor/types";
+import type { PortalTarget } from "$lib/components/_shared/utilities/portal/index";
 
 export type BitsConfigPropsWithoutChildren = {
 	/**
@@ -14,4 +14,4 @@ export type BitsConfigPropsWithoutChildren = {
 };
 export type BitsConfigProps = WithChildren<BitsConfigPropsWithoutChildren>;
 
-export * from "$lib/components/_shared/utilities/config/exports.js";
+export * from "$lib/components/_shared/utilities/config/exports";

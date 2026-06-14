@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { CheckboxGroupProps } from "$lib/components/checkbox/primitive/index.js";
-	import { CheckboxGroupState } from "$lib/components/checkbox/primitive/checkbox.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import { arraysAreEqual } from "$lib/internal/arrays.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { CheckboxGroupProps } from "$lib/components/checkbox/primitive/index";
+	import { CheckboxGroupState } from "$lib/components/checkbox/primitive/checkbox.svelte";
+	import { createId } from "$lib/vendor/create-id";
+	import { arraysAreEqual } from "$lib/vendor/arrays";
 
 	const uid = $props.id();
 

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { PopoverTriggerProps } from '$lib/components/popover/primitive/index.js';
-	import { PopoverTriggerState } from '$lib/components/popover/primitive/popover.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { PopoverTriggerProps } from '$lib/components/popover/primitive/index';
+	import { PopoverTriggerState } from '$lib/components/popover/primitive/popover.svelte';
+	import { createId } from '$lib/vendor/create-id';
 	import FloatingLayerAnchor from '$lib/components/_shared/utilities/floating-layer/components/floating-layer-anchor.svelte';
 	import { cn } from '../../vendor/utils';
 
@@ -23,21 +23,43 @@
 	}: PopoverTriggerProps = $props();
 
 	const triggerState = PopoverTriggerState.create({
-		id: { get current() { return id; } },
-		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
-		disabled: { get current() { return Boolean(disabled); } },
-		openOnHover: { get current() { return openOnHover; } },
-		openDelay: { get current() { return openDelay; } },
-		closeDelay: { get current() { return closeDelay; } },
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
+		disabled: {
+			get current() {
+				return Boolean(disabled);
+			},
+		},
+		openOnHover: {
+			get current() {
+				return openOnHover;
+			},
+		},
+		openDelay: {
+			get current() {
+				return openDelay;
+			},
+		},
+		closeDelay: {
+			get current() {
+				return closeDelay;
+			},
+		},
 	});
 
 	const mergedProps = $derived(
-		mergeProps(
-			{ 'data-slot': 'popover-trigger', class: cn('', className) },
-			restProps,
-			triggerState.props,
-			{ type },
-		),
+		mergeProps({ 'data-slot': 'popover-trigger', class: cn('', className) }, restProps, triggerState.props, { type }),
 	);
 </script>
 

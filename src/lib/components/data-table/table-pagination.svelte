@@ -1,6 +1,6 @@
 <script lang="ts" generics="TData">
 	import type { Table } from '@tanstack/table-core';
-	import * as Select from '@polumeyv/ui/select';
+	import * as Select from '../select/index';
 	import { Button } from '@polumeyv/ui/button';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
@@ -24,15 +24,14 @@
 		<div class="flex items-center space-x-6 lg:space-x-8">
 			<div class="flex items-center space-x-2">
 				<p class="text-sm font-medium">Rows per page</p>
-				<Select.Root allowDeselect={false} type="single" value={`${table.getState().pagination.pageSize}`} onValueChange={(value) => table.setPageSize(Number(value))}>
-					<Select.Trigger class="w-17.5!">
-						{String(table.getState().pagination.pageSize)}
-					</Select.Trigger>
-					<Select.Content side="top">
-						{#each [10, 20, 30, 40, 50] as pageSize (pageSize)}
-							<Select.Item value={`${pageSize}`}>{pageSize}</Select.Item>
-						{/each}
-					</Select.Content>
+				<Select.Root
+					class="w-17.5!"
+					side="top"
+					value={`${table.getState().pagination.pageSize}`}
+					onchange={(e) => table.setPageSize(Number(e.currentTarget.value))}>
+					{#each [10, 20, 30, 40, 50] as pageSize (pageSize)}
+						<Select.Option value={`${pageSize}`}>{pageSize}</Select.Option>
+					{/each}
 				</Select.Root>
 			</div>
 			<div class="flex w-25 items-center justify-center text-sm font-medium">

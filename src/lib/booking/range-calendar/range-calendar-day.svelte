@@ -1,7 +1,7 @@
 <script lang="ts">
-import { RangeCalendar as RangeCalendarPrimitive } from "$lib/components/_shared/primitives.js";
-import { buttonVariants } from '../../components/button/index.js';
-import { cn } from '../../vendor/utils.js';
+import { RangeCalendar as RangeCalendarPrimitive } from "$lib/components/_shared/primitives";
+import { buttonVariants } from '../../components/button/index';
+import { cn } from '../../vendor/utils';
 
 let { ref = $bindable(null), class: className, ...restProps }: RangeCalendarPrimitive.DayProps = $props();
 </script>

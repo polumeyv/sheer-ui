@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { MenubarContentProps } from "$lib/components/menubar/primitive/index.js";
-	import { MenubarContentState } from "$lib/components/menubar/primitive/menubar.svelte.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { MenubarContentProps } from "$lib/components/menubar/primitive/index";
+	import { MenubarContentState } from "$lib/components/menubar/primitive/menubar.svelte";
 	import MenuContent from "$lib/components/_shared/menu/components/menu-content.svelte";
-	import { createId } from "$lib/internal/create-id.js";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

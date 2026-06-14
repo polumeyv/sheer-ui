@@ -1,5 +1,5 @@
-import { type Getter, type ReadableProp } from '$lib/vendor/index.js';
-import { type BitsConfigState, getBitsConfig } from '$lib/components/_shared/utilities/config/bits-config.js';
+import { type Getter, type ReadableProp } from '$lib/vendor/index';
+import { type BitsConfigState, getBitsConfig } from '$lib/components/_shared/utilities/config/bits-config';
 
 /**
  * Creates a generic prop resolver that follows a standard priority chain:

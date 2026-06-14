@@ -1,11 +1,11 @@
-import type { EscapeBehaviorType } from "$lib/components/_shared/utilities/escape-layer/index.js";
-import type { InteractOutsideBehaviorType } from "$lib/components/_shared/utilities/dismissible-layer/index.js";
+import type { EscapeBehaviorType } from "$lib/components/_shared/utilities/escape-layer/index";
+import type { InteractOutsideBehaviorType } from "$lib/components/_shared/utilities/dismissible-layer/index";
 import type {
 	OnChangeFn,
 	WithChild,
 	WithChildNoChildrenSnippetProps,
 	Without,
-} from "$lib/internal/types.js";
+} from "$lib/vendor/types";
 import type {
 	BitsPrimitiveAnchorAttributes,
 	BitsPrimitiveButtonAttributes,
@@ -13,8 +13,8 @@ import type {
 	BitsPrimitiveElementAttributes,
 	BitsPrimitiveLiAttributes,
 	BitsPrimitiveUListAttributes,
-} from "$lib/shared/attributes.js";
-import type { Direction, Orientation } from "$lib/shared/index.js";
+} from "$lib/shared/attributes";
+import type { Direction, Orientation } from "$lib/shared/index";
 
 export type NavigationMenuRootPropsWithoutHTML = WithChild<{
 	/**
@@ -211,4 +211,4 @@ export type NavigationMenuViewportPropsWithoutHTML = WithChild<{
 export type NavigationMenuViewportProps = NavigationMenuViewportPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, NavigationMenuViewportPropsWithoutHTML>;
 
-export * as NavigationMenu from "$lib/components/navigation-menu/primitive/exports.js";
+export * as NavigationMenu from "$lib/components/navigation-menu/primitive/exports";

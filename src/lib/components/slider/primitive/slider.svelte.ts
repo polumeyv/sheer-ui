@@ -1,5 +1,5 @@
 import { createContext, untrack } from 'svelte';
-import { executeCallbacks } from '$lib/vendor/index.js';
+import { executeCallbacks } from '$lib/vendor/index';
 import {
 	attachRef,
 	type WritableProp,
@@ -7,7 +7,7 @@ import {
 	DOMContext,
 	type ReadableProps,
 	type WritableProps,
-} from '$lib/vendor/index.js';
+} from '$lib/vendor/index';
 import { on } from 'svelte/events';
 import {
 	getRangeStyles,
@@ -18,15 +18,15 @@ import {
 	getAdjacentStepValue,
 	getTickLabelStyles,
 	getThumbLabelStyles,
-} from '$lib/components/slider/primitive/helpers.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { isValidIndex } from '$lib/internal/arrays.js';
-import { SvelteResizeObserver } from '$lib/internal/svelte-resize-observer.svelte.js';
-import type { BitsKeyboardEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import type { Direction, Orientation, SliderThumbPositioning } from '$lib/shared/index.js';
-import { linearScale } from '$lib/internal/math.js';
-import type { SliderLabelPosition } from '$lib/components/slider/primitive/index.js';
+} from '$lib/components/slider/primitive/helpers';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import { kbd } from '$lib/vendor/kbd';
+import { isValidIndex } from '$lib/vendor/arrays';
+import { SvelteResizeObserver } from '$lib/vendor/svelte-resize-observer.svelte';
+import type { BitsKeyboardEvent, OnChangeFn, RefAttachment, WithRefProps } from '$lib/vendor/types';
+import type { Direction, Orientation, SliderThumbPositioning } from '$lib/shared/index';
+import { linearScale } from '$lib/vendor/math';
+import type { SliderLabelPosition } from '$lib/components/slider/primitive/index';
 
 const sliderAttrs = createBitsAttrs({
 	component: 'slider',

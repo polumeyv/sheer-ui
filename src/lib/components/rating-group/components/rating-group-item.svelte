@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { RatingGroupItemProps } from "$lib/components/rating-group/index.js";
-	import { RatingGroupItemState } from "$lib/components/rating-group/rating-group.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { RatingGroupItemProps } from "$lib/components/rating-group/index";
+	import { RatingGroupItemState } from "$lib/components/rating-group/rating-group.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

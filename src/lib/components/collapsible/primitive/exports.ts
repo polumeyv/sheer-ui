@@ -6,4 +6,4 @@ export type {
 	CollapsibleRootProps as RootProps,
 	CollapsibleContentProps as ContentProps,
 	CollapsibleTriggerProps as TriggerProps,
-} from "$lib/components/collapsible/primitive/index.js";
+} from "$lib/components/collapsible/primitive/index";

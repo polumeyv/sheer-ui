@@ -1,20 +1,12 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/merge-props.js";
-	import type { RadioGroupItemProps } from "$lib/components/radio-group/primitive/index.js";
-	import { RadioGroupItemState } from "$lib/components/radio-group/primitive/radio-group.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/vendor';
+	import type { RadioGroupItemProps } from '$lib/components/radio-group/primitive/index';
+	import { RadioGroupItemState } from '$lib/components/radio-group/primitive/radio-group.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
-	let {
-		id = createId(uid),
-		children,
-		child,
-		value,
-		disabled = false,
-		ref = $bindable(null),
-		...restProps
-	}: RadioGroupItemProps = $props();
+	let { id = createId(uid), children, child, value, disabled = false, ref = $bindable(null), ...restProps }: RadioGroupItemProps = $props();
 
 	const itemState = RadioGroupItemState.create({
 		value: {

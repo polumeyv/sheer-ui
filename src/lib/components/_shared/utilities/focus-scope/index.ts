@@ -1,6 +1,6 @@
 import type { Snippet } from 'svelte';
-import type { EventCallback } from '$lib/internal/events.js';
-import type { ReadableProp } from '$lib/vendor/index.js';
+import type { EventCallback } from '$lib/vendor/events';
+import type { ReadableProp } from '$lib/vendor/index';
 
 export type FocusScopeProps = {
 	/**

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/merge-props.js";
-	import type { AccordionItemProps } from "$lib/components/accordion/primitive/index.js";
-	import { AccordionItemState } from "$lib/components/accordion/primitive/accordion.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/vendor';
+	import type { AccordionItemProps } from '$lib/components/accordion/primitive/index';
+	import { AccordionItemState } from '$lib/components/accordion/primitive/accordion.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 	const defaultId = createId(uid);

@@ -1,6 +1,6 @@
-import { tv, type VariantProps } from '../../vendor/utils';
+import { declareVariants, type VariantProps } from '../../vendor/utils';
 
-export const inputGroupAddonVariants = tv({
+export const inputGroupAddonVariants = declareVariants({
 	base: "text-muted-foreground flex h-auto cursor-text items-center gap-2 py-1.5 text-sm font-medium select-none group-data-[disabled=true]/input-group:opacity-50 [&>kbd]:rounded-[calc(var(--radius)-5px)] [&>svg:not([class*='size-'])]:size-4",
 	variants: {
 		align: {
@@ -17,7 +17,7 @@ export const inputGroupAddonVariants = tv({
 
 export type InputGroupAddonAlign = VariantProps<typeof inputGroupAddonVariants>['align'];
 
-export const inputGroupButtonVariants = tv({
+export const inputGroupButtonVariants = declareVariants({
 	base: 'text-sm shadow-none',
 	variants: {
 		size: {

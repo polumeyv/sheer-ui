@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { BitsConfigProps } from "$lib/components/_shared/utilities/config/index.js";
-	import { useBitsConfig } from "$lib/components/_shared/utilities/config/bits-config.js";
+	import type { BitsConfigProps } from "$lib/components/_shared/utilities/config/index";
+	import { useBitsConfig } from "$lib/components/_shared/utilities/config/bits-config";
 	let { children, defaultPortalTo, defaultLocale }: BitsConfigProps = $props();
 
 	useBitsConfig({

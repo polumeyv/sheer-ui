@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/merge-props.js";
-	import type { SwitchRootProps } from "$lib/components/switch/primitive/index.js";
-	import { SwitchRootState } from "$lib/components/switch/primitive/switch.svelte.js";
-	import SwitchInput from "$lib/components/switch/primitive/components/switch-input.svelte";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/vendor';
+	import type { SwitchRootProps } from '$lib/components/switch/primitive/index';
+	import { SwitchRootState } from '$lib/components/switch/primitive/switch.svelte';
+	import SwitchInput from '$lib/components/switch/primitive/components/switch-input.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
@@ -15,10 +15,10 @@
 		disabled = false,
 		required = false,
 		checked = $bindable(false),
-		value = "on",
+		value = 'on',
 		name = undefined,
-		type = "button",
-		onCheckedChange = (() => {}),
+		type = 'button',
+		onCheckedChange = () => {},
 		...restProps
 	}: SwitchRootProps = $props();
 

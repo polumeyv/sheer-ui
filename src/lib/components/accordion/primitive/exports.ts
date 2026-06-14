@@ -10,4 +10,4 @@ export type {
 	AccordionHeaderProps as HeaderProps,
 	AccordionTriggerProps as TriggerProps,
 	AccordionContentProps as ContentProps,
-} from "$lib/components/accordion/primitive/index.js";
+} from "$lib/components/accordion/primitive/index";

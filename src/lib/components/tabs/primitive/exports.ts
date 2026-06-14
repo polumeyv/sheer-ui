@@ -8,4 +8,4 @@ export type {
 	TabsContentProps as ContentProps,
 	TabsTriggerProps as TriggerProps,
 	TabsListProps as ListProps,
-} from '$lib/components/tabs/primitive/index.js';
+} from '$lib/components/tabs/primitive/index';

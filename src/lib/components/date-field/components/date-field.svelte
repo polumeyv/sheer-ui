@@ -1,8 +1,8 @@
 <script lang="ts">import { untrack } from "svelte";
-		import { DateFieldRootState } from "$lib/components/date-field/date-field.svelte.js";
-	import type { DateFieldRootProps } from "$lib/components/date-field/index.js";
-	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
-	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
+		import { DateFieldRootState } from "$lib/components/date-field/date-field.svelte";
+	import type { DateFieldRootProps } from "$lib/components/date-field/index";
+	import { getDefaultDate } from "$lib/vendor/date-time/utils";
+	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers";
 
 	let {
 		disabled = false,

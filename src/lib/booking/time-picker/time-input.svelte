@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { cn } from '../../vendor/utils.js';
-	import * as Select from '../../components/select/index.js';
-	import { Button } from '../../components/button/index.js';
+	import { cn } from '../../vendor/utils';
+	import * as Select from '../../components/select/index';
+	import { Button } from '../../components/button/index';
 
 	interface Props {
 		value?: string;
@@ -10,13 +10,11 @@
 		class?: string;
 		triggerClass?: string;
 		onValueChange?: (value: string) => void;
-		open?: boolean;
-		onOpenChange?: (open: boolean) => void;
 		interval?: 15 | 30 | 60;
 		use24Hour?: boolean;
 	}
 
-	let { value = $bindable(''), placeholder = 'Time', disabled = false, class: className, triggerClass, onValueChange, open = $bindable(false), onOpenChange, interval = 30, use24Hour = false }: Props = $props();
+	let { value = $bindable(''), placeholder = 'Time', disabled = false, class: className, triggerClass, onValueChange, interval = 30, use24Hour = false }: Props = $props();
 
 	// Generate time slots based on mode
 	const slots = $derived.by(() => {
@@ -94,23 +92,16 @@
 
 <div class={cn('flex items-center gap-1', className)}>
 	<Select.Root
-		type="single"
-		{open}
-		onOpenChange={(o) => {
-			open = o;
-			onOpenChange?.(o);
-		}}
-		value={display || undefined}
-		onValueChange={handleSelect}
-		{disabled}>
-		<Select.Trigger size="sm" class={cn(use24Hour ? 'w-[72px]!' : 'w-[60px]!', 'px-2!', triggerClass)}>
-			<span class="flex-1 text-center">{display || placeholder}</span>
-		</Select.Trigger>
-		<Select.Content class="max-h-50!">
-			{#each slots as slot (slot)}
-				<Select.Item value={slot} label={slot} />
-			{/each}
-		</Select.Content>
+		value={display || ''}
+		onchange={(e) => handleSelect(e.currentTarget.value || undefined)}
+		{disabled}
+		{placeholder}
+		maxHeight="12.5rem"
+		class={cn('h-8', use24Hour ? 'w-[72px]!' : 'w-[60px]!', triggerClass)}
+		triggerClass="justify-center px-2">
+		{#each slots as slot (slot)}
+			<Select.Option value={slot}>{slot}</Select.Option>
+		{/each}
 	</Select.Root>
 
 	{#if !use24Hour}

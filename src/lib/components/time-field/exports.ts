@@ -9,4 +9,4 @@ export type {
 	TimeFieldLabelProps as LabelProps,
 	TimeFieldSegmentProps as SegmentProps,
 	// DateFieldDescriptionProps as DescriptionProps,
-} from "$lib/components/time-field/index.js";
+} from "$lib/components/time-field/index";

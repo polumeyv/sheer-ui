@@ -1,19 +1,19 @@
-import type { ArrowProps, ArrowPropsWithoutHTML } from "$lib/components/_shared/utilities/arrow/index.js";
-import type { PopperLayerProps, PopperLayerStaticProps } from "$lib/components/_shared/utilities/popper-layer/index.js";
+import type { ArrowProps, ArrowPropsWithoutHTML } from "$lib/components/_shared/utilities/arrow/index";
+import type { PopperLayerProps, PopperLayerStaticProps } from "$lib/components/_shared/utilities/popper-layer/index";
 import type {
 	OnChangeFn,
 	WithChild,
 	WithChildNoChildrenSnippetProps,
 	WithChildren,
 	Without,
-} from "$lib/internal/types.js";
+} from "$lib/vendor/types";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
-import type { FloatingContentSnippetProps, StaticContentSnippetProps } from "$lib/shared/types.js";
-import type { PortalProps } from "$lib/components/_shared/utilities/portal/index.js";
-import type { PresenceLayerProps } from "$lib/components/_shared/utilities/presence-layer/index.js";
+} from "$lib/shared/attributes";
+import type { FloatingContentSnippetProps, StaticContentSnippetProps } from "$lib/shared/types";
+import type { PortalProps } from "$lib/components/_shared/utilities/portal/index";
+import type { PresenceLayerProps } from "$lib/components/_shared/utilities/presence-layer/index";
 
 export type PopoverRootPropsWithoutHTML = WithChildren<{
 	/**
@@ -99,4 +99,4 @@ export type PopoverOverlayPropsWithoutHTML = WithChild<
 export type PopoverOverlayProps = PopoverOverlayPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, PopoverOverlayPropsWithoutHTML>;
 
-export * as Popover from "$lib/components/popover/primitive/exports.js";
+export * as Popover from "$lib/components/popover/primitive/exports";

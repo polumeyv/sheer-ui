@@ -1,5 +1,5 @@
 import { createContext, untrack } from 'svelte';
-import { executeCallbacks } from '$lib/vendor/index.js';
+import { executeCallbacks } from '$lib/vendor/index';
 /**
  * This logic is adapted from Radix UI ScrollArea component.
  * https://github.com/radix-ui/primitives/blob/main/packages/react/scroll-area/src/ScrollArea.tsx
@@ -7,17 +7,17 @@ import { executeCallbacks } from '$lib/vendor/index.js';
  * Incredible thought must have went into solving all the intricacies of this component.
  */
 
-import { useDebounce } from '$lib/vendor/use-debounce.svelte.js';
-import { writableProp, attachRef, DOMContext, getWindow, type ReadableProps } from '$lib/vendor/index.js';
-import type { ScrollAreaType } from '$lib/components/scroll-area/primitive/index.js';
-import type { BitsPointerEvent, RefAttachment, WithRefProps } from '$lib/internal/types.js';
-import { type Direction, type Orientation, mergeProps, useId } from '$lib/shared/index.js';
+import { useDebounce } from '$lib/vendor/use-debounce.svelte';
+import { writableProp, attachRef, DOMContext, getWindow, type ReadableProps } from '$lib/vendor/index';
+import type { ScrollAreaType } from '$lib/components/scroll-area/primitive/index';
+import type { BitsPointerEvent, RefAttachment, WithRefProps } from '$lib/vendor/types';
+import { type Direction, type Orientation, mergeProps, useId } from '$lib/shared/index';
 import { on } from 'svelte/events';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { SvelteResizeObserver } from '$lib/internal/svelte-resize-observer.svelte.js';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import { SvelteResizeObserver } from '$lib/vendor/svelte-resize-observer.svelte';
 
 
-import { type WritableProp } from '$lib/vendor/index.js';
+import { type WritableProp } from '$lib/vendor/index';
 
 interface Machine<S> {
 	[k: string]: { [k: string]: S };

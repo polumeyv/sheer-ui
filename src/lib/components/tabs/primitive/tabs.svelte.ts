@@ -1,13 +1,13 @@
 import { createContext, untrack } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
-import { attachRef, type RefAttachment } from '$lib/internal/attach-ref.js';
-import type { TabsActivationMode } from '$lib/components/tabs/primitive/index.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import type { ReadableProps, WithRefProps, WritableProps } from '$lib/vendor/utils.js';
-import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent } from '$lib/internal/types.js';
-import type { Orientation } from '$lib/shared/index.js';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
+import { attachRef, type RefAttachment } from '$lib/vendor/attach-ref';
+import type { TabsActivationMode } from '$lib/components/tabs/primitive/index';
+import { createBitsAttrs } from '$lib/vendor/attrs';
+import { kbd } from '$lib/vendor/kbd';
+import type { ReadableProps, WithRefProps, WritableProps } from '$lib/vendor/utils';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent } from '$lib/vendor/types';
+import type { Orientation } from '$lib/shared/index';
+import { RovingFocusGroup } from '$lib/vendor/roving-focus-group';
 
 const tabsAttrs = createBitsAttrs({
 	component: 'tabs',

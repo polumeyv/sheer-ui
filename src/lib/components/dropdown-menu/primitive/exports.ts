@@ -36,4 +36,4 @@ export type {
 	DropdownMenuTriggerProps as TriggerProps,
 	DropdownMenuPortalProps as PortalProps,
 	DropdownMenuCheckboxGroupProps as CheckboxGroupProps,
-} from "$lib/components/dropdown-menu/primitive/index.js";
+} from "$lib/components/dropdown-menu/primitive/index";

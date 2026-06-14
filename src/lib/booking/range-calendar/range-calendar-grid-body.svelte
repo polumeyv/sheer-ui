@@ -1,5 +1,5 @@
 <script lang="ts">
-import { RangeCalendar as RangeCalendarPrimitive } from "$lib/components/_shared/primitives.js";
+import { RangeCalendar as RangeCalendarPrimitive } from "$lib/components/_shared/primitives";
 
 let { ref = $bindable(null), ...restProps }: RangeCalendarPrimitive.GridBodyProps = $props();
 </script>

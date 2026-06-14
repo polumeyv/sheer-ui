@@ -1,9 +1,9 @@
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
+import type { OnChangeFn, WithChild, Without } from "$lib/vendor/types";
 import type {
 	BitsPrimitiveDivAttributes,
 	BitsPrimitiveImgAttributes,
 	BitsPrimitiveSpanAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/shared/attributes";
 
 export type AvatarImageLoadingStatus = "loading" | "loaded" | "error";
 
@@ -45,4 +45,4 @@ export type AvatarFallbackPropsWithoutHTML = WithChild;
 export type AvatarFallbackProps = AvatarFallbackPropsWithoutHTML &
 	Without<BitsPrimitiveSpanAttributes, AvatarFallbackPropsWithoutHTML>;
 
-export * as Avatar from "$lib/components/avatar/primitive/exports.js";
+export * as Avatar from "$lib/components/avatar/primitive/exports";

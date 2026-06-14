@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/internal/merge-props';
+	import { mergeProps } from '$lib/vendor/merge-props';
 	import type { SwitchRootProps } from '$lib/components/switch/primitive';
 	import { SwitchRootState, SwitchThumbState } from '$lib/components/switch/primitive/switch.svelte';
 	import SwitchInput from '$lib/components/switch/primitive/components/switch-input.svelte';
-	import { createId } from '$lib/internal/create-id';
+	import { createId } from '$lib/vendor/create-id';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 
 	const uid = $props.id();

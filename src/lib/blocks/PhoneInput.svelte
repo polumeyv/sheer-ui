@@ -30,20 +30,16 @@
 
 <div class="flex w-full gap-2">
 	<Select.Root
-		type="single"
 		value={country}
-		onValueChange={(v) => {
-			country = v as CountryCode;
+		onchange={(e) => {
+			country = e.currentTarget.value as CountryCode;
 			value = toE164();
 			onchange?.(value);
 		}}
 		{disabled}>
-		<Select.Trigger>{country}</Select.Trigger>
-		<Select.Content>
-			{#each Object.entries(COUNTRIES) as [code, dial] (code)}
-				<Select.Item value={code}>{code}: +{dial}</Select.Item>
-			{/each}
-		</Select.Content>
+		{#each Object.keys(COUNTRIES) as code (code)}
+			<Select.Option value={code}>{code}</Select.Option>
+		{/each}
 	</Select.Root>
 	<InputGroup.Root>
 		<InputGroup.Text class="ml-2 select-none">+{COUNTRIES[country]}</InputGroup.Text>

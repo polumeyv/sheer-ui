@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { ReadableProp } from '$lib/vendor/index.js';
+import type { ReadableProp } from '$lib/vendor/index';
 
 export type PointerHandler = (e: PointerEvent) => void;
 

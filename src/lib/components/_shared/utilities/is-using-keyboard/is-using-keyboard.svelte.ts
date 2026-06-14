@@ -1,5 +1,5 @@
-import { type AnyFn } from '$lib/vendor/index.js';
-import { executeCallbacks } from '$lib/vendor/index.js';
+import { type AnyFn } from '$lib/vendor/index';
+import { executeCallbacks } from '$lib/vendor/index';
 import { on } from 'svelte/events';
 
 // Using global state to avoid multiple listeners.

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { AccordionItemProps } from '$lib/components/accordion/primitive/index.js';
-	import { AccordionItemState } from '$lib/components/accordion/primitive/accordion.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { AccordionItemProps } from '$lib/components/accordion/primitive/index';
+	import { AccordionItemState } from '$lib/components/accordion/primitive/accordion.svelte';
+	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();
@@ -46,11 +46,7 @@
 	});
 
 	const mergedProps = $derived(
-		mergeProps(
-			{ 'data-slot': 'accordion-item', class: cn('border-b last:border-b-0', className) },
-			restProps,
-			itemState.props,
-		),
+		mergeProps({ 'data-slot': 'accordion-item', class: cn('border-b last:border-b-0', className) }, restProps, itemState.props),
 	);
 </script>
 

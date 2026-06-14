@@ -1,11 +1,11 @@
 <script lang="ts">import { untrack } from "svelte";
-		import { mergeProps } from "$lib/vendor/index.js";
+		import { mergeProps } from "$lib/vendor/index";
 	import { type DateValue } from "@internationalized/date";
-	import { CalendarRootState } from "$lib/components/calendar/calendar.svelte.js";
-	import type { CalendarRootProps } from "$lib/components/calendar/index.js";
-	import { useId } from "$lib/internal/use-id.js";
-	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
-	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers.js";
+	import { CalendarRootState } from "$lib/components/calendar/calendar.svelte";
+	import type { CalendarRootProps } from "$lib/components/calendar/index";
+	import { useId } from "$lib/vendor/use-id";
+	import { getDefaultDate } from "$lib/vendor/date-time/utils";
+	import { resolveLocaleProp } from "$lib/components/_shared/utilities/config/prop-resolvers";
 
 	let {
 		child,

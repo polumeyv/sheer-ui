@@ -1,9 +1,9 @@
 import type { Snippet } from "svelte";
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
+import type { OnChangeFn, WithChild, Without } from "$lib/vendor/types";
 import type {
 	BitsPrimitiveDivAttributes,
 	BitsPrimitiveInputAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/shared/attributes";
 
 export type PinInputRootSnippetProps = {
 	cells: PinInputCell[];
@@ -117,4 +117,4 @@ export type PinInputCell = {
 	hasFakeCaret: boolean;
 };
 
-export * as PinInput from "$lib/components/pin-input/exports.js";
+export * as PinInput from "$lib/components/pin-input/exports";

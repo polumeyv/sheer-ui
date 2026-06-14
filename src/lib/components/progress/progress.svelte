@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index.js';
-	import type { ProgressRootProps } from '$lib/components/progress/primitive/index.js';
-	import { ProgressRootState } from '$lib/components/progress/primitive/progress.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor/index';
+	import type { ProgressRootProps } from '$lib/components/progress/primitive/index';
+	import { ProgressRootState } from '$lib/components/progress/primitive/progress.svelte';
+	import { createId } from '$lib/vendor/create-id';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 
 	const uid = $props.id();

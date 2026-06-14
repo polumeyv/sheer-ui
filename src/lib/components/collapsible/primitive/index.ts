@@ -3,11 +3,11 @@ import type {
 	WithChild,
 	WithChildNoChildrenSnippetProps,
 	Without,
-} from "$lib/internal/types.js";
+} from "$lib/vendor/types";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/shared/attributes";
 
 export type CollapsibleRootPropsWithoutHTML = WithChild<{
 	/**
@@ -72,4 +72,4 @@ export type CollapsibleTriggerPropsWithoutHTML = WithChild;
 export type CollapsibleTriggerProps = CollapsibleTriggerPropsWithoutHTML &
 	Without<BitsPrimitiveButtonAttributes, CollapsibleTriggerPropsWithoutHTML>;
 
-export * as Collapsible from "$lib/components/collapsible/primitive/exports.js";
+export * as Collapsible from "$lib/components/collapsible/primitive/exports";

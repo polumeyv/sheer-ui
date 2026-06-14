@@ -13,12 +13,12 @@ export const cn = import.meta.env.DEV ? guard(join) : join;
 type VariantsSchema = Record<string, Record<string, string>>;
 
 /**
- * Minimal replacement for tailwind-variants' tv(): plain string concatenation,
- * no conflict merging. Variant strings MUST stay disjoint from base (no CSS
- * property set by both for the same modifier prefix) — enforced exhaustively
- * by components/variants.test.ts.
+ * Local stand-in for overrule's `declareVariants` — flip to `export { declareVariants, type VariantProps } from 'overrule'`
+ * once overrule ships it. A typed variant author: plain string concatenation, NO conflict merging. Base/variant/caller
+ * classes must stay disjoint for the same modifier prefix — the invariant overrule's CLI + `guard` and
+ * components/variants.test.ts enforce, which is what lets this skip tailwind-variants' tailwind-merge runtime.
  */
-export function tv<S extends VariantsSchema>(config: { base?: string; variants?: S; defaultVariants?: { [K in keyof S]?: keyof S[K] } }) {
+export function declareVariants<S extends VariantsSchema>(config: { base?: string; variants?: S; defaultVariants?: { [K in keyof S]?: keyof S[K] } }) {
 	return (props?: { [K in keyof S]?: keyof S[K] | null | undefined } & { class?: string }): string => {
 		let out = config.base ?? '';
 		for (const key in config.variants) {

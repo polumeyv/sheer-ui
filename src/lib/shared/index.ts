@@ -1,7 +1,7 @@
 // oxlint-disable no-explicit-any
 import type * as CSS from 'csstype';
 
-export { REGEXP_ONLY_DIGITS, REGEXP_ONLY_CHARS, REGEXP_ONLY_DIGITS_AND_CHARS } from '$lib/components/pin-input/pin-input.svelte.js';
+export { REGEXP_ONLY_DIGITS, REGEXP_ONLY_CHARS, REGEXP_ONLY_DIGITS_AND_CHARS } from '$lib/components/pin-input/pin-input.svelte';
 
 export type Selected<Value> = {
 	value: Value;
@@ -33,7 +33,7 @@ export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;
 export type WithoutChildren<T> = T extends { children?: any } ? Omit<T, 'children'> : T;
 export type WithoutChild<T> = T extends { child?: any } ? Omit<T, 'child'> : T;
 export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: U | null };
-export type { EditableSegmentPart, EditableTimeSegmentPart } from './date/types.js';
+export type { EditableSegmentPart, EditableTimeSegmentPart } from './date/types';
 export type {
 	Month,
 	DateMatcher,
@@ -47,9 +47,9 @@ export type {
 	TimeValidator,
 	TimeRangeValidator,
 	TimeOnInvalid,
-} from './date/types.js';
-export type { WithChild, Without, WithChildren } from '$lib/internal/types.js';
-export { mergeProps } from '$lib/vendor/index.js';
-export { useId } from '$lib/internal/use-id.js';
-export * from './attributes.js';
-export * from './types.js';
+} from './date/types';
+export type { WithChild, Without, WithChildren } from '$lib/vendor/types';
+export { mergeProps } from '$lib/vendor/index';
+export { useId } from '$lib/vendor/use-id';
+export * from './attributes';
+export * from './types';

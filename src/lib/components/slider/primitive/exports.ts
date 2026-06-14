@@ -12,4 +12,4 @@ export type {
 	SliderTickProps as TickProps,
 	SliderTickLabelProps as TickLabelProps,
 	SliderThumbLabelProps as ThumbLabelProps,
-} from "$lib/components/slider/primitive/index.js";
+} from "$lib/components/slider/primitive/index";

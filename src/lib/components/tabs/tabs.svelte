@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { TabsRootProps } from '$lib/components/tabs/primitive/index.js';
-	import { TabsRootState } from '$lib/components/tabs/primitive/tabs.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '../../vendor/utils.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { TabsRootProps } from '$lib/components/tabs/primitive/index';
+	import { TabsRootState } from '$lib/components/tabs/primitive/tabs.svelte';
+	import { createId } from '$lib/vendor/create-id';
+	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();
 
@@ -11,7 +11,7 @@
 		id = createId(uid),
 		ref = $bindable(null),
 		value = $bindable(''),
-		onValueChange = (() => {}),
+		onValueChange = () => {},
 		orientation = 'horizontal',
 		loop = true,
 		activationMode = 'automatic',
@@ -74,8 +74,8 @@
 				class: cn('flex flex-col gap-2', className),
 			},
 			restProps,
-			rootState.props
-		)
+			rootState.props,
+		),
 	);
 </script>
 

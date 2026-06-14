@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { HTMLAttributes } from 'svelte/elements';
-import { getEmblaContext } from './context';
+import { getEmblaContext } from './carouselState.svelte';
 import { cn, type WithElementRef } from '../../vendor/utils';
 
 let {
@@ -10,7 +10,7 @@ let {
 	...restProps
 }: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
 
-const emblaCtx = getEmblaContext('<Carousel.Item/>');
+const emblaCtx = getEmblaContext();
 </script>
 
 <div

@@ -1,9 +1,9 @@
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
+import type { OnChangeFn, WithChild, Without } from "$lib/vendor/types";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
 	BitsPrimitiveSpanAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/shared/attributes";
 
 export type CheckboxRootSnippetProps = { checked: boolean; indeterminate: boolean };
 
@@ -143,4 +143,4 @@ export type CheckboxGroupLabelPropsWithoutHTML = WithChild;
 export type CheckboxGroupLabelProps = CheckboxGroupLabelPropsWithoutHTML &
 	Without<BitsPrimitiveSpanAttributes, CheckboxGroupLabelPropsWithoutHTML>;
 
-export * as Checkbox from "$lib/components/checkbox/primitive/exports.js";
+export * as Checkbox from "$lib/components/checkbox/primitive/exports";

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/internal/merge-props.js';
-	import type { ToolbarRootProps } from '$lib/components/toolbar/index.js';
-	import { ToolbarRootState } from '$lib/components/toolbar/toolbar.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/vendor';
+	import type { ToolbarRootProps } from '$lib/components/toolbar/index';
+	import { ToolbarRootState } from '$lib/components/toolbar/toolbar.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 

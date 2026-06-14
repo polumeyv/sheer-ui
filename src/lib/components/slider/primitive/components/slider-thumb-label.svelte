@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { SliderThumbLabelProps } from "$lib/components/slider/primitive/index.js";
-	import { getSliderRootContext, SliderThumbLabelState } from "$lib/components/slider/primitive/slider.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { SliderThumbLabelProps } from "$lib/components/slider/primitive/index";
+	import { getSliderRootContext, SliderThumbLabelState } from "$lib/components/slider/primitive/slider.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

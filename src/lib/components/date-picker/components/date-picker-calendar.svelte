@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { DatePickerCalendarProps } from "$lib/components/date-picker/index.js";
-	import { getDatePickerRootContext } from "$lib/components/date-picker/date-picker.svelte.js";
-	import { CalendarRootState } from "$lib/components/calendar/calendar.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { DatePickerCalendarProps } from "$lib/components/date-picker/index";
+	import { getDatePickerRootContext } from "$lib/components/date-picker/date-picker.svelte";
+	import { CalendarRootState } from "$lib/components/calendar/calendar.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

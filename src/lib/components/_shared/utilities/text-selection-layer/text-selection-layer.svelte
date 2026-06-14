@@ -1,6 +1,6 @@
 <script lang="ts">
-		import type { TextSelectionLayerImplProps } from "$lib/components/_shared/utilities/text-selection-layer/index.js";
-	import { TextSelectionLayerState } from "$lib/components/_shared/utilities/text-selection-layer/use-text-selection-layer.svelte.js";
+		import type { TextSelectionLayerImplProps } from "$lib/components/_shared/utilities/text-selection-layer/index";
+	import { TextSelectionLayerState } from "$lib/components/_shared/utilities/text-selection-layer/use-text-selection-layer.svelte";
 
 	let {
 		preventOverflowTextSelection = true,

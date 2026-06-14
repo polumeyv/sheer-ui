@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import { DateFieldSegmentState } from "$lib/components/date-field/date-field.svelte.js";
-	import type { DateFieldSegmentProps } from "$lib/components/date-field/index.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import { DateFieldSegmentState } from "$lib/components/date-field/date-field.svelte";
+	import type { DateFieldSegmentProps } from "$lib/components/date-field/index";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 

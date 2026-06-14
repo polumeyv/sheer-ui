@@ -1,7 +1,7 @@
 import { untrack } from "svelte";
-import { type ReadableProp, type ReadableProps } from '$lib/vendor/index.js';
-import { AnimationsComplete } from '$lib/internal/animations-complete.js';
-import type { TransitionState } from '$lib/internal/attrs.js';
+import { type ReadableProp, type ReadableProps } from '$lib/vendor/index';
+import { AnimationsComplete } from '$lib/vendor/animations-complete.svelte';
+import type { TransitionState } from '$lib/vendor/attrs';
 
 export interface PresenceOptions extends ReadableProps<{
 	open: boolean;

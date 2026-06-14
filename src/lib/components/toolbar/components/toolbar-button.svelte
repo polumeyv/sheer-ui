@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/merge-props.js";
-	import type { ToolbarButtonProps } from "$lib/components/toolbar/index.js";
-	import { ToolbarButtonState } from "$lib/components/toolbar/toolbar.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/vendor';
+	import type { ToolbarButtonProps } from '$lib/components/toolbar/index';
+	import { ToolbarButtonState } from '$lib/components/toolbar/toolbar.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
@@ -10,7 +10,7 @@
 		child,
 		children,
 		disabled = false,
-		type = "button",
+		type = 'button',
 		id = createId(uid),
 		ref = $bindable(null),
 		...restProps

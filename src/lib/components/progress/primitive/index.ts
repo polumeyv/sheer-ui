@@ -1,5 +1,5 @@
-import type { WithChild, Without } from "$lib/internal/types.js";
-import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes.js";
+import type { WithChild, Without } from "$lib/vendor/types";
+import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes";
 
 export type ProgressRootPropsWithoutHTML = WithChild<{
 	/**
@@ -27,5 +27,3 @@ export type ProgressRootPropsWithoutHTML = WithChild<{
 
 export type ProgressRootProps = ProgressRootPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, ProgressRootPropsWithoutHTML>;
-
-export * as Progress from "$lib/components/progress/primitive/exports.js";

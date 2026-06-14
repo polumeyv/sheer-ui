@@ -1,8 +1,8 @@
-import { untrack } from "svelte";
-import { DOMContext, type WritableProp, type ReadableProp, type ReadableProps } from '$lib/vendor/index.js';
+import { untrack } from 'svelte';
+import { DOMContext, type WritableProp, type ReadableProp, type ReadableProps } from '$lib/vendor/index';
 import { on } from 'svelte/events';
-import type { EscapeBehaviorType, EscapeLayerImplProps } from '$lib/components/_shared/utilities/escape-layer/index.js';
-import { kbd } from '$lib/internal/kbd.js';
+import type { EscapeBehaviorType, EscapeLayerImplProps } from '$lib/components/_shared/utilities/escape-layer/index';
+import { kbd } from '$lib/vendor/kbd';
 
 globalThis.bitsEscapeLayers ??= new Map<EscapeLayerState, ReadableProp<EscapeBehaviorType>>();
 

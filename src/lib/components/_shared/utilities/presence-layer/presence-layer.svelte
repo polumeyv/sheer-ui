@@ -1,6 +1,6 @@
 <script lang="ts">
-		import type { PresenceLayerImplProps } from "$lib/components/_shared/utilities/presence-layer/index.js";
-	import { Presence } from "$lib/components/_shared/utilities/presence-layer/presence.svelte.js";
+		import type { PresenceLayerImplProps } from "$lib/components/_shared/utilities/presence-layer/index";
+	import { Presence } from "$lib/components/_shared/utilities/presence-layer/presence.svelte";
 
 	let { open, forceMount, presence, ref }: PresenceLayerImplProps = $props();
 

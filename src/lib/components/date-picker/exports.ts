@@ -48,4 +48,4 @@ export type {
 	DatePickerPortalProps as PortalProps,
 	DatePickerMonthSelectProps as MonthSelectProps,
 	DatePickerYearSelectProps as YearSelectProps,
-} from "$lib/components/date-picker/index.js";
+} from "$lib/components/date-picker/index";

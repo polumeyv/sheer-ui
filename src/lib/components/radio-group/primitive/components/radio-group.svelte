@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/merge-props.js";
-	import type { RadioGroupRootProps } from "$lib/components/radio-group/primitive/index.js";
-	import { RadioGroupRootState } from "$lib/components/radio-group/primitive/radio-group.svelte.js";
-	import RadioGroupInput from "$lib/components/radio-group/primitive/components/radio-group-input.svelte";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from '$lib/vendor';
+	import type { RadioGroupRootProps } from '$lib/components/radio-group/primitive/index';
+	import { RadioGroupRootState } from '$lib/components/radio-group/primitive/radio-group.svelte';
+	import RadioGroupInput from '$lib/components/radio-group/primitive/components/radio-group-input.svelte';
+	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();
 
@@ -11,15 +11,15 @@
 		disabled = false,
 		children,
 		child,
-		value = $bindable(""),
+		value = $bindable(''),
 		ref = $bindable(null),
-		orientation = "vertical",
+		orientation = 'vertical',
 		loop = true,
 		name = undefined,
 		required = false,
 		readonly = false,
 		id = createId(uid),
-		onValueChange = (() => {}),
+		onValueChange = () => {},
 		...restProps
 	}: RadioGroupRootProps = $props();
 

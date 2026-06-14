@@ -1,5 +1,5 @@
-import { kbd } from "$lib/internal/kbd.js";
-import type { Direction } from "$lib/shared/index.js";
+import { kbd } from "$lib/vendor/kbd";
+import type { Direction } from "$lib/shared/index";
 
 export type CheckedState = boolean | "indeterminate";
 

@@ -10,4 +10,4 @@ export type {
 	ToolbarLinkProps as LinkProps,
 	ToolbarGroupProps as GroupProps,
 	ToolbarGroupItemProps as GroupItemProps,
-} from '$lib/components/toolbar/index.js';
+} from '$lib/components/toolbar/index';

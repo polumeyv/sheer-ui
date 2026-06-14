@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DateFieldHiddenInputState } from "$lib/components/date-field/date-field.svelte.js";
+	import { DateFieldHiddenInputState } from "$lib/components/date-field/date-field.svelte";
 	import HiddenInput from "$lib/components/_shared/utilities/hidden-input.svelte";
 
 	const hiddenInputState = DateFieldHiddenInputState.create();

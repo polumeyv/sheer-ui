@@ -1,8 +1,8 @@
 <script lang="ts">
-import { RangeCalendar as RangeCalendarPrimitive } from "$lib/components/_shared/primitives.js";
+import { RangeCalendar as RangeCalendarPrimitive } from "$lib/components/_shared/primitives";
 import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
-import { buttonVariants, type ButtonVariant } from '../../components/button/index.js';
-import { cn } from '../../vendor/utils.js';
+import { buttonVariants, type ButtonVariant } from '../../components/button/index';
+import { cn } from '../../vendor/utils';
 
 let {
 	ref = $bindable(null),

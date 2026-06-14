@@ -1,6 +1,7 @@
 <script lang="ts">
-		import type { MenuRootProps } from "$lib/components/_shared/menu/index.js";
-	import { MenuMenuState, MenuRootState } from "$lib/components/_shared/menu/menu.svelte.js";
+		import type { MenuRootProps } from "$lib/components/_shared/menu/index";
+	import { MenuMenuState } from "$lib/components/_shared/menu/menu.svelte";
+	import { MenuRootState } from "$lib/components/_shared/menu/root.svelte";
 	import FloatingLayer from "$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte";
 
 	let {

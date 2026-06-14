@@ -3,7 +3,7 @@
   export { fieldVariants, type FieldOrientation };
 </script>
 <script lang="ts">
-  import { cn, type WithElementRef } from "../../vendor/utils.js";
+  import { cn, type WithElementRef } from "../../vendor/utils";
   import type { HTMLAttributes } from "svelte/elements";
   let {
     ref = $bindable(null),

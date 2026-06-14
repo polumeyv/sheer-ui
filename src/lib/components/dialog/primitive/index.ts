@@ -1,21 +1,21 @@
-import type { EscapeLayerProps } from "$lib/components/_shared/utilities/escape-layer/index.js";
-import type { DismissibleLayerProps } from "$lib/components/_shared/utilities/dismissible-layer/index.js";
-import type { PresenceLayerProps } from "$lib/components/_shared/utilities/presence-layer/index.js";
-import type { FocusScopeProps } from "$lib/components/_shared/utilities/focus-scope/index.js";
-import type { TextSelectionLayerProps } from "$lib/components/_shared/utilities/text-selection-layer/index.js";
-import type { ScrollLockProps } from "$lib/components/_shared/utilities/scroll-lock/index.js";
+import type { EscapeLayerProps } from "$lib/components/_shared/utilities/escape-layer/index";
+import type { DismissibleLayerProps } from "$lib/components/_shared/utilities/dismissible-layer/index";
+import type { PresenceLayerProps } from "$lib/components/_shared/utilities/presence-layer/index";
+import type { FocusScopeProps } from "$lib/components/_shared/utilities/focus-scope/index";
+import type { TextSelectionLayerProps } from "$lib/components/_shared/utilities/text-selection-layer/index";
+import type { ScrollLockProps } from "$lib/components/_shared/utilities/scroll-lock/index";
 import type {
 	OnChangeFn,
 	WithChild,
 	WithChildNoChildrenSnippetProps,
 	WithChildren,
 	Without,
-} from "$lib/internal/types.js";
+} from "$lib/vendor/types";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
-import type { PortalProps } from "$lib/components/_shared/utilities/portal/index.js";
+} from "$lib/shared/attributes";
+import type { PortalProps } from "$lib/components/_shared/utilities/portal/index";
 
 export type DialogRootPropsWithoutHTML = WithChildren<{
 	/**
@@ -102,7 +102,7 @@ export { default as Title } from './title.svelte';
 export { default as Description } from './description.svelte';
 export { default as Portal } from '$lib/components/_shared/utilities/portal/portal.svelte';
 
-export * as Dialog from '$lib/components/dialog/primitive/exports.js';
+export * as Dialog from '$lib/components/dialog/primitive/exports';
 
 
 export type {

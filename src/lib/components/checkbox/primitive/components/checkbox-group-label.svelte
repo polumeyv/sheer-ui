@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index.js";
-	import type { CheckboxGroupLabelProps } from "$lib/components/checkbox/primitive/index.js";
-	import { CheckboxGroupLabelState } from "$lib/components/checkbox/primitive/checkbox.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { mergeProps } from "$lib/vendor/index";
+	import type { CheckboxGroupLabelProps } from "$lib/components/checkbox/primitive/index";
+	import { CheckboxGroupLabelState } from "$lib/components/checkbox/primitive/checkbox.svelte";
+	import { createId } from "$lib/vendor/create-id";
 
 	const uid = $props.id();
 
