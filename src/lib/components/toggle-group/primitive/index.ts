@@ -81,5 +81,3 @@ export type ToggleGroupItemPropsWithoutHTML = WithChild<
 
 export type ToggleGroupItemProps = ToggleGroupItemPropsWithoutHTML &
 	Without<BitsPrimitiveButtonAttributes, ToggleGroupItemPropsWithoutHTML>;
-
-export * as ToggleGroup from '$lib/components/toggle-group/primitive/exports';

@@ -20,5 +20,3 @@ export type SeparatorRootPropsWithoutHTML = WithChild<{
 
 export type SeparatorRootProps = SeparatorRootPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, SeparatorRootPropsWithoutHTML>;
-
-export * as Separator from "$lib/components/separator/primitive/exports";
