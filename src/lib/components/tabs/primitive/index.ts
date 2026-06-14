@@ -84,5 +84,3 @@ export type TabsContentPropsWithoutHTML = WithChild<{
 
 export type TabsContentProps = TabsContentPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, TabsContentPropsWithoutHTML>;
-
-export * as Tabs from "$lib/components/tabs/primitive/exports";

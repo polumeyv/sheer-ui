@@ -98,5 +98,3 @@ export type PageItem = (Page | Ellipsis) & {
 	 */
 	key: string;
 };
-
-export * as Pagination from "$lib/components/pagination/primitive/exports";

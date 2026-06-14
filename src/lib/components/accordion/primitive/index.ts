@@ -161,5 +161,3 @@ export type AccordionHeaderPropsWithoutHTML = WithChild<{
 }>;
 
 export type AccordionHeaderProps = AccordionHeaderPropsWithoutHTML & BitsPrimitiveDivAttributes;
-
-export * as Accordion from "$lib/components/accordion/primitive/exports";

@@ -71,5 +71,3 @@ export type CollapsibleTriggerPropsWithoutHTML = WithChild;
 
 export type CollapsibleTriggerProps = CollapsibleTriggerPropsWithoutHTML &
 	Without<BitsPrimitiveButtonAttributes, CollapsibleTriggerPropsWithoutHTML>;
-
-export * as Collapsible from "$lib/components/collapsible/primitive/exports";

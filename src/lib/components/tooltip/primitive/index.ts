@@ -202,5 +202,3 @@ export type TooltipTriggerPropsWithoutHTML<Payload = never> = WithChild<{
 
 export type TooltipTriggerProps<Payload = never> = TooltipTriggerPropsWithoutHTML<Payload> &
 	Without<BitsPrimitiveButtonAttributes, TooltipTriggerPropsWithoutHTML<Payload>>;
-
-export * as Tooltip from "$lib/components/tooltip/primitive/exports";
