@@ -1,4 +1,3 @@
-export { AlertDialog } from "$lib/components/alert-dialog/primitive/index";
 export { BitsConfig, getBitsConfig } from "$lib/components/_shared/utilities/config/index";
 export { Calendar } from "$lib/components/calendar/index";
 export { Combobox } from "$lib/components/combobox/index";
@@ -14,10 +13,8 @@ export { LinkPreview } from "$lib/components/link-preview/index";
 export { Menubar } from "$lib/components/menubar/primitive/index";
 export { Meter } from "$lib/components/meter/index";
 export { PinInput } from "$lib/components/pin-input/index";
-export { Popover } from "$lib/components/popover/primitive/index";
 export { RangeCalendar } from "$lib/components/range-calendar/index";
 export { RatingGroup } from "$lib/components/rating-group/index";
-export { ScrollArea } from "$lib/components/scroll-area/primitive/index";
 export { TimeField } from "$lib/components/time-field/index";
 export { TimeRangeField } from "$lib/components/time-range-field/index";
 export { Toolbar } from "$lib/components/toolbar/index";

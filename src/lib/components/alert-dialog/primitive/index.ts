@@ -24,5 +24,3 @@ export type AlertDialogContentPropsWithoutHTML = Omit<
 	"onInteractOutside"
 >;
 export type AlertDialogContentProps = DialogContentProps;
-
-export * as AlertDialog from "$lib/components/alert-dialog/primitive/exports";

@@ -65,5 +65,3 @@ export type ScrollAreaCornerProps = ScrollAreaCornerPropsWithoutHTML &
 export type _ScrollbarStubProps = Omit<ScrollAreaScrollbarProps, "orientation" | "ref" | "id"> & {
 	id: string;
 };
-
-export * as ScrollArea from "$lib/components/scroll-area/primitive/exports";

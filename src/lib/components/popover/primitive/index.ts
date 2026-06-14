@@ -98,5 +98,3 @@ export type PopoverOverlayPropsWithoutHTML = WithChild<
 
 export type PopoverOverlayProps = PopoverOverlayPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, PopoverOverlayPropsWithoutHTML>;
-
-export * as Popover from "$lib/components/popover/primitive/exports";
