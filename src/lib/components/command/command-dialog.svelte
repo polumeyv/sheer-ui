@@ -1,5 +1,6 @@
 <script lang="ts">
-import type { Command as CommandPrimitive, Dialog as DialogPrimitive } from "$lib/components/_shared/primitives";
+import type { Dialog as DialogPrimitive } from "$lib/components/_shared/primitives";
+import type { CommandRootProps } from './primitive/index';
 import type { Snippet } from 'svelte';
 import Command from './command.svelte';
 import * as Dialog from '../dialog';
@@ -15,7 +16,7 @@ let {
 	children,
 	...restProps
 }: WithoutChildrenOrChild<DialogPrimitive.RootProps> &
-	WithoutChildrenOrChild<CommandPrimitive.RootProps> & {
+	WithoutChildrenOrChild<CommandRootProps> & {
 		portalProps?: DialogPrimitive.PortalProps;
 		children: Snippet;
 		title?: string;

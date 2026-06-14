@@ -292,5 +292,3 @@ export type SliderThumbLabelPropsWithoutHTML = WithChild<{
 
 export type SliderThumbLabelProps = SliderThumbLabelPropsWithoutHTML &
 	Without<BitsPrimitiveSpanAttributes, SliderThumbLabelPropsWithoutHTML>;
-
-export * as Slider from "$lib/components/slider/primitive/exports";

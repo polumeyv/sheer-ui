@@ -286,5 +286,3 @@ export type SelectScrollDownButtonPropsWithoutHTML = SelectScrollButtonPropsWith
 
 export type SelectScrollDownButtonProps = SelectScrollDownButtonPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, SelectScrollDownButtonPropsWithoutHTML>;
-
-export * as Select from '$lib/components/combobox/primitive/exports';

@@ -210,5 +210,3 @@ export type NavigationMenuViewportPropsWithoutHTML = WithChild<{
 
 export type NavigationMenuViewportProps = NavigationMenuViewportPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, NavigationMenuViewportPropsWithoutHTML>;
-
-export * as NavigationMenu from "$lib/components/navigation-menu/primitive/exports";

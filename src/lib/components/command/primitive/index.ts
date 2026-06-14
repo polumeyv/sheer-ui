@@ -221,5 +221,4 @@ export type CommandViewportPropsWithoutHTML = WithChild;
 export type CommandViewportProps = CommandViewportPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, CommandViewportPropsWithoutHTML>;
 
-export * as Command from "$lib/components/command/primitive/exports";
 export { computeCommandScore } from "$lib/components/command/primitive/compute-command-score";
