@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor';
+	import { mergeProps } from '$lib/merge-props';
 	import type { ToolbarRootProps } from '$lib/components/toolbar/index';
 	import { ToolbarRootState } from '$lib/components/toolbar/toolbar.svelte';
 	import { createId } from '$lib/vendor/create-id';

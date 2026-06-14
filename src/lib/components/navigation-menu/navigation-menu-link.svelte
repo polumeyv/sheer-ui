@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { NavigationMenuLinkProps } from '$lib/components/navigation-menu/primitive/index';
-	import { NavigationMenuLinkState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { NavigationMenuLinkProps } from '$lib/components/primitive/navigation-menu/index';
+	import { NavigationMenuLinkState } from '$lib/components/primitive/navigation-menu/navigation-menu.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

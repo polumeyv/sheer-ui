@@ -10,31 +10,9 @@ export type ClassDictionary = Record<string, unknown>;
  */
 export const cn = import.meta.env.DEV ? guard(join) : join;
 
-type VariantsSchema = Record<string, Record<string, string>>;
-
-/**
- * Local stand-in for overrule's `declareVariants` — flip to `export { declareVariants, type VariantProps } from 'overrule'`
- * once overrule ships it. A typed variant author: plain string concatenation, NO conflict merging. Base/variant/caller
- * classes must stay disjoint for the same modifier prefix — the invariant overrule's CLI + `guard` and
- * components/variants.test.ts enforce, which is what lets this skip tailwind-variants' tailwind-merge runtime.
- */
-export function declareVariants<S extends VariantsSchema>(config: { base?: string; variants?: S; defaultVariants?: { [K in keyof S]?: keyof S[K] } }) {
-	return (props?: { [K in keyof S]?: keyof S[K] | null | undefined } & { class?: string }): string => {
-		let out = config.base ?? '';
-		for (const key in config.variants) {
-			// undefined → defaultVariants; explicit null → axis opted out (no classes emitted)
-			const raw = props?.[key];
-			const selected = raw === undefined ? config.defaultVariants?.[key] : raw;
-			const classes = selected != null ? config.variants[key][selected as string] : undefined;
-			if (classes) out += ' ' + classes;
-		}
-		if (props?.class) out += ' ' + props.class;
-		return out;
-	};
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type VariantProps<T extends (props?: any) => string> = Omit<NonNullable<Parameters<T>[0]>, 'class'>;
+// `writableProp` (the $state-backed accessor) lives in ./writable-prop.svelte.ts —
+// runes are only available in rune modules, and this stays a plain .ts so the many
+// extensionless `cn` importers keep resolving.
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type WithoutChild<T> = T extends { child?: any } ? Omit<T, 'child'> : T;

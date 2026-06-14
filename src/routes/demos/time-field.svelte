@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Time } from '@internationalized/date';
-	import { TimeField } from '$lib/components/time-field/index';
+	import { TimeField } from '$lib/components/primitive/time-field/index';
 
 	let value = $state(new Time(12, 30));
 </script>

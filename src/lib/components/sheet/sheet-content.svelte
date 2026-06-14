@@ -4,7 +4,7 @@ export { sheetVariants, type Side };
 </script>
 
 <script lang="ts">
-	import * as SheetPrimitive from "../dialog/primitive/index";
+	import * as SheetPrimitive from "$lib/components/primitive/dialog/index";
 	import XIcon from "@lucide/svelte/icons/x";
 	import type { Snippet } from "svelte";
 	import SheetPortal from "./sheet-portal.svelte";

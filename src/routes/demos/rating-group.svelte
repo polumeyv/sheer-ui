@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { RatingGroup } from '$lib/components/rating-group/index';
+	import { RatingGroup } from '$lib/components/primitive/rating-group/index';
 	import Star from '@lucide/svelte/icons/star';
 	import StarHalf from '@lucide/svelte/icons/star-half';
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Time } from '@internationalized/date';
-	import { TimeRangeField } from '$lib/components/time-range-field/index';
+	import { TimeRangeField } from '$lib/components/primitive/time-range-field/index';
 	import type { TimeRange } from '$lib/shared/index';
 
 	let value = $state<TimeRange>({

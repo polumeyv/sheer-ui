@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor';
-	import type { AccordionHeaderProps, AccordionTriggerProps } from '$lib/components/accordion/primitive/index';
-	import { AccordionHeaderState, AccordionTriggerState } from '$lib/components/accordion/primitive/accordion.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { AccordionHeaderProps, AccordionTriggerProps } from './accordion.svelte.js';
+	import { AccordionHeaderState, AccordionTriggerState } from './accordion.svelte.js';
 	import { createId } from '$lib/vendor/create-id';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import { cn, type WithoutChild } from '../../vendor/utils';
@@ -71,10 +71,12 @@
 		},
 	});
 
-	const headerProps = $derived(mergeProps({ class: 'flex' }, headerState.props));
+</script>
 
-	const mergedProps = $derived(
-		mergeProps(
+<div {...mergeProps({ class: 'flex' }, headerState.props)}>
+	<button
+		type="button"
+		{...mergeProps(
 			{
 				'data-slot': 'accordion-trigger',
 				class: cn(
@@ -84,12 +86,7 @@
 			},
 			restProps,
 			triggerState.props,
-		),
-	);
-</script>
-
-<div {...headerProps}>
-	<button type="button" {...mergedProps}>
+		)}>
 		{@render children?.()}
 		<ChevronDownIcon class="text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200" />
 	</button>

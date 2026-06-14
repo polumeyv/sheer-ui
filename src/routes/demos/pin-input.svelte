@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { PinInput } from '$lib/components/pin-input/index';
-	import { REGEXP_ONLY_DIGITS } from '$lib/components/pin-input/pin-input.svelte';
+	import { PinInput } from '$lib/components/primitive/pin-input/index';
+	import { REGEXP_ONLY_DIGITS } from '$lib/components/primitive/pin-input/pin-input.svelte';
 
 	let value = $state('');
 </script>

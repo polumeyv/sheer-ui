@@ -1,6 +1,6 @@
 <script lang="ts">
-		import type { PopoverRootProps } from '$lib/components/popover/primitive/index';
-	import { PopoverRootState } from '$lib/components/popover/primitive/popover.svelte';
+		import type { PopoverRootProps } from '$lib/components/primitive/popover/index';
+	import { PopoverRootState } from '$lib/components/primitive/popover/popover.svelte';
 	import FloatingLayer from '$lib/components/_shared/utilities/floating-layer/components/floating-layer.svelte';
 
 	let {

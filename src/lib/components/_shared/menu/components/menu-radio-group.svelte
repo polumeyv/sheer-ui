@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index";
+	import { mergeProps } from '$lib/merge-props';
 	import type { MenuRadioGroupProps } from "$lib/components/_shared/menu/index";
 	import { MenuRadioGroupState } from "$lib/components/_shared/menu/radio.svelte";
 	import { createId } from "$lib/vendor/create-id";

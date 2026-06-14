@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { AlertDialogContentProps } from '$lib/components/alert-dialog/primitive/index';
-	import { DialogContentState } from '$lib/components/dialog/primitive/dialog.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { AlertDialogContentProps } from '$lib/components/primitive/dialog/index';
+	import { DialogContentState } from '$lib/components/primitive/dialog/dialog.svelte';
 	import DismissibleLayer from '$lib/components/_shared/utilities/dismissible-layer/dismissible-layer.svelte';
 	import EscapeLayer from '$lib/components/_shared/utilities/escape-layer/escape-layer.svelte';
 	import FocusScope from '$lib/components/_shared/utilities/focus-scope/focus-scope.svelte';

@@ -1,9 +1,9 @@
 import { tick } from 'svelte';
 import {
-	mergeProps,
 	attachRef,
 	type ReadableProps,
 } from '$lib/vendor/index';
+import { mergeProps } from '$lib/merge-props';
 import { SELECTION_KEYS, isMouseEvent } from '$lib/components/_shared/menu/utils';
 import type {
 	AnyFn,

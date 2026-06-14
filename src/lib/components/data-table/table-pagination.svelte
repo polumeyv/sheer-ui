@@ -1,7 +1,7 @@
 <script lang="ts" generics="TData">
 	import type { Table } from '@tanstack/table-core';
 	import * as Select from '../select/index';
-	import { Button } from '@polumeyv/ui/button';
+	import { Button } from '$lib/components/button';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
 	import ChevronsLeftIcon from '@lucide/svelte/icons/chevrons-left';

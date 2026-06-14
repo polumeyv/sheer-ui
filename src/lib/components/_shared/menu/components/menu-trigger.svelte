@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index";
+	import { mergeProps } from '$lib/merge-props';
 	import type { MenuTriggerProps } from "$lib/components/_shared/menu/index";
 	import { DropdownMenuTriggerState } from "$lib/components/_shared/menu/trigger.svelte";
 	import { createId } from "$lib/vendor/create-id";

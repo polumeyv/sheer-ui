@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { PaginationPrevButtonProps } from '$lib/components/pagination/primitive/index';
-	import { PaginationButtonState } from '$lib/components/pagination/primitive/pagination.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { PaginationPrevButtonProps } from '$lib/components/primitive/pagination/index';
+	import { PaginationButtonState } from '$lib/components/primitive/pagination/pagination.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
 	import { buttonVariants } from '../button';

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { PinInputCellProps } from '$lib/components/pin-input/index';
-	import { PinInputCellState } from '$lib/components/pin-input/pin-input.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { PinInputCellProps } from '$lib/components/primitive/pin-input/index';
+	import { PinInputCellState } from '$lib/components/primitive/pin-input/pin-input.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as LinkPreview from '$lib/components/link-preview/index';
+	import * as LinkPreview from '$lib/components/primitive/link-preview/index';
 </script>
 
 <LinkPreview.Root>

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { AvatarFallbackProps } from '$lib/components/avatar/primitive/index';
-	import { AvatarFallbackState } from '$lib/components/avatar/primitive/avatar.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { AvatarFallbackProps } from '$lib/components/primitive/avatar/index';
+	import { AvatarFallbackState } from '$lib/components/primitive/avatar/avatar.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

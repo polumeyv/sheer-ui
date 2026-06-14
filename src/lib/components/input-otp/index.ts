@@ -1,5 +1,5 @@
-import type { PinInputCellProps } from '$lib/components/pin-input/index';
-export { REGEXP_ONLY_DIGITS, REGEXP_ONLY_DIGITS_AND_CHARS } from '$lib/components/pin-input/pin-input.svelte';
+import type { PinInputCellProps } from '$lib/components/primitive/pin-input/index';
+export { REGEXP_ONLY_DIGITS, REGEXP_ONLY_DIGITS_AND_CHARS } from '$lib/components/primitive/pin-input/pin-input.svelte';
 import Root from './input-otp.svelte';
 import Group from './input-otp-group.svelte';
 import Separator from './input-otp-separator.svelte';

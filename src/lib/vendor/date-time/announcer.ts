@@ -1,84 +1,120 @@
-import { srOnlyStyles, styleToCSS } from '$lib/vendor';
+import { srOnlyStyles } from '$lib/vendor';
+import { styleToString, type StyleObject } from 'overrule/props';
 
-/**
- * Creates or gets an announcer element which is used to announce messages to screen readers.
- * Within the date components, we use this to announce when the values of the individual segments
- * change, as without it we get inconsistent behavior across screen readers.
- */
-function initAnnouncer(doc: Document | null) {
-	if (!(typeof document !== 'undefined') || !doc) return null;
-	let el = doc.querySelector('[data-bits-announcer]');
+type AnnouncementKind = 'assertive' | 'polite';
 
-	/**
-	 * Creates a log element for assertive or polite announcements.
-	 */
-	const createLog = (kind: 'assertive' | 'polite') => {
-		const log = doc.createElement('div');
-		log.role = 'log';
-		log.ariaLive = kind;
-		log.setAttribute('aria-relevant', 'additions');
-		return log;
-	};
+type AnnouncerElement = HTMLElement & {
+	__bitsAnnouncer?: true;
+};
 
-	if (!(el instanceof HTMLElement)) {
-		const div = doc.createElement('div');
-		div.style.cssText = styleToCSS(srOnlyStyles).replace('\n', ' ');
-		div.setAttribute('data-bits-announcer', '');
-		div.appendChild(createLog('assertive'));
-		div.appendChild(createLog('polite'));
-		el = div;
-		doc.body.insertBefore(el, doc.body.firstChild);
+const announcers = new WeakMap<Document, AnnouncerRoot>();
+
+class AnnouncerRoot {
+	readonly #doc: Document;
+	readonly #root: HTMLElement;
+
+	constructor(doc: Document) {
+		this.#doc = doc;
+		this.#root = this.#getOrCreateRoot();
+		this.#ensureLog('assertive');
+		this.#ensureLog('polite');
 	}
 
-	/**
-	 * Retrieves the log element for assertive or polite announcements.
-	 */
-	const getLog = (kind: 'assertive' | 'polite') => {
-		if (!(el instanceof HTMLElement)) return null;
-		const log = el.querySelector(`[aria-live="${kind}"]`);
-		if (!(log instanceof HTMLElement)) return null;
+	#getOrCreateRoot() {
+		const existing = this.#doc.querySelector('[data-bits-announcer]');
+
+		if (existing instanceof HTMLElement) {
+			return existing;
+		}
+
+		const root = this.#doc.createElement('div') as AnnouncerElement;
+		root.__bitsAnnouncer = true;
+		root.style.cssText = styleToString(srOnlyStyles as StyleObject);
+		root.setAttribute('data-bits-announcer', '');
+
+		this.#doc.body.insertBefore(root, this.#doc.body.firstChild);
+
+		return root;
+	}
+
+	#ensureLog(kind: AnnouncementKind) {
+		const existing = this.getLog(kind);
+
+		if (existing) {
+			return existing;
+		}
+
+		const log = this.#doc.createElement('div');
+		log.setAttribute('role', 'log');
+		log.setAttribute('aria-live', kind);
+		log.setAttribute('aria-relevant', 'additions');
+
+		this.#root.appendChild(log);
+
 		return log;
-	};
+	}
+
+	getLog(kind: AnnouncementKind) {
+		const log = this.#root.querySelector(`[aria-live="${kind}"]`);
+		return log instanceof HTMLElement ? log : null;
+	}
+
+	announce(value: string | number | null, kind: AnnouncementKind = 'assertive', timeout = 7500) {
+		const log = this.getLog(kind);
+		if (!log) return;
+
+		const content = this.#doc.createElement('div');
+		content.textContent = normalizeAnnouncement(value);
+
+		if (kind === 'assertive') {
+			log.replaceChildren(content);
+		} else {
+			log.appendChild(content);
+		}
+
+		const timer = this.#doc.defaultView?.setTimeout(() => {
+			content.remove();
+		}, timeout);
+
+		return () => {
+			if (timer !== undefined) {
+				this.#doc.defaultView?.clearTimeout(timer);
+			}
+
+			content.remove();
+		};
+	}
+}
+
+function normalizeAnnouncement(value: string | number | null) {
+	if (typeof value === 'number') return value.toString();
+	if (value === null) return 'Empty';
+
+	const trimmed = value.trim();
+	return trimmed || 'Empty';
+}
+
+export function getAnnouncer(doc: Document | null) {
+	const root = doc ? getAnnouncerRoot(doc) : null;
 
 	return {
-		getLog,
+		announce(value: string | number | null, kind: AnnouncementKind = 'assertive', timeout = 7500) {
+			return root?.announce(value, kind, timeout);
+		},
 	};
+}
+
+function getAnnouncerRoot(doc: Document) {
+	const existing = announcers.get(doc);
+
+	if (existing) {
+		return existing;
+	}
+
+	const announcer = new AnnouncerRoot(doc);
+	announcers.set(doc, announcer);
+
+	return announcer;
 }
 
 export type Announcer = ReturnType<typeof getAnnouncer>;
-
-/**
- * Creates an announcer object that can be used to make `aria-live` announcements to screen readers.
- */
-export function getAnnouncer(doc: Document | null) {
-	const announcer = initAnnouncer(doc);
-
-	/**
-	 * Announces a message to screen readers using the specified kind of announcement.
-	 */
-	function announce(value: string | null | number, kind: 'assertive' | 'polite' = 'assertive', timeout = 7500) {
-		if (!announcer || !(typeof document !== 'undefined') || !doc) return;
-		const log = announcer.getLog(kind);
-		const content = doc.createElement('div');
-		if (typeof value === 'number') {
-			value = value.toString();
-		} else if (value === null) {
-			value = 'Empty';
-		} else {
-			value = value.trim();
-		}
-		content.innerText = value;
-		if (kind === 'assertive') {
-			log?.replaceChildren(content);
-		} else {
-			log?.appendChild(content);
-		}
-		return setTimeout(() => {
-			content.remove();
-		}, timeout);
-	}
-
-	return {
-		announce,
-	};
-}

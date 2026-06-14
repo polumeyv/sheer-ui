@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index";
+	import { mergeProps } from '$lib/merge-props';
 	import ScrollLock from "$lib/components/_shared/utilities/scroll-lock/scroll-lock.svelte";
 	import type { PopperLayerImplProps } from "$lib/components/_shared/utilities/popper-layer/index";
 	import PopperContent from "$lib/components/_shared/utilities/popper-layer/popper-content.svelte";

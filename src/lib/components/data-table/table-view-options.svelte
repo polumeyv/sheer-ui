@@ -1,8 +1,8 @@
 <script lang="ts" generics="TData">
 	import Settings2Icon from '@lucide/svelte/icons/settings-2';
 	import type { Table } from '@tanstack/table-core';
-	import * as DropdownMenu from '@polumeyv/ui/dropdown-menu';
-	import { buttonVariants } from '@polumeyv/ui/button';
+	import * as DropdownMenu from '$lib/components/dropdown-menu';
+	import { buttonVariants } from '$lib/components/button';
 	import { cn } from '../../vendor/utils';
 	let { table }: { table: Table<TData> } = $props();
 </script>

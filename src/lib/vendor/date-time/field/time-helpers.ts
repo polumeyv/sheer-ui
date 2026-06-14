@@ -12,7 +12,7 @@ import type { TimeFormatter } from '../formatter';
 import { ALL_TIME_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from './parts';
 import { getTimeSegments } from './segments';
 import type { TimeSegmentPart } from './types';
-import { styleToCSS } from '$lib/vendor/index';
+import { styleToString } from 'overrule/props';
 import { useId } from '$lib/vendor/use-id';
 import { getPlaceholder } from '../placeholders';
 import { isZonedDateTime } from '../utils';
@@ -314,9 +314,9 @@ export function setTimeDescription(props: SetTimeDescriptionProps) {
 	const el = props.doc.getElementById(props.id);
 	if (!el) {
 		const div = props.doc.createElement('div');
-		div.style.cssText = styleToCSS({
+		div.style.cssText = styleToString({
 			display: 'none',
-		}).replace('\n', ' ');
+		});
 		div.id = props.id;
 		div.innerText = `Selected Time: ${valueString}`;
 		props.doc.body.appendChild(div);

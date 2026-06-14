@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index";
+	import { mergeProps } from '$lib/merge-props';
 	import type { MenuContentProps } from "$lib/components/_shared/menu/index";
 	import { MenuContentState } from "$lib/components/_shared/menu/content.svelte";
 	import { createId } from "$lib/vendor/create-id";

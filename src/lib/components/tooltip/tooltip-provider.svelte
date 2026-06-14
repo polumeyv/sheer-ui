@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { TooltipProviderProps } from '$lib/components/tooltip/primitive/index';
-	import { TooltipProviderState } from '$lib/components/tooltip/primitive/tooltip.svelte';
+	import type { TooltipProviderProps } from '$lib/components/primitive/tooltip/index';
+	import { TooltipProviderState } from '$lib/components/primitive/tooltip/tooltip.svelte';
 
 	let {
 		children,

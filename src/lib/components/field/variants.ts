@@ -1,4 +1,4 @@
-import { declareVariants, type VariantProps } from '../../vendor/utils';
+import { declareVariants, type VariantProps } from 'overrule';
 
 export const fieldVariants = declareVariants({
 	base: 'data-[invalid=true]:text-destructive gap-3 group/field flex w-full',

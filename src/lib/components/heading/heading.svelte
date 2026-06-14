@@ -14,7 +14,7 @@ let {
 	bind:this={ref}
 	data-slot="heading"
 	class={cn(
-		'w-full has-[[data-slot=heading-nav]]:mb-6',
+		'w-full has-data-[slot=heading-nav]:mb-6',
 		'[&:not(:has([data-slot=heading-nav]))]:mb-2 [&:not(:has([data-slot=heading-nav]))]:md:mb-4 [&:not(:has([data-slot=heading-nav]))]:lg:mb-6',
 		className
 	)}

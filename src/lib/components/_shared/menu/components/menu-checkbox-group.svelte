@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
+	import { mergeProps } from '$lib/merge-props';
 	import type { MenuCheckboxGroupProps } from '$lib/components/_shared/menu/index';
 	import { MenuCheckboxGroupState } from '$lib/components/_shared/menu/checkbox.svelte';
 	import { createId } from '$lib/vendor/create-id';

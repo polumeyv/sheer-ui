@@ -1,7 +1,7 @@
 // oxlint-disable no-explicit-any
 import type * as CSS from 'csstype';
 
-export { REGEXP_ONLY_DIGITS, REGEXP_ONLY_CHARS, REGEXP_ONLY_DIGITS_AND_CHARS } from '$lib/components/pin-input/pin-input.svelte';
+export { REGEXP_ONLY_DIGITS, REGEXP_ONLY_CHARS, REGEXP_ONLY_DIGITS_AND_CHARS } from '$lib/components/primitive/pin-input/pin-input.svelte';
 
 export type Selected<Value> = {
 	value: Value;
@@ -49,7 +49,6 @@ export type {
 	TimeOnInvalid,
 } from './date/types';
 export type { WithChild, Without, WithChildren } from '$lib/vendor/types';
-export { mergeProps } from '$lib/vendor/index';
 export { useId } from '$lib/vendor/use-id';
 export * from './attributes';
 export * from './types';

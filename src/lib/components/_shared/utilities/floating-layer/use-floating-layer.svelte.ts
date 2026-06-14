@@ -2,14 +2,13 @@ import { createContext, untrack } from 'svelte';
 import { type Middleware, type Placement, arrow, autoUpdate, flip, hide, limitShift, offset, shift, size } from '@floating-ui/dom';
 import {
 	attachRef,
-	cssToStyleObj,
 	getWindow,
 	type ReadableProps,
 	type ReadableProp,
 	type WritableProp,
 	writableProp,
 } from '$lib/vendor/index';
-import { styleToCSS } from '$lib/vendor/index';
+import { styleToObject, styleToString } from 'overrule/props';
 import { ElementSize } from '$lib/vendor/element-size.svelte';
 import type { Arrayable, WithRefProps } from '$lib/vendor/types';
 import { useId } from '$lib/vendor/use-id';
@@ -102,7 +101,7 @@ export class FloatingContentState {
 	arrowId: WritableProp<string> = writableProp(useId());
 
 	#transformedStyle = $derived.by(() => {
-		if (typeof this.opts.style === 'string') return cssToStyleObj(this.opts.style);
+		if (typeof this.opts.style === 'string') return styleToObject(this.opts.style);
 		if (!this.opts.style) return {};
 	});
 
@@ -201,9 +200,9 @@ export class FloatingContentState {
 			({
 				'data-side': this.placedSide,
 				'data-align': this.placedAlign,
-				style: styleToCSS({
+				style: styleToString({
 					...this.#transformedStyle,
-				}).replace('\n', ' '),
+				}),
 				...this.contentAttachment,
 			}) as const,
 	);

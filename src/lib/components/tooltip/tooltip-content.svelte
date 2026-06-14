@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { TooltipContentProps } from '$lib/components/tooltip/primitive/index';
-	import { TooltipContentState } from '$lib/components/tooltip/primitive/tooltip.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { TooltipContentProps } from '$lib/components/primitive/tooltip/index';
+	import { TooltipContentState } from '$lib/components/primitive/tooltip/tooltip.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
 	import { getFloatingContentCSSVars } from '$lib/vendor/floating-svelte/floating-utils.svelte';

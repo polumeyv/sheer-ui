@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index";
+	import { mergeProps } from '$lib/merge-props';
 	import type { MenuSubTriggerProps } from "$lib/components/_shared/menu/index";
 	import { MenuSubTriggerState } from "$lib/components/_shared/menu/sub-trigger.svelte";
 	import FloatingLayerAnchor from "$lib/components/_shared/utilities/floating-layer/components/floating-layer-anchor.svelte";

@@ -1,6 +1,6 @@
 <script lang="ts">
-import * as DialogPrimitive from '../dialog/primitive/index';
-import type { AlertDialogRootProps } from '$lib/components/alert-dialog/primitive/index';
+import * as DialogPrimitive from '$lib/components/primitive/dialog/index';
+import type { AlertDialogRootProps } from '$lib/components/primitive/dialog/index';
 
 let { open = $bindable(false), ...restProps }: AlertDialogRootProps = $props();
 </script>

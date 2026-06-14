@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CalendarDate } from '@internationalized/date';
-	import { DateField } from '$lib/components/date-field/index';
+	import { DateField } from '$lib/components/primitive/date-field/index';
 
 	let value = $state(new CalendarDate(2025, 1, 1));
 </script>

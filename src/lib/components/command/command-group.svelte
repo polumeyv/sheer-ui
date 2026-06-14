@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { CommandGroupProps } from '$lib/components/command/primitive/index';
+	import { mergeProps } from '$lib/merge-props';
+	import type { CommandGroupProps } from '$lib/components/primitive/command/index';
 	import {
 		CommandGroupContainerState,
 		CommandGroupHeadingState,
 		CommandGroupItemsState,
-	} from '$lib/components/command/primitive/command.svelte';
+	} from '$lib/components/primitive/command/command.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

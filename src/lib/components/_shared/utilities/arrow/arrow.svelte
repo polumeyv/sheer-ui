@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index";
+	import { mergeProps } from '$lib/merge-props';
 	import type { ArrowProps } from "$lib/components/_shared/utilities/arrow/index";
 	import { useId } from "$lib/vendor/use-id";
 

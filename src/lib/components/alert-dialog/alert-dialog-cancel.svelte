@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { AlertDialogCancelProps } from '$lib/components/alert-dialog/primitive/index';
-	import { AlertDialogCancelState } from '$lib/components/dialog/primitive/dialog.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { AlertDialogCancelProps } from '$lib/components/primitive/dialog/index';
+	import { AlertDialogCancelState } from '$lib/components/primitive/dialog/dialog.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { buttonVariants } from '../button';
 	import { cn } from '../../vendor/utils';

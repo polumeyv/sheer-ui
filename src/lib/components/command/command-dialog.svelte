@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { Dialog as DialogPrimitive } from "$lib/components/_shared/primitives";
-import type { CommandRootProps } from './primitive/index';
+import type { CommandRootProps } from '$lib/components/primitive/command/index';
 import type { Snippet } from 'svelte';
 import Command from './command.svelte';
 import * as Dialog from '../dialog';

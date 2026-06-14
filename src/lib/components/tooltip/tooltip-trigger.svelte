@@ -3,9 +3,9 @@
 </script>
 
 <script lang="ts" generics="T = never">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { TooltipTriggerProps } from '$lib/components/tooltip/primitive/index';
-	import { TooltipTriggerState } from '$lib/components/tooltip/primitive/tooltip.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { TooltipTriggerProps } from '$lib/components/primitive/tooltip/index';
+	import { TooltipTriggerState } from '$lib/components/primitive/tooltip/tooltip.svelte';
 	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();

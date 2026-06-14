@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Checkbox } from '@polumeyv/ui/checkbox';
+	import { Checkbox } from '$lib/components/checkbox';
 
 	type CheckedState = boolean | "indeterminate";
 

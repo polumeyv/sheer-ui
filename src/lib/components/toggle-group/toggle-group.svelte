@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { createContext } from 'svelte';
-	import type { VariantProps } from '../../vendor/utils';
+	import type { VariantProps } from 'overrule';
 	import { toggleVariants } from '../toggle';
 
 	type ToggleVariants = VariantProps<typeof toggleVariants>;
@@ -14,10 +14,10 @@
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { mergeProps } from '$lib/vendor';
+	import { mergeProps } from '$lib/merge-props';
 	import type { WritableProp } from '$lib/vendor/utils';
-	import type { ToggleGroupRootProps } from '$lib/components/toggle-group/primitive/index';
-	import { ToggleGroupRootState } from '$lib/components/toggle-group/primitive/toggle-group.svelte';
+	import type { ToggleGroupRootProps } from '$lib/components/primitive/toggle-group/index';
+	import { ToggleGroupRootState } from '$lib/components/primitive/toggle-group/toggle-group.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

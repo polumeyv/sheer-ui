@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index";
+	import { mergeProps } from '$lib/merge-props';
 	import type { VisuallyHiddenProps } from "$lib/components/_shared/utilities/visually-hidden/index";
 	import type { StyleProperties } from "$lib/shared/index";
 

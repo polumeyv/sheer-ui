@@ -1,4 +1,4 @@
-import type { AnyFn } from "./types";
+import type { AnyFn } from './types';
 
 export class SharedState<T extends AnyFn> {
 	#factory: T;

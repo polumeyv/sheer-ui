@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { mergeProps } from '$lib/vendor';
+	import { mergeProps } from '$lib/merge-props';
 	import type { WritableProp } from '$lib/vendor/utils';
 	import type { ToolbarGroupProps } from '$lib/components/toolbar';
 	import { ToolbarGroupState } from '$lib/components/toolbar/toolbar.svelte';

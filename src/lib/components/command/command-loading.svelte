@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { CommandLoadingProps } from '$lib/components/command/primitive/index';
-	import { CommandLoadingState } from '$lib/components/command/primitive/command.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { CommandLoadingProps } from '$lib/components/primitive/command/index';
+	import { CommandLoadingState } from '$lib/components/primitive/command/command.svelte';
 	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();

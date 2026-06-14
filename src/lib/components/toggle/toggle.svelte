@@ -4,9 +4,9 @@
 </script>
 
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor';
-	import type { ToggleRootProps } from '$lib/components/toggle/primitive/index';
-	import { ToggleRootState } from '$lib/components/toggle/primitive/toggle.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { ToggleRootProps } from '$lib/components/primitive/toggle/index';
+	import { ToggleRootState } from '$lib/components/primitive/toggle/toggle.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

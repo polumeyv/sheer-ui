@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor';
-	import type { RadioGroupRootProps } from '$lib/components/radio-group/primitive/index';
-	import { RadioGroupRootState } from '$lib/components/radio-group/primitive/radio-group.svelte';
-	import RadioGroupInput from '$lib/components/radio-group/primitive/components/radio-group-input.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { RadioGroupRootProps } from '$lib/components/primitive/radio-group/index';
+	import { RadioGroupRootState } from '$lib/components/primitive/radio-group/radio-group.svelte';
+	import RadioGroupInput from '$lib/components/primitive/radio-group/components/radio-group-input.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

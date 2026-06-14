@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { LinkPreviewContentProps } from '$lib/components/link-preview/index';
-	import { LinkPreviewContentState } from '$lib/components/link-preview/link-preview.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { LinkPreviewContentProps } from '$lib/components/primitive/link-preview/index';
+	import { LinkPreviewContentState } from '$lib/components/primitive/link-preview/link-preview.svelte.js';
 	import PopperLayer from '$lib/components/_shared/utilities/popper-layer/popper-layer.svelte';
 	import { getFloatingContentCSSVars } from '$lib/vendor/floating-svelte/floating-utils.svelte';
 	import Mounted from '$lib/components/_shared/utilities/mounted.svelte';
@@ -27,8 +27,8 @@
 		sticky = 'partial',
 		hideWhenDetached = false,
 		collisionPadding = 0,
-		onInteractOutside = (() => {}),
-		onEscapeKeydown = (() => {}),
+		onInteractOutside = () => {},
+		onEscapeKeydown = () => {},
 		forceMount = false,
 		style,
 		...restProps
@@ -37,10 +37,29 @@
 	} = $props();
 
 	const contentState = LinkPreviewContentState.create({
-		id: { get current() { return id; } },
-		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
-		onInteractOutside: { get current() { return onInteractOutside; } },
-		onEscapeKeydown: { get current() { return onEscapeKeydown; } },
+		id: {
+			get current() {
+				return id;
+			},
+		},
+		ref: {
+			get current() {
+				return ref;
+			},
+			set current(v) {
+				ref = v;
+			},
+		},
+		onInteractOutside: {
+			get current() {
+				return onInteractOutside;
+			},
+		},
+		onEscapeKeydown: {
+			get current() {
+				return onEscapeKeydown;
+			},
+		},
 	});
 
 	const floatingProps = $derived({
@@ -53,9 +72,11 @@
 		hideWhenDetached,
 		collisionPadding,
 	});
+</script>
 
-	const mergedProps = $derived(
-		mergeProps(
+<HoverCardPortal {...portalProps}>
+	<PopperLayer
+		{...mergeProps(
 			{
 				'data-slot': 'hover-card-content',
 				class: cn(
@@ -66,13 +87,7 @@
 			restProps,
 			floatingProps,
 			contentState.props,
-		),
-	);
-</script>
-
-<HoverCardPortal {...portalProps}>
-	<PopperLayer
-		{...mergedProps}
+		)}
 		{...contentState.popperProps}
 		ref={contentState.opts.ref}
 		open={contentState.root.opts.open.current}
@@ -81,14 +96,9 @@
 		loop={false}
 		preventScroll={false}
 		{forceMount}
-		shouldRender={contentState.shouldRender}
-	>
+		shouldRender={contentState.shouldRender}>
 		{#snippet popper({ props, wrapperProps })}
-			{@const finalProps = mergeProps(
-				props,
-				{ style: getFloatingContentCSSVars('link-preview') },
-				{ style }
-			)}
+			{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('link-preview') }, { style })}
 			{#if child}
 				{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
 			{:else}

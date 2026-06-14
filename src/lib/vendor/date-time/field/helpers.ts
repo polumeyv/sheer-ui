@@ -1,5 +1,5 @@
 import type { DateValue } from '@internationalized/date';
-import { styleToCSS } from '$lib/vendor/index';
+import { styleToString } from 'overrule/props';
 import type { Formatter } from '../formatter';
 import { getPlaceholder } from '../placeholders';
 import { hasTime, isZonedDateTime } from '../utils';
@@ -403,9 +403,9 @@ export function setDescription(props: SetDescriptionProps) {
 	const el = doc.getElementById(id);
 	if (!el) {
 		const div = doc.createElement('div');
-		div.style.cssText = styleToCSS({
+		div.style.cssText = styleToString({
 			display: 'none',
-		}).replace('\n', ' ');
+		});
 		div.id = id;
 		div.innerText = `Selected Date: ${valueString}`;
 		doc.body.appendChild(div);

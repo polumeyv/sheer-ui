@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index";
+	import { mergeProps } from '$lib/merge-props';
 	import type { MenuSeparatorProps } from "$lib/components/_shared/menu/index";
 	import { MenuSeparatorState } from "$lib/components/_shared/menu/group.svelte";
 	import { createId } from "$lib/vendor/create-id";

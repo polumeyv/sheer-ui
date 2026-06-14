@@ -1,0 +1,35 @@
+<script lang="ts">
+	import { mergeProps } from '$lib/merge-props';
+	import type { RangeCalendarCellProps } from "$lib/components/primitive/range-calendar/index";
+	import { RangeCalendarCellState } from "$lib/components/primitive/range-calendar/range-calendar.svelte";
+	import { createId } from "$lib/vendor/create-id";
+
+	const uid = $props.id();
+
+	let {
+		children,
+		child,
+		id = createId(uid),
+		ref = $bindable(null),
+		date,
+		month,
+		...restProps
+	}: RangeCalendarCellProps = $props();
+
+	const cellState = RangeCalendarCellState.create({
+		id: { get current() { return id; } },
+		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		date: { get current() { return date; } },
+		month: { get current() { return month; } },
+	});
+
+	const mergedProps = $derived(mergeProps(restProps, cellState.props));
+</script>
+
+{#if child}
+	{@render child({ props: mergedProps, ...cellState.snippetProps })}
+{:else}
+	<td {...mergedProps}>
+		{@render children?.(cellState.snippetProps)}
+	</td>
+{/if}

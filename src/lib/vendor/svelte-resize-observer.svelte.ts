@@ -1,28 +1,62 @@
-import type { Getter } from '$lib/vendor/index';
+import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 
-export class SvelteResizeObserver {
-	#node: Getter<HTMLElement | null>;
-	#onResize: () => void;
-	constructor(node: Getter<HTMLElement | null>, onResize: () => void) {
-		this.#node = node;
-		this.#onResize = onResize;
-		this.handler = this.handler.bind(this);
-		$effect(this.handler);
-	}
+export type ResizeAttachment<E extends HTMLElement = HTMLElement> = Record<symbol, Attachment<E>>;
 
-	handler() {
-		let rAF = 0;
-		const _node = this.#node();
-		if (!_node) return;
-		const resizeObserver = new ResizeObserver(() => {
-			cancelAnimationFrame(rAF);
-			rAF = window.requestAnimationFrame(this.#onResize);
+export function createResizeAttachment<E extends HTMLElement = HTMLElement>(onResize: (node: E) => void): Attachment<E> {
+	return (node) => {
+		let frame = 0;
+
+		const observer = new ResizeObserver(() => {
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(() => onResize(node));
 		});
 
-		resizeObserver.observe(_node);
+		observer.observe(node);
+
 		return () => {
-			window.cancelAnimationFrame(rAF);
-			resizeObserver.unobserve(_node);
+			cancelAnimationFrame(frame);
+			observer.disconnect();
 		};
-	}
+	};
+}
+
+export function attachResize<E extends HTMLElement = HTMLElement>(onResize: (node: E) => void): ResizeAttachment<E> {
+	return {
+		[createAttachmentKey()]: createResizeAttachment(onResize),
+	};
+}
+
+export function createObservedResizeAttachment<E extends HTMLElement = HTMLElement>(
+	getNode: () => E | null,
+	onResize: (node: E) => void,
+): Attachment<HTMLElement> {
+	return () => {
+		$effect(() => {
+			let frame = 0;
+			const node = getNode();
+
+			if (!node) return;
+
+			const observer = new ResizeObserver(() => {
+				cancelAnimationFrame(frame);
+				frame = requestAnimationFrame(() => onResize(node));
+			});
+
+			observer.observe(node);
+
+			return () => {
+				cancelAnimationFrame(frame);
+				observer.disconnect();
+			};
+		});
+	};
+}
+
+export function attachObservedResize<E extends HTMLElement = HTMLElement>(
+	getNode: () => E | null,
+	onResize: (node: E) => void,
+): ResizeAttachment {
+	return {
+		[createAttachmentKey()]: createObservedResizeAttachment(getNode, onResize),
+	};
 }

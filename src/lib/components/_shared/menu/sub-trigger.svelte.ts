@@ -1,18 +1,10 @@
 import { tick } from 'svelte';
-import {
-	mergeProps,
-	attachRef,
-	type ReadableProp,
-	type RefAttachment,
-} from '$lib/vendor/index';
+import { attachRef, type ReadableProp, type RefAttachment } from '$lib/vendor/index';
+import { mergeProps } from '$lib/merge-props';
 import { SUB_OPEN_KEYS, isMouseEvent } from '$lib/components/_shared/menu/utils';
-import type {
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	BitsPointerEvent,
-} from '$lib/vendor/types';
+import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent } from '$lib/vendor/types';
 import { kbd } from '$lib/vendor/kbd';
-import { MenuOpenEvent } from '$lib/components/_shared/menu/attrs';
+import { dispatchMenuOpen } from '$lib/components/_shared/menu/attrs';
 import { getMenuContentContext, getMenuMenuContext } from '$lib/components/_shared/menu/context.svelte';
 import { MenuItemSharedState, type MenuItemSharedStateOpts, type MenuItemStateOpts } from '$lib/components/_shared/menu/item.svelte';
 import type { MenuContentState } from '$lib/components/_shared/menu/content.svelte';
@@ -29,11 +21,13 @@ export class MenuSubTriggerState {
 		const submenu = getMenuMenuContext();
 		return new MenuSubTriggerState(opts, item, content, submenu);
 	}
+
 	readonly opts: MenuSubTriggerStateOpts;
 	readonly item: MenuItemSharedState;
 	readonly content: MenuContentState;
 	readonly submenu: MenuMenuState;
 	readonly attachment: RefAttachment;
+
 	#openTimer: number | null = null;
 
 	constructor(opts: MenuSubTriggerStateOpts, item: MenuItemSharedState, content: MenuContentState, submenu: MenuMenuState) {
@@ -60,6 +54,7 @@ export class MenuSubTriggerState {
 
 	onpointermove(e: BitsPointerEvent) {
 		if (!isMouseEvent(e)) return;
+
 		if (this.submenu.root.isPointerInTransit) {
 			if (this.#openTimer !== null) this.#clearOpenTimer();
 			return;
@@ -102,24 +97,31 @@ export class MenuSubTriggerState {
 
 	onclick(e: BitsMouseEvent) {
 		if (this.item.opts.disabled.current) return;
+
 		/**
 		 * We manually focus because iOS Safari doesn't always focus on click (e.g. buttons)
 		 * and we rely heavily on `onFocusOutside` for submenus to close when switching
 		 * between separate submenus.
 		 */
 		if (!(e.currentTarget instanceof HTMLElement)) return;
+
 		e.currentTarget.focus();
+
 		const selectEvent = new CustomEvent('menusubtriggerselect', {
 			bubbles: true,
 			cancelable: true,
 		});
+
 		this.opts.onSelect.current(selectEvent);
+
 		if (!this.submenu.opts.open.current) {
 			this.submenu.onOpen();
+
 			tick().then(() => {
 				const contentNode = this.submenu.contentNode;
 				if (!contentNode) return;
-				MenuOpenEvent.dispatch(contentNode);
+
+				dispatchMenuOpen(contentNode);
 			});
 		}
 	}

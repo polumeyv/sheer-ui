@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { CommandLinkItemProps } from '$lib/components/command/primitive/index';
-	import { CommandItemState } from '$lib/components/command/primitive/command.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { CommandLinkItemProps } from '$lib/components/primitive/command/index';
+	import { CommandItemState } from '$lib/components/primitive/command/command.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

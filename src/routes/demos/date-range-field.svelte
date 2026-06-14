@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CalendarDate } from '@internationalized/date';
-	import { DateRangeField } from '$lib/components/date-range-field/index';
+	import { DateRangeField } from '$lib/components/primitive/date-range-field/index';
 	import type { DateRange } from '$lib/shared/index';
 
 	let value = $state<DateRange>({

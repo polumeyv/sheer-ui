@@ -1,6 +1,6 @@
 import { untrack } from "svelte";
-import { DOMContext, type ReadableProp, type ReadableProps, composeHandlers, contains } from '$lib/vendor/index';
-import { executeCallbacks } from '$lib/vendor/index';
+import { DOMContext, type ReadableProp, type ReadableProps, contains } from '$lib/vendor/index';
+import { chain, composeEventHandlers } from 'overrule/props';
 import { on } from 'svelte/events';
 import type { PointerHandler, TextSelectionLayerImplProps } from '$lib/components/_shared/utilities/text-selection-layer/index';
 
@@ -54,9 +54,9 @@ export class TextSelectionLayerState {
 	}
 
 	#addEventListeners() {
-		return executeCallbacks(
+		return chain(
 			on(this.domContext.getDocument(), 'pointerdown', this.#pointerdown),
-			on(this.domContext.getDocument(), 'pointerup', composeHandlers(this.#resetSelectionLock, this.#pointerupUserHandler)),
+			on(this.domContext.getDocument(), 'pointerup', composeEventHandlers(this.#resetSelectionLock, this.#pointerupUserHandler)),
 		);
 	}
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-import * as DialogPrimitive from '../dialog/primitive/index';
+import * as DialogPrimitive from '$lib/components/primitive/dialog/index';
 import { cn } from '../../vendor/utils';
 
 let { ref = $bindable(null), class: className, ...restProps }: DialogPrimitive.DescriptionProps = $props();

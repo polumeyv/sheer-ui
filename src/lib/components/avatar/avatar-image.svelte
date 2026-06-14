@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { AvatarImageProps } from '$lib/components/avatar/primitive/index';
-	import { AvatarImageState } from '$lib/components/avatar/primitive/avatar.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { AvatarImageProps } from '$lib/components/primitive/avatar/index';
+	import { AvatarImageState } from '$lib/components/primitive/avatar/avatar.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

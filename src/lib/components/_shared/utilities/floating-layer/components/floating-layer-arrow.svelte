@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index";
+	import { mergeProps } from '$lib/merge-props';
 	import { FloatingArrowState } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte";
 	import { Arrow, type ArrowProps } from "$lib/components/_shared/utilities/arrow/index";
 	import { useId } from "$lib/vendor/use-id";

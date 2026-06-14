@@ -1,6 +1,6 @@
-import { untrack } from "svelte";
+import { untrack } from 'svelte';
 import { type Getter, getDocument } from '$lib/vendor/index';
-import { executeCallbacks } from '$lib/vendor/index';
+import { chain } from 'overrule/props';
 import { on } from 'svelte/events';
 import type { Side } from '$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte';
 
@@ -176,7 +176,7 @@ export class SafePolygon {
 					this.#scheduleLeaveFallback();
 				};
 
-				return executeCallbacks(
+				return chain(
 					on(doc, 'pointermove', handlePointerMove),
 					on(triggerNode, 'pointerleave', handleTriggerLeave),
 					on(triggerNode, 'pointerenter', handleTriggerEnter),

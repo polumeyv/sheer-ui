@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor';
-	import type { ToggleGroupItemProps } from '$lib/components/toggle-group/primitive/index';
-	import { ToggleGroupItemState } from '$lib/components/toggle-group/primitive/toggle-group.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { ToggleGroupItemProps } from '$lib/components/primitive/toggle-group/index';
+	import { ToggleGroupItemState } from '$lib/components/primitive/toggle-group/toggle-group.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { getToggleGroupCtx } from './toggle-group.svelte';
 	import { cn } from '../../vendor/utils';

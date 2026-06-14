@@ -6,7 +6,7 @@
 <script lang="ts">
 	import * as Tooltip from '../tooltip/index';
 	import { cn, type WithElementRef, type WithoutChildrenOrChild } from '../../vendor/utils';
-	import { mergeProps } from '$lib/vendor/index';
+	import { mergeProps } from '$lib/merge-props';
 	import type { ComponentProps, Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { useSidebar } from './context.svelte';

@@ -1,5 +1,5 @@
 <script lang="ts">
-import * as SheetPrimitive from '../dialog/primitive/index';
+import * as SheetPrimitive from '$lib/components/primitive/dialog/index';
 
 let { ...restProps }: SheetPrimitive.PortalProps = $props();
 </script>

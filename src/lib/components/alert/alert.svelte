@@ -1,6 +1,5 @@
 <script lang="ts" module>
 import { alertVariants, type AlertVariant } from './variants';
-export { alertVariants, type AlertVariant };
 </script>
 
 <script lang="ts">

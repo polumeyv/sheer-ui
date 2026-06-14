@@ -1,4 +1,4 @@
-import { type VariantProps, declareVariants } from '../../vendor/utils';
+import { declareVariants, type VariantProps } from 'overrule';
 
 export const buttonVariants = declareVariants({
 	base: 'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border bg-clip-padding font-medium focus-visible:ring-3 active:translate-y-px aria-invalid:ring-3 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0',

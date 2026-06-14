@@ -102,7 +102,7 @@
 		maxHeight="300px"
 		class={buttonVariants({
 			variant: 'outline',
-			class: 'w-[180px] justify-start! text-start font-normal!',
+			class: 'w-45 justify-start! text-start font-normal!',
 		})}
 		triggerClass={cn('justify-start px-0', !value && 'text-muted-foreground', triggerClass)}>
 		{#snippet icon()}

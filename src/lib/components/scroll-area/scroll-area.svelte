@@ -1,10 +1,10 @@
 <script lang="ts">
-import { mergeProps } from '$lib/vendor/index';
-import type { ScrollAreaRootProps } from '$lib/components/scroll-area/primitive/index';
-import { ScrollAreaRootState, ScrollAreaViewportState } from '$lib/components/scroll-area/primitive/scroll-area.svelte';
+import { mergeProps } from '$lib/merge-props';
+import type { ScrollAreaRootProps } from '$lib/components/primitive/scroll-area/index';
+import { ScrollAreaRootState, ScrollAreaViewportState } from '$lib/components/primitive/scroll-area/scroll-area.svelte';
 import { createId } from '$lib/vendor/create-id';
 import { Scrollbar } from './index';
-import Corner from '$lib/components/scroll-area/primitive/components/scroll-area-corner.svelte';
+import Corner from '$lib/components/primitive/scroll-area/components/scroll-area-corner.svelte';
 import { cn, type WithoutChild } from '../../vendor/utils';
 
 const uid = $props.id();

@@ -1,6 +1,6 @@
 <script lang="ts">
-		import type { LinkPreviewRootProps } from '$lib/components/link-preview/index';
-	import { LinkPreviewRootState } from '$lib/components/link-preview/link-preview.svelte';
+		import type { LinkPreviewRootProps } from '$lib/components/primitive/link-preview/index';
+	import { LinkPreviewRootState } from '$lib/components/primitive/link-preview/link-preview.svelte.js';
 	import { FloatingLayer } from '$lib/components/_shared/utilities/floating-layer/index';
 
 	let {

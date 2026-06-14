@@ -1,24 +1,14 @@
-import { tick, untrack } from 'svelte';
-import {
-	attachRef,
-	DOMContext,
-	type ReadableProps,
-} from '$lib/vendor/index';
+import { tick } from 'svelte';
+import { attachRef, DOMContext, type ReadableProps } from '$lib/vendor/index';
 import { FIRST_LAST_KEYS, LAST_KEYS } from '$lib/components/_shared/menu/utils';
 import { focusFirst } from '$lib/vendor/focus';
-import type {
-	BitsFocusEvent,
-	BitsKeyboardEvent,
-	BitsPointerEvent,
-	RefAttachment,
-	WithRefProps,
-} from '$lib/vendor/types';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsPointerEvent, RefAttachment, WithRefProps } from '$lib/vendor/types';
 import { kbd } from '$lib/vendor/kbd';
 import { getTabbableFrom } from '$lib/vendor/tabbable';
 import { isTabbable } from 'tabbable';
 import { DOMTypeahead } from '$lib/vendor/dom-typeahead.svelte';
 import { RovingFocusGroup } from '$lib/vendor/roving-focus-group';
-import { MenuOpenEvent } from '$lib/components/_shared/menu/attrs';
+import { attachMenuOpen, type MenuOpenAttachment } from '$lib/components/_shared/menu/attrs';
 import { getMenuMenuContext, setMenuContentContext } from '$lib/components/_shared/menu/context.svelte';
 import { MenuSubmenuIntent } from '$lib/components/_shared/menu/submenu-intent.svelte';
 import type { Point } from '$lib/components/_shared/menu/geometry';
@@ -44,6 +34,7 @@ export class MenuContentState {
 	readonly rovingFocusGroup: RovingFocusGroup;
 	readonly domContext: DOMContext;
 	readonly attachment: RefAttachment;
+	readonly menuOpenAttachment: MenuOpenAttachment;
 	search = $state('');
 	#timer = 0;
 	#handleTypeaheadSearch: DOMTypeahead['handleTypeaheadSearch'];
@@ -91,24 +82,26 @@ export class MenuContentState {
 			getActiveElement: () => this.domContext.getActiveElement(),
 			getWindow: () => this.domContext.getWindow(),
 		}).handleTypeaheadSearch;
+
 		this.rovingFocusGroup = new RovingFocusGroup({
-			rootNode: { get current() { return self.parentMenu.contentNode; } },
+			rootNode: {
+				get current() {
+					return self.parentMenu.contentNode;
+				},
+			},
 			candidateAttr: this.parentMenu.root.getBitsAttr('item'),
 			loop: this.opts.loop,
-			orientation: { get current() { return 'vertical' as const; } },
+			orientation: {
+				get current() {
+					return 'vertical' as const;
+				},
+			},
 		});
 
-		$effect(() => {
-			const contentNode = this.parentMenu.contentNode;
-			return untrack(() => {
-				if (!contentNode) return;
-				const handler = () => {
-					tick().then(() => {
-						if (!this.parentMenu.root.isUsingKeyboard.current) return;
-						this.rovingFocusGroup.focusFirstCandidate();
-					});
-				};
-				return MenuOpenEvent.listen(contentNode, handler);
+		this.menuOpenAttachment = attachMenuOpen(() => {
+			tick().then(() => {
+				if (!this.parentMenu.root.isUsingKeyboard.current) return;
+				this.rovingFocusGroup.focusFirstCandidate();
 			});
 		});
 
@@ -320,6 +313,7 @@ export class MenuContentState {
 					contain: 'layout style',
 				},
 				...this.attachment,
+				...this.menuOpenAttachment,
 			}) as const,
 	);
 

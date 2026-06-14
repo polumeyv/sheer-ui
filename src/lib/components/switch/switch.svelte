@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/merge-props';
-	import type { SwitchRootProps } from '$lib/components/switch/primitive';
-	import { SwitchRootState, SwitchThumbState } from '$lib/components/switch/primitive/switch.svelte';
-	import SwitchInput from '$lib/components/switch/primitive/components/switch-input.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import { SwitchRootState, SwitchThumbState } from '$lib/components/primitive/switch/switch.svelte';
+	import SwitchInput from '$lib/components/primitive/switch/components/switch-input.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
-
+	import type { SwitchRootProps } from '$lib/components/primitive/switch';
 	const uid = $props.id();
 	const thumbId = createId(`${uid}-thumb`);
 
@@ -17,7 +16,6 @@
 		checked = $bindable(false),
 		value = 'on',
 		name = undefined,
-		type = 'button',
 		onCheckedChange = () => {},
 		class: className,
 		...restProps
@@ -31,6 +29,7 @@
 				return checked;
 			},
 			set current(v) {
+				if (v === checked) return;
 				checked = v;
 				onCheckedChange?.(v);
 			},
@@ -70,36 +69,40 @@
 		},
 	});
 
-	const thumbState = SwitchThumbState.create({
-		id: {
-			get current() {
-				return thumbId;
+	const thumbState = SwitchThumbState.create(
+		{
+			id: {
+				get current() {
+					return thumbId;
+				},
+			},
+			ref: {
+				get current() {
+					return thumbRef;
+				},
+				set current(v) {
+					thumbRef = v;
+				},
 			},
 		},
-		ref: {
-			get current() {
-				return thumbRef;
-			},
-			set current(v) {
-				thumbRef = v;
-			},
-		},
-	});
+		rootState,
+	);
 </script>
 
-<button
+<span
 	{...mergeProps(
 		{
 			'data-slot': 'switch',
 			class: cn(
-				'data-[state=checked]:bg-primary data-[state=unchecked]:bg-input focus-visible:border-ring focus-visible:ring-ring/50 dark:data-[state=unchecked]:bg-input/80 peer inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
+				'relative data-[state=checked]:bg-primary data-[state=unchecked]:bg-input focus-within:border-ring focus-within:ring-ring/50 dark:data-[state=unchecked]:bg-input/80 inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-within:ring-[3px] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
 				className,
 			),
 		},
 		restProps,
 		rootState.props,
-		{ type },
 	)}>
+	<SwitchInput />
+
 	<span
 		{...mergeProps(
 			{
@@ -110,6 +113,4 @@
 			},
 			thumbState.props,
 		)}></span>
-</button>
-
-<SwitchInput />
+</span>

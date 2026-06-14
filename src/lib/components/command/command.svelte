@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import { CommandRootState } from '$lib/components/command/primitive/command.svelte';
-	import type { CommandRootProps } from '$lib/components/command/primitive/index';
-	import CommandLabel from '$lib/components/command/primitive/components/_command-label.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import { CommandRootState } from '$lib/components/primitive/command/command.svelte';
+	import type { CommandRootProps } from '$lib/components/primitive/command/index';
+	import CommandLabel from '$lib/components/primitive/command/components/_command-label.svelte';
 	import { createId } from '$lib/vendor/create-id';
-	import { computeCommandScore } from '$lib/components/command/primitive/index';
+	import { computeCommandScore } from '$lib/components/primitive/command/index';
 	import { cn } from '../../vendor/utils';
 
 	const uid = $props.id();

@@ -97,7 +97,7 @@
 		{disabled}
 		{placeholder}
 		maxHeight="12.5rem"
-		class={cn('h-8', use24Hour ? 'w-[72px]!' : 'w-[60px]!', triggerClass)}
+		class={cn('h-8', use24Hour ? 'w-18!' : 'w-15!', triggerClass)}
 		triggerClass="justify-center px-2">
 		{#each slots as slot (slot)}
 			<Select.Option value={slot}>{slot}</Select.Option>

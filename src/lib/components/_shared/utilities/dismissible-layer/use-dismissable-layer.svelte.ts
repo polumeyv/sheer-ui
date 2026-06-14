@@ -1,5 +1,5 @@
 import { tick, untrack } from 'svelte';
-import { executeCallbacks } from '$lib/vendor/index';
+import { chain } from 'overrule/props';
 import { type ReadableProp, type WritableProp, type ReadableProps } from '$lib/vendor/index';
 import { on } from 'svelte/events';
 import type { DismissibleLayerImplProps, InteractOutsideBehaviorType } from '$lib/components/_shared/utilities/dismissible-layer/index';
@@ -87,7 +87,7 @@ export class DismissibleLayerState {
 	};
 
 	#addEventListeners() {
-		return executeCallbacks(
+		return chain(
 			/**
 			 * CAPTURE INTERACTION START
 			 * mark interaction-start event as intercepted.
@@ -95,14 +95,14 @@ export class DismissibleLayerState {
 			 * to avoid checking if is responsible layer during interaction end
 			 * when a new floating element may have been opened.
 			 */
-			on(this.#documentObj, 'pointerdown', executeCallbacks(this.#markInterceptedEvent, this.#markResponsibleLayer), { capture: true }),
+			on(this.#documentObj, 'pointerdown', chain(this.#markInterceptedEvent, this.#markResponsibleLayer), { capture: true }),
 
 			/**
 			 * BUBBLE INTERACTION START
 			 * Mark interaction-start event as non-intercepted. Debounce `onInteractOutsideStart`
 			 * to avoid prematurely checking if other events were intercepted.
 			 */
-			on(this.#documentObj, 'pointerdown', executeCallbacks(this.#markNonInterceptedEvent, this.#handleInteractOutside)),
+			on(this.#documentObj, 'pointerdown', chain(this.#markNonInterceptedEvent, this.#handleInteractOutside)),
 
 			/**
 			 * HANDLE FOCUS OUTSIDE

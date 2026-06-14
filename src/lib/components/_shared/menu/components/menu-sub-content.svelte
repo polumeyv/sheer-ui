@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index";
+	import { mergeProps } from '$lib/merge-props';
 	import type { MenuSubContentProps } from "$lib/components/_shared/menu/index";
-	import { MenuOpenEvent } from "$lib/components/_shared/menu/attrs";
+	import { dispatchMenuOpen } from "$lib/components/_shared/menu/attrs";
 	import { MenuContentState } from "$lib/components/_shared/menu/content.svelte";
 	import { SUB_CLOSE_KEYS } from "$lib/components/_shared/menu/utils";
 	import { createId } from "$lib/vendor/create-id";
@@ -69,7 +69,7 @@
 			subContentState.parentMenu.root.isUsingKeyboard &&
 			subContentState.parentMenu.contentNode
 		) {
-			MenuOpenEvent.dispatch(subContentState.parentMenu.contentNode);
+			dispatchMenuOpen(subContentState.parentMenu.contentNode);
 		}
 	}
 

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { ProgressRootProps } from '$lib/components/progress/primitive/index';
-	import { ProgressRootState } from '$lib/components/progress/primitive/progress.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { ProgressRootProps } from '$lib/components/primitive/progress/index';
+	import { ProgressRootState } from '$lib/components/primitive/progress/progress.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';
 

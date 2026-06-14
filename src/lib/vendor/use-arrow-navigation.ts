@@ -1,168 +1,163 @@
-import type { Direction } from "$lib/shared/index";
+import type { Direction } from '$lib/shared/index';
 
-type ArrowKeyOptions = "horizontal" | "vertical" | "both";
+type ArrowKeyOptions = 'horizontal' | 'vertical' | 'both';
 
 interface ArrowNavigationOptions {
 	/**
-	 * The arrow key options to allow navigation
+	 * The arrow key options to allow navigation.
 	 *
 	 * @defaultValue "both"
 	 */
 	arrowKeyOptions?: ArrowKeyOptions;
 
 	/**
-	 * The selector to find the collection items in the parent element.
+	 * The selector used to find candidate items inside the parent element.
 	 */
 	candidateSelector: string;
 
 	/**
-	 * The parent element where contains all the collection items, this will collect every item to be used when nav
-	 * It will be ignored if attributeName is provided
+	 * Candidate items to use when no parent element is provided.
 	 *
 	 * @defaultValue []
 	 */
 	itemsArray?: HTMLElement[];
 
 	/**
-	 * Allow loop navigation. If false, it will stop at the first and last element
+	 * Allow loop navigation. If false, navigation stops at the first and last element.
 	 *
 	 * @defaultValue true
 	 */
 	loop?: boolean;
 
 	/**
-	 * The orientation of the collection
+	 * Text direction. Used to reverse left/right behavior in RTL layouts.
 	 *
 	 * @defaultValue "ltr"
 	 */
 	dir?: Direction;
 
 	/**
-	 * Prevent the scroll when navigating. This happens when the direction of the
-	 * key matches the scroll direction of any ancestor scrollable elements.
+	 * Prevent browser scrolling when navigating.
 	 *
 	 * @defaultValue true
 	 */
 	preventScroll?: boolean;
 
 	/**
-	 * By default all currentElement would trigger navigation. If `true`, currentElement nodeName in the ignore list will return null
+	 * If true, ignored elements like inputs and textareas do not trigger navigation.
 	 *
 	 * @defaultValue false
 	 */
 	enableIgnoredElement?: boolean;
 
 	/**
-	 * Focus the element after navigation
+	 * Focus the navigated element automatically.
 	 *
 	 * @defaultValue false
 	 */
 	focus?: boolean;
 }
 
-const ignoredElement = ["INPUT", "TEXTAREA"];
+const ignoredElements = ['INPUT', 'TEXTAREA'];
 
-/**
- *
- * @param e               Keyboard event
- * @param currentElement  Event initiator element or any element that wants to handle the navigation
- * @param parentElement   Parent element where contains all the collection items, this will collect every item to be used when nav
- * @param options         further options
- * @returns               the navigated html element or null if none
- */
 export function useArrowNavigation(
 	e: KeyboardEvent,
 	currentElement: HTMLElement,
 	parentElement: HTMLElement | undefined,
-	options: ArrowNavigationOptions
+	options: ArrowNavigationOptions,
 ): HTMLElement | null {
-	if (
-		!currentElement ||
-		(options.enableIgnoredElement && ignoredElement.includes(currentElement.nodeName))
-	) {
+	if (options.enableIgnoredElement && ignoredElements.includes(currentElement.nodeName)) {
 		return null;
 	}
 
 	const {
-		arrowKeyOptions = "both",
-		candidateSelector: attributeName,
+		arrowKeyOptions = 'both',
+		candidateSelector,
 		itemsArray = [],
 		loop = true,
-		dir = "ltr",
+		dir = 'ltr',
 		preventScroll = true,
 		focus = false,
 	} = options;
 
-	const [right, left, up, down, home, end] = [
-		e.key === "ArrowRight",
-		e.key === "ArrowLeft",
-		e.key === "ArrowUp",
-		e.key === "ArrowDown",
-		e.key === "Home",
-		e.key === "End",
-	];
-	const goingVertical = up || down;
-	const goingHorizontal = right || left;
+	const isRight = e.key === 'ArrowRight';
+	const isLeft = e.key === 'ArrowLeft';
+	const isUp = e.key === 'ArrowUp';
+	const isDown = e.key === 'ArrowDown';
+	const isHome = e.key === 'Home';
+	const isEnd = e.key === 'End';
+
+	const goingVertical = isUp || isDown;
+	const goingHorizontal = isRight || isLeft;
+
 	if (
-		!home &&
-		!end &&
+		!isHome &&
+		!isEnd &&
 		((!goingVertical && !goingHorizontal) ||
-			(arrowKeyOptions === "vertical" && goingHorizontal) ||
-			(arrowKeyOptions === "horizontal" && goingVertical))
-	)
+			(arrowKeyOptions === 'vertical' && goingHorizontal) ||
+			(arrowKeyOptions === 'horizontal' && goingVertical))
+	) {
 		return null;
+	}
 
-	const allCollectionItems: HTMLElement[] = parentElement
-		? Array.from(parentElement.querySelectorAll(attributeName))
-		: itemsArray;
+	const candidates = parentElement ? Array.from(parentElement.querySelectorAll<HTMLElement>(candidateSelector)) : itemsArray;
 
-	if (!allCollectionItems.length) return null;
+	if (!candidates.length) return null;
 
-	if (preventScroll) e.preventDefault();
+	if (preventScroll) {
+		e.preventDefault();
+	}
 
-	let item: HTMLElement | null = null;
+	let nextElement: HTMLElement | null = null;
 
 	if (goingHorizontal || goingVertical) {
-		const goForward = goingVertical ? down : dir === "ltr" ? right : left;
-		item = findNextFocusableElement(allCollectionItems, currentElement, {
+		const goForward = goingVertical ? isDown : dir === 'ltr' ? isRight : isLeft;
+
+		nextElement = findNextFocusableElement(candidates, currentElement, {
 			goForward,
 			loop,
 		});
-	} else if (home) {
-		item = allCollectionItems.at(0) || null;
-	} else if (end) {
-		item = allCollectionItems.at(-1) || null;
+	} else if (isHome) {
+		nextElement = candidates.at(0) ?? null;
+	} else if (isEnd) {
+		nextElement = candidates.at(-1) ?? null;
 	}
 
-	if (focus) item?.focus();
+	if (focus) {
+		nextElement?.focus();
+	}
 
-	return item;
+	return nextElement;
 }
 
-/**
- * Recursive function to find the next focusable element to avoid disabled elements
- */
 function findNextFocusableElement(
 	elements: HTMLElement[],
 	currentElement: HTMLElement,
-	{ goForward, loop }: { goForward: boolean; loop?: boolean },
-	iterations = elements.length
+	{ goForward, loop }: { goForward: boolean; loop: boolean },
+	iterations = elements.length,
 ): HTMLElement | null {
 	if (--iterations === 0) return null;
 
-	const index = elements.indexOf(currentElement);
-	const newIndex = goForward ? index + 1 : index - 1;
+	const currentIndex = elements.indexOf(currentElement);
+	const nextIndex = goForward ? currentIndex + 1 : currentIndex - 1;
 
-	if (!loop && (newIndex < 0 || newIndex >= elements.length)) return null;
+	if (!loop && (nextIndex < 0 || nextIndex >= elements.length)) {
+		return null;
+	}
 
-	const adjustedNewIndex = (newIndex + elements.length) % elements.length;
-	const candidate = elements[adjustedNewIndex];
+	const adjustedIndex = (nextIndex + elements.length) % elements.length;
+	const candidate = elements[adjustedIndex];
+
 	if (!candidate) return null;
 
 	const isDisabled =
-		candidate.hasAttribute("disabled") && candidate.getAttribute("disabled") !== "false";
+		(candidate.hasAttribute('disabled') && candidate.getAttribute('disabled') !== 'false') ||
+		candidate.hasAttribute('data-disabled') ||
+		candidate.getAttribute('aria-disabled') === 'true';
+
 	if (isDisabled) {
 		return findNextFocusableElement(elements, candidate, { goForward, loop }, iterations);
 	}
+
 	return candidate;
 }

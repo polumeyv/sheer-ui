@@ -1,3 +1,8 @@
+// Used by:
+//   - navigation-menu/primitive/navigation-menu.svelte.ts (isDelaySkipped, hasPointerMoveOpened)
+//   - vendor/data-typeahead.svelte.ts (DataTypeahead) -> select/combobox
+//   - vendor/dom-typeahead.svelte.ts (DOMTypeahead) -> select/combobox + _shared/menu (context-menu, dropdown-menu, menubar)
+
 import { type WritableProp } from '$lib/vendor';
 
 type BoxAutoResetOptions<T> = {

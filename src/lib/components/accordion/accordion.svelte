@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { mergeProps } from '$lib/vendor';
+	import { mergeProps } from '$lib/merge-props';
 	import type { WritableProp } from '$lib/vendor/utils';
-	import { AccordionRootState } from '$lib/components/accordion/primitive/accordion.svelte';
-	import type { AccordionRootProps } from '$lib/components/accordion/primitive/index';
+	import { AccordionRootState, type  AccordionRootProps } from './accordion.svelte.js';
 	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();

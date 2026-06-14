@@ -1,5 +1,5 @@
 import { type AnyFn } from '$lib/vendor/index';
-import { executeCallbacks } from '$lib/vendor/index';
+import { chain } from 'overrule/props';
 import { on } from 'svelte/events';
 
 // Using global state to avoid multiple listeners.
@@ -41,7 +41,7 @@ export class IsUsingKeyboard {
 					);
 
 					// Don't forget to spread and call twice.
-					return executeCallbacks(...callbacksToDispose);
+					return chain(...callbacksToDispose);
 				});
 			}
 

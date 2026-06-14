@@ -2,7 +2,7 @@ import type {
 	ToggleGroupItemProps,
 	ToggleGroupItemPropsWithoutHTML,
 	ToggleGroupRootPropsWithoutHTML,
-} from "$lib/components/toggle-group/primitive/index";
+} from "$lib/components/primitive/toggle-group/index";
 import type { Orientation } from "$lib/shared/index";
 import type { WithChild, Without } from "$lib/vendor/types";
 import type {

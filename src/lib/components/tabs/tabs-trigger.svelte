@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor';
-	import type { TabsTriggerProps } from '$lib/components/tabs/primitive/index';
-	import { TabsTriggerState } from '$lib/components/tabs/primitive/tabs.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { TabsTriggerProps } from '$lib/components/primitive/tabs/index';
+	import { TabsTriggerState } from '$lib/components/primitive/tabs/tabs.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor';
-	import { AccordionContentState } from '$lib/components/accordion/primitive/accordion.svelte';
-	import type { AccordionContentProps } from '$lib/components/accordion/primitive/index';
+	import { mergeProps } from '$lib/merge-props';
+	import { AccordionContentState, type AccordionContentProps } from '$lib/components/accordion/accordion.svelte.js';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn, type WithoutChild } from '../../vendor/utils';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { PaginationRootProps } from '$lib/components/pagination/primitive/index';
-	import { PaginationRootState } from '$lib/components/pagination/primitive/pagination.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { PaginationRootProps } from '$lib/components/primitive/pagination/index';
+	import { PaginationRootState } from '$lib/components/primitive/pagination/pagination.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

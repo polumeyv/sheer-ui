@@ -3,7 +3,7 @@ import type {
 	SelectBaseRootPropsWithoutHTML,
 	SelectMultipleRootPropsWithoutHTML,
 	SelectSingleRootPropsWithoutHTML,
-} from "$lib/components/combobox/primitive/index";
+} from "$lib/components/primitive/combobox/index";
 import type { WithChild, Without } from "$lib/vendor/types";
 
 export type ComboboxBaseRootPropsWithoutHTML = Omit<
@@ -58,7 +58,7 @@ export type {
 	SelectArrowPropsWithoutHTML as ComboboxArrowPropsWithoutHTML,
 	SelectPortalProps as ComboboxPortalProps,
 	SelectPortalPropsWithoutHTML as ComboboxPortalPropsWithoutHTML,
-} from "$lib/components/combobox/primitive/index";
+} from "$lib/components/primitive/combobox/index";
 
 export type ComboboxInputPropsWithoutHTML = WithChild<{
 	/**

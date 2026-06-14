@@ -7,6 +7,8 @@ import type { WritableProp } from './utils';
  * trigger updates. Use for state a class owns itself (no external getter to defer
  * to); for props handed in from a component, build the accessor inline from
  * `$props()` instead.
+ *
+ * Lives in a `.svelte.ts` file because `$state` is only available in rune modules.
  */
 export function writableProp<T>(initial: T): WritableProp<T>;
 export function writableProp<T>(): WritableProp<T | undefined>;

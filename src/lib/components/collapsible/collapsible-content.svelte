@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor';
-	import { CollapsibleContentState } from '$lib/components/collapsible/primitive/collapsible.svelte';
-	import type { CollapsibleContentProps } from '$lib/components/collapsible/primitive/index';
+	import { mergeProps } from '$lib/merge-props';
+	import { CollapsibleContentState } from '$lib/components/primitive/collapsible/collapsible.svelte';
+	import type { CollapsibleContentProps } from '$lib/components/primitive/collapsible/index';
 	import { createId } from '$lib/vendor/create-id';
 
 	const uid = $props.id();

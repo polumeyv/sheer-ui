@@ -1,6 +1,5 @@
 <script lang="ts" module>
 import { inputGroupAddonVariants, type InputGroupAddonAlign } from './variants';
-export { inputGroupAddonVariants, type InputGroupAddonAlign };
 </script>
 
 <script lang="ts">

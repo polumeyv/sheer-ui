@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import { SeparatorRootState } from '$lib/components/separator/primitive/separator.svelte';
-	import type { SeparatorRootProps } from '$lib/components/separator/primitive/index';
+	import { mergeProps } from '$lib/merge-props';
+	import { SeparatorRootState } from '$lib/components/primitive/separator/separator.svelte';
+	import type { SeparatorRootProps } from '$lib/components/primitive/separator/index';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

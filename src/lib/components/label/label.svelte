@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { LabelRootProps } from '$lib/components/label/primitive/index';
-	import { LabelRootState } from '$lib/components/label/primitive/label.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import { type LabelRootProps, LabelRootState } from './label.svelte.js';
 	import { createId } from '$lib/vendor/create-id';
 	import { cn } from '../../vendor/utils';
 

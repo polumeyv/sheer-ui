@@ -5,9 +5,9 @@
 </script>
 
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { NavigationMenuTriggerProps } from '$lib/components/navigation-menu/primitive/index';
-	import { NavigationMenuTriggerState } from '$lib/components/navigation-menu/primitive/navigation-menu.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { NavigationMenuTriggerProps } from '$lib/components/primitive/navigation-menu/index';
+	import { NavigationMenuTriggerState } from '$lib/components/primitive/navigation-menu/navigation-menu.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import VisuallyHidden from '$lib/components/_shared/utilities/visually-hidden/visually-hidden.svelte';
 	import Mounted from '$lib/components/_shared/utilities/mounted.svelte';
@@ -52,7 +52,7 @@
 		{@render children?.()}
 
 		<ChevronDownIcon
-			class="relative top-[1px] ms-1 size-3 transition duration-300 group-data-[state=open]:rotate-180"
+			class="relative top-px ms-1 size-3 transition duration-300 group-data-[state=open]:rotate-180"
 			aria-hidden="true"
 		/>
 	</button>

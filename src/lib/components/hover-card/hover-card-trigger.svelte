@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor/index';
-	import type { LinkPreviewTriggerProps } from '$lib/components/link-preview/index';
-	import { LinkPreviewTriggerState } from '$lib/components/link-preview/link-preview.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { LinkPreviewTriggerProps } from '$lib/components/primitive/link-preview/index';
+	import { LinkPreviewTriggerState } from '$lib/components/primitive/link-preview/link-preview.svelte.js';
 	import { createId } from '$lib/vendor/create-id';
 	import { FloatingLayer } from '$lib/components/_shared/utilities/floating-layer/index';
 

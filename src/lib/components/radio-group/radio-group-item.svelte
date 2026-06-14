@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/vendor';
-	import type { RadioGroupItemProps } from '$lib/components/radio-group/primitive/index';
-	import { RadioGroupItemState } from '$lib/components/radio-group/primitive/radio-group.svelte';
+	import { mergeProps } from '$lib/merge-props';
+	import type { RadioGroupItemProps } from '$lib/components/primitive/radio-group/index';
+	import { RadioGroupItemState } from '$lib/components/primitive/radio-group/radio-group.svelte';
 	import { createId } from '$lib/vendor/create-id';
 	import CircleIcon from '@lucide/svelte/icons/circle';
 	import { cn, type WithoutChildrenOrChild } from '../../vendor/utils';

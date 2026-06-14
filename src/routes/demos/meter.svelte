@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Meter } from '$lib/components/meter/index';
+	import { Meter } from '$lib/components/primitive/meter/index';
 
 	const value = 72;
 	const max = 100;

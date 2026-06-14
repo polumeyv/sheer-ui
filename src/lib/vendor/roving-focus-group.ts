@@ -1,45 +1,48 @@
-import { writableProp } from '$lib/vendor/index';
+import { writableProp, getWindow } from '$lib/vendor/index';
 import type { ReadableProp, WritableProp } from '$lib/vendor/utils';
-import { getElemDirection } from './locale';
 import { getDirectionalKeys } from './get-directional-keys';
 import { kbd } from './kbd';
-import type { Orientation } from '$lib/shared/index';
+import type { Direction, Orientation } from '$lib/shared/index';
 import { BROWSER } from '$lib/vendor/env';
 
 type RovingFocusGroupOptions = (
 	| {
 			/**
-			 * The selector used to find the focusable candidates.
+			 * The attribute used to find focusable candidates.
 			 */
 			candidateAttr: string;
 			candidateSelector?: undefined;
 	  }
 	| {
 			/**
-			 * Custom candidate selector
+			 * Custom candidate selector.
 			 */
 			candidateSelector: string;
 			candidateAttr?: undefined;
 	  }
 ) & {
 	/**
-	 * The id of the root node
+	 * The root node containing all focusable candidates.
 	 */
 	rootNode: WritableProp<HTMLElement | null>;
 
 	/**
-	 * Whether to loop through the candidates when reaching the end.
+	 * Whether to loop through candidates when reaching the end.
 	 */
 	loop: ReadableProp<boolean>;
 
 	/**
-	 * The orientation of the roving focus group. Used
-	 * to determine how keyboard navigation should work.
+	 * The orientation of the roving focus group.
 	 */
 	orientation: ReadableProp<Orientation>;
 
 	/**
-	 * A callback function called when a candidate is focused.
+	 * Text direction. If omitted, direction is read from the root node's computed style.
+	 */
+	dir?: ReadableProp<Direction>;
+
+	/**
+	 * Called when a candidate is focused.
 	 */
 	onCandidateFocus?: (node: HTMLElement) => void;
 };
@@ -53,16 +56,15 @@ export class RovingFocusGroup {
 	}
 
 	getCandidateNodes() {
-		if (!BROWSER || !this.#opts.rootNode.current) return [];
+		const rootNode = this.#opts.rootNode.current;
+		if (!BROWSER || !rootNode) return [];
 
 		if (this.#opts.candidateSelector) {
-			const candidates = Array.from(this.#opts.rootNode.current.querySelectorAll<HTMLElement>(this.#opts.candidateSelector));
-			return candidates;
-		} else if (this.#opts.candidateAttr) {
-			const candidates = Array.from(
-				this.#opts.rootNode.current.querySelectorAll<HTMLElement>(`[${this.#opts.candidateAttr}]:not([data-disabled])`),
-			);
-			return candidates;
+			return Array.from(rootNode.querySelectorAll<HTMLElement>(this.#opts.candidateSelector));
+		}
+
+		if (this.#opts.candidateAttr) {
+			return Array.from(rootNode.querySelectorAll<HTMLElement>(`[${this.#opts.candidateAttr}]:not([data-disabled])`));
 		}
 
 		return [];
@@ -70,11 +72,10 @@ export class RovingFocusGroup {
 
 	focusFirstCandidate() {
 		const items = this.getCandidateNodes();
-		if (!items.length) return;
 		items[0]?.focus();
 	}
 
-	handleKeydown(node: HTMLElement | null | undefined, e: KeyboardEvent, both: boolean = false) {
+	handleKeydown(node: HTMLElement | null | undefined, e: KeyboardEvent, both = false) {
 		const rootNode = this.#opts.rootNode.current;
 		if (!rootNode || !node) return;
 
@@ -82,11 +83,13 @@ export class RovingFocusGroup {
 		if (!items.length) return;
 
 		const currentIndex = items.indexOf(node);
-		const dir = getElemDirection(rootNode);
+		if (currentIndex === -1) return;
+
+		const dir = this.#opts.dir?.current ?? getWindow(node).getComputedStyle(node).direction as Direction;
 		const { nextKey, prevKey } = getDirectionalKeys(dir, this.#opts.orientation.current);
 		const loop = this.#opts.loop.current;
 
-		const keyToIndex = {
+		const keyToIndex: Record<string, number> = {
 			[nextKey]: currentIndex + 1,
 			[prevKey]: currentIndex - 1,
 			[kbd.HOME]: 0,
@@ -96,12 +99,14 @@ export class RovingFocusGroup {
 		if (both) {
 			const altNextKey = nextKey === kbd.ARROW_DOWN ? kbd.ARROW_RIGHT : kbd.ARROW_DOWN;
 			const altPrevKey = prevKey === kbd.ARROW_UP ? kbd.ARROW_LEFT : kbd.ARROW_UP;
+
 			keyToIndex[altNextKey] = currentIndex + 1;
 			keyToIndex[altPrevKey] = currentIndex - 1;
 		}
 
 		let itemIndex = keyToIndex[e.key];
 		if (itemIndex === undefined) return;
+
 		e.preventDefault();
 
 		if (itemIndex < 0 && loop) {
@@ -112,9 +117,11 @@ export class RovingFocusGroup {
 
 		const itemToFocus = items[itemIndex];
 		if (!itemToFocus) return;
+
 		itemToFocus.focus();
 		this.#currentTabStopId.current = itemToFocus.id;
 		this.#opts.onCandidateFocus?.(itemToFocus);
+
 		return itemToFocus;
 	}
 
@@ -125,7 +132,9 @@ export class RovingFocusGroup {
 		if (node && !anyActive && items[0] === node) {
 			this.#currentTabStopId.current = node.id;
 			return 0;
-		} else if (node?.id === this.#currentTabStopId.current) {
+		}
+
+		if (node?.id === this.#currentTabStopId.current) {
 			return 0;
 		}
 
@@ -139,8 +148,10 @@ export class RovingFocusGroup {
 	focusCurrentTabStop() {
 		const currentTabStopId = this.#currentTabStopId.current;
 		if (!currentTabStopId) return;
+
 		const currentTabStop = this.#opts.rootNode.current?.querySelector(`#${currentTabStopId}`);
-		if (!currentTabStop || !(currentTabStop instanceof HTMLElement)) return;
+		if (!(currentTabStop instanceof HTMLElement)) return;
+
 		currentTabStop.focus();
 	}
 }

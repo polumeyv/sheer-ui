@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { mergeProps } from '$lib/vendor/index';
+	import { mergeProps } from '$lib/merge-props';
 	import type { MenuCheckboxItemProps } from '$lib/components/_shared/menu/index';
 	import { getMenuCheckboxGroupContextOr } from '$lib/components/_shared/menu/context.svelte';
 	import { MenuCheckboxItemState } from '$lib/components/_shared/menu/checkbox.svelte';

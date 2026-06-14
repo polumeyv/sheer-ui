@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/vendor/index";
+	import { mergeProps } from '$lib/merge-props';
 	import { FloatingContentState } from "$lib/components/_shared/utilities/floating-layer/use-floating-layer.svelte";
 	import type { ContentImplProps } from "$lib/components/_shared/utilities/floating-layer/components/index";
 	import { useId } from "$lib/vendor/use-id";

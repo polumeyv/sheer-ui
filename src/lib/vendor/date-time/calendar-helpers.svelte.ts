@@ -1,6 +1,7 @@
 import { tick, untrack } from 'svelte';
 import { type DateValue, endOfMonth, isSameDay, isSameMonth, startOfMonth } from '@internationalized/date';
-import { type ReadableProp, type WritableProp, getDocument, styleToCSS } from '$lib/vendor/index';
+import { type ReadableProp, type WritableProp, getDocument } from '$lib/vendor/index';
+import { styleToString } from 'overrule/props';
 import {
 	getDaysInMonth,
 	getLastFirstDayOfWeek,
@@ -525,7 +526,7 @@ type CreateAccessibleHeadingProps = {
 export function createAccessibleHeading({ calendarNode, label, accessibleHeadingId }: CreateAccessibleHeadingProps) {
 	const doc = getDocument(calendarNode);
 	const div = doc.createElement('div');
-	div.style.cssText = styleToCSS({
+	div.style.cssText = styleToString({
 		border: '0px',
 		clip: 'rect(0px, 0px, 0px, 0px)',
 		clipPath: 'inset(50%)',
@@ -536,7 +537,7 @@ export function createAccessibleHeading({ calendarNode, label, accessibleHeading
 		position: 'absolute',
 		whiteSpace: 'nowrap',
 		width: '1px',
-	}).replace('\n', ' ');
+	});
 	const h2 = doc.createElement('div');
 	h2.textContent = label;
 	h2.id = accessibleHeadingId;
