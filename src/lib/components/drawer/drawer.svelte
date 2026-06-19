@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Drawer as DrawerPrimitive } from 'vaul-svelte';
+import { Drawer as DrawerPrimitive } from './util/index.js';
 
 let {
 	shouldScaleBackground = true,
