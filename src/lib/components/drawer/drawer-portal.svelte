@@ -1,7 +1,10 @@
 <script lang="ts">
-import { Drawer as DrawerPrimitive } from 'vaul-svelte';
+import { Portal, type PortalProps } from '$lib/components/dialog/index.js';
+import { DrawerContext } from './util/context.js';
 
-let { ...restProps }: DrawerPrimitive.PortalProps = $props();
+const ctx = DrawerContext.get();
+
+let { to = ctx.container.current ?? undefined, ...restProps }: PortalProps = $props();
 </script>
 
-<DrawerPrimitive.Portal {...restProps} />
+<Portal {to} {...restProps} />

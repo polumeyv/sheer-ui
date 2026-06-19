@@ -1,9 +1,9 @@
 <script lang="ts" generics="TData">
 	import Settings2Icon from '@lucide/svelte/icons/settings-2';
 	import type { Table } from '@tanstack/table-core';
-	import * as DropdownMenu from '@polumeyv/ui/dropdown-menu';
-	import { buttonVariants } from '@polumeyv/ui/button';
-	import { cn } from '../../utils';
+	import * as DropdownMenu from '../dropdown-menu';
+	import { buttonVariants } from '../button';
+	import { cn } from "$lib/utils.js";
 	let { table }: { table: Table<TData> } = $props();
 </script>
 
@@ -15,7 +15,7 @@
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content>
 		<DropdownMenu.Group>
-			<DropdownMenu.Label>Toggle columns</DropdownMenu.Label>
+			<DropdownMenu.GroupHeading>Toggle columns</DropdownMenu.GroupHeading>
 			<DropdownMenu.Separator />
 			{#each table.getAllColumns().filter((col) => typeof col.accessorFn !== 'undefined' && col.getCanHide()) as column (column)}
 				<DropdownMenu.CheckboxItem bind:checked={() => column.getIsVisible(), (v) => column.toggleVisibility(!!v)} class="capitalize">

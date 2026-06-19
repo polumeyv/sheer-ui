@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Button } from '../../components/button';
-	import * as Tooltip from '../../components/tooltip';
+	import { Button } from '$lib/components/button';
+	import * as Tooltip from '$lib/components/tooltip';
 	import { UseClipboard } from './copy.svelte';
-	import { cn } from '../../utils';
+	import { cn } from '$lib/utils.js';
 	import Clipboard from '@lucide/svelte/icons/clipboard';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import type { ComponentProps } from 'svelte';

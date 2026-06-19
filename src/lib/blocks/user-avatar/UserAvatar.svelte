@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Avatar from '../../components/avatar';
+	import * as Avatar from "$lib/components/avatar";
 
 	// Display avatar: an optional image (e.g. an S3 object keyed by the user) with initials as the fallback when no `src`
 	// is given or it 404s. The image URL is resolved by the consuming app — it depends on app env (bucket/region), so this

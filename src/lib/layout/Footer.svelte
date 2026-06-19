@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Separator from '$lib/components/separator/separator.svelte';
-	import { ThemeToggle } from '$lib/components/theme-toggle';
+	import { Separator } from '$lib/components/separator';
+	import { ThemeToggle } from "$lib/components/theme-toggle";
 	import type { Component } from 'svelte';
 
 	type NavLink = { href: string; label: string };

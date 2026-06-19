@@ -1,0 +1,26 @@
+<script lang="ts">
+	import { boxWith } from "$lib/internal/toolbelt.js";
+	import { DialogRootState } from "$lib/components/dialog/dialog.svelte.js";
+	import type { DialogRootProps } from "$lib/components/dialog/types.js";
+
+	let {
+		open = $bindable(false),
+		onOpenChange = () => {},
+		onOpenChangeComplete = () => {},
+		children,
+	}: DialogRootProps = $props();
+
+	DialogRootState.create({
+		variant: boxWith(() => "dialog"),
+		open: boxWith(
+			() => open,
+			(v) => {
+				open = v;
+				onOpenChange(v);
+			}
+		),
+		onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
+	});
+</script>
+
+{@render children?.()}

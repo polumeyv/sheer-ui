@@ -229,6 +229,10 @@
 	}
 }
 
+.cn-item-group {
+	@apply gap-4 has-data-[size=sm]:gap-2.5 has-data-[size=xs]:gap-2;
+}
+
 @custom-variant data-selected {
 	&:where([data-selected]) {
 		@slot;
@@ -271,6 +275,132 @@
 }
 
 @utility container {
-	@apply 3xl:max-w-screen-2xl mx-auto max-w-[1400px] px-4 lg:px-8;
+	@apply mx-auto max-w-350 px-4 3xl:max-w-screen-2xl lg:px-8;
 }
 
+.label-selectable-card {
+	@apply /* ← the */ gap-2 rounded-2xl border leading-snug group-data-[disabled=true]/field:opacity-50 has-data-checked:bg-border/30 *:data-[slot=field]:p-4;
+}
+
+.hide-input-identity {
+	@apply rounded-none border-0 bg-transparent shadow-none ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:bg-transparent;
+}
+
+.wrap-input-identity {
+	@apply relative flex h-9 w-full min-w-0 items-center rounded-md border border-border shadow-xs transition-[color,box-shadow] outline-none in-data-[slot=combobox-content]:focus-within:border-inherit in-data-[slot=combobox-content]:focus-within:ring-0 has-[[data-slot=input-group-control]:focus-visible]:border-ring has-[[data-slot=input-group-control]:focus-visible]:ring-3 has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50 has-[[data-slot][aria-invalid=true]]:border-destructive has-[[data-slot][aria-invalid=true]]:ring-3 has-[[data-slot][aria-invalid=true]]:ring-destructive/20 has-[>[data-align=block-end]]:h-auto has-[>[data-align=block-end]]:flex-col has-[>[data-align=block-start]]:h-auto has-[>[data-align=block-start]]:flex-col has-[>textarea]:h-auto dark:bg-border/30 dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40 has-[>[data-align=block-end]]:[&>input]:pt-3 has-[>[data-align=block-start]]:[&>input]:pb-3 has-[>[data-align=inline-end]]:[&>input]:pr-1.5 has-[>[data-align=inline-start]]:[&>input]:pl-1.5;
+}
+
+.cn-item-description {
+	@apply text-left text-sm leading-normal text-muted-foreground group-data-[size=xs]/item:text-xs;
+}
+
+/* MARK: Badge */
+.cn-badge {
+	@apply h-5 gap-1 rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&>svg]:size-3!;
+}
+
+.cn-badge-variant-default {
+	@apply bg-primary text-primary-foreground [a]:hover:bg-primary/80;
+}
+
+.cn-badge-variant-secondary {
+	@apply bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80;
+}
+
+.cn-badge-variant-outline {
+	@apply border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground;
+}
+
+.cn-badge-variant-destructive {
+	@apply bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20;
+}
+
+.cn-badge-variant-ghost {
+	@apply hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50;
+}
+
+.cn-badge-variant-link {
+	@apply text-primary underline-offset-4 hover:underline;
+}
+
+/* MARK: Item */
+.cn-item {
+	@apply rounded-md border text-sm [a]:hover:bg-muted;
+}
+
+.cn-item-variant-default {
+	@apply border-transparent;
+}
+
+.cn-item-variant-outline {
+	@apply border-border;
+}
+
+.cn-item-variant-muted {
+	@apply border-transparent bg-muted/50;
+}
+
+.cn-item-size-default {
+	@apply gap-3.5 px-4 py-3.5;
+}
+
+.cn-item-size-sm {
+	@apply gap-2.5 px-3 py-2.5;
+}
+
+.cn-item-size-xs {
+	@apply gap-2 px-2.5 py-2 in-data-[slot=dropdown-menu-content]:p-0;
+}
+
+.cn-item-media {
+	@apply gap-2 group-has-data-[slot=item-description]/item:translate-y-0.5 group-has-data-[slot=item-description]/item:self-start;
+}
+
+.cn-item-media-variant-default {
+	@apply bg-transparent;
+}
+
+.cn-item-media-variant-icon {
+	@apply [&_svg:not([class*='size-'])]:size-4;
+}
+
+.cn-item-media-variant-image {
+	@apply size-10 overflow-hidden rounded-sm group-data-[size=sm]/item:size-8 group-data-[size=xs]/item:size-6 [&_img]:size-full [&_img]:object-cover;
+}
+
+.cn-item-content {
+	@apply gap-1 group-data-[size=xs]/item:gap-0;
+}
+
+.cn-item-title {
+	@apply gap-2 text-sm leading-snug font-medium underline-offset-4;
+}
+
+.cn-item-description {
+	@apply text-left text-sm leading-normal text-muted-foreground group-data-[size=xs]/item:text-xs;
+}
+
+.cn-item-actions {
+	@apply gap-2;
+}
+
+.cn-item-header {
+	@apply gap-2;
+}
+
+.cn-item-footer {
+	@apply gap-2;
+}
+
+.cn-item-group {
+	@apply gap-4 has-data-[size=sm]:gap-2.5 has-data-[size=xs]:gap-2;
+}
+
+.cn-item-separator {
+	@apply my-2;
+}
+
+/* MARK: Input */
+.cn-input {
+	@apply rounded-md border border-input bg-transparent text-base shadow-xs transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
+}

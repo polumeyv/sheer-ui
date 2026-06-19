@@ -1,38 +1,30 @@
 <script lang="ts">
-import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-import type { WithoutChildren } from 'bits-ui';
-import { getEmblaContext } from './context';
-import { cn } from '../../utils';
-import { Button, type Props } from '../button';
+	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+	import type { WithoutChildren } from "$lib/shared/index.js";
+	import { getCarouselContext } from './carouselState.svelte';
+	import { cn } from "$lib/utils.js";
+	import { Button, type Props } from '../button';
 
-let {
-	ref = $bindable(null),
-	class: className,
-	variant = 'outline',
-	size = 'icon',
-	...restProps
-}: WithoutChildren<Props> = $props();
+	let { ref = $bindable(null), class: className, variant = 'outline', size = 'icon', ...restProps }: WithoutChildren<Props> = $props();
 
-const emblaCtx = getEmblaContext('<Carousel.Previous/>');
+	const emblaCtx = getCarouselContext();
 </script>
 
 <Button
 	data-slot="carousel-previous"
 	{variant}
 	{size}
+	disabled={!emblaCtx.canScrollPrev}
 	aria-disabled={!emblaCtx.canScrollPrev}
 	class={cn(
-		"absolute size-8! rounded-full!",
-		emblaCtx.orientation === "horizontal"
-			? "-inset-s-12 top-1/2 -translate-y-1/2"
-			: "inset-s-1/2 -top-12 -translate-x-1/2 rotate-90",
-		className
+		'absolute size-8! rounded-full!',
+		emblaCtx.orientation === 'horizontal' ? '-inset-s-12 top-1/2 -translate-y-1/2' : 'inset-s-1/2 -top-12 -translate-x-1/2 rotate-90',
+		className,
 	)}
 	onclick={emblaCtx.scrollPrev}
 	onkeydown={emblaCtx.handleKeyDown}
 	{...restProps}
-	bind:ref
->
+	bind:ref>
 	<ArrowLeftIcon class="size-4" />
 	<span class="sr-only">Previous slide</span>
 </Button>

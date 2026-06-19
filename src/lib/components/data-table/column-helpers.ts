@@ -1,7 +1,7 @@
 import type { ColumnDef, CellContext, HeaderContext } from '@tanstack/table-core';
-import { renderComponent, renderSnippet } from '@polumeyv/ui/data-table';
+import { renderComponent, renderSnippet } from './';
 import { createRawSnippet } from 'svelte';
-import { DataTableCheckbox } from './index.js';
+import { DataTableCheckbox } from './index';
 import DataTableSortButton from './data-table-sort-button.svelte';
 
 type CheckedState = boolean | 'indeterminate';

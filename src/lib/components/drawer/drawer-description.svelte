@@ -1,11 +1,11 @@
 <script lang="ts">
-import { Drawer as DrawerPrimitive } from 'vaul-svelte';
-import { cn } from '../../utils';
+import { Description, type DescriptionProps } from '$lib/components/dialog/index.js';
+import { cn } from "$lib/utils.js";
 
-let { ref = $bindable(null), class: className, ...restProps }: DrawerPrimitive.DescriptionProps = $props();
+let { ref = $bindable(null), class: className, ...restProps }: DescriptionProps = $props();
 </script>
 
-<DrawerPrimitive.Description
+<Description
 	bind:ref
 	data-slot="drawer-description"
 	class={cn("text-muted-foreground text-sm", className)}

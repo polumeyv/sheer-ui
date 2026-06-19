@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Stripe, StripeElements } from '@stripe/stripe-js';
-	import { Button } from '@polumeyv/ui/button';
-	import { toastError } from '@polumeyv/ui/sonner';
-	import { Spinner } from '@polumeyv/ui/spinner';
+	import { Button } from "$lib/components/button";
+	import { toastError } from "$lib/components/sonner";
+	import { Spinner } from "$lib/components/spinner";
 	import { loadStripe } from '@stripe/stripe-js';
 	import { untrack } from 'svelte';
 	import type { PaymentMethod } from '@polumeyv/lib/schemas';

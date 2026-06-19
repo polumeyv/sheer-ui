@@ -1,9 +1,10 @@
 <script lang="ts">
 import * as Sheet from '../sheet';
-import { cn, type WithElementRef } from '../../utils';
+import { cn, type WithElementRef } from "$lib/utils.js";
 import type { HTMLAttributes } from 'svelte/elements';
 import { SIDEBAR_WIDTH_MOBILE } from './constants';
 import { useSidebar } from './context.svelte';
+import { isMobile } from "$lib/hooks/is-mobile.svelte";
 
 let {
 	ref = $bindable(null),
@@ -33,7 +34,7 @@ const sidebar = useSidebar();
 	>
 		{@render children?.()}
 	</div>
-{:else if sidebar.isMobile}
+{:else if isMobile.current}
 	<Sheet.Root
 		bind:open={() => sidebar.openMobile, (v) => sidebar.setOpenMobile(v)}
 		{...restProps}

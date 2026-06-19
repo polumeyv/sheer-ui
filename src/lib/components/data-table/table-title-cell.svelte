@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Badge } from '@polumeyv/ui/badge';
+	import { Badge } from '../badge';
 
 	let {
 		value,

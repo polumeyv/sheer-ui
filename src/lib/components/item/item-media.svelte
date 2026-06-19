@@ -1,10 +1,25 @@
 <script lang="ts" module>
-	import { itemMediaVariants, type ItemMediaVariant } from './variants';
-	export { itemMediaVariants, type ItemMediaVariant };
+	import { declareVariants, type VariantProps } from 'overrule';
+
+	export const itemMediaVariants = declareVariants({
+		base: 'cn-item-media flex shrink-0 items-center justify-center [&_svg]:pointer-events-none',
+		variants: {
+			variant: {
+				default: 'cn-item-media-variant-default',
+				icon: 'cn-item-media-variant-icon',
+				image: 'cn-item-media-variant-image',
+			},
+		},
+		defaultVariants: {
+			variant: 'default',
+		},
+	});
+
+	export type ItemMediaVariant = VariantProps<typeof itemMediaVariants>['variant'];
 </script>
 
 <script lang="ts">
-	import { cn, type WithElementRef } from '../../utils.js';
+	import { cn, type WithElementRef } from '$lib/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Component } from 'svelte';
-	import * as Empty from '../components/empty';
-	import { Button } from '../components/button';
+	import * as Empty from "$lib/components/empty";
+	import { Button } from "$lib/components/button";
 	import AlertCircle from '@lucide/svelte/icons/alert-circle';
 	import Search from '@lucide/svelte/icons/search';
 	import Lock from '@lucide/svelte/icons/lock';

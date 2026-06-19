@@ -1,7 +1,2 @@
-import Root from './separator.svelte';
-
-export {
-	Root,
-	//
-	Root as Separator,
-};
+export * from "./exports.js";
+export { Root as Separator } from "./exports.js";

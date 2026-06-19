@@ -3,11 +3,11 @@
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import type { Column } from '@tanstack/table-core';
 	import { SvelteSet } from 'svelte/reactivity';
-	import * as Popover from '@polumeyv/ui/popover';
-	import * as Command from '@polumeyv/ui/command';
-	import { Badge } from '@polumeyv/ui/badge';
-	import { Button } from '@polumeyv/ui/button';
-	import { Separator } from '@polumeyv/ui/separator';
+	import * as Popover from '../popover';
+	import * as Command from '../command';
+	import { Badge } from '../badge';
+	import { Button } from '../button';
+	import { Separator } from '../separator';
 	import type { Component } from 'svelte';
 
 	let {

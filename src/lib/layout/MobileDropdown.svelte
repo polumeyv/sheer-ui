@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button } from '../components/button';
+	import { Button } from "$lib/components/button";
 	import ArrowUpRight from '@lucide/svelte/icons/arrow-up-right';
-	import { cn } from '../utils.js';
+	import { cn } from "$lib/utils.js";
 
 	interface Props {
 		navLinks: { href: string; label: string }[];
