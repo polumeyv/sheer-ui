@@ -20,15 +20,15 @@
 	onOpenChange={(open) => { if (!open) alertModal.close(); }}
 >
 	<AlertDialog.Portal>
-		<AlertDialog.Overlay />
+		<AlertDialog.Overlay class="transition-opacity starting:opacity-0 data-[state=closed]:opacity-0 fixed inset-0 z-50 bg-black/50" />
 		<AlertDialog.Content>
 			{#if alertModal.options}
 				{const opts = alertModal.options}
 				<div class="flex flex-col gap-2 text-center sm:text-start">
-					<AlertDialog.Title class={titleClasses[opts.variant ?? ''] ?? ''}>
+					<AlertDialog.Title class="text-lg font-semibold {titleClasses[opts.variant ?? ''] ?? ''}">
 						{opts.title}
 					</AlertDialog.Title>
-					<AlertDialog.Description>{opts.description}</AlertDialog.Description>
+					<AlertDialog.Description class="text-muted-foreground text-sm">{opts.description}</AlertDialog.Description>
 				</div>
 
 				{#if opts.confirmText}
