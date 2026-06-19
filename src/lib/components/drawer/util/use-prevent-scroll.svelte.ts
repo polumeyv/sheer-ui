@@ -158,11 +158,7 @@ function preventScrollMobileSafari() {
 		}
 	};
 
-	let onWindowScroll = () => {
-		// Last resort. If the window scrolled, scroll it back to the top.
-		// It should always be at the top because the body will have a negative margin (see below).
-		window.scrollTo(0, 0);
-	};
+	const onWindowScroll = () => window.scrollTo(0, 0);
 
 	// Record the original scroll position so we can restore it.
 	// Then apply a negative margin to the body to offset it by the scroll position. This will

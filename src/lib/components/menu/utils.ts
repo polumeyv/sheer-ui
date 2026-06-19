@@ -3,10 +3,10 @@ import type { Direction } from "$lib/shared/index.js";
 
 export type CheckedState = boolean | "indeterminate";
 
-export const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
+export const SELECTION_KEYS: string[] = [kbd.ENTER, kbd.SPACE];
 export const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
-export const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
-export const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
+export const LAST_KEYS: string[] = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
+export const FIRST_LAST_KEYS: string[] = [...FIRST_KEYS, ...LAST_KEYS];
 export const SUB_OPEN_KEYS: Record<Direction, string[]> = {
 	ltr: [...SELECTION_KEYS, kbd.ARROW_RIGHT],
 	rtl: [...SELECTION_KEYS, kbd.ARROW_LEFT],

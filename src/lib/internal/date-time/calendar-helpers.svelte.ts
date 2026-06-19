@@ -369,7 +369,7 @@ type HandleCalendarKeydownProps = {
 	placeholderValue: DateValue;
 };
 const ARROW_KEYS = [kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT] as const;
-const SELECT_KEYS = [kbd.ENTER, kbd.SPACE];
+const SELECT_KEYS: string[] = [kbd.ENTER, kbd.SPACE];
 
 /**
  * Shared keyboard event handler for the calendar and range calendar.

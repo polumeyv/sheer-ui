@@ -739,7 +739,7 @@ export class SliderRootState {
 	}
 }
 
-const VALID_SLIDER_KEYS = [
+const VALID_SLIDER_KEYS: string[] = [
 	kbd.ARROW_LEFT,
 	kbd.ARROW_RIGHT,
 	kbd.ARROW_UP,

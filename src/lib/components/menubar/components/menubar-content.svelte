@@ -2,7 +2,7 @@
 	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
 	import type { MenubarContentProps } from "../types.js";
 	import { MenubarContentState } from "../menubar.svelte.js";
-	import MenuCon$lib/components/menu/components/menu-content.sveltetent.svelte";
+	import MenuContent from "$lib/components/menu/components/menu-content.svelte";
 	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();

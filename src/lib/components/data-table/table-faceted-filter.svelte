@@ -3,7 +3,7 @@
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import type { Column } from '@tanstack/table-core';
 	import { SvelteSet } from 'svelte/reactivity';
-	import * as Popover from '../popover';
+	import { Popover } from '../popover';
 	import * as Command from '../command';
 	import { Badge } from '../badge';
 	import { Button } from '../button';
