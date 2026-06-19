@@ -45,13 +45,13 @@ export function useScaleBackground() {
 
 			return () => {
 				wrapperStylesCleanup();
-				timeoutId = window.setTimeout(() => {
-					if (initialBackgroundColor) {
-						document.body.style.background = initialBackgroundColor;
-					} else {
-						document.body.style.removeProperty('background');
-					}
-				}, TRANSITIONS.DURATION * 1000);
+				timeoutId = window.setTimeout(
+					() =>
+						initialBackgroundColor
+							? (document.body.style.background = initialBackgroundColor)
+							: document.body.style.removeProperty('background'),
+					TRANSITIONS.DURATION * 1000,
+				);
 			};
 		}
 	});

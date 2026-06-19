@@ -220,56 +220,36 @@ export function useSnapPoints({
 		}
 		snapToPoint(closestSnapPoint);
 	}
-
-	function onDrag({ draggedDistance }: { draggedDistance: number }) {
+	
+	const onDrag = ({ draggedDistance }: { draggedDistance: number }) => {
 		if (activeSnapPointOffset === null) return;
 		const dir = direction.current;
-		const newValue = isBottomOrRight(dir) ? activeSnapPointOffset - draggedDistance : activeSnapPointOffset + draggedDistance;
-
+		const bottomOrRight = isBottomOrRight(dir);
+		const newValue = bottomOrRight ? activeSnapPointOffset - draggedDistance : activeSnapPointOffset + draggedDistance;
 		const lastSnapPoint = snapPointsOffset[snapPointsOffset.length - 1];
-
-		// Don't do anything if we exceed the last(biggest) snap point
-		if (isBottomOrRight(dir) && newValue < lastSnapPoint) return;
-		if (!isBottomOrRight(dir) && newValue > lastSnapPoint) return;
-
+		// Don't do anything if we exceed the last (biggest) snap point
+		if (bottomOrRight && newValue < lastSnapPoint) return;
+		if (!bottomOrRight && newValue > lastSnapPoint) return;
 		set(drawerNode(), {
 			transform: isVertical(dir) ? `translate3d(0, ${newValue}px, 0)` : `translate3d(${newValue}px, 0, 0)`,
 		});
-	}
+	};
 
-	function getPercentageDragged(absDraggedDistance: number, isDraggingDown: boolean) {
-		if (!snapPoints.current || typeof activeSnapPointIndex !== 'number' || !snapPointsOffset || fadeFromIndex.current === undefined) {
+	const getPercentageDragged = (absDraggedDistance: number, isDraggingDown: boolean): number | null => {
+		if (!snapPoints.current || typeof activeSnapPointIndex !== 'number' || !snapPointsOffset || fadeFromIndex.current === undefined)
 			return null;
-		}
-
-		// If this is true we are dragging to a snap point that is supposed to have an overlay
 		const isOverlaySnapPoint = activeSnapPointIndex === fadeFromIndex.current - 1;
 		const isOverlaySnapPointOrHigher = activeSnapPointIndex >= fadeFromIndex.current;
-
-		if (isOverlaySnapPointOrHigher && isDraggingDown) {
-			return 0;
-		}
-
-		// Don't animate, but still use this one if we are dragging away from the overlaySnapPoint
-		if (isOverlaySnapPoint && !isDraggingDown) {
-			return 1;
-		}
-		if (!shouldFade && !isOverlaySnapPoint) {
-			return null;
-		}
-
-		// Either fadeFrom index or the one before
+		if (isOverlaySnapPointOrHigher && isDraggingDown) return 0;
+		if (isOverlaySnapPoint && !isDraggingDown) return 1;
+		if (!shouldFade && !isOverlaySnapPoint) return null;
 		const targetSnapPointIndex = isOverlaySnapPoint ? activeSnapPointIndex + 1 : activeSnapPointIndex - 1;
-
-		// Get the distance from overlaySnapPoint to the one before or vice-versa to calculate the opacity percentage accordingly
 		const snapPointDistance = isOverlaySnapPoint
 			? snapPointsOffset[targetSnapPointIndex] - snapPointsOffset[targetSnapPointIndex - 1]
 			: snapPointsOffset[targetSnapPointIndex + 1] - snapPointsOffset[targetSnapPointIndex];
-
 		const percentageDragged = absDraggedDistance / Math.abs(snapPointDistance);
-
 		return isOverlaySnapPoint ? 1 - percentageDragged : percentageDragged;
-	}
+	};
 
 	return {
 		get isLastSnapPoint() {
