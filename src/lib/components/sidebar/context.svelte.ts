@@ -1,16 +1,14 @@
 import { createContext } from 'svelte';
-import { IsMobile } from '../../hooks/is-mobile.svelte';
+import { isMobile } from "$lib/hooks/is-mobile.svelte";
 import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants';
 
-type Getter<T> = () => T;
-
-export type SidebarStateProps = {
+type SidebarStateProps = {
 	/**
 	 * A getter function that returns the current open state of the sidebar.
 	 * We use a getter function here to support `bind:open` on the `Sidebar.Provider`
 	 * component.
 	 */
-	open: Getter<boolean>;
+	open: () => boolean;
 
 	/**
 	 * A function that sets the open state of the sidebar. To support `bind:open`, we need
@@ -20,24 +18,16 @@ export type SidebarStateProps = {
 	setOpen: (open: boolean) => void;
 };
 
-class SidebarState {
+export class SidebarState {
 	readonly props: SidebarStateProps;
 	open = $derived.by(() => this.props.open());
 	openMobile = $state(false);
 	setOpen: SidebarStateProps['setOpen'];
-	#isMobile: IsMobile;
 	state = $derived.by(() => (this.open ? 'expanded' : 'collapsed'));
 
 	constructor(props: SidebarStateProps) {
 		this.setOpen = props.setOpen;
-		this.#isMobile = new IsMobile();
 		this.props = props;
-	}
-
-	// Convenience getter for checking if the sidebar is mobile
-	// without this, we would need to use `sidebar.isMobile.current` everywhere
-	get isMobile() {
-		return this.#isMobile.current;
 	}
 
 	// Event handler to apply to the `<svelte:window>`
@@ -53,24 +43,8 @@ class SidebarState {
 	};
 
 	toggle = () => {
-		return this.#isMobile.current ? (this.openMobile = !this.openMobile) : this.setOpen(!this.open);
+		return isMobile.current ? (this.openMobile = !this.openMobile) : this.setOpen(!this.open);
 	};
 }
 
-/**
- * `useSidebar` retrieves the `SidebarState` instance from the context (it's a class
- * instance, so you cannot destructure it); `setSidebarContext` stores one.
- */
-const [useSidebar, setSidebarContext] = createContext<SidebarState>();
-
-export { useSidebar };
-
-/**
- * Instantiates a new `SidebarState` instance and sets it in the context.
- *
- * @param props The constructor props for the `SidebarState` class.
- * @returns  The `SidebarState` instance.
- */
-export function setSidebar(props: SidebarStateProps): SidebarState {
-	return setSidebarContext(new SidebarState(props));
-}
+export const [useSidebar, setSidebar] = createContext<SidebarState>();

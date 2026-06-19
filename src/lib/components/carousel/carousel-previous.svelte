@@ -1,13 +1,13 @@
 <script lang="ts">
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-	import type { WithoutChildren } from '$lib/shared/index';
-	import { getEmblaContext } from './carouselState.svelte';
-	import { cn } from '../../vendor/utils';
+	import type { WithoutChildren } from "$lib/shared/index.js";
+	import { getCarouselContext } from './carouselState.svelte';
+	import { cn } from "$lib/utils.js";
 	import { Button, type Props } from '../button';
 
 	let { ref = $bindable(null), class: className, variant = 'outline', size = 'icon', ...restProps }: WithoutChildren<Props> = $props();
 
-	const emblaCtx = getEmblaContext();
+	const emblaCtx = getCarouselContext();
 </script>
 
 <Button

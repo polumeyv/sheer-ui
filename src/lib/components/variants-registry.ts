@@ -9,10 +9,8 @@ import { itemVariants, itemMediaVariants } from './item/variants';
 import { emptyMediaVariants } from './empty/variants';
 import { sidebarMenuButtonVariants } from './sidebar/variants';
 import { toggleVariants } from './toggle/variants';
-import { buttonGroupVariants } from './button-group/variants';
 import { alertVariants } from './alert/variants';
 import { navigationMenuTriggerStyle } from './navigation-menu/variants';
-import { inputGroupAddonVariants, inputGroupButtonVariants } from './input-group/variants';
 import { sheetVariants } from './sheet/variants';
 
 export type RegistryEntry = {
@@ -42,15 +40,8 @@ export const registry: RegistryEntry[] = [
 		axes: { variant: ['default', 'outline'], size: ['default', 'sm', 'lg'] },
 	},
 	{ name: 'toggle', fn: toggleVariants, axes: { variant: ['default', 'outline'], size: ['default', 'sm', 'lg'] } },
-	{ name: 'button-group', fn: buttonGroupVariants, axes: { orientation: ['horizontal', 'vertical'] } },
 	{ name: 'alert', fn: alertVariants, axes: { variant: ['default', 'destructive'] } },
 	{ name: 'navigation-menu-trigger', fn: navigationMenuTriggerStyle, axes: {} },
-	{
-		name: 'input-group-addon',
-		fn: inputGroupAddonVariants,
-		axes: { align: ['inline-start', 'inline-end', 'block-start', 'block-end'] },
-	},
-	{ name: 'input-group-button', fn: inputGroupButtonVariants, axes: { size: ['xs', 'sm', 'icon-xs', 'icon-sm'] } },
 	{ name: 'sheet', fn: sheetVariants, axes: { side: ['top', 'bottom', 'left', 'right'] } },
 ];
 
@@ -59,29 +50,4 @@ export const registry: RegistryEntry[] = [
  * from source, so these cannot drift). Layerings that involve copied class
  * strings are guarded at runtime by the cn() dev tripwire instead.
  */
-export const compositions: [string, () => string][] = [
-	['igb/xs', () => `${buttonVariants({ variant: 'ghost', size: null })} ${inputGroupButtonVariants({ size: 'xs' })}`],
-	['igb/sm', () => `${buttonVariants({ variant: 'ghost', size: null })} ${inputGroupButtonVariants({ size: 'sm' })}`],
-	['igb/icon-xs', () => `${buttonVariants({ variant: 'ghost', size: null })} ${inputGroupButtonVariants({ size: 'icon-xs' })}`],
-	['igb/icon-sm', () => `${buttonVariants({ variant: 'ghost', size: null })} ${inputGroupButtonVariants({ size: 'icon-sm' })}`],
-];
-
-export function combos(axes: Record<string, readonly string[]>): Record<string, string>[] {
-	const keys = Object.keys(axes);
-	if (keys.length === 0) return [{}];
-	return keys.reduce<Record<string, string>[]>(
-		(acc, key) => acc.flatMap((partial) => axes[key].map((value) => ({ ...partial, [key]: value }))),
-		[{}],
-	);
-}
-
-export function classSet(classString: string): string[] {
-	return [...new Set(classString.trim().split(/\s+/))].sort();
-}
-
-export function comboKey(name: string, combo: Record<string, string>): string {
-	const parts = Object.keys(combo)
-		.sort()
-		.map((k) => `${k}=${combo[k]}`);
-	return `${name}|${parts.join(',')}`;
-}
+export const compositions: [string, () => string][] = [];

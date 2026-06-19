@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/merge-props';
-	import { type LabelRootProps, LabelRootState } from './label.svelte.js';
-	import { createId } from '$lib/vendor/create-id';
-	import { cn } from '../../vendor/utils';
+	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
+	import type { LabelRootProps } from "./types.js";
+	import { LabelRootState } from "./label.svelte.js";
+	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();
 
@@ -12,22 +12,22 @@
 		id = createId(uid),
 		ref = $bindable(null),
 		for: forProp,
-		class: className,
 		...restProps
 	}: LabelRootProps = $props();
 
 	const rootState = LabelRootState.create({
-		id: { get current() { return id; } },
-		ref: { get current() { return ref; }, set current(v) { (ref = v); } },
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
 	});
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				'data-slot': 'label',
-				class: cn(
+				"data-slot": "label",
+				class:
 					"flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
-					className
-				),
 			},
 			restProps,
 			rootState.props,

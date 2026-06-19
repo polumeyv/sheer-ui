@@ -1,21 +1,20 @@
 <script>
-	import { onMount, onDestroy } from 'svelte';
 	import SunIcon from '@lucide/svelte/icons/sun';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 
-	import { toggleMode } from 'mode-watcher';
+	import { mode, toggleMode } from 'mode-watcher';
 	import { Button } from '../button';
 
 	let { variant = 'ghost' } = $props();
 
-	let dark = $state(document.documentElement.classList.contains('dark'));
-	let phase = $derived('idle');
+	// `mode.current` is SSR-safe (undefined on the server) and stays in sync with mode-watcher, so `toggleMode()`
+	// alone flips `dark` — no manual bookkeeping, and no `document` read at init that would crash during SSR.
+	let phase = $state('idle');
+	const dark = $derived(mode.current === 'dark');
 
 	function toggleTheme() {
 		phase = dark ? 'to-light' : 'to-dark';
-
 		toggleMode();
-		dark = !dark;
 	}
 </script>
 

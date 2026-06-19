@@ -1,8 +1,8 @@
 <script lang="ts" generics="TData">
 	import type { Row } from '@tanstack/table-core';
 	import type { Snippet } from 'svelte';
-	import * as DropdownMenu from '$lib/components/dropdown-menu';
-	import { Button } from '$lib/components/button';
+	import * as DropdownMenu from '../dropdown-menu';
+	import { Button } from '../button';
 	import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
 
 	let {

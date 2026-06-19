@@ -1,13 +1,13 @@
-import type { CalendarDateTime, DateValue, Time, ZonedDateTime } from "@internationalized/date";
+import type { CalendarDateTime, DateValue, Time, ZonedDateTime } from '@internationalized/date';
 import type {
 	DATE_SEGMENT_PARTS,
 	EDITABLE_SEGMENT_PARTS,
 	NON_EDITABLE_SEGMENT_PARTS,
 	EDITABLE_TIME_SEGMENT_PARTS,
-} from "$lib/vendor/date-time/field/parts";
+} from '$lib/internal/date-time/field/parts.js';
 
-export type Granularity = "day" | "hour" | "minute" | "second";
-export type TimeGranularity = "hour" | "minute" | "second";
+export type Granularity = 'day' | 'hour' | 'minute' | 'second';
+export type TimeGranularity = 'hour' | 'minute' | 'second';
 export type HourCycle = 12 | 24;
 export type WeekStartsOn = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -27,27 +27,21 @@ export type DateValidator = (date: DateValue) => string[] | string | void;
  * A function that returns a string or array of strings as validation errors if the date range
  * is invalid, or nothing if the date range is valid
  */
-export type DateRangeValidator = (range: {
-	start: DateValue;
-	end: DateValue;
-}) => string[] | string | void;
+export type DateRangeValidator = (range: { start: DateValue; end: DateValue }) => string[] | string | void;
 
-export type TimeRangeValidator<T extends TimeValue = Time> = (range: {
-	start: T;
-	end: T;
-}) => string[] | string | void;
+export type TimeRangeValidator<T extends TimeValue = Time> = (range: { start: T; end: T }) => string[] | string | void;
 
 /**
  * A callback fired when the date field's value is invalid. Use this to display an error
  * message to the user.
  */
-export type DateOnInvalid = (reason: "min" | "max" | "custom", msg?: string | string[]) => void;
+export type DateOnInvalid = (reason: 'min' | 'max' | 'custom', msg?: string | string[]) => void;
 
 /**
  * A callback fired when the time field's value is invalid. Use this to display an error
  * message to the user.
  */
-export type TimeOnInvalid = (reason: "min" | "max" | "custom", msg?: string | string[]) => void;
+export type TimeOnInvalid = (reason: 'min' | 'max' | 'custom', msg?: string | string[]) => void;
 
 export type DateRange = {
 	start: DateValue | undefined;
@@ -93,17 +87,17 @@ export type EditableSegmentPart = (typeof EDITABLE_SEGMENT_PARTS)[number];
 export type NonEditableSegmentPart = (typeof NON_EDITABLE_SEGMENT_PARTS)[number];
 export type SegmentPart = EditableSegmentPart | NonEditableSegmentPart;
 
-export type TimeSegmentPart = EditableTimeSegmentPart | "literal" | "timeZoneName";
-export type AnyTimeExceptLiteral = Exclude<TimeSegmentPart, "literal">;
+export type TimeSegmentPart = EditableTimeSegmentPart | 'literal' | 'timeZoneName';
+export type AnyTimeExceptLiteral = Exclude<TimeSegmentPart, 'literal'>;
 
-export type AnyExceptLiteral = Exclude<SegmentPart, "literal">;
+export type AnyExceptLiteral = Exclude<SegmentPart, 'literal'>;
 
-export type DayPeriod = "AM" | "PM" | null;
+export type DayPeriod = 'AM' | 'PM' | null;
 export type DateSegmentObj = {
 	[K in DateSegmentPart]: string | null;
 };
 export type TimeSegmentObj = {
-	[K in EditableTimeSegmentPart]: K extends "dayPeriod" ? DayPeriod : string | null;
+	[K in EditableTimeSegmentPart]: K extends 'dayPeriod' ? DayPeriod : string | null;
 };
 export type DateAndTimeSegmentObj = DateSegmentObj & TimeSegmentObj;
 export type SegmentValueObj = DateSegmentObj | DateAndTimeSegmentObj;

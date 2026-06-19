@@ -14,7 +14,7 @@
 		<div class="mx-auto max-w-xs flex-1 rounded-md bg-muted/50 px-3 py-0.5 text-center">
 			<span class="truncate text-xs text-muted-foreground/60">{title || ''}</span>
 		</div>
-		<div class="w-[36px]"></div>
+		<div class="w-9"></div>
 	</div>
 	<div>
 		{@render children()}

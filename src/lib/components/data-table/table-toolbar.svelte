@@ -2,8 +2,8 @@
 	import type { Component } from 'svelte';
 	import XIcon from '@lucide/svelte/icons/x';
 	import type { Table } from '@tanstack/table-core';
-	import { Button } from '$lib/components/button';
-	import { Input } from '$lib/components/input';
+	import { Button } from '../button';
+	import { Input } from '../input';
 	import { DataTableFacetedFilter } from './index';
 
 	let {

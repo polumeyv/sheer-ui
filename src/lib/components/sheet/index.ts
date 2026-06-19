@@ -1,13 +1,13 @@
-import Root from './sheet.svelte';
-import Close from './sheet-close.svelte';
-import Content from './sheet-content.svelte';
-import Description from './sheet-description.svelte';
-import Footer from './sheet-footer.svelte';
-import Header from './sheet-header.svelte';
-import Overlay from './sheet-overlay.svelte';
-import Portal from './sheet-portal.svelte';
-import Title from './sheet-title.svelte';
-import Trigger from './sheet-trigger.svelte';
+import Root from '$lib/components/sheet/components/sheet.svelte';
+import Close from '$lib/components/sheet/components/sheet-close.svelte';
+import Content from '$lib/components/sheet/components/sheet-content.svelte';
+import Description from '$lib/components/sheet/components/sheet-description.svelte';
+import Overlay from '$lib/components/sheet/components/sheet-overlay.svelte';
+import Title from '$lib/components/sheet/components/sheet-title.svelte';
+import Trigger from '$lib/components/sheet/components/sheet-trigger.svelte';
+import Portal from '$lib/components/utilities/portal/portal.svelte';
+import Footer from './components/sheet-footer.svelte';
+import Header from './components/sheet-header.svelte';
 
 export {
 	Root,
@@ -32,3 +32,16 @@ export {
 	Title as SheetTitle,
 	Description as SheetDescription,
 };
+
+export { sheetVariants, type Side } from './variants.js';
+
+export type {
+	DialogRootProps as SheetProps,
+	DialogCloseProps as SheetCloseProps,
+	DialogTitleProps as SheetTitleProps,
+	DialogPortalProps as SheetPortalProps,
+	DialogTriggerProps as SheetTriggerProps,
+	DialogOverlayProps as SheetOverlayProps,
+	DialogContentProps as SheetContentProps,
+	DialogDescriptionProps as SheetDescriptionProps,
+} from '$lib/components/dialog/types.js';

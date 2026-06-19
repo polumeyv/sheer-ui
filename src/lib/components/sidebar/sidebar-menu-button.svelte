@@ -5,11 +5,12 @@
 
 <script lang="ts">
 	import * as Tooltip from '../tooltip/index';
-	import { cn, type WithElementRef, type WithoutChildrenOrChild } from '../../vendor/utils';
-	import { mergeProps } from '$lib/merge-props';
+	import { cn, type WithElementRef, type WithoutChildrenOrChild } from "$lib/utils.js";
+	import { mergeProps } from "$lib/merge-props.js";
 	import type { ComponentProps, Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { useSidebar } from './context.svelte';
+	import { isMobile } from "$lib/hooks/is-mobile.svelte";
 
 	let {
 		ref = $bindable(null),
@@ -63,7 +64,7 @@
 				{@render Button({ props })}
 			{/snippet}
 		</Tooltip.Trigger>
-		<Tooltip.Content side="right" align="center" hidden={sidebar.state !== 'collapsed' || sidebar.isMobile} {...tooltipContentProps}>
+		<Tooltip.Content side="right" align="center" hidden={sidebar.state !== 'collapsed' || isMobile.current} {...tooltipContentProps}>
 			{#if typeof tooltipContent === 'string'}
 				{tooltipContent}
 			{:else if tooltipContent}

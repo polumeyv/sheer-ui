@@ -1,0 +1,22 @@
+<script lang="ts">
+	import { boxWith } from "$lib/internal/toolbelt.js";
+	import type { EscapeLayerImplProps } from "./types.js";
+	import { EscapeLayerState } from "./use-escape-layer.svelte.js";
+
+	let {
+		escapeKeydownBehavior = "close",
+		onEscapeKeydown = () => {},
+		children,
+		enabled,
+		ref,
+	}: EscapeLayerImplProps = $props();
+
+	EscapeLayerState.create({
+		escapeKeydownBehavior: boxWith(() => escapeKeydownBehavior),
+		onEscapeKeydown: boxWith(() => onEscapeKeydown),
+		enabled: boxWith(() => enabled),
+		ref,
+	});
+</script>
+
+{@render children?.()}

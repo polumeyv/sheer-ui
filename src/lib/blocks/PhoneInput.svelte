@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as InputGroup from '../components/input-group';
-	import * as Select from '../components/select';
+	import * as NativeSelect from '$lib/components/native-select';
+	import { Input } from '$lib/components/input';
 
 	const COUNTRIES = { US: 1, CA: 1, MX: 52 } as const;
 	type CountryCode = keyof typeof COUNTRIES;
@@ -29,8 +29,9 @@
 </script>
 
 <div class="flex w-full gap-2">
-	<Select.Root
+	<NativeSelect.Root
 		value={country}
+		widthClass="w-26 bg-border/30"
 		onchange={(e) => {
 			country = e.currentTarget.value as CountryCode;
 			value = toE164();
@@ -38,16 +39,19 @@
 		}}
 		{disabled}>
 		{#each Object.keys(COUNTRIES) as code (code)}
-			<Select.Option value={code}>{code}</Select.Option>
+			<NativeSelect.Option value={code}>{code}</NativeSelect.Option>
 		{/each}
-	</Select.Root>
-	<InputGroup.Root>
-		<InputGroup.Text class="ml-2 select-none">+{COUNTRIES[country]}</InputGroup.Text>
-		<InputGroup.Input
+	</NativeSelect.Root>
+	<div data-slot="input-group" class="wrap-input-identity group/input-group">
+		<div class="select-none text-muted-foreground h-auto pl-2 text-sm font-medium group-data-[disabled=true]/input-group:opacity-50">
+			+{COUNTRIES[country]}
+		</div>
+		<Input
 			type="tel"
 			{placeholder}
 			autocomplete="tel-national"
 			inputmode="numeric"
+			variant="invisible"
 			class="w-full"
 			aria-invalid={!!error || undefined}
 			value={clean(raw)}
@@ -58,7 +62,7 @@
 				value = toE164();
 				onchange?.(value);
 			}} />
-	</InputGroup.Root>
+	</div>
 	{#if name}
 		<input type="hidden" {name} value={toE164()} />
 	{/if}

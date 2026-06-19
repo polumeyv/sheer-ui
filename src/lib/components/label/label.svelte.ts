@@ -1,21 +1,13 @@
-import { attachRef } from '$lib/vendor/index';
-import type { BitsMouseEvent, RefAttachment, Without, WithRefProps, WithChild } from '$lib/vendor/types';
-import { createBitsAttrs } from '$lib/vendor/attrs';
-
-import type { BitsPrimitiveLabelAttributes } from "$lib/shared/attributes";
-
-export type LabelRootPropsWithoutHTML = WithChild;
-
-export type LabelRootProps = LabelRootPropsWithoutHTML &
-	Without<BitsPrimitiveLabelAttributes, LabelRootPropsWithoutHTML>;
-
+import { attachRef } from "$lib/internal/toolbelt.js";
+import type { BitsMouseEvent, RefAttachment, WithRefOpts } from "$lib/internal/types.js";
+import { createBitsAttrs } from "$lib/internal/attrs.js";
 
 const labelAttrs = createBitsAttrs({
-	component: 'label',
-	parts: ['root'],
+	component: "label",
+	parts: ["root"],
 });
 
-interface LabelRootStateOpts extends WithRefProps {}
+interface LabelRootStateOpts extends WithRefOpts {}
 
 export class LabelRootState {
 	static create(opts: LabelRootStateOpts) {
@@ -39,9 +31,9 @@ export class LabelRootState {
 		() =>
 			({
 				id: this.opts.id.current,
-				[labelAttrs.root]: '',
+				[labelAttrs.root]: "",
 				onmousedown: this.onmousedown,
 				...this.attachment,
-			}) as const,
+			}) as const
 	);
 }

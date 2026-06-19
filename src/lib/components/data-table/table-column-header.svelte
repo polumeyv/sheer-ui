@@ -1,6 +1,6 @@
 <script lang="ts" generics="TData">
-	import * as DropdownMenu from '$lib/components/dropdown-menu';
-	import { Button } from '$lib/components/button';
+	import * as DropdownMenu from '../dropdown-menu';
+	import { Button } from '../button';
 	import type { Column } from '@tanstack/table-core';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';

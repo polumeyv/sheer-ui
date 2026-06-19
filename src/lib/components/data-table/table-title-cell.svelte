@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/badge';
+	import { Badge } from '../badge';
 
 	let {
 		value,

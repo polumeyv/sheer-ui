@@ -1,5 +1,5 @@
 import type { ColumnDef, CellContext, HeaderContext } from '@tanstack/table-core';
-import { renderComponent, renderSnippet } from '$lib/components/data-table';
+import { renderComponent, renderSnippet } from './';
 import { createRawSnippet } from 'svelte';
 import { DataTableCheckbox } from './index';
 import DataTableSortButton from './data-table-sort-button.svelte';

@@ -1,30 +1,39 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/merge-props';
-	import { ToolbarLinkState } from '$lib/components/toolbar/toolbar.svelte';
-	import type { ToolbarLinkProps } from '$lib/components/toolbar/index';
-	import { createId } from '$lib/vendor/create-id';
+	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
+	import { ToolbarLinkState } from "../toolbar.svelte.js";
+	import type { ToolbarLinkProps } from "../types.js";
+	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();
 
-	let { children, href, child, ref = $bindable(null), id = createId(uid), ...restProps }: ToolbarLinkProps = $props();
+	let {
+		children,
+		href,
+		child,
+		ref = $bindable(null),
+		id = createId(uid),
+		...restProps
+	}: ToolbarLinkProps = $props();
 
 	const linkState = ToolbarLinkState.create({
-		id: {
-			get current() {
-				return id;
-			},
-		},
-		ref: {
-			get current() {
-				return ref;
-			},
-			set current(v) {
-				ref = v;
-			},
-		},
+		id: boxWith(() => id),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
 	});
 
-	const mergedProps = $derived(mergeProps(restProps, linkState.props));
+	const mergedProps = $derived(
+		mergeProps(
+			{
+				"data-slot": "toolbar-link",
+				class:
+					"focus-visible:border-ring focus-visible:ring-ring/50 inline-flex items-center justify-center rounded-md text-sm font-medium underline-offset-4 transition-colors outline-none hover:underline focus-visible:ring-[3px]",
+			},
+			restProps,
+			linkState.props
+		)
+	);
 </script>
 
 {#if child}

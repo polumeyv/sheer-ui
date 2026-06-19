@@ -7,9 +7,6 @@ export default defineConfig({
 	plugins: [
 		tailwindcss(),
 		sveltekit({
-			alias: {
-				$utils: 'src/lib/utils'
-			},
 			// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
 			// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
 			// See https://svelte.dev/docs/kit/adapters for more information about adapters.
@@ -29,8 +26,7 @@ export default defineConfig({
 			compilerOptions: {
 				// The vendored bits-ui code intentionally reads $state at init in places; upstream
 				// ships with these warnings too. Everything outside lib/bits keeps the full surface.
-				warningFilter: (warning) =>
-					!(warning.code === 'state_referenced_locally' && !!warning.filename?.includes('/lib/bits/')),
+				warningFilter: (warning) => !(warning.code === 'state_referenced_locally' && !!warning.filename?.includes('/lib/bits/')),
 			},
 		}),
 	],

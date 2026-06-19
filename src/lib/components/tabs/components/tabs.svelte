@@ -1,0 +1,57 @@
+<script lang="ts">
+	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
+	import type { TabsRootProps } from "../types.js";
+	import { TabsRootState } from "../tabs.svelte.js";
+	import { createId } from "$lib/internal/create-id.js";
+
+	const uid = $props.id();
+
+	let {
+		id = createId(uid),
+		ref = $bindable(null),
+		value = $bindable(""),
+		onValueChange = () => {},
+		orientation = "horizontal",
+		loop = true,
+		activationMode = "automatic",
+		disabled = false,
+		children,
+		child,
+		...restProps
+	}: TabsRootProps = $props();
+
+	const rootState = TabsRootState.create({
+		id: boxWith(() => id),
+		value: boxWith(
+			() => value,
+			(v) => {
+				value = v;
+				onValueChange(v);
+			}
+		),
+		orientation: boxWith(() => orientation),
+		loop: boxWith(() => loop),
+		activationMode: boxWith(() => activationMode),
+		disabled: boxWith(() => disabled),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v)
+		),
+	});
+
+	const mergedProps = $derived(
+		mergeProps(
+			{ "data-slot": "tabs", class: "flex flex-col gap-2" },
+			restProps,
+			rootState.props
+		)
+	);
+</script>
+
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<div {...mergedProps}>
+		{@render children?.()}
+	</div>
+{/if}

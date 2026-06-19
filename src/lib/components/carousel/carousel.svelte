@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { type CarouselAPI, type CarouselContext, type CarouselProps, setEmblaContext } from './carouselState.svelte';
-	import { cn, type WithElementRef } from '../../vendor/utils';
+	import { type CarouselAPI, type CarouselContext, type CarouselProps, setCarouselContext } from './carouselState.svelte';
+	import { cn, type WithElementRef } from "$lib/utils.js";
 
 	let {
 		ref = $bindable(null),
@@ -150,7 +150,7 @@
 		handleKeyDown,
 	};
 
-	setEmblaContext(emblaCtx);
+	setCarouselContext(emblaCtx);
 
 	$effect(() => {
 		return () => registerApi(undefined);
