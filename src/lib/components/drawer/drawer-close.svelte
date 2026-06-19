@@ -1,7 +1,7 @@
 <script lang="ts">
-import { Drawer as DrawerPrimitive } from './util/index.js';
+import { Close, type CloseProps } from '$lib/components/dialog/index.js';
 
-let { ref = $bindable(null), ...restProps }: DrawerPrimitive.CloseProps = $props();
+let { ref = $bindable(null), ...restProps }: CloseProps = $props();
 </script>
 
-<DrawerPrimitive.Close bind:ref data-slot="drawer-close" {...restProps} />
+<Close bind:ref data-slot="drawer-close" {...restProps} />

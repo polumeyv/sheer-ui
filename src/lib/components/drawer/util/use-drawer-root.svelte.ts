@@ -17,7 +17,8 @@ import {
 	VELOCITY_THRESHOLD,
 	WINDOW_TOP_OFFSET,
 } from "./internal/constants.js";
-import { isIOS, isMobileFirefox } from "./internal/browser.js";
+import { isMobileFirefox } from "./internal/browser.js";
+import { isIOS } from "$lib/internal/is.js";
 import { on } from "svelte/events";
 import { dampenValue, getTranslate, isVertical, reset, set } from "./helpers.js";
 import { watch } from "runed";
@@ -121,7 +122,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		dragStartTime = new Date();
 
 		// iOS doesn't trigger mouseUp after scrolling so we need to listen to touched in order to disallow dragging
-		if (isIOS()) {
+		if (isIOS) {
 			on(window, "touchend", () => (isAllowedToDrag = false), { once: true });
 		}
 		// Ensure we maintain correct pointer capture even when going outside of the drawer

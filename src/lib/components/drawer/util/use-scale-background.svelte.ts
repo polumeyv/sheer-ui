@@ -1,6 +1,7 @@
 import { watch } from "runed";
 import { BORDER_RADIUS, TRANSITIONS, WINDOW_TOP_OFFSET } from "./internal/constants.js";
-import { assignStyle, chain, isVertical } from "./helpers.js";
+import { assignStyle, isVertical } from "./helpers.js";
+import { executeCallbacks } from "$lib/internal/toolbelt.js";
 import { noop } from "./internal/noop.js";
 import { DrawerContext } from "./context.js";
 
@@ -29,7 +30,7 @@ export function useScaleBackground() {
 
 				if (!wrapper) return;
 
-				chain(
+				executeCallbacks(
 					ctx.setBackgroundColorOnScale.current && !ctx.noBodyStyles.current
 						? assignStyle(document.body, { background: "black" })
 						: noop,

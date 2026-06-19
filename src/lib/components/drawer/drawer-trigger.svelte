@@ -1,7 +1,7 @@
 <script lang="ts">
-import { Drawer as DrawerPrimitive } from './util/index.js';
+import { Trigger, type TriggerProps } from '$lib/components/dialog/index.js';
 
-let { ref = $bindable(null), ...restProps }: DrawerPrimitive.TriggerProps = $props();
+let { ref = $bindable(null), ...restProps }: TriggerProps = $props();
 </script>
 
-<DrawerPrimitive.Trigger bind:ref data-slot="drawer-trigger" {...restProps} />
+<Trigger bind:ref data-slot="drawer-trigger" {...restProps} />

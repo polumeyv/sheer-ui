@@ -1,12 +1,39 @@
 <script lang="ts">
-import { Drawer as DrawerPrimitive } from './util/index.js';
+import DrawerRoot from './drawer.svelte';
+import type { RootProps } from './util/components/drawer/index.js';
+import { DrawerContext } from './util/context.js';
+import { noop } from './util/internal/noop.js';
 
 let {
 	shouldScaleBackground = true,
 	open = $bindable(false),
 	activeSnapPoint = $bindable(null),
+	onOpenChange = noop,
+	onDrag = noop,
 	...restProps
-}: DrawerPrimitive.RootProps = $props();
+}: Omit<RootProps, 'nested' | 'onRelease' | 'onClose'> = $props();
+
+const rootState = DrawerContext.get();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const rest = $derived(restProps) as any;
 </script>
 
-<DrawerPrimitive.NestedRoot {shouldScaleBackground} bind:open bind:activeSnapPoint {...restProps} />
+<DrawerRoot
+	{shouldScaleBackground}
+	bind:activeSnapPoint
+	bind:open
+	nested
+	onClose={() => rootState.onNestedOpenChange(false)}
+	onDrag={(e, p) => {
+		rootState.onNestedDrag(e, p);
+		onDrag(e, p);
+	}}
+	onOpenChange={(o) => {
+		if (o) {
+			rootState.onNestedOpenChange(o);
+		}
+		onOpenChange(o);
+	}}
+	onRelease={rootState.onNestedRelease}
+	{...rest}
+/>

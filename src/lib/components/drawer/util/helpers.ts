@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { AnyFunction, DrawerDirection } from "./types.js";
+import type { DrawerDirection } from "./types.js";
 
 interface Style {
 	[key: string]: string;
@@ -105,18 +105,5 @@ export function assignStyle(
 
 	return () => {
 		element.style.cssText = prevStyle;
-	};
-}
-
-/**
- * Receives functions as arguments and returns a new function that calls all.
- */
-export function chain<T>(...fns: T[]) {
-	return (...args: T extends AnyFunction ? Parameters<T> : never) => {
-		for (const fn of fns) {
-			if (typeof fn === "function") {
-				fn(...args);
-			}
-		}
 	};
 }

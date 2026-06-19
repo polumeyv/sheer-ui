@@ -1,16 +1,46 @@
 <script lang="ts">
-import { Drawer as DrawerPrimitive } from './util/index.js';
-import { cn } from "$lib/utils.js";
+import * as DialogPrimitive from '$lib/components/dialog/index.js';
+import { type WithChildren, box, mergeProps } from 'svelte-toolbelt';
+import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+import { useId } from '$lib/internal/use-id.js';
+import { useDrawerOverlay } from './util/use-drawer-overlay.svelte.js';
+import type { OverlayProps } from './util/components/drawer/index.js';
+import Mounted from './util/components/utils/mounted.svelte';
 
-let { ref = $bindable(null), class: className, ...restProps }: DrawerPrimitive.OverlayProps = $props();
+let {
+	id = useId(),
+	ref = $bindable(null),
+	class: className,
+	children,
+	...restProps
+}: WithChildren<WithoutChildrenOrChild<OverlayProps>> = $props();
+
+const overlayState = useDrawerOverlay({
+	id: box.with(() => id),
+	ref: box.with(
+		() => ref,
+		(v) => (ref = v),
+	),
+});
+
+const mergedProps = $derived(
+	mergeProps(
+		{
+			'data-slot': 'drawer-overlay',
+			class: cn(
+				'transition-opacity starting:opacity-0 data-[state=closed]:opacity-0 fixed inset-0 z-50 bg-black/50',
+				className,
+			),
+		},
+		restProps,
+		overlayState.props,
+	),
+);
 </script>
 
-<DrawerPrimitive.Overlay
-	bind:ref
-	data-slot="drawer-overlay"
-	class={cn(
-		"transition-opacity starting:opacity-0 data-[state=closed]:opacity-0 fixed inset-0 z-50 bg-black/50",
-		className
-	)}
-	{...restProps}
-/>
+{#if overlayState.shouldRender}
+	<DialogPrimitive.Overlay {...mergedProps}>
+		<Mounted onMounted={overlayState.setMounted} />
+		{@render children?.()}
+	</DialogPrimitive.Overlay>
+{/if}

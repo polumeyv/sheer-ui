@@ -2,7 +2,7 @@
 // This code comes from https://github.com/adobe/react-spectrum/blob/main/packages/%40react-aria/overlays/src/usePreventScroll.ts
 
 import { watch } from "runed";
-import { isBrowser, isIOS } from "./internal/browser.js";
+import { isBrowser, isIOS } from "$lib/internal/is.js";
 import { on } from "svelte/events";
 
 const KEYBOARD_BUFFER = 24;
@@ -72,7 +72,7 @@ export function usePreventScroll(opts: PreventScrollOptions) {
 
 		preventScrollCount++;
 		if (preventScrollCount === 1) {
-			if (isIOS()) {
+			if (isIOS) {
 				restore = preventScrollMobileSafari();
 			}
 		}
