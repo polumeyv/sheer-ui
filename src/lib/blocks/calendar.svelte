@@ -71,11 +71,11 @@
 	{...restProps}>
 	{#snippet children({ months, weekdays })}
 		<Calendar.Header class="flex items-center justify-between">
-			<Calendar.PrevButton class="rounded bg-background-alt hover:bg-muted inline-flex items-center justify-center">
+			<Calendar.PrevButton class="rounded bg-background-alt p-2 hover:bg-muted inline-flex items-center justify-center">
 				<ChevronLeftIcon class="size-5" />
 			</Calendar.PrevButton>
 			<Calendar.Heading class="text-md font-medium" />
-			<Calendar.NextButton class="rounded bg-background-alt hover:bg-muted inline-flex items-center justify-center">
+			<Calendar.NextButton class="rounded bg-background-alt p-2 hover:bg-muted inline-flex items-center justify-center">
 				<ChevronRightIcon class="size-5" />
 			</Calendar.NextButton>
 		</Calendar.Header>
@@ -93,11 +93,11 @@
 					</Calendar.GridHead>
 					<Calendar.GridBody>
 						{#each month.weeks as weekDates, i (i)}
-							<Calendar.GridRow class="flex w-full">
+							<Calendar.GridRow class="mb-1 flex w-full justify-between">
 								{#each weekDates as date, i (i)}
 									<Calendar.Cell {date} month={month.value} class="p-0! relative size-10 text-center text-sm">
 										<Calendar.Day
-											class="rounded text-foreground hover:border-foreground data-selected:bg-foreground data-disabled:text-foreground/30 data-selected:text-background data-unavailable:text-muted-foreground data-disabled:pointer-events-none data-outside-month:pointer-events-none data-selected:font-medium data-unavailable:line-through group relative inline-flex size-10 items-center justify-center whitespace-nowrap border border-transparent bg-transparent p-0 text-sm font-normal">
+											class="group relative inline-flex size-10 items-center justify-center whitespace-nowrap rounded p-0 text-sm font-normal text-foreground not-data-selected:hover:bg-muted data-unavailable:text-muted-foreground data-unavailable:line-through data-unavailable:pointer-events-none data-disabled:text-muted-foreground/50 data-disabled:pointer-events-none data-outside-month:text-muted-foreground/50 data-outside-month:pointer-events-none data-selected:bg-foreground data-selected:text-background data-selected:font-medium">
 											<div
 												class="bg-foreground group-data-selected:bg-background group-data-today:block absolute top-1.25 hidden size-1 rounded-full">
 											</div>
