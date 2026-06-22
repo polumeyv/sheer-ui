@@ -2,23 +2,9 @@
  * Based on Radix UI's Navigation Menu
  * https://www.radix-ui.com/docs/primitives/components/navigation-menu
  */
-import {
-	type AnyFn,
-	type ReadableBox,
-	type ReadableBoxedValues,
-	type WithRefProps,
-	type WritableBox,
-	type WritableBoxedValues,
-	afterSleep,
-	afterTick,
-	attachRef,
-	DOMContext,
-	getWindow,
-	simpleBox,
-	boxWith,
-} from "$lib/internal/toolbelt.js";
-import { Context, useDebounce, watch } from "runed";
-import { untrack, type Snippet } from "svelte";
+import { type AnyFn, type ReadableBox, type ReadableBoxedValues, type WithRefProps, type WritableBox, type WritableBoxedValues, attachRef, DOMContext, getWindow, simpleBox, boxWith } from "$lib/internal/toolbelt.js";
+import { useDebounce, watch } from "$lib/internal/toolbelt.js";
+import { createContext, tick, untrack, type Snippet } from "svelte";
 import { SvelteMap } from "svelte/reactivity";
 import { type Direction, type Orientation, useId } from "$lib/shared/index.js";
 import {
@@ -65,17 +51,22 @@ const navigationMenuAttrs = createBitsAttrs({
 	],
 });
 
-const NavigationMenuProviderContext = new Context<NavigationMenuProviderState>(
-	"NavigationMenu.Root"
-);
-export const NavigationMenuItemContext = new Context<NavigationMenuItemState>(
-	"NavigationMenu.Item"
-);
-const NavigationMenuListContext = new Context<NavigationMenuListState>("NavigationMenu.List");
-const NavigationMenuContentContext = new Context<NavigationMenuContentState>(
-	"NavigationMenu.Content"
-);
-const NavigationMenuSubContext = new Context<NavigationMenuSubState>("NavigationMenu.Sub");
+const [getNavigationMenuProvider, setNavigationMenuProvider] = createContext<NavigationMenuProviderState>();
+export const [getNavigationMenuItem, setNavigationMenuItem] = createContext<NavigationMenuItemState>();
+const [getNavigationMenuList, setNavigationMenuList] = createContext<NavigationMenuListState>();
+const [getNavigationMenuContent, setNavigationMenuContent] = createContext<NavigationMenuContentState>();
+const [getNavigationMenuSub, setNavigationMenuSub] = createContext<NavigationMenuSubState>();
+
+const missingContextErrorUrl = "https://svelte.dev/e/missing_context";
+
+function getNavigationMenuSubOr<TFallback>(fallback: TFallback): NavigationMenuSubState | TFallback {
+	try {
+		return getNavigationMenuSub();
+	} catch (error) {
+		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
+		throw error;
+	}
+}
 
 interface NavigationMenuProviderStateOpts
 	extends ReadableBoxedValues<{
@@ -98,7 +89,7 @@ interface NavigationMenuProviderStateOpts
 
 class NavigationMenuProviderState {
 	static create(opts: NavigationMenuProviderStateOpts) {
-		return NavigationMenuProviderContext.set(new NavigationMenuProviderState(opts));
+		return setNavigationMenuProvider(new NavigationMenuProviderState(opts));
 	}
 	readonly opts: NavigationMenuProviderStateOpts;
 	indicatorTrackRef = simpleBox<HTMLElement | null>(null);
@@ -262,7 +253,7 @@ interface NavigationMenuSubStateOpts
 
 export class NavigationMenuSubState {
 	static create(opts: NavigationMenuSubStateOpts) {
-		return new NavigationMenuSubState(opts, NavigationMenuProviderContext.get());
+		return new NavigationMenuSubState(opts, getNavigationMenuProvider());
 	}
 	readonly opts: NavigationMenuSubStateOpts;
 	readonly context: NavigationMenuProviderState;
@@ -316,8 +307,8 @@ interface NavigationMenuListStateOpts extends WithRefProps {}
 
 export class NavigationMenuListState {
 	static create(opts: NavigationMenuListStateOpts) {
-		return NavigationMenuListContext.set(
-			new NavigationMenuListState(opts, NavigationMenuProviderContext.get())
+		return setNavigationMenuList(
+			new NavigationMenuListState(opts, getNavigationMenuProvider())
 		);
 	}
 	wrapperId = simpleBox(useId());
@@ -380,8 +371,8 @@ interface NavigationMenuItemStateOpts
 
 export class NavigationMenuItemState {
 	static create(opts: NavigationMenuItemStateOpts) {
-		return NavigationMenuItemContext.set(
-			new NavigationMenuItemState(opts, NavigationMenuListContext.get())
+		return setNavigationMenuItem(
+			new NavigationMenuItemState(opts, getNavigationMenuList())
 		);
 	}
 	readonly opts: NavigationMenuItemStateOpts;
@@ -446,10 +437,10 @@ interface NavigationMenuTriggerStateOpts
 export class NavigationMenuTriggerState {
 	static create(opts: NavigationMenuTriggerStateOpts) {
 		return new NavigationMenuTriggerState(opts, {
-			provider: NavigationMenuProviderContext.get(),
-			item: NavigationMenuItemContext.get(),
-			list: NavigationMenuListContext.get(),
-			sub: NavigationMenuSubContext.getOr(null),
+			provider: getNavigationMenuProvider(),
+			item: getNavigationMenuItem(),
+			list: getNavigationMenuList(),
+			sub: getNavigationMenuSubOr(null),
 		});
 	}
 	readonly opts: NavigationMenuTriggerStateOpts;
@@ -616,8 +607,8 @@ const ROOT_CONTENT_DISMISS_EVENT = new CustomEventDispatcher("bitsRootContentDis
 export class NavigationMenuLinkState {
 	static create(opts: NavigationMenuLinkStateOpts) {
 		return new NavigationMenuLinkState(opts, {
-			provider: NavigationMenuProviderContext.get(),
-			item: NavigationMenuItemContext.get(),
+			provider: getNavigationMenuProvider(),
+			item: getNavigationMenuItem(),
 		});
 	}
 	readonly opts: NavigationMenuLinkStateOpts;
@@ -700,7 +691,7 @@ interface NavigationMenuIndicatorStateOpts extends WithRefProps {}
 
 export class NavigationMenuIndicatorState {
 	static create() {
-		return new NavigationMenuIndicatorState(NavigationMenuProviderContext.get());
+		return new NavigationMenuIndicatorState(getNavigationMenuProvider());
 	}
 	readonly context: NavigationMenuProviderState;
 	readonly isVisible = $derived.by(() => Boolean(this.context.opts.value.current));
@@ -713,8 +704,8 @@ export class NavigationMenuIndicatorState {
 export class NavigationMenuIndicatorImplState {
 	static create(opts: NavigationMenuIndicatorStateOpts) {
 		return new NavigationMenuIndicatorImplState(opts, {
-			provider: NavigationMenuProviderContext.get(),
-			list: NavigationMenuListContext.get(),
+			provider: getNavigationMenuProvider(),
+			list: getNavigationMenuList(),
 		});
 	}
 	readonly opts: NavigationMenuIndicatorStateOpts;
@@ -796,11 +787,11 @@ interface NavigationMenuContentStateOpts extends WithRefProps {}
 
 export class NavigationMenuContentState {
 	static create(opts: NavigationMenuContentStateOpts) {
-		return NavigationMenuContentContext.set(
+		return setNavigationMenuContent(
 			new NavigationMenuContentState(opts, {
-				provider: NavigationMenuProviderContext.get(),
-				item: NavigationMenuItemContext.get(),
-				list: NavigationMenuListContext.get(),
+				provider: getNavigationMenuProvider(),
+				item: getNavigationMenuItem(),
+				list: getNavigationMenuList(),
 			})
 		);
 	}
@@ -869,7 +860,7 @@ export class NavigationMenuContentImplState {
 	static create(opts: NavigationMenuContentImplStateOpts, itemState?: NavigationMenuItemState) {
 		return new NavigationMenuContentImplState(
 			opts,
-			itemState ?? NavigationMenuItemContext.get()
+			itemState ?? getNavigationMenuItem()
 		);
 	}
 	readonly opts: NavigationMenuContentImplStateOpts;
@@ -1063,7 +1054,7 @@ interface NavigationMenuViewportStateOpts extends WithRefProps {}
 
 export class NavigationMenuViewportState {
 	static create(opts: NavigationMenuViewportStateOpts) {
-		return new NavigationMenuViewportState(opts, NavigationMenuProviderContext.get());
+		return new NavigationMenuViewportState(opts, getNavigationMenuProvider());
 	}
 	readonly opts: NavigationMenuViewportStateOpts;
 	readonly context: NavigationMenuProviderState;
@@ -1082,7 +1073,7 @@ export class NavigationMenuViewportState {
 		this.attachment = attachRef(this.opts.ref, (v) => (this.context.viewportRef.current = v));
 
 		watch([() => this.activeContentValue, () => this.open], () => {
-			afterTick(() => {
+			tick().then(() => {
 				const currNode = this.context.viewportRef.current;
 				if (!currNode) return;
 				const el =
@@ -1193,7 +1184,7 @@ function handleProxyFocus(
 	const ariaHidden = guard.getAttribute("aria-hidden");
 	guard.removeAttribute("aria-hidden");
 	guard.focus(focusOptions);
-	afterSleep(0, () => {
+	setTimeout(() => {
 		if (ariaHidden === null) {
 			guard.setAttribute("aria-hidden", "");
 		} else {

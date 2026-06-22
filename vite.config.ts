@@ -1,5 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import adapter from '@sveltejs/adapter-auto';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
@@ -11,6 +12,7 @@ export default defineConfig({
 			// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
 			// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 			adapter: adapter(),
+			preprocess: vitePreprocess({ script: true }),
 			// Inherit the monorepo base tsconfig so this lib gets the shared plugin list
 			// (typescript-svelte-plugin → @effect/language-service) + diagnostic config.
 			// Path is relative to the generated .svelte-kit/tsconfig.json.
@@ -30,4 +32,7 @@ export default defineConfig({
 			},
 		}),
 	],
+	optimizeDeps: {
+		exclude: ['layerchart'],
+	},
 });

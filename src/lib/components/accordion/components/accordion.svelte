@@ -1,8 +1,8 @@
 <script lang="ts">
+	import { untrack } from "svelte";
 	import { type WritableBox, boxWith, mergeProps } from "$lib/internal/toolbelt.js";
 	import { AccordionRootState } from "../accordion.svelte.js";
 	import type { AccordionRootProps } from "../types.js";
-	import { watch } from "runed";
 	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();
@@ -21,25 +21,29 @@
 		...restProps
 	}: AccordionRootProps = $props();
 
+	// Mode is construction-static: AccordionRootState chooses a single/multiple class once.
+	const valueType = untrack(() => type);
+
+	function getDefaultValue(): string | string[] {
+		return valueType === "single" ? "" : [];
+	}
+
 	function handleDefaultValue() {
 		if (value !== undefined) return;
-		value = type === "single" ? "" : [];
+		value = getDefaultValue();
+	}
+
+	function getValue() {
+		return value ?? getDefaultValue();
 	}
 
 	// SSR
 	handleDefaultValue();
 
-	watch.pre(
-		() => value,
-		() => {
-			handleDefaultValue();
-		}
-	);
-
 	const rootState = AccordionRootState.create({
-		type,
+		type: valueType,
 		value: boxWith(
-			() => value!,
+			() => getValue(),
 			(v) => {
 				value = v;
 				// oxlint-disable-next-line no-explicit-any

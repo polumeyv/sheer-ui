@@ -1,4 +1,5 @@
-import { attachRef, type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
+import { attachRef } from "$lib/internal/attachments.js";
+import type { ReadableBoxedValues } from "$lib/internal/toolbelt.js";
 import { createBitsAttrs } from "$lib/internal/attrs.js";
 import type { RefAttachment, WithRefOpts } from "$lib/internal/types.js";
 

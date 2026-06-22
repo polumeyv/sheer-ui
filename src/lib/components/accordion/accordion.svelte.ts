@@ -1,12 +1,6 @@
-import {
-	afterTick,
-	attachRef,
-	boxWith,
-	type Box,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from "$lib/internal/toolbelt.js";
-import { Context, watch } from "runed";
+import { attachRef, boxWith, type Box, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
+import { watch } from "$lib/internal/toolbelt.js";
+import { createContext, tick } from "svelte";
 import type {
 	BitsKeyboardEvent,
 	BitsMouseEvent,
@@ -25,14 +19,15 @@ import { createBitsAttrs } from "$lib/internal/attrs.js";
 import { RovingFocusGroup } from "$lib/internal/roving-focus-group.js";
 import { on } from "svelte/events";
 import { PresenceManager } from "$lib/internal/presence-manager.svelte.js";
+import { createAttachmentKey, type Attachment } from "svelte/attachments";
 
 const accordionAttrs = createBitsAttrs({
 	component: "accordion",
 	parts: ["root", "trigger", "content", "item", "header"],
 });
 
-const AccordionRootContext = new Context<AccordionRoot>("Accordion.Root");
-const AccordionItemContext = new Context<AccordionItemState>("Accordion.Item");
+const [getAccordionRoot, setAccordionRoot] = createContext<AccordionRoot>();
+const [getAccordionItem, setAccordionItem] = createContext<AccordionItemState>();
 
 interface AccordionBaseStateOpts
 	extends WithRefOpts,
@@ -173,14 +168,14 @@ export class AccordionRootState {
 			type === "single"
 				? new AccordionSingleState(rest as AccordionSingleStateOpts)
 				: new AccordionMultiState(rest as AccordionMultiStateOpts);
-		return AccordionRootContext.set(rootState);
+		return setAccordionRoot(rootState);
 	}
 }
 
 export class AccordionItemState {
 	static create(props: Omit<AccordionItemStateOpts, "rootState">): AccordionItemState {
-		return AccordionItemContext.set(
-			new AccordionItemState({ ...props, rootState: AccordionRootContext.get() })
+		return setAccordionItem(
+			new AccordionItemState({ ...props, rootState: getAccordionRoot() })
 		);
 	}
 
@@ -245,7 +240,7 @@ export class AccordionTriggerState {
 	}
 
 	static create(props: AccordionTriggerStateOpts): AccordionTriggerState {
-		return new AccordionTriggerState(props, AccordionItemContext.get());
+		return new AccordionTriggerState(props, getAccordionItem());
 	}
 
 	onclick(e: BitsMouseEvent): void {
@@ -305,7 +300,10 @@ export class AccordionContentState {
 		this.opts = opts;
 		this.item = item;
 		this.#isMountAnimationPrevented = this.item.isActive;
-		this.attachment = attachRef(this.opts.ref, (v) => (this.item.contentNode = v));
+		this.attachment = {
+			...attachRef(this.opts.ref, (v) => (this.item.contentNode = v)),
+			[createAttachmentKey()]: ((node) => this.#attachBeforeMatch(node)) satisfies Attachment<HTMLElement>,
+		};
 		// Prevent mount animations on initial render
 		$effect(() => {
 			const rAF = requestAnimationFrame(() => {
@@ -314,37 +312,34 @@ export class AccordionContentState {
 			return () => cancelAnimationFrame(rAF);
 		});
 
-		watch.pre(
-			[() => this.opts.ref.current, () => this.opts.hiddenUntilFound.current],
-			([node, hiddenUntilFound]) => {
-				if (!node || !hiddenUntilFound) return;
-
-				const handleBeforeMatch = () => {
-					if (this.item.isActive) return;
-					// we need to defer opening until after browser completes search highlighting
-					// otherwise the browser will immediately open the accordion
-					// and the search highlighting will not be visible
-					requestAnimationFrame(() => {
-						this.item.updateValue();
-					});
-				};
-
-				return on(node, "beforematch", handleBeforeMatch);
-			}
-		);
-
 		// Handle dimension updates
 		watch([() => this.open, () => this.opts.ref.current], this.#updateDimensions);
 	}
 
 	static create(props: AccordionContentStateOpts): AccordionContentState {
-		return new AccordionContentState(props, AccordionItemContext.get());
+		return new AccordionContentState(props, getAccordionItem());
+	}
+
+	#attachBeforeMatch(node: HTMLElement) {
+		if (!this.opts.hiddenUntilFound.current) return;
+
+		const handleBeforeMatch = () => {
+			if (this.item.isActive) return;
+			// we need to defer opening until after browser completes search highlighting
+			// otherwise the browser will immediately open the accordion
+			// and the search highlighting will not be visible
+			requestAnimationFrame(() => {
+				this.item.updateValue();
+			});
+		};
+
+		return on(node, "beforematch", handleBeforeMatch);
 	}
 
 	#updateDimensions = ([_, node]: [boolean, HTMLElement | null]): void => {
 		if (!node) return;
 
-		afterTick(() => {
+		tick().then(() => {
 			const element = this.opts.ref.current;
 			if (!element) return;
 
@@ -418,7 +413,7 @@ export class AccordionHeaderState {
 	}
 
 	static create(props: AccordionHeaderStateOpts): AccordionHeaderState {
-		return new AccordionHeaderState(props, AccordionItemContext.get());
+		return new AccordionHeaderState(props, getAccordionItem());
 	}
 
 	readonly props = $derived.by(

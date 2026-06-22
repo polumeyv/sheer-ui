@@ -1,10 +1,9 @@
-import type { ReadableBoxedValues, WritableBoxedValues } from 'svelte-toolbelt';
+import type { ReadableBoxedValues, WritableBoxedValues } from '$lib/internal/toolbelt.js';
 import type { DrawerDirection, Getters } from './types.js';
-import { onMount } from 'svelte';
-import { on } from 'svelte/events';
 import { isVertical, set } from './helpers.js';
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './internal/constants.js';
-import { watch } from 'runed';
+import { watch } from '$lib/internal/toolbelt.js';
+import { windowSize } from '$lib/internal/window-state.svelte.js';
 
 export function useSnapPoints({
 	snapPoints,
@@ -35,21 +34,6 @@ export function useSnapPoints({
 		fadeFromIndex: number | undefined;
 		snapPoints: (number | string)[] | undefined;
 	}>) {
-	let windowDimensions = $state(
-		typeof window !== 'undefined' ? { innerWidth: window.innerWidth, innerHeight: window.innerHeight } : undefined,
-	);
-
-	onMount(() => {
-		function onResize() {
-			windowDimensions = {
-				innerWidth: window.innerWidth,
-				innerHeight: window.innerHeight,
-			};
-		}
-
-		return on(window, 'resize', onResize);
-	});
-
 	const isLastSnapPoint = $derived(activeSnapPoint.current === snapPoints.current?.[snapPoints.current.length - 1] || null);
 
 	const activeSnapPointIndex = $derived(snapPoints.current?.findIndex((snapPoint) => snapPoint === activeSnapPoint.current));
@@ -65,13 +49,14 @@ export function useSnapPoints({
 
 	const snapPointsOffset = $derived.by(() => {
 		open.current;
+		const windowDimensions = windowSize.current;
 		const containerSize = container.current
 			? {
 					width: container.current.getBoundingClientRect().width,
 					height: container.current.getBoundingClientRect().height,
 				}
-			: typeof window !== 'undefined'
-				? { width: window.innerWidth, height: window.innerHeight }
+			: windowDimensions
+				? { width: windowDimensions.innerWidth, height: windowDimensions.innerHeight }
 				: { width: 0, height: 0 };
 
 		return (
@@ -198,7 +183,8 @@ export function useSnapPoints({
 			return Math.abs(curr - currentPosition) < Math.abs(prev - currentPosition) ? curr : prev;
 		});
 
-		const dim = isVertical(dir) ? window.innerHeight : window.innerWidth;
+		const dimensions = windowSize.current;
+		const dim = isVertical(dir) ? dimensions?.innerHeight ?? 0 : dimensions?.innerWidth ?? 0;
 
 		if (velocity > VELOCITY_THRESHOLD && Math.abs(draggedDistance) < dim * 0.4) {
 			const dragDirection = hasDraggedUp ? 1 : -1; // 1 = up, -1 = down

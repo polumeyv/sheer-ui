@@ -1,59 +1,23 @@
+import { type DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from "@internationalized/date";
 import {
-	type DateValue,
-	getLocalTimeZone,
-	isSameDay,
-	isSameMonth,
-	isToday,
-} from "@internationalized/date";
-import {
-	attachRef,
-	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from "svelte-toolbelt";
-import { Context, watch } from "runed";
-import { CalendarRootContext } from "../calendar/calendar.svelte.js";
+	attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
+import { watch } from "$lib/internal/toolbelt.js";
+import { getCalendarRoot, setCalendarRoot } from "../calendar/calendar.svelte.js";
 import type { DateRange, Month } from "$lib/shared/index.js";
 import type {
-	BitsFocusEvent,
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
+	BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts, } from "$lib/internal/types.js";
 import { useId } from "$lib/internal/use-id.js";
 import { boolToStr, boolToEmptyStrOrUndef } from "$lib/internal/attrs.js";
 import { type Announcer, getAnnouncer } from "$lib/internal/date-time/announcer.js";
 import { type Formatter, createFormatter } from "$lib/internal/date-time/formatter.js";
 import {
-	calendarAttrs,
-	createMonths,
-	getCalendarElementProps,
-	getCalendarHeadingValue,
-	getDefaultYears,
-	getIsNextButtonDisabled,
-	getIsPrevButtonDisabled,
-	getWeekdays,
-	handleCalendarKeydown,
-	handleCalendarNextPage,
-	handleCalendarPrevPage,
-	shiftCalendarFocus,
-	useEnsureNonDisabledPlaceholder,
-	useMonthViewOptionsSync,
-	useMonthViewPlaceholderSync,
-} from "$lib/internal/date-time/calendar-helpers.svelte.js";
+	calendarAttrs, createMonths, getCalendarElementProps, getCalendarHeadingValue, getDefaultYears, getIsNextButtonDisabled, getIsPrevButtonDisabled, getWeekdays, handleCalendarKeydown, handleCalendarNextPage, handleCalendarPrevPage, shiftCalendarFocus, useEnsureNonDisabledPlaceholder, useMonthViewOptionsSync, useMonthViewPlaceholderSync, } from "$lib/internal/date-time/calendar-helpers.svelte.js";
 import {
-	areAllDaysBetweenValid,
-	getDateValueType,
-	isAfter,
-	isBefore,
-	isBetweenInclusive,
-	toDate,
-} from "$lib/internal/date-time/utils.js";
+	areAllDaysBetweenValid, getDateValueType, isAfter, isBefore, isBetweenInclusive, toDate, } from "$lib/internal/date-time/utils.js";
 import type { WeekStartsOn } from "$lib/shared/date/types.js";
-import { onMount, untrack } from "svelte";
+import { createContext, onMount, untrack } from "svelte";
 
-const RangeCalendarCellContext = new Context<RangeCalendarCellState>("RangeCalendar.Cell");
+const [getRangeCalendarCell, setRangeCalendarCell] = createContext<RangeCalendarCellState>();
 
 interface RangeCalendarRootStateOpts
 	extends WithRefOpts,
@@ -95,7 +59,7 @@ interface RangeCalendarRootStateOpts
 
 export class RangeCalendarRootState {
 	static create(opts: RangeCalendarRootStateOpts) {
-		return CalendarRootContext.set(new RangeCalendarRootState(opts));
+		return setCalendarRoot(new RangeCalendarRootState(opts));
 	}
 
 	readonly opts: RangeCalendarRootStateOpts;
@@ -285,8 +249,8 @@ export class RangeCalendarRootState {
 		});
 
 		/**
-		 * Synchronize the start and end values with the `value` in case
-		 * it is updated externally.
+		 * External bind:value updates replace the range object. startValue/endValue
+		 * are internal selection cursor state, so they must be repaired from value.
 		 */
 		watch(
 			() => this.opts.value.current,
@@ -305,7 +269,8 @@ export class RangeCalendarRootState {
 		);
 
 		/**
-		 * Synchronize the placeholder value with the current start value
+		 * The selected start date controls the visible month, and parents using
+		 * bind:placeholder should observe that navigation-state update.
 		 */
 		watch(
 			() => this.opts.value.current,
@@ -337,6 +302,10 @@ export class RangeCalendarRootState {
 			}
 		);
 
+		/**
+		 * Internal partial selection composes the public bind:value range object.
+		 * This is why parent bind:value observes start-only and completed ranges.
+		 */
 		watch(
 			[() => this.opts.startValue.current, () => this.opts.endValue.current],
 			([startValue, endValue]) => {
@@ -718,8 +687,8 @@ interface RangeCalendarCellStateOpts
 
 export class RangeCalendarCellState {
 	static create(opts: RangeCalendarCellStateOpts) {
-		return RangeCalendarCellContext.set(
-			new RangeCalendarCellState(opts, CalendarRootContext.get() as RangeCalendarRootState)
+		return setRangeCalendarCell(
+			new RangeCalendarCellState(opts, getCalendarRoot() as RangeCalendarRootState)
 		);
 	}
 	readonly opts: RangeCalendarCellStateOpts;
@@ -846,7 +815,7 @@ interface RangeCalendarDayStateOpts extends WithRefOpts {}
 
 export class RangeCalendarDayState {
 	static create(opts: RangeCalendarDayStateOpts) {
-		return new RangeCalendarDayState(opts, RangeCalendarCellContext.get());
+		return new RangeCalendarDayState(opts, getRangeCalendarCell());
 	}
 
 	readonly opts: RangeCalendarDayStateOpts;

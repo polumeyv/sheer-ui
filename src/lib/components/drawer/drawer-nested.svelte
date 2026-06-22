@@ -1,7 +1,7 @@
 <script lang="ts">
 import DrawerRoot from './drawer.svelte';
 import type { RootProps } from './util/components/drawer/index.js';
-import { DrawerContext } from './util/context.js';
+import { getDrawer } from './util/context.js';
 import { noop } from './util/internal/noop.js';
 
 let {
@@ -13,7 +13,7 @@ let {
 	...restProps
 }: Omit<RootProps, 'nested' | 'onRelease' | 'onClose'> = $props();
 
-const rootState = DrawerContext.get();
+const rootState = getDrawer();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rest = $derived(restProps) as any;
 </script>

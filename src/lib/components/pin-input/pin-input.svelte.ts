@@ -1,4 +1,4 @@
-import { Previous, watch } from "runed";
+import { Previous, watch } from "$lib/internal/toolbelt.js";
 import { onMount } from "svelte";
 import {
 	type WritableBox,
@@ -20,6 +20,7 @@ import type {
 } from "$lib/internal/types.js";
 import { createBitsAttrs, boolToTrueOrUndef } from "$lib/internal/attrs.js";
 import { on } from "svelte/events";
+import { resizeAttachment } from "$lib/internal/svelte-resize-observer.svelte.js";
 
 export const REGEXP_ONLY_DIGITS = "^\\d+$";
 export const REGEXP_ONLY_CHARS = "^[a-zA-Z]+$";
@@ -106,11 +107,21 @@ export class PinInputRootState {
 	#pwmb: ReturnType<typeof usePasswordManagerBadge>;
 	#initialLoad: InitialLoad;
 	domContext: DOMContext;
+	#updateRootHeight = () => {
+		const input = this.opts.inputRef.current;
+		const container = this.opts.ref.current;
+		if (!input || !container) return;
+
+		container.style.setProperty("--bits-pin-input-root-height", `${input.clientHeight}px`);
+	};
 
 	constructor(opts: PinInputRootStateOpts) {
 		this.opts = opts;
 		this.attachment = attachRef(this.opts.ref);
-		this.inputAttachment = attachRef(this.opts.inputRef);
+		this.inputAttachment = {
+			...attachRef(this.opts.inputRef),
+			...resizeAttachment<HTMLInputElement>(this.#updateRootHeight),
+		};
 		this.domContext = new DOMContext(opts.ref);
 
 		this.#initialLoad = {
@@ -162,22 +173,10 @@ export class PinInputRootState {
 				this.#applyStyles();
 			}
 
-			const updateRootHeight = () => {
-				if (container) {
-					container.style.setProperty(
-						"--bits-pin-input-root-height",
-						`${input.clientHeight}px`
-					);
-				}
-			};
-			updateRootHeight();
-
-			const resizeObserver = new ResizeObserver(updateRootHeight);
-			resizeObserver.observe(input);
+			this.#updateRootHeight();
 
 			return () => {
 				unsub();
-				resizeObserver.disconnect();
 			};
 		});
 

@@ -1,10 +1,10 @@
-import { useRefById, type WithRefProps } from "svelte-toolbelt";
-import { DrawerContext } from "./context.js";
+import { useRefById, type WithRefProps } from "$lib/internal/toolbelt.js";
+import { getDrawer } from "./context.js";
 
 type UseDrawerOverlayProps = WithRefProps;
 
 export function useDrawerOverlay(opts: UseDrawerOverlayProps) {
-	const ctx = DrawerContext.get();
+	const ctx = getDrawer();
 	let mounted = $state(false);
 
 	useRefById({

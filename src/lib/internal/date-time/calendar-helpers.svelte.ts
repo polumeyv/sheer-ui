@@ -8,11 +8,10 @@ import {
 import {
 	type ReadableBox,
 	type WritableBox,
-	afterTick,
 	getDocument,
 	styleToString,
 } from "$lib/internal/toolbelt.js";
-import { untrack } from "svelte";
+import { tick, untrack } from "svelte";
 import {
 	getDaysInMonth,
 	getLastFirstDayOfWeek,
@@ -30,7 +29,7 @@ import { chunk, isValidIndex } from "$lib/internal/arrays.js";
 import { isBrowser, isHTMLElement } from "$lib/internal/is.js";
 import { kbd } from "$lib/internal/kbd.js";
 import type { DateMatcher, Month } from "$lib/shared/index.js";
-import { watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
 
 /**
  * Checks if a given node is a calendar cell element.
@@ -310,7 +309,7 @@ export function shiftCalendarFocus({
 
 		// Without a tick here, it seems to be too quick for the DOM to update
 
-		afterTick(() => {
+		tick().then(() => {
 			const newCandidateCells = getSelectableCells(calendarNode);
 			if (!newCandidateCells.length) return;
 
@@ -343,7 +342,7 @@ export function shiftCalendarFocus({
 		if (!firstMonth) return;
 		placeholder.current = firstMonth.add({ months: numberOfMonths });
 
-		afterTick(() => {
+		tick().then(() => {
 			const newCandidateCells = getSelectableCells(calendarNode);
 			if (!newCandidateCells.length) return;
 
@@ -369,7 +368,7 @@ type HandleCalendarKeydownProps = {
 	placeholderValue: DateValue;
 };
 const ARROW_KEYS = [kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT] as const;
-const SELECT_KEYS = [kbd.ENTER, kbd.SPACE];
+const SELECT_KEYS: string[] = [kbd.ENTER, kbd.SPACE];
 
 /**
  * Shared keyboard event handler for the calendar and range calendar.

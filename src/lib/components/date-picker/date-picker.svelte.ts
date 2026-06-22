@@ -1,10 +1,10 @@
+import { createContext } from "svelte";
 import type { DateValue } from "@internationalized/date";
-import { Context } from "runed";
-import { type ReadableBoxedValues, type WritableBoxedValues } from "svelte-toolbelt";
+import { type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
 import type { DateMatcher, SegmentPart } from "$lib/shared/index.js";
 import type { Granularity, HourCycle, WeekStartsOn } from "$lib/shared/date/types.js";
 
-export const DatePickerRootContext = new Context<DatePickerRootState>("DatePicker.Root");
+export const [getDatePickerRoot, setDatePickerRoot] = createContext<DatePickerRootState>();
 
 interface DatePickerRootStateOpts
 	extends WritableBoxedValues<{
@@ -43,7 +43,7 @@ interface DatePickerRootStateOpts
 
 export class DatePickerRootState {
 	static create(opts: DatePickerRootStateOpts) {
-		return DatePickerRootContext.set(new DatePickerRootState(opts));
+		return setDatePickerRoot(new DatePickerRootState(opts));
 	}
 
 	readonly opts: DatePickerRootStateOpts;

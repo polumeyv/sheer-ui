@@ -1,6 +1,7 @@
+import { createContext } from "svelte";
 import { SvelteMap } from "svelte/reactivity";
 import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
-import { Context, watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
 import type { TabsActivationMode } from "./types.js";
 import {
 	createBitsAttrs,
@@ -24,7 +25,7 @@ const tabsAttrs = createBitsAttrs({
 	parts: ["root", "list", "trigger", "content"],
 });
 
-const TabsRootContext = new Context<TabsRootState>("Tabs.Root");
+const [getTabsRoot, setTabsRoot] = createContext<TabsRootState>();
 
 interface TabsRootStateOpts
 	extends WithRefOpts,
@@ -40,7 +41,7 @@ interface TabsRootStateOpts
 
 export class TabsRootState {
 	static create(opts: TabsRootStateOpts) {
-		return TabsRootContext.set(new TabsRootState(opts));
+		return setTabsRoot(new TabsRootState(opts));
 	}
 	readonly opts: TabsRootStateOpts;
 	readonly attachment: RefAttachment;
@@ -101,7 +102,7 @@ interface TabsListStateOpts extends WithRefOpts {}
 
 export class TabsListState {
 	static create(opts: TabsListStateOpts) {
-		return new TabsListState(opts, TabsRootContext.get());
+		return new TabsListState(opts, getTabsRoot());
 	}
 	readonly opts: TabsListStateOpts;
 	readonly root: TabsRootState;
@@ -137,7 +138,7 @@ interface TabsTriggerStateOpts
 
 export class TabsTriggerState {
 	static create(opts: TabsTriggerStateOpts) {
-		return new TabsTriggerState(opts, TabsRootContext.get());
+		return new TabsTriggerState(opts, getTabsRoot());
 	}
 	readonly opts: TabsTriggerStateOpts;
 	readonly root: TabsRootState;
@@ -230,7 +231,7 @@ interface TabsContentStateOpts
 
 export class TabsContentState {
 	static create(opts: TabsContentStateOpts) {
-		return new TabsContentState(opts, TabsRootContext.get());
+		return new TabsContentState(opts, getTabsRoot());
 	}
 	readonly opts: TabsContentStateOpts;
 	readonly root: TabsRootState;

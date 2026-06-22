@@ -1,4 +1,4 @@
-import { createContext } from 'svelte';
+import { createContext } from "svelte";
 import { isMobile } from "$lib/hooks/is-mobile.svelte";
 import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants';
 

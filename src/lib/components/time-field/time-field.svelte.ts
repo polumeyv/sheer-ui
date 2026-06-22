@@ -1,16 +1,9 @@
 import type { Updater } from 'svelte/store';
 import { CalendarDateTime, Time, ZonedDateTime } from '@internationalized/date';
 import {
-	onDestroyEffect,
-	attachRef,
-	type WritableBox,
-	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	simpleBox,
-} from '$lib/internal/toolbelt.js';
-import { onMount, untrack } from 'svelte';
-import { Context, watch } from 'runed';
+	attachRef, type WritableBox, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, simpleBox } from "$lib/internal/toolbelt.js";
+import { createContext, onMount, untrack } from "svelte";
+import { watch } from "$lib/internal/toolbelt.js";
 import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
 import { isBrowser, isNumberString } from '$lib/internal/is.js';
@@ -58,7 +51,7 @@ export const timeFieldAttrs = createBitsAttrs({
 	parts: ['input', 'label'],
 });
 
-const TimeFieldRootContext = new Context<TimeFieldRootState>('TimeField.Root');
+const [getTimeFieldRoot, setTimeFieldRoot] = createContext<TimeFieldRootState>();
 
 interface SegmentConfig {
 	min: number | ((root: TimeFieldRootState) => number);
@@ -130,7 +123,7 @@ export interface TimeFieldRootStateOpts<T extends TimeValue = Time>
 
 export class TimeFieldRootState<T extends TimeValue = Time> {
 	static create<T extends TimeValue = Time>(opts: TimeFieldRootStateOpts<T>, rangeRoot?: TimeRangeFieldRootState<T>) {
-		return TimeFieldRootContext.set(new TimeFieldRootState(opts, rangeRoot) as unknown as TimeFieldRootState);
+		return setTimeFieldRoot(new TimeFieldRootState(opts, rangeRoot) as unknown as TimeFieldRootState);
 	}
 	value: TimeFieldRootStateOpts<T>['value'];
 	placeholder: WritableBox<TimeValue>;
@@ -225,7 +218,7 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 			this.announcer = getAnnouncer(this.domContext.getDocument());
 		});
 
-		onDestroyEffect(() => {
+		onMount(() => () => {
 			removeTimeDescriptionElement(this.descriptionId, this.domContext.getDocument());
 		});
 
@@ -591,7 +584,7 @@ interface TimeFieldInputStateOpts
 
 export class TimeFieldInputState {
 	static create(opts: TimeFieldInputStateOpts) {
-		return new TimeFieldInputState(opts, TimeFieldRootContext.get());
+		return new TimeFieldInputState(opts, getTimeFieldRoot());
 	}
 	readonly opts: TimeFieldInputStateOpts;
 	readonly root: TimeFieldRootState;
@@ -635,7 +628,7 @@ export class TimeFieldInputState {
 
 export class TimeFieldHiddenInputState {
 	static create() {
-		return new TimeFieldHiddenInputState(TimeFieldRootContext.get());
+		return new TimeFieldHiddenInputState(getTimeFieldRoot());
 	}
 	readonly root: TimeFieldRootState;
 	readonly shouldRender = $derived.by(() => this.root.name !== '');
@@ -659,7 +652,7 @@ interface TimeFieldLabelStateOpts extends WithRefOpts {}
 
 export class TimeFieldLabelState {
 	static create(opts: TimeFieldLabelStateOpts) {
-		return new TimeFieldLabelState(opts, TimeFieldRootContext.get());
+		return new TimeFieldLabelState(opts, getTimeFieldRoot());
 	}
 	readonly opts: TimeFieldLabelStateOpts;
 	readonly root: TimeFieldRootState;
@@ -1192,7 +1185,7 @@ class TimeFieldTimeZoneSegmentState {
 
 export class DateFieldSegmentState {
 	static create(part: SegmentPart, opts: WithRefOpts) {
-		const root = TimeFieldRootContext.get();
+		const root = getTimeFieldRoot();
 		switch (part) {
 			case 'hour':
 				return new TimeFieldHourSegmentState(opts, root);

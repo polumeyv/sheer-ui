@@ -1,13 +1,7 @@
 import type { Time } from '@internationalized/date';
-import {
-	boxWith,
-	onDestroyEffect,
-	attachRef,
-	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from '$lib/internal/toolbelt.js';
-import { Context, watch } from 'runed';
+import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
+import { watch } from "$lib/internal/toolbelt.js";
+import { createContext, onMount } from "svelte";
 import { TimeFieldRootState } from '$lib/components/time-field/time-field.svelte.js';
 import { TimeFieldInputState } from '$lib/components/time-field/time-field.svelte.js';
 import { useId } from '$lib/internal/use-id.js';
@@ -25,7 +19,7 @@ export const timeRangeFieldAttrs = createBitsAttrs({
 	parts: ['root', 'label'],
 });
 
-export const TimeRangeFieldRootContext = new Context<TimeRangeFieldRootState>('TimeRangeField.Root');
+export const [getTimeRangeFieldRoot, setTimeRangeFieldRoot] = createContext<TimeRangeFieldRootState>();
 
 interface TimeRangeFieldRootStateOpts<T extends TimeValue = Time>
 	extends
@@ -54,7 +48,7 @@ interface TimeRangeFieldRootStateOpts<T extends TimeValue = Time>
 
 export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 	static create<T extends TimeValue = Time>(opts: TimeRangeFieldRootStateOpts<T>) {
-		return TimeRangeFieldRootContext.set(new TimeRangeFieldRootState(opts) as unknown as TimeRangeFieldRootState);
+		return setTimeRangeFieldRoot(new TimeRangeFieldRootState(opts) as unknown as TimeRangeFieldRootState);
 	}
 	readonly opts: TimeRangeFieldRootStateOpts<T>;
 	readonly attachment: RefAttachment;
@@ -95,7 +89,7 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 		this.formatter = createTimeFormatter(this.opts.locale.current);
 		this.domContext = new DOMContext(this.opts.ref);
 		this.attachment = attachRef(this.opts.ref, (v) => (this.fieldNode = v));
-		onDestroyEffect(() => {
+		onMount(() => () => {
 			removeDescriptionElement(this.descriptionId, this.domContext.getDocument());
 		});
 
@@ -105,8 +99,8 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 		});
 
 		/**
-		 * Synchronize the start and end values with the `value` in case
-		 * it is updated externally.
+		 * External bind:value updates replace the range object. startValue/endValue
+		 * are internal field cursor state, so they must be repaired from value.
 		 */
 		watch(
 			() => this.opts.value.current,
@@ -125,7 +119,8 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 		);
 
 		/**
-		 * Synchronize the placeholder value with the current start value
+		 * The selected start time controls the placeholder used by both field inputs,
+		 * and parents using bind:placeholder should observe that state-machine update.
 		 */
 		watch(
 			() => this.opts.value.current,
@@ -137,6 +132,10 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 			},
 		);
 
+		/**
+		 * Internal start/end field completion composes the public bind:value range object.
+		 * Parent bind:value only observes a completed range from segment entry.
+		 */
 		watch([() => this.opts.startValue.current, () => this.opts.endValue.current], ([startValue, endValue]) => {
 			if (this.opts.value.current && this.opts.value.current.start === startValue && this.opts.value.current.end === endValue) {
 				return;
@@ -218,7 +217,7 @@ interface TimeRangeFieldLabelStateOpts extends WithRefOpts {}
 
 export class TimeRangeFieldLabelState {
 	static create(opts: TimeRangeFieldLabelStateOpts) {
-		return new TimeRangeFieldLabelState(opts, TimeRangeFieldRootContext.get());
+		return new TimeRangeFieldLabelState(opts, getTimeRangeFieldRoot());
 	}
 	readonly opts: TimeRangeFieldLabelStateOpts;
 	readonly root: TimeRangeFieldRootState;
@@ -262,7 +261,7 @@ interface TimeRangeFieldInputStateOpts<T extends TimeValue = Time>
 
 export class TimeRangeFieldInputState {
 	static create(opts: Omit<TimeRangeFieldInputStateOpts, 'value'>, type: 'start' | 'end') {
-		const root = TimeRangeFieldRootContext.get();
+		const root = getTimeRangeFieldRoot();
 		const fieldState = TimeFieldRootState.create(
 			{
 				value: type === 'start' ? root.opts.startValue : root.opts.endValue,

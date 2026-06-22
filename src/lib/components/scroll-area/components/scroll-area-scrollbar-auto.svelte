@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/toolbelt.js";
-	import { ScrollAreaScrollbarAutoState } from "../scroll-area.svelte.js";
-	import type { _ScrollbarStubProps } from "../types.js";
-	import ScrollAreaScrollbarVisible from "./scroll-area-scrollbar-visible.svelte";
-	import PresenceLayer from "$lib/components/utilities/presence-layer/presence-layer.svelte";
+	import { mergeProps } from '$lib/internal/toolbelt.js';
+	import { ScrollAreaScrollbarAutoState } from '../scroll-area.svelte.js';
+	import type { _ScrollbarStubProps } from '../types.js';
+	import ScrollAreaScrollbarVisible from './scroll-area-scrollbar-visible.svelte';
+	import PresenceLayer from '$lib/components/utilities/presence-layer/presence-layer.svelte';
 
 	let { forceMount = false, ...restProps }: _ScrollbarStubProps = $props();
 
@@ -11,10 +11,7 @@
 	const mergedProps = $derived(mergeProps(restProps, scrollbarAutoState.props));
 </script>
 
-<PresenceLayer
-	open={forceMount || scrollbarAutoState.isVisible}
-	ref={scrollbarAutoState.scrollbar.opts.ref}
->
+<PresenceLayer open={forceMount || scrollbarAutoState.isVisible} ref={scrollbarAutoState.scrollbar.opts.ref}>
 	{#snippet presence()}
 		<ScrollAreaScrollbarVisible {...mergedProps} />
 	{/snippet}

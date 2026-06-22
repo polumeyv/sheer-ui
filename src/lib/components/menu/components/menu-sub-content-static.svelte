@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { afterTick, boxWith, mergeProps } from "$lib/internal/toolbelt.js";
+	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
+	import { tick } from "svelte";
 	import type { MenuSubContentStaticProps } from "../types.js";
 	import { MenuContentState } from "../menu.svelte.js";
 	import { SUB_CLOSE_KEYS } from "../utils.js";
@@ -74,7 +75,7 @@
 	function handleOpenAutoFocus(e: Event) {
 		onOpenAutoFocusProp(e);
 		if (e.defaultPrevented) return;
-		afterTick(() => {
+		tick().then(() => {
 			e.preventDefault();
 			if (subContentState.parentMenu.root.isUsingKeyboard) {
 				const subContentEl = subContentState.parentMenu.contentNode;

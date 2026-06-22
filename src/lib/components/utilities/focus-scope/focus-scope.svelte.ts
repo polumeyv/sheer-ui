@@ -1,8 +1,9 @@
-import { onDestroyEffect, type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
+import { type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
 import { FocusScopeManager } from "./focus-scope-manager.js";
 import { focusable, isFocusable, tabbable } from "tabbable";
 import { on } from "svelte/events";
-import { watch } from "runed";
+import { createAttachmentKey, type Attachment } from "svelte/attachments";
+import { untrack } from "svelte";
 
 interface FocusScopeOpts
 	extends ReadableBoxedValues<{
@@ -227,28 +228,24 @@ export class FocusScope {
 	}
 
 	static use(opts: FocusScopeUseOpts) {
-		let scope: FocusScope | null = null;
+		const focusScopeAttachment = {
+			[createAttachmentKey()]: ((node) => {
+				if (!opts.enabled.current) return;
 
-		watch([() => opts.ref.current, () => opts.enabled.current], ([ref, enabled]) => {
-			if (ref && enabled) {
-				if (!scope) {
-					scope = new FocusScope(opts);
-				}
-				scope.mount(ref);
-			} else if (scope) {
-				scope.unmount();
-				scope = null;
-			}
-		});
+				const scope = new FocusScope(opts);
+				untrack(() => scope.mount(node));
 
-		onDestroyEffect(() => {
-			scope?.unmount();
-		});
+				return () => {
+					untrack(() => scope.unmount());
+				};
+			}) satisfies Attachment<HTMLElement>,
+		};
 
 		return {
 			get props() {
 				return {
 					tabindex: -1,
+					...focusScopeAttachment,
 				};
 			},
 		};

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "svelte-toolbelt";
+	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
 	import type { SelectScrollDownButtonProps } from "../types.js";
 	import { SelectScrollDownButtonState } from "../select.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";

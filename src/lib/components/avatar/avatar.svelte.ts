@@ -1,12 +1,7 @@
-import {
-	DOMContext,
-	type ReadableBox,
-	type WritableBox,
-	attachRef,
-	type ReadableBoxedValues,
-} from "$lib/internal/toolbelt.js";
+import { createContext } from "svelte";
+import { DOMContext, type ReadableBox, type WritableBox, attachRef, type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
 import type { HTMLImgAttributes } from "svelte/elements";
-import { Context, watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
 import type { AvatarImageLoadingStatus } from "./types.js";
 import type { RefAttachment, WithRefOpts } from "$lib/internal/types.js";
 import { createBitsAttrs } from "$lib/internal/attrs.js";
@@ -25,11 +20,11 @@ interface AvatarRootStateOpts extends WithRefOpts {
 	loadingStatus: WritableBox<AvatarImageLoadingStatus>;
 }
 
-const AvatarRootContext = new Context<AvatarRootState>("Avatar.Root");
+const [getAvatarRoot, setAvatarRoot] = createContext<AvatarRootState>();
 
 export class AvatarRootState {
 	static create(opts: AvatarRootStateOpts) {
-		return AvatarRootContext.set(new AvatarRootState(opts));
+		return setAvatarRoot(new AvatarRootState(opts));
 	}
 
 	readonly opts: AvatarRootStateOpts;
@@ -88,7 +83,7 @@ interface AvatarImageStateOpts
 
 export class AvatarImageState {
 	static create(opts: AvatarImageStateOpts) {
-		return new AvatarImageState(opts, AvatarRootContext.get());
+		return new AvatarImageState(opts, getAvatarRoot());
 	}
 	readonly opts: AvatarImageStateOpts;
 	readonly root: AvatarRootState;
@@ -131,7 +126,7 @@ export class AvatarImageState {
 interface AvatarFallbackStateOpts extends WithRefOpts {}
 export class AvatarFallbackState {
 	static create(opts: AvatarFallbackStateOpts) {
-		return new AvatarFallbackState(opts, AvatarRootContext.get());
+		return new AvatarFallbackState(opts, getAvatarRoot());
 	}
 
 	readonly opts: AvatarFallbackStateOpts;

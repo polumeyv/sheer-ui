@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/toolbelt.js";
-	import type { ArrowProps } from "./types.js";
-	import { useId } from "$lib/internal/use-id.js";
+	import { mergeProps } from '$lib/internal/toolbelt.js';
+	import type { ArrowProps } from './types.js';
+	import { useId } from '$lib/internal/use-id.js';
 
 	let {
 		id = useId(),
@@ -9,8 +9,13 @@
 		child,
 		width = 10,
 		height = 5,
+		offsetWidth = $bindable(0),
+		offsetHeight = $bindable(0),
 		...restProps
-	}: ArrowProps = $props();
+	}: ArrowProps & {
+		offsetWidth?: number;
+		offsetHeight?: number;
+	} = $props();
 
 	const mergedProps = $derived(mergeProps(restProps, { id }));
 </script>

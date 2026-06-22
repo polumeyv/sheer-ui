@@ -1,5 +1,5 @@
+import { createContext } from "svelte";
 import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
-import { Context } from "runed";
 import {
 	getAriaChecked,
 	boolToStr,
@@ -21,7 +21,7 @@ const switchAttrs = createBitsAttrs({
 	parts: ["root", "thumb"],
 });
 
-const SwitchRootContext = new Context<SwitchRootState>("Switch.Root");
+const [getSwitchRoot, setSwitchRoot] = createContext<SwitchRootState>();
 
 interface SwitchRootStateOpts
 	extends WithRefOpts,
@@ -36,7 +36,7 @@ interface SwitchRootStateOpts
 		}> {}
 export class SwitchRootState {
 	static create(opts: SwitchRootStateOpts) {
-		return SwitchRootContext.set(new SwitchRootState(opts));
+		return setSwitchRoot(new SwitchRootState(opts));
 	}
 	readonly opts: SwitchRootStateOpts;
 	readonly attachment: RefAttachment;
@@ -94,7 +94,7 @@ export class SwitchRootState {
 
 export class SwitchInputState {
 	static create() {
-		return new SwitchInputState(SwitchRootContext.get());
+		return new SwitchInputState(getSwitchRoot());
 	}
 	readonly root: SwitchRootState;
 	readonly shouldRender = $derived.by(() => this.root.opts.name.current !== undefined);
@@ -120,7 +120,7 @@ interface SwitchThumbStateOpts extends WithRefOpts {}
 
 export class SwitchThumbState {
 	static create(opts: SwitchThumbStateOpts) {
-		return new SwitchThumbState(opts, SwitchRootContext.get());
+		return new SwitchThumbState(opts, getSwitchRoot());
 	}
 	readonly opts: SwitchThumbStateOpts;
 	readonly root: SwitchRootState;

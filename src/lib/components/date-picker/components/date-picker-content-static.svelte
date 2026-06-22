@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mergeProps } from 'svelte-toolbelt';
+	import { mergeProps } from '$lib/internal/toolbelt.js';
 	import type { DatePickerContentStaticProps } from '../types.js';
 	import PopoverContentStatic from '$lib/components/popover/components/popover-content-static.svelte';
 	import { pickerOpenFocus } from '$lib/internal/date-time/calendar-helpers.svelte.js';

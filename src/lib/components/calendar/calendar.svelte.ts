@@ -1,19 +1,9 @@
-import {
-	type DateValue,
-	getLocalTimeZone,
-	isSameDay,
-	isSameMonth,
-	isToday,
-} from "@internationalized/date";
+import { type DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from "@internationalized/date";
 import { DEV } from "esm-env";
-import { onMount, untrack } from "svelte";
+import { createContext, onMount, untrack } from "svelte";
 import {
-	attachRef,
-	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from "$lib/internal/toolbelt.js";
-import { Context, watch } from "runed";
+	attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
+import { watch } from "$lib/internal/toolbelt.js";
 import type { RangeCalendarRootState } from "../range-calendar/range-calendar.svelte.js";
 import { boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from "$lib/internal/attrs.js";
 import type {
@@ -84,13 +74,11 @@ interface CalendarRootStateOpts
 	defaultPlaceholder: DateValue;
 }
 
-export const CalendarRootContext = new Context<CalendarRootState | RangeCalendarRootState>(
-	"Calendar.Root | RangeCalender.Root"
-);
+export const [getCalendarRoot, setCalendarRoot] = createContext<CalendarRootState | RangeCalendarRootState>();
 
 export class CalendarRootState {
 	static create(opts: CalendarRootStateOpts) {
-		return CalendarRootContext.set(new CalendarRootState(opts));
+		return setCalendarRoot(new CalendarRootState(opts));
 	}
 
 	readonly opts: CalendarRootStateOpts;
@@ -186,7 +174,8 @@ export class CalendarRootState {
 		);
 
 		/**
-		 * Synchronize the placeholder value with the current value.
+		 * The selected value controls the calendar's placeholder/view month, and
+		 * parents using bind:placeholder should observe that navigation-state update.
 		 */
 		watch(
 			() => this.opts.value.current,
@@ -539,7 +528,7 @@ interface CalendarHeadingStateOpts extends WithRefOpts {}
 
 export class CalendarHeadingState {
 	static create(opts: CalendarHeadingStateOpts) {
-		return new CalendarHeadingState(opts, CalendarRootContext.get());
+		return new CalendarHeadingState(opts, getCalendarRoot());
 	}
 
 	readonly opts: CalendarHeadingStateOpts;
@@ -565,7 +554,7 @@ export class CalendarHeadingState {
 	);
 }
 
-const CalendarCellContext = new Context<CalendarCellState>("Calendar.Cell | RangeCalendar.Cell");
+const [getCalendarCell, setCalendarCell] = createContext<CalendarCellState>();
 
 interface CalendarCellStateOpts
 	extends WithRefOpts,
@@ -576,8 +565,8 @@ interface CalendarCellStateOpts
 
 export class CalendarCellState {
 	static create(opts: CalendarCellStateOpts) {
-		return CalendarCellContext.set(
-			new CalendarCellState(opts, CalendarRootContext.get() as CalendarRootState)
+		return setCalendarCell(
+			new CalendarCellState(opts, getCalendarRoot() as CalendarRootState)
 		);
 	}
 
@@ -670,7 +659,7 @@ interface CalendarDayStateOpts extends WithRefOpts {}
 
 export class CalendarDayState {
 	static create(opts: CalendarDayStateOpts) {
-		return new CalendarDayState(opts, CalendarCellContext.get());
+		return new CalendarDayState(opts, getCalendarCell());
 	}
 
 	readonly opts: CalendarDayStateOpts;
@@ -728,7 +717,7 @@ interface CalendarNextButtonStateOpts extends WithRefOpts {}
 
 export class CalendarNextButtonState {
 	static create(opts: CalendarNextButtonStateOpts) {
-		return new CalendarNextButtonState(opts, CalendarRootContext.get());
+		return new CalendarNextButtonState(opts, getCalendarRoot());
 	}
 
 	readonly opts: CalendarNextButtonStateOpts;
@@ -773,7 +762,7 @@ interface CalendarPrevButtonStateOpts extends WithRefOpts {}
 
 export class CalendarPrevButtonState {
 	static create(opts: CalendarPrevButtonStateOpts) {
-		return new CalendarPrevButtonState(opts, CalendarRootContext.get());
+		return new CalendarPrevButtonState(opts, getCalendarRoot());
 	}
 
 	readonly opts: CalendarPrevButtonStateOpts;
@@ -818,7 +807,7 @@ interface CalendarGridStateOpts extends WithRefOpts {}
 
 export class CalendarGridState {
 	static create(opts: CalendarGridStateOpts) {
-		return new CalendarGridState(opts, CalendarRootContext.get());
+		return new CalendarGridState(opts, getCalendarRoot());
 	}
 
 	readonly opts: CalendarGridStateOpts;
@@ -851,7 +840,7 @@ interface CalendarGridBodyStateOpts extends WithRefOpts {}
 
 export class CalendarGridBodyState {
 	static create(opts: CalendarGridBodyStateOpts) {
-		return new CalendarGridBodyState(opts, CalendarRootContext.get());
+		return new CalendarGridBodyState(opts, getCalendarRoot());
 	}
 
 	readonly opts: CalendarGridBodyStateOpts;
@@ -880,7 +869,7 @@ interface CalendarGridHeadStateOpts extends WithRefOpts {}
 
 export class CalendarGridHeadState {
 	static create(opts: CalendarGridHeadStateOpts) {
-		return new CalendarGridHeadState(opts, CalendarRootContext.get());
+		return new CalendarGridHeadState(opts, getCalendarRoot());
 	}
 
 	readonly opts: CalendarGridHeadStateOpts;
@@ -908,7 +897,7 @@ interface CalendarGridRowStateOpts extends WithRefOpts {}
 
 export class CalendarGridRowState {
 	static create(opts: CalendarGridRowStateOpts) {
-		return new CalendarGridRowState(opts, CalendarRootContext.get());
+		return new CalendarGridRowState(opts, getCalendarRoot());
 	}
 
 	readonly opts: CalendarGridRowStateOpts;
@@ -936,7 +925,7 @@ interface CalendarHeadCellStateOpts extends WithRefOpts {}
 
 export class CalendarHeadCellState {
 	static create(opts: CalendarHeadCellStateOpts) {
-		return new CalendarHeadCellState(opts, CalendarRootContext.get());
+		return new CalendarHeadCellState(opts, getCalendarRoot());
 	}
 
 	readonly opts: CalendarHeadCellStateOpts;
@@ -964,7 +953,7 @@ interface CalendarHeaderStateOpts extends WithRefOpts {}
 
 export class CalendarHeaderState {
 	static create(opts: CalendarHeaderStateOpts) {
-		return new CalendarHeaderState(opts, CalendarRootContext.get());
+		return new CalendarHeaderState(opts, getCalendarRoot());
 	}
 
 	readonly opts: CalendarHeaderStateOpts;
@@ -998,7 +987,7 @@ interface CalendarMonthSelectStateOpts
 
 export class CalendarMonthSelectState {
 	static create(opts: CalendarMonthSelectStateOpts) {
-		return new CalendarMonthSelectState(opts, CalendarRootContext.get());
+		return new CalendarMonthSelectState(opts, getCalendarRoot());
 	}
 
 	readonly opts: CalendarMonthSelectStateOpts;
@@ -1090,7 +1079,7 @@ interface CalendarYearSelectStateOpts
 
 export class CalendarYearSelectState {
 	static create(opts: CalendarYearSelectStateOpts) {
-		return new CalendarYearSelectState(opts, CalendarRootContext.get());
+		return new CalendarYearSelectState(opts, getCalendarRoot());
 	}
 
 	readonly opts: CalendarYearSelectStateOpts;

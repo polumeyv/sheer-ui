@@ -1,14 +1,7 @@
-import {
-	onMountEffect,
-	attachRef,
-	DOMContext,
-	type WritableBoxedValues,
-	type ReadableBoxedValues,
-	simpleBox,
-	boxWith,
-} from "$lib/internal/toolbelt.js";
+import { attachRef, DOMContext, type WritableBoxedValues, type ReadableBoxedValues, simpleBox, boxWith } from "$lib/internal/toolbelt.js";
 import { on } from "svelte/events";
-import { Context, watch } from "runed";
+import { createContext, onMount } from "svelte";
+import { watch } from "$lib/internal/toolbelt.js";
 import { isElement, isFocusVisible } from "$lib/internal/is.js";
 import {
 	createBitsAttrs,
@@ -25,8 +18,8 @@ export const tooltipAttrs = createBitsAttrs({
 	component: "tooltip",
 	parts: ["content", "trigger"],
 });
-const TooltipProviderContext = new Context<TooltipProviderState>("Tooltip.Provider");
-const TooltipRootContext = new Context<TooltipRootState>("Tooltip.Root");
+const [getTooltipProvider, setTooltipProvider] = createContext<TooltipProviderState>();
+const [getTooltipRoot, setTooltipRoot] = createContext<TooltipRootState>();
 
 type TooltipTriggerRecord = {
 	id: string;
@@ -155,7 +148,7 @@ interface TooltipProviderStateOpts
 
 export class TooltipProviderState {
 	static create(opts: TooltipProviderStateOpts) {
-		return TooltipProviderContext.set(new TooltipProviderState(opts));
+		return setTooltipProvider(new TooltipProviderState(opts));
 	}
 	readonly opts: TooltipProviderStateOpts;
 	isOpenDelayed = $state<boolean>(true);
@@ -169,7 +162,7 @@ export class TooltipProviderState {
 			this.isOpenDelayed = true;
 		}, this.opts.skipDelayDuration.current);
 
-		onMountEffect(() =>
+		onMount(() =>
 			on(window, "scroll", (e) => {
 				const activeTooltip = this.#openTooltip;
 				if (!activeTooltip) return;
@@ -241,7 +234,7 @@ interface TooltipRootStateOpts
 
 export class TooltipRootState {
 	static create(opts: TooltipRootStateOpts) {
-		return TooltipRootContext.set(new TooltipRootState(opts, TooltipProviderContext.get()));
+		return setTooltipRoot(new TooltipRootState(opts, getTooltipProvider()));
 	}
 	readonly opts: TooltipRootStateOpts;
 	readonly provider: TooltipProviderState;
@@ -289,7 +282,7 @@ export class TooltipRootState {
 
 		if (this.tether) {
 			this.tether.root = this;
-			onMountEffect(() => {
+			onMount(() => {
 				return () => {
 					if (this.tether?.root === this) {
 						this.tether.root = null;
@@ -476,7 +469,7 @@ export class TooltipTriggerState {
 		if (opts.tether.current) {
 			return new TooltipTriggerState(opts, null, opts.tether.current.state);
 		}
-		return new TooltipTriggerState(opts, TooltipRootContext.get(), null);
+		return new TooltipTriggerState(opts, getTooltipRoot(), null);
 	}
 	readonly opts: TooltipTriggerStateOpts;
 	readonly root: TooltipRootState | null;
@@ -519,7 +512,7 @@ export class TooltipTriggerState {
 			}
 		);
 
-		onMountEffect(() => {
+		onMount(() => {
 			this.#mounted = true;
 			this.#register(this.opts.ref.current);
 
@@ -616,7 +609,8 @@ export class TooltipTriggerState {
 		if (this.#isDisabled()) return;
 		this.#isPointerDown.current = true;
 
-		this.domContext.getDocument().addEventListener(
+		on(
+			this.domContext.getDocument(),
 			"pointerup",
 			() => {
 				this.handlePointerUp();
@@ -772,7 +766,7 @@ interface TooltipContentStateOpts
 
 export class TooltipContentState {
 	static create(opts: TooltipContentStateOpts) {
-		return new TooltipContentState(opts, TooltipRootContext.get());
+		return new TooltipContentState(opts, getTooltipRoot());
 	}
 	readonly opts: TooltipContentStateOpts;
 	readonly root: TooltipRootState;

@@ -1,11 +1,6 @@
-import {
-	attachRef,
-	boxWith,
-	onDestroyEffect,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from "$lib/internal/toolbelt.js";
-import { Context, watch } from "runed";
+import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
+import { watch } from "$lib/internal/toolbelt.js";
+import { createContext, onDestroy } from "svelte";
 import {
 	createBitsAttrs,
 	boolToStr,
@@ -30,7 +25,18 @@ const dialogAttrs = createBitsAttrs({
 	parts: ["content", "trigger", "overlay", "title", "description", "close", "cancel", "action"],
 });
 
-const DialogRootContext = new Context<DialogRootState>("Dialog.Root | AlertDialog.Root");
+const [getDialogRoot, setDialogRoot] = createContext<DialogRootState>();
+
+const missingContextErrorUrl = "https://svelte.dev/e/missing_context";
+
+function getDialogRootOr<TFallback>(fallback: TFallback): DialogRootState | TFallback {
+	try {
+		return getDialogRoot();
+	} catch (error) {
+		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
+		throw error;
+	}
+}
 
 interface DialogRootStateOpts
 	extends WritableBoxedValues<{
@@ -43,8 +49,8 @@ interface DialogRootStateOpts
 
 export class DialogRootState {
 	static create(opts: DialogRootStateOpts) {
-		const parent = DialogRootContext.getOr(null);
-		return DialogRootContext.set(new DialogRootState(opts, parent));
+		const parent = getDialogRootOr(null);
+		return setDialogRoot(new DialogRootState(opts, parent));
 	}
 
 	readonly opts: DialogRootStateOpts;
@@ -53,9 +59,11 @@ export class DialogRootState {
 	overlayNode = $state<HTMLElement | null>(null);
 	descriptionNode = $state<HTMLElement | null>(null);
 	contentId = $state<string | undefined>(undefined);
-	titleId = $state<string | undefined>(undefined);
 	triggerId = $state<string | undefined>(undefined);
-	descriptionId = $state<string | undefined>(undefined);
+	titleState = $state<DialogTitleState | null>(null);
+	descriptionState = $state<DialogDescriptionState | null>(null);
+	readonly titleId = $derived.by(() => this.titleState?.opts.id.current);
+	readonly descriptionId = $derived.by(() => this.descriptionState?.opts.id.current);
 	cancelNode = $state<HTMLElement | null>(null);
 	nestedOpenCount = $state(0);
 	readonly depth: number;
@@ -98,7 +106,7 @@ export class DialogRootState {
 			{ lazy: true }
 		);
 
-		onDestroyEffect(() => {
+		onDestroy(() => {
 			if (this.opts.open.current) {
 				this.parent?.decrementNested();
 			}
@@ -142,7 +150,7 @@ interface DialogTriggerStateOpts extends WithRefOpts, ReadableBoxedValues<{ disa
 
 export class DialogTriggerState {
 	static create(opts: DialogTriggerStateOpts) {
-		return new DialogTriggerState(opts, DialogRootContext.get());
+		return new DialogTriggerState(opts, getDialogRoot());
 	}
 
 	readonly opts: DialogTriggerStateOpts;
@@ -197,7 +205,7 @@ interface DialogCloseStateOpts
 
 export class DialogCloseState {
 	static create(opts: DialogCloseStateOpts) {
-		return new DialogCloseState(opts, DialogRootContext.get());
+		return new DialogCloseState(opts, getDialogRoot());
 	}
 
 	readonly opts: DialogCloseStateOpts;
@@ -245,7 +253,7 @@ interface DialogActionStateOpts extends WithRefOpts {}
 
 export class DialogActionState {
 	static create(opts: DialogActionStateOpts) {
-		return new DialogActionState(opts, DialogRootContext.get());
+		return new DialogActionState(opts, getDialogRoot());
 	}
 
 	readonly opts: DialogActionStateOpts;
@@ -274,7 +282,7 @@ interface DialogTitleStateOpts
 
 export class DialogTitleState {
 	static create(opts: DialogTitleStateOpts) {
-		return new DialogTitleState(opts, DialogRootContext.get());
+		return new DialogTitleState(opts, getDialogRoot());
 	}
 
 	readonly opts: DialogTitleStateOpts;
@@ -284,15 +292,8 @@ export class DialogTitleState {
 	constructor(opts: DialogTitleStateOpts, root: DialogRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.root.titleId = this.opts.id.current;
+		this.root.titleState = this;
 		this.attachment = attachRef(this.opts.ref);
-
-		watch.pre(
-			() => this.opts.id.current,
-			(id) => {
-				this.root.titleId = id;
-			}
-		);
 	}
 
 	readonly props = $derived.by(
@@ -312,7 +313,7 @@ interface DialogDescriptionStateOpts extends WithRefOpts {}
 
 export class DialogDescriptionState {
 	static create(opts: DialogDescriptionStateOpts) {
-		return new DialogDescriptionState(opts, DialogRootContext.get());
+		return new DialogDescriptionState(opts, getDialogRoot());
 	}
 
 	readonly opts: DialogDescriptionStateOpts;
@@ -322,16 +323,10 @@ export class DialogDescriptionState {
 	constructor(opts: DialogDescriptionStateOpts, root: DialogRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.root.descriptionId = this.opts.id.current;
+		this.root.descriptionState = this;
 		this.attachment = attachRef(this.opts.ref, (v) => {
 			this.root.descriptionNode = v;
 		});
-		watch.pre(
-			() => this.opts.id.current,
-			(id) => {
-				this.root.descriptionId = id;
-			}
-		);
 	}
 
 	readonly props = $derived.by(
@@ -349,7 +344,7 @@ interface DialogContentStateOpts extends WithRefOpts {}
 
 export class DialogContentState {
 	static create(opts: DialogContentStateOpts) {
-		return new DialogContentState(opts, DialogRootContext.get());
+		return new DialogContentState(opts, getDialogRoot());
 	}
 
 	readonly opts: DialogContentStateOpts;
@@ -404,7 +399,7 @@ interface DialogOverlayStateOpts extends WithRefOpts {}
 
 export class DialogOverlayState {
 	static create(opts: DialogOverlayStateOpts) {
-		return new DialogOverlayState(opts, DialogRootContext.get());
+		return new DialogOverlayState(opts, getDialogRoot());
 	}
 
 	readonly opts: DialogOverlayStateOpts;
@@ -447,7 +442,7 @@ interface AlertDialogCancelStateOpts
 
 export class AlertDialogCancelState {
 	static create(opts: AlertDialogCancelStateOpts) {
-		return new AlertDialogCancelState(opts, DialogRootContext.get());
+		return new AlertDialogCancelState(opts, getDialogRoot());
 	}
 
 	readonly opts: AlertDialogCancelStateOpts;

@@ -1,11 +1,6 @@
-import {
-	afterTick,
-	attachRef,
-	boxWith,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from "$lib/internal/toolbelt.js";
-import { Context, watch } from "runed";
+import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
+import { watch } from "$lib/internal/toolbelt.js";
+import { createContext, tick } from "svelte";
 import {
 	createBitsAttrs,
 	boolToStr,
@@ -23,6 +18,7 @@ import type {
 } from "$lib/internal/types.js";
 import { on } from "svelte/events";
 import { PresenceManager } from "$lib/internal/presence-manager.svelte.js";
+import { createAttachmentKey, type Attachment } from "svelte/attachments";
 
 const collapsibleAttrs = createBitsAttrs({
 	component: "collapsible",
@@ -39,18 +35,19 @@ interface CollapsibleRootStateOpts
 			onOpenChangeComplete: OnChangeFn<boolean>;
 		}> {}
 
-const CollapsibleRootContext = new Context<CollapsibleRootState>("Collapsible.Root");
+const [getCollapsibleRoot, setCollapsibleRoot] = createContext<CollapsibleRootState>();
 
 export class CollapsibleRootState {
 	static create(opts: CollapsibleRootStateOpts) {
-		return CollapsibleRootContext.set(new CollapsibleRootState(opts));
+		return setCollapsibleRoot(new CollapsibleRootState(opts));
 	}
 
 	readonly opts: CollapsibleRootStateOpts;
 	readonly attachment: RefAttachment;
 	contentNode = $state<HTMLElement | null>(null);
 	contentPresence: PresenceManager;
-	contentId = $state<string | undefined>(undefined);
+	contentState = $state<CollapsibleContentState | null>(null);
+	readonly contentId = $derived.by(() => this.contentState?.opts.id.current);
 
 	constructor(opts: CollapsibleRootStateOpts) {
 		this.opts = opts;
@@ -91,7 +88,7 @@ interface CollapsibleContentStateOpts
 
 export class CollapsibleContentState {
 	static create(opts: CollapsibleContentStateOpts) {
-		return new CollapsibleContentState(opts, CollapsibleRootContext.get());
+		return new CollapsibleContentState(opts, getCollapsibleRoot());
 	}
 
 	readonly opts: CollapsibleContentStateOpts;
@@ -111,15 +108,11 @@ export class CollapsibleContentState {
 		this.opts = opts;
 		this.root = root;
 		this.#isMountAnimationPrevented = root.opts.open.current;
-		this.root.contentId = this.opts.id.current;
-		this.attachment = attachRef(this.opts.ref, (v) => (this.root.contentNode = v));
-
-		watch.pre(
-			() => this.opts.id.current,
-			(id) => {
-				this.root.contentId = id;
-			}
-		);
+		this.root.contentState = this;
+		this.attachment = {
+			...attachRef(this.opts.ref, (v) => (this.root.contentNode = v)),
+			[createAttachmentKey()]: ((node) => this.#attachBeforeMatch(node)) satisfies Attachment<HTMLElement>,
+		};
 
 		$effect.pre(() => {
 			const rAF = requestAnimationFrame(() => {
@@ -131,28 +124,9 @@ export class CollapsibleContentState {
 			};
 		});
 
-		watch.pre(
-			[() => this.opts.ref.current, () => this.opts.hiddenUntilFound.current],
-			([node, hiddenUntilFound]) => {
-				if (!node || !hiddenUntilFound) return;
-
-				const handleBeforeMatch = () => {
-					if (this.root.opts.open.current) return;
-					// we need to defer opening until after browser completes search highlighting
-					// otherwise the browser will immediately open the collapsible
-					// and the search highlighting will not be visible
-					requestAnimationFrame(() => {
-						this.root.opts.open.current = true;
-					});
-				};
-
-				return on(node, "beforematch", handleBeforeMatch);
-			}
-		);
-
 		watch([() => this.opts.ref.current, () => this.present], ([node]) => {
 			if (!node) return;
-			afterTick(() => {
+			tick().then(() => {
 				if (!this.opts.ref.current) return;
 				// get the dimensions of the element
 				this.#originalStyles = this.#originalStyles || {
@@ -180,6 +154,22 @@ export class CollapsibleContentState {
 
 	get shouldRender() {
 		return this.root.contentPresence.shouldRender;
+	}
+
+	#attachBeforeMatch(node: HTMLElement) {
+		if (!this.opts.hiddenUntilFound.current) return;
+
+		const handleBeforeMatch = () => {
+			if (this.root.opts.open.current) return;
+			// we need to defer opening until after browser completes search highlighting
+			// otherwise the browser will immediately open the collapsible
+			// and the search highlighting will not be visible
+			requestAnimationFrame(() => {
+				this.root.opts.open.current = true;
+			});
+		};
+
+		return on(node, "beforematch", handleBeforeMatch);
 	}
 
 	readonly snippetProps = $derived.by(() => ({
@@ -228,7 +218,7 @@ interface CollapsibleTriggerStateOpts
 
 export class CollapsibleTriggerState {
 	static create(opts: CollapsibleTriggerStateOpts) {
-		return new CollapsibleTriggerState(opts, CollapsibleRootContext.get());
+		return new CollapsibleTriggerState(opts, getCollapsibleRoot());
 	}
 
 	readonly opts: CollapsibleTriggerStateOpts;

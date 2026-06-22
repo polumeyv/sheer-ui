@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getAllContexts, mount, unmount } from 'svelte';
 	import { DEV } from 'esm-env';
-	import { watch } from 'runed';
+	import { watch } from '$lib/internal/toolbelt.js';
 	import PortalConsumer from './portal-consumer.svelte';
 	import type { PortalProps } from './types.js';
 	import { isBrowser } from '$lib/internal/is.js';

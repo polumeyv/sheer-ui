@@ -1,13 +1,7 @@
 import type { DateValue } from "@internationalized/date";
-import {
-	boxWith,
-	onDestroyEffect,
-	attachRef,
-	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from "$lib/internal/toolbelt.js";
-import { Context, watch } from "runed";
+import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
+import { watch } from "$lib/internal/toolbelt.js";
+import { createContext, onMount } from "svelte";
 import { DateFieldInputState, DateFieldRootState } from "../date-field/date-field.svelte.js";
 import { useId } from "$lib/internal/use-id.js";
 import type {
@@ -29,9 +23,7 @@ export const dateRangeFieldAttrs = createBitsAttrs({
 	parts: ["root", "label"],
 });
 
-export const DateRangeFieldRootContext = new Context<DateRangeFieldRootState>(
-	"DateRangeField.Root"
-);
+export const [getDateRangeFieldRoot, setDateRangeFieldRoot] = createContext<DateRangeFieldRootState>();
 
 interface DateRangeFieldRootStateOpts
 	extends WithRefOpts,
@@ -59,7 +51,7 @@ interface DateRangeFieldRootStateOpts
 
 export class DateRangeFieldRootState {
 	static create(opts: DateRangeFieldRootStateOpts) {
-		return DateRangeFieldRootContext.set(new DateRangeFieldRootState(opts));
+		return setDateRangeFieldRoot(new DateRangeFieldRootState(opts));
 	}
 
 	readonly opts: DateRangeFieldRootStateOpts;
@@ -86,7 +78,7 @@ export class DateRangeFieldRootState {
 		this.domContext = new DOMContext(this.opts.ref);
 		this.attachment = attachRef(this.opts.ref, (v) => (this.fieldNode = v));
 
-		onDestroyEffect(() => {
+		onMount(() => () => {
 			removeDescriptionElement(this.descriptionId, this.domContext.getDocument());
 		});
 
@@ -96,8 +88,8 @@ export class DateRangeFieldRootState {
 		});
 
 		/**
-		 * Synchronize the start and end values with the `value` in case
-		 * it is updated externally.
+		 * External bind:value updates replace the range object. startValue/endValue
+		 * are internal field cursor state, so they must be repaired from value.
 		 */
 		watch(
 			() => this.opts.value.current,
@@ -116,7 +108,8 @@ export class DateRangeFieldRootState {
 		);
 
 		/**
-		 * Synchronize the placeholder value with the current start value
+		 * The selected start date controls the placeholder used by both field inputs,
+		 * and parents using bind:placeholder should observe that state-machine update.
 		 */
 		watch(
 			() => this.opts.value.current,
@@ -128,6 +121,10 @@ export class DateRangeFieldRootState {
 			}
 		);
 
+		/**
+		 * Internal start/end field completion composes the public bind:value range object.
+		 * Parent bind:value only observes a completed range from segment entry.
+		 */
 		watch(
 			[() => this.opts.startValue.current, () => this.opts.endValue.current],
 			([startValue, endValue]) => {
@@ -226,7 +223,7 @@ interface DateRangeFieldLabelStateOpts extends WithRefOpts {}
 
 export class DateRangeFieldLabelState {
 	static create(opts: DateRangeFieldLabelStateOpts) {
-		return new DateRangeFieldLabelState(opts, DateRangeFieldRootContext.get());
+		return new DateRangeFieldLabelState(opts, getDateRangeFieldRoot());
 	}
 
 	readonly opts: DateRangeFieldLabelStateOpts;
@@ -270,7 +267,7 @@ interface DateRangeFieldInputStateOpts
 
 export class DateRangeFieldInputState {
 	static create(opts: Omit<DateRangeFieldInputStateOpts, "value">, type: "start" | "end") {
-		const root = DateRangeFieldRootContext.get();
+		const root = getDateRangeFieldRoot();
 		const fieldState = DateFieldRootState.create(
 			{
 				value: type === "start" ? root.opts.startValue : root.opts.endValue,

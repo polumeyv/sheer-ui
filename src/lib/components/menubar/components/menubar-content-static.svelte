@@ -3,7 +3,7 @@
 	import type { MenubarContentStaticProps } from "../types.js";
 	import { MenubarContentState } from "../menubar.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import MenuContentSta$lib/components/menu/components/menu-content-static.sveltetic.svelte";
+	import MenuContentStatic from "$lib/components/menu/components/menu-content-static.svelte";
 
 	const uid = $props.id();
 

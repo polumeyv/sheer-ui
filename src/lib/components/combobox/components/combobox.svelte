@@ -4,7 +4,7 @@
 	import FloatingLayer from "$lib/components/utilities/floating-layer/components/floating-layer.svelte";
 	import { SelectRootState } from "$lib/components/select/select.svelte.js";
 	import ListboxHiddenInput from "$lib/components/select/components/select-hidden-input.svelte";
-	import { watch } from "runed";
+	import { watch } from "$lib/internal/toolbelt.js";
 
 	let {
 		value = $bindable(),
@@ -24,16 +24,23 @@
 		children,
 	}: ComboboxRootProps = $props();
 
-	if (value === undefined) {
+	function repairUndefinedControlledValue() {
+		if (value !== undefined) return;
 		const defaultValue = type === "single" ? "" : [];
 		value = defaultValue;
 	}
 
+	// SSR/initial setup: Combobox owns a mode-specific controlled value.
+	repairUndefinedControlledValue();
+
 	watch.pre(
 		() => value,
 		() => {
-			if (value !== undefined) return;
-			value = type === "single" ? "" : [];
+			/**
+			 * Parent spread-prop resets can make the bindable value undefined again.
+			 * Repairing it preserves the controlled value shape observed by bind:value.
+			 */
+			repairUndefinedControlledValue();
 		}
 	);
 

@@ -9,7 +9,7 @@ import { itemVariants, itemMediaVariants } from './item/variants';
 import { emptyMediaVariants } from './empty/variants';
 import { sidebarMenuButtonVariants } from './sidebar/variants';
 import { toggleVariants } from './toggle/variants';
-import { alertVariants } from './alert/variants';
+import { alertVariants } from './alert';
 import { navigationMenuTriggerStyle } from './navigation-menu/variants';
 import { sheetVariants } from './sheet/variants';
 
@@ -51,3 +51,21 @@ export const registry: RegistryEntry[] = [
  * strings are guarded at runtime by the cn() dev tripwire instead.
  */
 export const compositions: [string, () => string][] = [];
+
+/** Cartesian product of every variant axis; `{}` (no axes) yields a single empty combo. */
+export function combos(axes: Record<string, readonly string[]>): Record<string, string>[] {
+	const keys = Object.keys(axes);
+	if (keys.length === 0) return [{}];
+	return keys.reduce<Record<string, string>[]>(
+		(acc, key) => acc.flatMap((partial) => axes[key].map((value) => ({ ...partial, [key]: value }))),
+		[{}],
+	);
+}
+
+/** Stable, sorted test name for a single variant combo. */
+export function comboKey(name: string, combo: Record<string, string>): string {
+	const parts = Object.keys(combo)
+		.sort()
+		.map((k) => `${k}=${combo[k]}`);
+	return `${name}|${parts.join(',')}`;
+}

@@ -1,21 +1,5 @@
 <script lang="ts" module>
-	import { declareVariants, type VariantProps } from 'overrule';
-
-	export const itemMediaVariants = declareVariants({
-		base: 'cn-item-media flex shrink-0 items-center justify-center [&_svg]:pointer-events-none',
-		variants: {
-			variant: {
-				default: 'cn-item-media-variant-default',
-				icon: 'cn-item-media-variant-icon',
-				image: 'cn-item-media-variant-image',
-			},
-		},
-		defaultVariants: {
-			variant: 'default',
-		},
-	});
-
-	export type ItemMediaVariant = VariantProps<typeof itemMediaVariants>['variant'];
+	import { itemMediaVariants, type ItemMediaVariant } from './variants';
 </script>
 
 <script lang="ts">

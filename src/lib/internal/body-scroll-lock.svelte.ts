@@ -2,17 +2,16 @@ import { SvelteMap } from "svelte/reactivity";
 import {
 	type Getter,
 	type ReadableBox,
-	afterTick,
 	boxWith,
-	onDestroyEffect,
 } from "$lib/internal/toolbelt.js";
 import type { Fn } from "./types.js";
 import { isIOS } from "./is.js";
 import { useId } from "./use-id.js";
-import { watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
 import { SharedState } from "./shared-state.svelte.js";
 import { BROWSER } from "esm-env";
 import { on } from "svelte/events";
+import { onMount, tick } from "svelte";
 
 export interface ScrollBodyOption {
 	padding?: boolean | number;
@@ -25,6 +24,10 @@ let initialBodyStyle: string | null = $state<string | null>(null);
 let stopTouchMoveListener: Fn | null = null;
 let cleanupTimeoutId: number | null = null;
 let isInCleanupTransition = false;
+
+function cleanupTouchMoveListener() {
+	stopTouchMoveListener?.();
+}
 
 const anyLocked = boxWith(() => {
 	for (const value of lockMap.values()) {
@@ -160,18 +163,14 @@ const bodyLockStackCount = new SharedState(() => {
 			 * this avoids race conditions where pointer-events could be set too early and break
 			 * focus/interaction.
 			 */
-			afterTick(() => {
+			tick().then(() => {
 				document.body.style.pointerEvents = "none";
 				document.body.style.overflow = "hidden";
 			});
 		}
 	);
 
-	onDestroyEffect(() => {
-		return () => {
-			stopTouchMoveListener?.();
-		};
-	});
+	$effect(() => cleanupTouchMoveListener);
 
 	return {
 		get lockMap() {
@@ -220,7 +219,7 @@ export class BodyScrollLock {
 			(v) => this.#countState.lockMap.set(this.#id, v)
 		);
 
-		onDestroyEffect(() => {
+		onMount(() => () => {
 			this.#countState.lockMap.delete(this.#id);
 
 			// if not the last lock, we don't need to do anything

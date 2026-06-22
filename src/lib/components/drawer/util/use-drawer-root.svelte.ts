@@ -1,10 +1,8 @@
 import {
-	afterSleep,
-	afterTick,
 	box,
 	type ReadableBoxedValues,
 	type WritableBoxedValues,
-} from "svelte-toolbelt";
+} from "$lib/internal/toolbelt.js";
 import type { DrawerDirection } from "./types.js";
 import { useSnapPoints } from "./use-snap-points.svelte.js";
 import { isInput, usePreventScroll } from "./use-prevent-scroll.svelte.js";
@@ -20,9 +18,10 @@ import {
 import { isMobileFirefox } from "./internal/browser.js";
 import { isIOS } from "$lib/internal/is.js";
 import { on } from "svelte/events";
+import { tick } from "svelte";
 import { dampenValue, getTranslate, isVertical, reset, set } from "./helpers.js";
-import { watch } from "runed";
-import { DrawerContext } from "./context.js";
+import { watch } from "$lib/internal/toolbelt.js";
+import { setDrawer } from "./context.js";
 
 type UseDrawerRootProps = ReadableBoxedValues<{
 	closeThreshold: number;
@@ -495,7 +494,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		// because we need to differentiate release from outside click/escape keydown
 		isReleasing = true;
 		handleRelease(event);
-		afterTick(() => {
+		tick().then(() => {
 			isReleasing = false;
 		});
 	}
@@ -669,17 +668,16 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let bodyStyles: any;
+	let bodyStyles = "";
 
 	function handleOpenChange(o: boolean) {
 		opts.onOpenChange.current?.(o);
 		if (o && !opts.nested.current) {
 			bodyStyles = document.body.style.cssText;
 		} else if (!o && !opts.nested.current) {
-			afterSleep(TRANSITIONS.DURATION * 1000, () => {
+			setTimeout(() => {
 				document.body.style.cssText = bodyStyles;
-			});
+			}, TRANSITIONS.DURATION * 1000);
 		}
 
 		if (!o && !opts.nested.current) {
@@ -723,7 +721,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		drawerNode = node;
 	}
 
-	return DrawerContext.set({
+	return setDrawer({
 		...opts,
 		keyboardIsOpen,
 		closeDrawer,

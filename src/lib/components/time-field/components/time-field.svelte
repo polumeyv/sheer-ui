@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts" generics="T extends TimeValue = Time">
-	import { watch } from "runed";
+	import { watch } from "$lib/internal/toolbelt.js";
 	import { boxWith } from "$lib/internal/toolbelt.js";
 	import { TimeFieldRootState } from "../time-field.svelte.js";
 	import type { TimeFieldRootProps } from "../types.js";
@@ -33,7 +33,7 @@
 		children,
 	}: TimeFieldRootProps<T> = $props();
 
-	function handleDefaultPlaceholder() {
+	function repairUndefinedControlledPlaceholder() {
 		if (placeholder !== undefined) return;
 
 		const defaultPlaceholder = getDefaultTime({
@@ -44,18 +44,18 @@
 		placeholder = defaultPlaceholder;
 	}
 
-	// SSR
-	handleDefaultPlaceholder();
+	// SSR/initial setup. Segment state requires a writable TimeValue placeholder.
+	repairUndefinedControlledPlaceholder();
 
 	/**
-	 * Covers an edge case where when a spread props object is reassigned,
-	 * the props are reset to their default values, which would make placeholder
-	 * undefined which causes errors to be thrown.
+	 * Parent spread-prop resets can make the bindable placeholder undefined again.
+	 * Repairing it is intentional: this is writable segment/focus state, and
+	 * parents using bind:placeholder should observe the repaired value.
 	 */
 	watch.pre(
 		() => placeholder,
 		() => {
-			handleDefaultPlaceholder();
+			repairUndefinedControlledPlaceholder();
 		}
 	);
 

@@ -379,7 +379,7 @@ export function inferGranularity(
 }
 
 export function isAcceptableSegmentKey(key: string) {
-	const acceptableSegmentKeys = [
+	const acceptableSegmentKeys: string[] = [
 		kbd.ENTER,
 		kbd.ARROW_UP,
 		kbd.ARROW_DOWN,

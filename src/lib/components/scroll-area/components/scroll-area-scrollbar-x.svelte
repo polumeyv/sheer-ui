@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IsMounted } from "runed";
+	import { IsMounted } from "$lib/internal/toolbelt.js";
 	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
 	import { ScrollAreaScrollbarXState } from "../scroll-area.svelte.js";
 	import type { _ScrollbarStubProps } from "../types.js";

@@ -6,7 +6,7 @@ import {
 	getWindow,
 } from "$lib/internal/toolbelt.js";
 import { on } from "svelte/events";
-import { watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
 import { boxAutoReset } from "./box-auto-reset.svelte.js";
 import { isElement, isHTMLElement } from "./is.js";
 import type { Side } from "$lib/components/utilities/floating-layer/use-floating-layer.svelte.js";

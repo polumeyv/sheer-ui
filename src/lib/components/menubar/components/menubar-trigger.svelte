@@ -4,7 +4,7 @@
 	import { MenubarTriggerState } from "../menubar.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 	import FloatingLayerAnchor from "$lib/components/utilities/floating-layer/components/floating-layer-anchor.svelte";
-	import { DropdownMenuTriggerState$lib/components/menu/menu.svelte.jssvelte.js";
+	import { DropdownMenuTriggerState } from "$lib/components/menu/menu.svelte.js";
 
 	const uid = $props.id();
 

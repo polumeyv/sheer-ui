@@ -1,24 +1,13 @@
-import {
-	type ReadableBox,
-	afterTick,
-	boxWith,
-	attachRef,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from "$lib/internal/toolbelt.js";
-import { Context, watch } from "runed";
+import { type ReadableBox, boxWith, attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
+import { watch } from "$lib/internal/toolbelt.js";
 import type { InteractOutsideBehaviorType } from "../utilities/dismissible-layer/types.js";
 import type { Direction } from "$lib/shared/index.js";
 import {
-	createBitsAttrs,
-	boolToStr,
-	boolToEmptyStrOrUndef,
-	getDataOpenClosed,
-} from "$lib/internal/attrs.js";
+	createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed, } from "$lib/internal/attrs.js";
 import { kbd } from "$lib/internal/kbd.js";
 import { wrapArray } from "$lib/internal/arrays.js";
 import type { OnChangeFn, RefAttachment, WithRefOpts } from "$lib/internal/types.js";
-import { onMount } from "svelte";
+import { createContext, onMount, tick } from "svelte";
 import type { FocusEventHandler, KeyboardEventHandler, PointerEventHandler } from "svelte/elements";
 import { getFloatingContentCSSVars } from "../../internal/floating-svelte/floating-utils.svelte.js";
 import { RovingFocusGroup } from "$lib/internal/roving-focus-group.js";
@@ -28,8 +17,8 @@ const menubarAttrs = createBitsAttrs({
 	parts: ["root", "trigger", "content"],
 });
 
-const MenubarRootContext = new Context<MenubarRootState>("Menubar.Root");
-const MenubarMenuContext = new Context<MenubarMenuState>("Menubar.Menu");
+const [getMenubarRoot, setMenubarRoot] = createContext<MenubarRootState>();
+const [getMenubarMenu, setMenubarMenu] = createContext<MenubarMenuState>();
 interface MenubarRootStateOpts
 	extends WithRefOpts,
 		ReadableBoxedValues<{
@@ -42,7 +31,7 @@ interface MenubarRootStateOpts
 
 export class MenubarRootState {
 	static create(opts: MenubarRootStateOpts) {
-		return MenubarRootContext.set(new MenubarRootState(opts));
+		return setMenubarRoot(new MenubarRootState(opts));
 	}
 	readonly opts: MenubarRootStateOpts;
 	readonly rovingFocusGroup: RovingFocusGroup;
@@ -105,7 +94,7 @@ export class MenubarRootState {
 			nextHandler(true);
 		}
 		if (switchingMenus) {
-			afterTick(() => {
+			tick().then(() => {
 				this.skipExitAnimationForMenuValue = null;
 			});
 		}
@@ -151,7 +140,7 @@ interface MenubarMenuStateOpts
 
 export class MenubarMenuState {
 	static create(opts: MenubarMenuStateOpts) {
-		return MenubarMenuContext.set(new MenubarMenuState(opts, MenubarRootContext.get()));
+		return setMenubarMenu(new MenubarMenuState(opts, getMenubarRoot()));
 	}
 
 	readonly opts: MenubarMenuStateOpts;
@@ -202,7 +191,7 @@ interface MenubarTriggerStateOpts
 
 export class MenubarTriggerState {
 	static create(opts: MenubarTriggerStateOpts) {
-		return new MenubarTriggerState(opts, MenubarMenuContext.get());
+		return new MenubarTriggerState(opts, getMenubarMenu());
 	}
 
 	readonly opts: MenubarTriggerStateOpts;
@@ -314,7 +303,7 @@ interface MenubarContentStateOpts
 
 export class MenubarContentState {
 	static create(opts: MenubarContentStateOpts) {
-		return new MenubarContentState(opts, MenubarMenuContext.get());
+		return new MenubarContentState(opts, getMenubarMenu());
 	}
 
 	readonly opts: MenubarContentStateOpts;
@@ -350,7 +339,7 @@ export class MenubarContentState {
 	onOpenAutoFocus = (e: Event) => {
 		this.opts.onOpenAutoFocus.current(e);
 		if (e.defaultPrevented) return;
-		afterTick(() => this.opts.ref.current?.focus());
+		tick().then(() => this.opts.ref.current?.focus());
 	};
 
 	onkeydown: KeyboardEventHandler<HTMLElement> = (e) => {

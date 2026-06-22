@@ -1,10 +1,5 @@
-import {
-	type WritableBox,
-	type WritableBoxedValues,
-	type ReadableBoxedValues,
-	attachRef,
-} from "$lib/internal/toolbelt.js";
-import { Context } from "runed";
+import { createContext } from "svelte";
+import { type WritableBox, type WritableBoxedValues, type ReadableBoxedValues, attachRef } from "$lib/internal/toolbelt.js";
 import {
 	createBitsAttrs,
 	getAriaChecked,
@@ -27,8 +22,8 @@ export const toolbarAttrs = createBitsAttrs({
 	parts: ["root", "item", "group", "group-item", "link", "button"],
 });
 
-const ToolbarRootContext = new Context<ToolbarRootState>("Toolbar.Root");
-const ToolbarGroupContext = new Context<ToolbarGroup>("Toolbar.Group");
+const [getToolbarRoot, setToolbarRoot] = createContext<ToolbarRootState>();
+const [getToolbarGroup, setToolbarGroup] = createContext<ToolbarGroup>();
 interface ToolbarRootStateOpts
 	extends WithRefOpts,
 		ReadableBoxedValues<{
@@ -38,7 +33,7 @@ interface ToolbarRootStateOpts
 
 export class ToolbarRootState {
 	static create(opts: ToolbarRootStateOpts) {
-		return ToolbarRootContext.set(new ToolbarRootState(opts));
+		return setToolbarRoot(new ToolbarRootState(opts));
 	}
 	readonly opts: ToolbarRootStateOpts;
 	readonly rovingFocusGroup: RovingFocusGroup;
@@ -176,13 +171,13 @@ interface ToolbarGroupRootOpts
 export class ToolbarGroupState {
 	static create(opts: ToolbarGroupRootOpts): ToolbarGroup {
 		const { type, ...rest } = opts;
-		const rootState = ToolbarRootContext.get();
+		const rootState = getToolbarRoot();
 		const groupState =
 			type === "single"
 				? new ToolbarGroupSingleState(rest as ToolbarGroupSingleStateOpts, rootState)
 				: new ToolbarGroupMultipleState(rest as ToolbarGroupMultipleStateOpts, rootState);
 
-		return ToolbarGroupContext.set(groupState);
+		return setToolbarGroup(groupState);
 	}
 }
 
@@ -199,7 +194,7 @@ interface ToolbarGroupItemStateOpts
 
 export class ToolbarGroupItemState {
 	static create(opts: ToolbarGroupItemStateOpts) {
-		const group = ToolbarGroupContext.get();
+		const group = getToolbarGroup();
 		return new ToolbarGroupItemState(opts, group, group.root);
 	}
 	readonly opts: ToolbarGroupItemStateOpts;
@@ -284,7 +279,7 @@ interface ToolbarLinkStateOpts extends WithRefOpts {}
 
 export class ToolbarLinkState {
 	static create(opts: ToolbarLinkStateOpts) {
-		return new ToolbarLinkState(opts, ToolbarRootContext.get());
+		return new ToolbarLinkState(opts, getToolbarRoot());
 	}
 	readonly opts: ToolbarLinkStateOpts;
 	readonly root: ToolbarRootState;
@@ -339,7 +334,7 @@ interface ToolbarButtonStateOpts
 
 export class ToolbarButtonState {
 	static create(opts: ToolbarButtonStateOpts) {
-		return new ToolbarButtonState(opts, ToolbarRootContext.get());
+		return new ToolbarButtonState(opts, getToolbarRoot());
 	}
 	readonly opts: ToolbarButtonStateOpts;
 	readonly root: ToolbarRootState;

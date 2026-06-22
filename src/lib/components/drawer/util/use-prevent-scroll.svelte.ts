@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // This code comes from https://github.com/adobe/react-spectrum/blob/main/packages/%40react-aria/overlays/src/usePreventScroll.ts
 
-import { watch } from 'runed';
+import { watch } from '$lib/internal/toolbelt.js';
 import { isBrowser, isIOS } from '$lib/internal/is.js';
 import { on } from 'svelte/events';
 
@@ -158,11 +158,7 @@ function preventScrollMobileSafari() {
 		}
 	};
 
-	let onWindowScroll = () => {
-		// Last resort. If the window scrolled, scroll it back to the top.
-		// It should always be at the top because the body will have a negative margin (see below).
-		window.scrollTo(0, 0);
-	};
+	const onWindowScroll = () => window.scrollTo(0, 0);
 
 	// Record the original scroll position so we can restore it.
 	// Then apply a negative margin to the body to offset it by the scroll position. This will

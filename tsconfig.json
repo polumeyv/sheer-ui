@@ -19,5 +19,5 @@
 		"noImplicitOverride": false
 	},
 	"include": ["src/lib"],
-	"exclude": ["dist"]
+	"exclude": ["dist", "src/lib/registry/examples"]
 }

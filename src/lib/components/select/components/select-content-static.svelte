@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from 'svelte-toolbelt';
+	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
 	import type { SelectContentStaticProps } from '../types.js';
 	import { SelectContentState } from '../select.svelte.js';
 	import PopperLayer from '../../utilities/popper-layer/popper-layer.svelte';

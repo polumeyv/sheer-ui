@@ -1,17 +1,8 @@
 import type { Updater } from 'svelte/store';
 import type { DateValue } from '@internationalized/date';
-import {
-	type WritableBox,
-	boxWith,
-	onDestroyEffect,
-	attachRef,
-	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	simpleBox,
-} from '$lib/internal/toolbelt.js';
-import { onMount, untrack } from 'svelte';
-import { Context, watch } from 'runed';
+import { type ReadableBox, type WritableBox, boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, simpleBox } from "$lib/internal/toolbelt.js";
+import { createContext, onMount, untrack } from "svelte";
+import { watch } from "$lib/internal/toolbelt.js";
 import type { DateRangeFieldRootState } from '../date-range-field/date-range-field.svelte.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, WithRefOpts, RefAttachment } from '$lib/internal/types.js';
 import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
@@ -132,7 +123,7 @@ const SEGMENT_CONFIGS: Record<'day' | 'month' | 'year' | 'hour' | 'minute' | 'se
 	},
 };
 
-const DateFieldRootContext = new Context<DateFieldRootState>('DateField.Root');
+const [getDateFieldRoot, setDateFieldRoot] = createContext<DateFieldRootState>();
 
 interface DateFieldRootStateOpts
 	extends
@@ -159,7 +150,7 @@ interface DateFieldRootStateOpts
 
 export class DateFieldRootState {
 	static create(opts: DateFieldRootStateOpts, rangeRoot?: DateRangeFieldRootState) {
-		return DateFieldRootContext.set(new DateFieldRootState(opts, rangeRoot));
+		return setDateFieldRoot(new DateFieldRootState(opts, rangeRoot));
 	}
 
 	value: DateFieldRootStateOpts['value'];
@@ -192,7 +183,10 @@ export class DateFieldRootState {
 	states = initSegmentStates();
 	dayPeriodNode = $state<HTMLElement | null>(null);
 	rangeRoot: DateRangeFieldRootState | undefined = undefined;
-	name = $state('');
+	#nameSource: ReadableBox<string> = simpleBox('');
+	get name() {
+		return this.#nameSource.current;
+	}
 	domContext: DOMContext = new DOMContext(() => null);
 
 	constructor(props: DateFieldRootStateOpts, rangeRoot?: DateRangeFieldRootState) {
@@ -241,7 +235,7 @@ export class DateFieldRootState {
 			this.announcer = getAnnouncer(this.domContext.getDocument());
 		});
 
-		onDestroyEffect(() => {
+		onMount(() => () => {
 			if (rangeRoot) return;
 			removeDescriptionElement(this.descriptionId, this.domContext.getDocument());
 		});
@@ -302,8 +296,8 @@ export class DateFieldRootState {
 		);
 	}
 
-	setName(name: string) {
-		this.name = name;
+	setNameSource(name: ReadableBox<string>) {
+		this.#nameSource = name;
 	}
 
 	/**
@@ -702,7 +696,7 @@ interface DateFieldInputStateOpts
 
 export class DateFieldInputState {
 	static create(opts: DateFieldInputStateOpts) {
-		return new DateFieldInputState(opts, DateFieldRootContext.get());
+		return new DateFieldInputState(opts, getDateFieldRoot());
 	}
 
 	readonly opts: DateFieldInputStateOpts;
@@ -716,13 +710,7 @@ export class DateFieldInputState {
 		this.domContext = new DOMContext(opts.ref);
 		this.root.domContext = this.domContext;
 		this.attachment = attachRef(opts.ref, (v) => this.root.setFieldNode(v));
-
-		watch(
-			() => this.opts.name.current,
-			(v) => {
-				this.root.setName(v);
-			},
-		);
+		this.root.setNameSource(this.opts.name);
 	}
 
 	readonly #ariaDescribedBy = $derived.by(() => {
@@ -749,7 +737,7 @@ export class DateFieldInputState {
 }
 export class DateFieldHiddenInputState {
 	static create() {
-		return new DateFieldHiddenInputState(DateFieldRootContext.get());
+		return new DateFieldHiddenInputState(getDateFieldRoot());
 	}
 
 	readonly root: DateFieldRootState;
@@ -773,7 +761,7 @@ interface DateFieldLabelStateOpts extends WithRefOpts {}
 
 export class DateFieldLabelState {
 	static create(opts: DateFieldLabelStateOpts) {
-		return new DateFieldLabelState(opts, DateFieldRootContext.get());
+		return new DateFieldLabelState(opts, getDateFieldRoot());
 	}
 
 	readonly opts: DateFieldLabelStateOpts;
@@ -1314,7 +1302,7 @@ interface DateFieldDayPeriodSegmentStateOpts extends WithRefOpts {}
 
 export class DateFieldDayPeriodSegmentState {
 	static create(opts: DateFieldDayPeriodSegmentStateOpts) {
-		return new DateFieldDayPeriodSegmentState(opts, DateFieldRootContext.get());
+		return new DateFieldDayPeriodSegmentState(opts, getDateFieldRoot());
 	}
 
 	readonly opts: DateFieldDayPeriodSegmentStateOpts;
@@ -1402,7 +1390,7 @@ interface DateFieldLiteralSegmentStateOpts extends WithRefOpts {}
 
 export class DateFieldLiteralSegmentState {
 	static create(opts: DateFieldLiteralSegmentStateOpts) {
-		return new DateFieldLiteralSegmentState(opts, DateFieldRootContext.get());
+		return new DateFieldLiteralSegmentState(opts, getDateFieldRoot());
 	}
 
 	readonly opts: DateFieldLiteralSegmentStateOpts;
@@ -1430,7 +1418,7 @@ interface DateFieldTimeZoneSegmentStateOpts extends WithRefOpts {}
 
 export class DateFieldTimeZoneSegmentState {
 	static create(opts: DateFieldTimeZoneSegmentStateOpts) {
-		return new DateFieldTimeZoneSegmentState(opts, DateFieldRootContext.get());
+		return new DateFieldTimeZoneSegmentState(opts, getDateFieldRoot());
 	}
 
 	readonly opts: DateFieldTimeZoneSegmentStateOpts;
@@ -1471,7 +1459,7 @@ export class DateFieldTimeZoneSegmentState {
 
 export class DateFieldSegmentState {
 	static create(part: SegmentPart, opts: WithRefOpts) {
-		const root = DateFieldRootContext.get();
+		const root = getDateFieldRoot();
 		switch (part) {
 			case 'day':
 				return new DateFieldDaySegmentState(opts, root);

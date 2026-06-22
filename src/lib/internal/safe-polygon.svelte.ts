@@ -1,8 +1,8 @@
-import { type Getter, getDocument } from "$lib/internal/toolbelt.js";
-import { on } from "svelte/events";
-import { watch } from "runed";
-import { isElement } from "./is.js";
-import type { Side } from "$lib/components/utilities/floating-layer/use-floating-layer.svelte.js";
+import { type Getter, getDocument } from '$lib/internal/toolbelt.js';
+import { on } from 'svelte/events';
+import { watch } from '$lib/internal/toolbelt.js';
+import { isElement } from './is.js';
+import type { Side } from '$lib/components/utilities/floating-layer/use-floating-layer.svelte.js';
 
 type Point = [number, number];
 
@@ -22,12 +22,7 @@ function isPointInPolygon(point: Point, polygon: Point[]): boolean {
 }
 
 function isInsideRect(point: Point, rect: DOMRect): boolean {
-	return (
-		point[0] >= rect.left &&
-		point[0] <= rect.right &&
-		point[1] >= rect.top &&
-		point[1] <= rect.bottom
-	);
+	return point[0] >= rect.left && point[0] <= rect.right && point[1] >= rect.top && point[1] <= rect.bottom;
 }
 
 function getSide(triggerRect: DOMRect, contentRect: DOMRect): Side {
@@ -41,9 +36,9 @@ function getSide(triggerRect: DOMRect, contentRect: DOMRect): Side {
 	const deltaY = contentCenterY - triggerCenterY;
 
 	if (Math.abs(deltaX) > Math.abs(deltaY)) {
-		return deltaX > 0 ? "right" : "left";
+		return deltaX > 0 ? 'right' : 'left';
 	}
-	return deltaY > 0 ? "bottom" : "top";
+	return deltaY > 0 ? 'bottom' : 'top';
 }
 
 export interface SafePolygonOptions {
@@ -69,7 +64,7 @@ export class SafePolygon {
 	// tracks the cursor position when leaving trigger or content
 	#exitPoint: Point | null = null;
 	// tracks what we're moving toward: "content" when leaving trigger, "trigger" when leaving content
-	#exitTarget: "trigger" | "content" | null = null;
+	#exitTarget: 'trigger' | 'content' | null = null;
 	#transitTargets: HTMLElement[] = [];
 	#trackedTriggerNode: HTMLElement | null = null;
 	#leaveFallbackRafId: number | null = null;
@@ -114,146 +109,125 @@ export class SafePolygon {
 		this.#opts = opts;
 		this.#buffer = opts.buffer ?? 1;
 		const transitIntentTimeout = opts.transitIntentTimeout;
-		this.#transitIntentTimeout =
-			typeof transitIntentTimeout === "number" && transitIntentTimeout > 0
-				? transitIntentTimeout
-				: null;
+		this.#transitIntentTimeout = typeof transitIntentTimeout === 'number' && transitIntentTimeout > 0 ? transitIntentTimeout : null;
 
-		watch(
-			[opts.triggerNode, opts.contentNode, opts.enabled],
-			([triggerNode, contentNode, enabled]) => {
-				if (!triggerNode || !contentNode || !enabled) {
-					this.#trackedTriggerNode = null;
-					this.#clearTracking();
+		watch([opts.triggerNode, opts.contentNode, opts.enabled], ([triggerNode, contentNode, enabled]) => {
+			if (!triggerNode || !contentNode || !enabled) {
+				this.#trackedTriggerNode = null;
+				this.#clearTracking();
+				return;
+			}
+			if (this.#trackedTriggerNode && this.#trackedTriggerNode !== triggerNode) {
+				this.#clearTracking();
+			}
+			this.#trackedTriggerNode = triggerNode;
+
+			const doc = getDocument(triggerNode);
+
+			const handlePointerMove = (e: PointerEvent) => {
+				this.#onPointerMove([e.clientX, e.clientY], triggerNode, contentNode);
+			};
+
+			const handleTriggerLeave = (e: PointerEvent) => {
+				// when leaving trigger toward content, record exit point
+				const target = e.relatedTarget;
+				// if going directly to content, no need for polygon tracking
+				if (isElement(target) && contentNode.contains(target)) {
 					return;
 				}
-				if (this.#trackedTriggerNode && this.#trackedTriggerNode !== triggerNode) {
-					this.#clearTracking();
+				// if moving to an ignored target (e.g. a sibling trigger), don't close —
+				// the sibling's enter handler will take over
+				const ignoredTargets = this.#opts.ignoredTargets?.() ?? [];
+				if (isElement(target) && ignoredTargets.some((n) => n === target || n.contains(target))) {
+					return;
 				}
-				this.#trackedTriggerNode = triggerNode;
+				this.#transitTargets = isElement(target) && ignoredTargets.length > 0 ? ignoredTargets.filter((n) => target.contains(n)) : [];
+				// for unrelated elements, defer close decisions to pointer geometry checks.
+				// this allows the cursor to pass through intermediate elements on the way
+				// to content without immediately closing.
+				this.#exitPoint = [e.clientX, e.clientY];
+				this.#exitTarget = 'content';
+				this.#scheduleLeaveFallback();
+			};
 
-				const doc = getDocument(triggerNode);
+			const handleTriggerEnter = () => {
+				// reached trigger, clear tracking
+				this.#clearTracking();
+			};
 
-				const handlePointerMove = (e: PointerEvent) => {
-					this.#onPointerMove([e.clientX, e.clientY], triggerNode, contentNode);
-				};
+			const handleContentEnter = () => {
+				// reached content, clear tracking
+				this.#clearTracking();
+			};
 
-				const handleTriggerLeave = (e: PointerEvent) => {
-					// when leaving trigger toward content, record exit point
-					const target = e.relatedTarget;
-					// if going directly to content, no need for polygon tracking
-					if (isElement(target) && contentNode.contains(target)) {
-						return;
-					}
-					// if moving to an ignored target (e.g. a sibling trigger), don't close —
-					// the sibling's enter handler will take over
-					const ignoredTargets = this.#opts.ignoredTargets?.() ?? [];
-					if (
-						isElement(target) &&
-						ignoredTargets.some((n) => n === target || n.contains(target))
-					) {
-						return;
-					}
-					this.#transitTargets =
-						isElement(target) && ignoredTargets.length > 0
-							? ignoredTargets.filter((n) => target.contains(n))
-							: [];
-					// for unrelated elements, defer close decisions to pointer geometry checks.
-					// this allows the cursor to pass through intermediate elements on the way
-					// to content without immediately closing.
-					this.#exitPoint = [e.clientX, e.clientY];
-					this.#exitTarget = "content";
-					this.#scheduleLeaveFallback();
-				};
+			const handleContentLeave = (e: PointerEvent) => {
+				// when leaving content, check if going directly back to trigger
+				const target = e.relatedTarget;
+				if (isElement(target) && triggerNode.contains(target)) {
+					// going directly to trigger, no polygon tracking needed
+					return;
+				}
+				// set up polygon tracking toward trigger — pointermove decides whether to close
+				this.#exitPoint = [e.clientX, e.clientY];
+				this.#exitTarget = 'trigger';
+				this.#scheduleLeaveFallback();
+			};
 
-				const handleTriggerEnter = () => {
-					// reached trigger, clear tracking
-					this.#clearTracking();
-				};
-
-				const handleContentEnter = () => {
-					// reached content, clear tracking
-					this.#clearTracking();
-				};
-
-				const handleContentLeave = (e: PointerEvent) => {
-					// when leaving content, check if going directly back to trigger
-					const target = e.relatedTarget;
-					if (isElement(target) && triggerNode.contains(target)) {
-						// going directly to trigger, no polygon tracking needed
-						return;
-					}
-					// set up polygon tracking toward trigger — pointermove decides whether to close
-					this.#exitPoint = [e.clientX, e.clientY];
-					this.#exitTarget = "trigger";
-					this.#scheduleLeaveFallback();
-				};
-
-				return [
-					on(doc, "pointermove", handlePointerMove),
-					on(triggerNode, "pointerleave", handleTriggerLeave),
-					on(triggerNode, "pointerenter", handleTriggerEnter),
-					on(contentNode, "pointerenter", handleContentEnter),
-					on(contentNode, "pointerleave", handleContentLeave),
-				].reduce(
-					(acc, cleanup) => () => {
-						acc();
-						cleanup();
-					},
-					() => {}
-				);
-			}
-		);
+			return [
+				on(doc, 'pointermove', handlePointerMove),
+				on(triggerNode, 'pointerleave', handleTriggerLeave),
+				on(triggerNode, 'pointerenter', handleTriggerEnter),
+				on(contentNode, 'pointerenter', handleContentEnter),
+				on(contentNode, 'pointerleave', handleContentLeave),
+			].reduce(
+				(acc, cleanup) => () => {
+					acc();
+					cleanup();
+				},
+				() => {},
+			);
+		});
 	}
 
 	#onPointerMove(clientPoint: Point, triggerNode: HTMLElement, contentNode: HTMLElement): void {
-		// if no exit point recorded, nothing to check
-		if (!this.#exitPoint || !this.#exitTarget) return;
+		const exitPoint = this.#exitPoint;
+		const exitTarget = this.#exitTarget;
+		if (!exitPoint || !exitTarget) return;
+
 		this.#cancelLeaveFallback();
 		this.#scheduleTransitIntentTimeout();
 
 		const triggerRect = triggerNode.getBoundingClientRect();
 		const contentRect = contentNode.getBoundingClientRect();
+		const targetRect = exitTarget === 'content' ? contentRect : triggerRect;
 
-		// check if pointer reached the target
-		if (this.#exitTarget === "content" && isInsideRect(clientPoint, contentRect)) {
-			this.#clearTracking();
-			return;
-		}
-		if (this.#exitTarget === "trigger" && isInsideRect(clientPoint, triggerRect)) {
+		if (isInsideRect(clientPoint, targetRect)) {
 			this.#clearTracking();
 			return;
 		}
 
-		if (this.#exitTarget === "content" && this.#transitTargets.length > 0) {
+		if (exitTarget === 'content') {
 			for (const transitTarget of this.#transitTargets) {
 				const transitRect = transitTarget.getBoundingClientRect();
+
 				if (isInsideRect(clientPoint, transitRect)) return;
+
 				const transitSide = getSide(triggerRect, transitRect);
-				const transitCorridor = this.#getCorridorPolygon(
-					triggerRect,
-					transitRect,
-					transitSide
-				);
-				if (transitCorridor && isPointInPolygon(clientPoint, transitCorridor)) return;
+				const transitCorridor = this.#getCorridorPolygon(triggerRect, transitRect, transitSide);
+
+				if (isPointInPolygon(clientPoint, transitCorridor)) return;
 			}
 		}
 
-		// check if pointer is in the rectangular corridor between trigger and content
 		const side = getSide(triggerRect, contentRect);
-		const corridorPoly = this.#getCorridorPolygon(triggerRect, contentRect, side);
-		if (corridorPoly && isPointInPolygon(clientPoint, corridorPoly)) {
-			return;
-		}
+		const corridor = this.#getCorridorPolygon(triggerRect, contentRect, side);
 
-		// check if pointer is within the safe polygon from exit point to target
-		const targetRect = this.#exitTarget === "content" ? contentRect : triggerRect;
-		const safePoly = this.#getSafePolygon(this.#exitPoint, targetRect, side, this.#exitTarget);
-		if (isPointInPolygon(clientPoint, safePoly)) {
-			return;
-		}
+		if (isPointInPolygon(clientPoint, corridor)) return;
 
-		// pointer is outside all safe zones - close
+		const safePolygon = this.#getSafePolygon(exitPoint, targetRect, side, exitTarget);
+
+		if (isPointInPolygon(clientPoint, safePolygon)) return;
+
 		this.#clearTracking();
 		this.#opts.onPointerExit();
 	}
@@ -270,107 +244,111 @@ export class SafePolygon {
 	 * Creates a rectangular corridor between trigger and content
 	 * This prevents closing when cursor is in the gap between them
 	 */
-	#getCorridorPolygon(triggerRect: DOMRect, contentRect: DOMRect, side: Side): Point[] | null {
-		const buffer = this.#buffer;
+	#getCorridorPolygon(triggerRect: DOMRect, contentRect: DOMRect, side: Side): Point[] {
+		const b = this.#buffer;
+
+		const minX = Math.min(triggerRect.left, contentRect.left) - b;
+		const maxX = Math.max(triggerRect.right, contentRect.right) + b;
+		const minY = Math.min(triggerRect.top, contentRect.top) - b;
+		const maxY = Math.max(triggerRect.bottom, contentRect.bottom) + b;
 
 		switch (side) {
-			case "top":
+			case 'top':
 				return [
-					[Math.min(triggerRect.left, contentRect.left) - buffer, triggerRect.top],
-					[Math.min(triggerRect.left, contentRect.left) - buffer, contentRect.bottom],
-					[Math.max(triggerRect.right, contentRect.right) + buffer, contentRect.bottom],
-					[Math.max(triggerRect.right, contentRect.right) + buffer, triggerRect.top],
+					[minX, triggerRect.top],
+					[minX, contentRect.bottom],
+					[maxX, contentRect.bottom],
+					[maxX, triggerRect.top],
 				];
-			case "bottom":
+
+			case 'bottom':
 				return [
-					[Math.min(triggerRect.left, contentRect.left) - buffer, triggerRect.bottom],
-					[Math.min(triggerRect.left, contentRect.left) - buffer, contentRect.top],
-					[Math.max(triggerRect.right, contentRect.right) + buffer, contentRect.top],
-					[Math.max(triggerRect.right, contentRect.right) + buffer, triggerRect.bottom],
+					[minX, triggerRect.bottom],
+					[minX, contentRect.top],
+					[maxX, contentRect.top],
+					[maxX, triggerRect.bottom],
 				];
-			case "left":
+
+			case 'left':
 				return [
-					[triggerRect.left, Math.min(triggerRect.top, contentRect.top) - buffer],
-					[contentRect.right, Math.min(triggerRect.top, contentRect.top) - buffer],
-					[contentRect.right, Math.max(triggerRect.bottom, contentRect.bottom) + buffer],
-					[triggerRect.left, Math.max(triggerRect.bottom, contentRect.bottom) + buffer],
+					[triggerRect.left, minY],
+					[contentRect.right, minY],
+					[contentRect.right, maxY],
+					[triggerRect.left, maxY],
 				];
-			case "right":
+
+			case 'right':
 				return [
-					[triggerRect.right, Math.min(triggerRect.top, contentRect.top) - buffer],
-					[contentRect.left, Math.min(triggerRect.top, contentRect.top) - buffer],
-					[contentRect.left, Math.max(triggerRect.bottom, contentRect.bottom) + buffer],
-					[triggerRect.right, Math.max(triggerRect.bottom, contentRect.bottom) + buffer],
+					[triggerRect.right, minY],
+					[contentRect.left, minY],
+					[contentRect.left, maxY],
+					[triggerRect.right, maxY],
 				];
 		}
 	}
-
 	/**
-	 * Creates a triangular/trapezoidal safe zone from the exit point to the target
+	 * Creates a triangular/trapezoidal safe zone from the exit point to the target.
 	 */
-	#getSafePolygon(
-		exitPoint: Point,
-		targetRect: DOMRect,
-		side: Side,
-		exitTarget: "trigger" | "content"
-	): Point[] {
-		const buffer = this.#buffer * 4;
+	#getSafePolygon(exitPoint: Point, targetRect: DOMRect, side: Side, exitTarget: 'trigger' | 'content'): Point[] {
+		const b = this.#buffer * 4;
 		const [x, y] = exitPoint;
+		const { top, right, bottom, left } = targetRect;
 
-		// when going back to trigger, we need to flip the side
-		const effectiveSide = exitTarget === "trigger" ? this.#flipSide(side) : side;
+		const effectiveSide = exitTarget === 'trigger' ? this.#flipSide(side) : side;
 
-		// create polygon points from cursor to target edges
 		switch (effectiveSide) {
-			case "top":
+			case 'top':
 				return [
-					[x - buffer, y + buffer],
-					[x + buffer, y + buffer],
-					[targetRect.right + buffer, targetRect.bottom],
-					[targetRect.right + buffer, targetRect.top],
-					[targetRect.left - buffer, targetRect.top],
-					[targetRect.left - buffer, targetRect.bottom],
+					[x - b, y + b],
+					[x + b, y + b],
+					[right + b, bottom],
+					[right + b, top],
+					[left - b, top],
+					[left - b, bottom],
 				];
-			case "bottom":
+
+			case 'bottom':
 				return [
-					[x - buffer, y - buffer],
-					[x + buffer, y - buffer],
-					[targetRect.right + buffer, targetRect.top],
-					[targetRect.right + buffer, targetRect.bottom],
-					[targetRect.left - buffer, targetRect.bottom],
-					[targetRect.left - buffer, targetRect.top],
+					[x - b, y - b],
+					[x + b, y - b],
+					[right + b, top],
+					[right + b, bottom],
+					[left - b, bottom],
+					[left - b, top],
 				];
-			case "left":
+
+			case 'left':
 				return [
-					[x + buffer, y - buffer],
-					[x + buffer, y + buffer],
-					[targetRect.right, targetRect.bottom + buffer],
-					[targetRect.left, targetRect.bottom + buffer],
-					[targetRect.left, targetRect.top - buffer],
-					[targetRect.right, targetRect.top - buffer],
+					[x + b, y - b],
+					[x + b, y + b],
+					[right, bottom + b],
+					[left, bottom + b],
+					[left, top - b],
+					[right, top - b],
 				];
-			case "right":
+
+			case 'right':
 				return [
-					[x - buffer, y - buffer],
-					[x - buffer, y + buffer],
-					[targetRect.left, targetRect.bottom + buffer],
-					[targetRect.right, targetRect.bottom + buffer],
-					[targetRect.right, targetRect.top - buffer],
-					[targetRect.left, targetRect.top - buffer],
+					[x - b, y - b],
+					[x - b, y + b],
+					[left, bottom + b],
+					[right, bottom + b],
+					[right, top - b],
+					[left, top - b],
 				];
 		}
 	}
 
 	#flipSide(side: Side): Side {
 		switch (side) {
-			case "top":
-				return "bottom";
-			case "bottom":
-				return "top";
-			case "left":
-				return "right";
-			case "right":
-				return "left";
+			case 'top':
+				return 'bottom';
+			case 'bottom':
+				return 'top';
+			case 'left':
+				return 'right';
+			case 'right':
+				return 'left';
 		}
 	}
 }

@@ -1,6 +1,7 @@
+import { createContext } from "svelte";
 import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
 import type { HTMLButtonAttributes } from "svelte/elements";
-import { Context, watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
 import type {
 	BitsFocusEvent,
 	BitsKeyboardEvent,
@@ -37,16 +38,28 @@ interface CheckboxGroupStateOpts
 			value: string[];
 		}> {}
 
-export const CheckboxGroupContext = new Context<CheckboxGroupState>("Checkbox.Group");
+export const [getCheckboxGroup, setCheckboxGroup] = createContext<CheckboxGroupState>();
+
+const missingContextErrorUrl = "https://svelte.dev/e/missing_context";
+
+export function getCheckboxGroupOr<TFallback>(fallback: TFallback): CheckboxGroupState | TFallback {
+	try {
+		return getCheckboxGroup();
+	} catch (error) {
+		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
+		throw error;
+	}
+}
 
 export class CheckboxGroupState {
 	static create(opts: CheckboxGroupStateOpts) {
-		return CheckboxGroupContext.set(new CheckboxGroupState(opts));
+		return setCheckboxGroup(new CheckboxGroupState(opts));
 	}
 
 	readonly opts: CheckboxGroupStateOpts;
 	readonly attachment: RefAttachment;
-	labelId = $state<string | undefined>(undefined);
+	labelState = $state<CheckboxGroupLabelState | null>(null);
+	readonly labelId = $derived.by(() => this.labelState?.opts.id.current);
 
 	constructor(opts: CheckboxGroupStateOpts) {
 		this.opts = opts;
@@ -90,7 +103,7 @@ interface CheckboxGroupLabelStateOpts extends WithRefOpts {}
 
 export class CheckboxGroupLabelState {
 	static create(opts: CheckboxGroupLabelStateOpts) {
-		return new CheckboxGroupLabelState(opts, CheckboxGroupContext.get());
+		return new CheckboxGroupLabelState(opts, getCheckboxGroup());
 	}
 
 	readonly opts: CheckboxGroupLabelStateOpts;
@@ -100,15 +113,8 @@ export class CheckboxGroupLabelState {
 	constructor(opts: CheckboxGroupLabelStateOpts, group: CheckboxGroupState) {
 		this.opts = opts;
 		this.group = group;
-		this.group.labelId = this.opts.id.current;
+		this.group.labelState = this;
 		this.attachment = attachRef(this.opts.ref);
-
-		watch.pre(
-			() => this.opts.id.current,
-			(id) => {
-				this.group.labelId = id;
-			}
-		);
 	}
 
 	readonly props = $derived.by(
@@ -122,7 +128,7 @@ export class CheckboxGroupLabelState {
 	);
 }
 
-const CheckboxRootContext = new Context<CheckboxRootState>("Checkbox.Root");
+const [getCheckboxRoot, setCheckboxRoot] = createContext<CheckboxRootState>();
 
 interface CheckboxRootStateOpts
 	extends WithRefOpts,
@@ -141,7 +147,7 @@ interface CheckboxRootStateOpts
 
 export class CheckboxRootState {
 	static create(opts: CheckboxRootStateOpts, group: CheckboxGroupState | null = null) {
-		return CheckboxRootContext.set(new CheckboxRootState(opts, group));
+		return setCheckboxRoot(new CheckboxRootState(opts, group));
 	}
 
 	readonly opts: CheckboxRootStateOpts;
@@ -171,6 +177,10 @@ export class CheckboxRootState {
 		this.onkeydown = this.onkeydown.bind(this);
 		this.onclick = this.onclick.bind(this);
 
+		/**
+		 * Group -> item sync: external bind:value updates must drive each item's
+		 * bind:checked state so parent bindings and hidden input state stay aligned.
+		 */
 		watch.pre(
 			[() => $state.snapshot(this.group?.opts.value.current), () => this.opts.value.current],
 			([groupValue, value]) => {
@@ -179,6 +189,10 @@ export class CheckboxRootState {
 			}
 		);
 
+		/**
+		 * Item -> group sync: item toggles write back into the controlled group value.
+		 * addValue/removeValue are idempotent, which prevents value-array churn loops.
+		 */
 		watch.pre(
 			() => this.opts.checked.current,
 			(checked) => {
@@ -262,7 +276,7 @@ export class CheckboxRootState {
 
 export class CheckboxInputState {
 	static create() {
-		return new CheckboxInputState(CheckboxRootContext.get());
+		return new CheckboxInputState(getCheckboxRoot());
 	}
 
 	readonly root: CheckboxRootState;

@@ -1,18 +1,6 @@
-import {
-	afterTick,
-	mergeProps,
-	onDestroyEffect,
-	attachRef,
-	DOMContext,
-	getDocument,
-	getWindow,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	simpleBox,
-	boxWith,
-	type ReadableBox,
-} from "$lib/internal/toolbelt.js";
-import { Context, watch } from "runed";
+import { mergeProps, attachRef, DOMContext, getDocument, getWindow, type ReadableBoxedValues, type WritableBoxedValues, simpleBox, boxWith, type ReadableBox } from "$lib/internal/toolbelt.js";
+import { watch } from "$lib/internal/toolbelt.js";
+import { createContext, onDestroy, tick } from "svelte";
 import {
 	FIRST_LAST_KEYS,
 	LAST_KEYS,
@@ -52,18 +40,39 @@ import { DOMTypeahead } from "$lib/internal/dom-typeahead.svelte.js";
 import { RovingFocusGroup } from "$lib/internal/roving-focus-group.js";
 import { PresenceManager } from "$lib/internal/presence-manager.svelte.js";
 import { arraysAreEqual } from "$lib/internal/arrays.js";
+import { on } from "svelte/events";
 
 export const CONTEXT_MENU_TRIGGER_ATTR = "data-context-menu-trigger";
 export const CONTEXT_MENU_CONTENT_ATTR = "data-context-menu-content";
 
-const MenuRootContext = new Context<MenuRootState>("Menu.Root");
-const MenuMenuContext = new Context<MenuMenuState>("Menu.Root | Menu.Sub");
-const MenuContentContext = new Context<MenuContentState>("Menu.Content");
-const MenuGroupContext = new Context<MenuGroupState | MenuRadioGroupState>(
-	"Menu.Group | Menu.RadioGroup"
-);
-const MenuRadioGroupContext = new Context<MenuRadioGroupState>("Menu.RadioGroup");
-export const MenuCheckboxGroupContext = new Context<MenuCheckboxGroupState>("Menu.CheckboxGroup");
+const [getMenuRoot, setMenuRoot] = createContext<MenuRootState>();
+const [getMenuMenu, setMenuMenu] = createContext<MenuMenuState>();
+const [getMenuContent, setMenuContent] = createContext<MenuContentState>();
+const [getMenuGroup, setMenuGroup] = createContext<MenuGroupState | MenuRadioGroupState>();
+const [getMenuRadioGroup, setMenuRadioGroup] = createContext<MenuRadioGroupState>();
+export const [getMenuCheckboxGroup, setMenuCheckboxGroup] = createContext<MenuCheckboxGroupState>();
+
+const missingContextErrorUrl = "https://svelte.dev/e/missing_context";
+
+function getMenuRadioGroupOr<TFallback>(fallback: TFallback): MenuRadioGroupState | TFallback {
+	try {
+		return getMenuRadioGroup();
+	} catch (error) {
+		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
+		throw error;
+	}
+}
+
+export function getMenuCheckboxGroupOr<TFallback>(
+	fallback: TFallback
+): MenuCheckboxGroupState | TFallback {
+	try {
+		return getMenuCheckboxGroup();
+	} catch (error) {
+		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
+		throw error;
+	}
+}
 
 type MenuVariant = "context-menu" | "dropdown-menu" | "menubar";
 
@@ -328,26 +337,23 @@ class MenuSubmenuIntent {
 					this.#disengage();
 				};
 
-				triggerNode.addEventListener("pointermove", onTriggerMove);
-				triggerNode.addEventListener("pointerleave", onTriggerLeave);
-				triggerNode.addEventListener("pointerenter", onTriggerEnter);
-				contentNode.addEventListener("pointermove", onContentMove);
-				contentNode.addEventListener("pointerleave", onContentLeave);
-				contentNode.addEventListener("pointerenter", onContentEnter);
+				const cleanup = [
+					on(triggerNode, "pointermove", onTriggerMove),
+					on(triggerNode, "pointerleave", onTriggerLeave),
+					on(triggerNode, "pointerenter", onTriggerEnter),
+					on(contentNode, "pointermove", onContentMove),
+					on(contentNode, "pointerleave", onContentLeave),
+					on(contentNode, "pointerenter", onContentEnter),
+				];
 
 				return () => {
-					triggerNode.removeEventListener("pointermove", onTriggerMove);
-					triggerNode.removeEventListener("pointerleave", onTriggerLeave);
-					triggerNode.removeEventListener("pointerenter", onTriggerEnter);
-					contentNode.removeEventListener("pointermove", onContentMove);
-					contentNode.removeEventListener("pointerleave", onContentLeave);
-					contentNode.removeEventListener("pointerenter", onContentEnter);
+					cleanup.forEach((remove) => remove());
 					this.#reset();
 				};
 			}
 		);
 
-		onDestroyEffect(() => {
+		onDestroy(() => {
 			this.#reset();
 			// this.#debugOverlay.destroy();
 		});
@@ -573,9 +579,9 @@ class MenuSubmenuIntent {
 		if (this.#cleanupDocMove) return;
 		const doc = getDocument(this.#opts.triggerNode() ?? this.#opts.contentNode());
 		if (!doc) return;
-		doc.addEventListener("pointermove", this.#onDocMove, true);
+		const remove = on(doc, "pointermove", this.#onDocMove, { capture: true });
 		this.#cleanupDocMove = () => {
-			doc.removeEventListener("pointermove", this.#onDocMove, true);
+			remove();
 			this.#cleanupDocMove = null;
 		};
 	}
@@ -785,7 +791,7 @@ function flipSide(side: PolygonSide): PolygonSide {
 export class MenuRootState {
 	static create(opts: MenuRootStateOpts) {
 		const root = new MenuRootState(opts);
-		return MenuRootContext.set(root);
+		return setMenuRoot(root);
 	}
 
 	readonly opts: MenuRootStateOpts;
@@ -812,7 +818,7 @@ interface MenuMenuStateOpts
 
 export class MenuMenuState {
 	static create(opts: MenuMenuStateOpts, root: MenuRootState) {
-		return MenuMenuContext.set(new MenuMenuState(opts, root, null));
+		return setMenuMenu(new MenuMenuState(opts, root, null));
 	}
 
 	readonly opts: MenuMenuStateOpts;
@@ -877,7 +883,7 @@ interface MenuContentStateOpts
 
 export class MenuContentState {
 	static create(opts: MenuContentStateOpts) {
-		return MenuContentContext.set(new MenuContentState(opts, MenuMenuContext.get()));
+		return setMenuContent(new MenuContentState(opts, getMenuMenu()));
 	}
 
 	readonly opts: MenuContentStateOpts;
@@ -947,7 +953,7 @@ export class MenuContentState {
 			(contentNode) => {
 				if (!contentNode) return;
 				const handler = () => {
-					afterTick(() => {
+					tick().then(() => {
 						if (!this.parentMenu.root.isUsingKeyboard.current) return;
 						this.rovingFocusGroup.focusFirstCandidate();
 					});
@@ -1038,9 +1044,9 @@ export class MenuContentState {
 			 */
 			this.parentMenu.root.ignoreCloseAutoFocus = true;
 			rootMenu.onClose();
-			afterTick(() => {
+			tick().then(() => {
 				nodeToFocus.focus();
-				afterTick(() => {
+				tick().then(() => {
 					this.parentMenu.root.ignoreCloseAutoFocus = false;
 				});
 			});
@@ -1105,7 +1111,7 @@ export class MenuContentState {
 
 	onfocus(_: BitsFocusEvent) {
 		if (!this.parentMenu.root.isUsingKeyboard.current) return;
-		afterTick(() => this.rovingFocusGroup.focusFirstCandidate());
+		tick().then(() => this.rovingFocusGroup.focusFirstCandidate());
 	}
 
 	onItemEnter() {
@@ -1143,7 +1149,7 @@ export class MenuContentState {
 		 * to prevent stealing focus from the new interaction target.
 		 */
 		this.parentMenu.root.ignoreCloseAutoFocus = true;
-		afterTick(() => {
+		tick().then(() => {
 			this.parentMenu.root.ignoreCloseAutoFocus = false;
 		});
 	}
@@ -1224,14 +1230,14 @@ class MenuItemSharedState {
 	}
 
 	onfocus(e: BitsFocusEvent) {
-		afterTick(() => {
+		tick().then(() => {
 			if (e.defaultPrevented || this.opts.disabled.current) return;
 			this.#isFocused = true;
 		});
 	}
 
 	onblur(e: BitsFocusEvent) {
-		afterTick(() => {
+		tick().then(() => {
 			if (e.defaultPrevented) return;
 			this.#isFocused = false;
 		});
@@ -1267,7 +1273,7 @@ interface MenuItemStateOpts
 
 export class MenuItemState {
 	static create(opts: MenuItemCombinedProps) {
-		const item = new MenuItemSharedState(opts, MenuContentContext.get());
+		const item = new MenuItemSharedState(opts, getMenuContent());
 		return new MenuItemState(opts, item);
 	}
 
@@ -1351,9 +1357,9 @@ interface MenuSubTriggerStateOpts
 
 export class MenuSubTriggerState {
 	static create(opts: MenuSubTriggerStateOpts) {
-		const content = MenuContentContext.get();
+		const content = getMenuContent();
 		const item = new MenuItemSharedState(opts, content);
-		const submenu = MenuMenuContext.get();
+		const submenu = getMenuMenu();
 		return new MenuSubTriggerState(opts, item, content, submenu);
 	}
 	readonly opts: MenuSubTriggerStateOpts;
@@ -1379,7 +1385,7 @@ export class MenuSubTriggerState {
 		this.onkeydown = this.onkeydown.bind(this);
 		this.onclick = this.onclick.bind(this);
 
-		onDestroyEffect(() => {
+		onDestroy(() => {
 			this.#clearOpenTimer();
 		});
 	}
@@ -1452,7 +1458,7 @@ export class MenuSubTriggerState {
 		this.opts.onSelect.current(selectEvent);
 		if (!this.submenu.opts.open.current) {
 			this.submenu.onOpen();
-			afterTick(() => {
+			tick().then(() => {
 				const contentNode = this.submenu.contentNode;
 				if (!contentNode) return;
 				MenuOpenEvent.dispatch(contentNode);
@@ -1497,7 +1503,7 @@ export class MenuCheckboxItemState {
 	) {
 		const item = new MenuItemState(
 			opts,
-			new MenuItemSharedState(opts, MenuContentContext.get())
+			new MenuItemSharedState(opts, getMenuContent())
 		);
 		return new MenuCheckboxItemState(opts, item, checkboxGroup);
 	}
@@ -1515,8 +1521,11 @@ export class MenuCheckboxItemState {
 		this.item = item;
 		this.group = group;
 
-		// Watch for value changes in the group if we're part of one
 		if (this.group) {
+			/**
+			 * Group -> item sync: external bind:value updates must drive each item's
+			 * bind:checked state and ARIA state.
+			 */
 			watch(
 				() => this.group!.opts.value.current,
 				(groupValues) => {
@@ -1524,7 +1533,10 @@ export class MenuCheckboxItemState {
 				}
 			);
 
-			// Watch for checked state changes and sync with group
+			/**
+			 * Item -> group sync: menu selection toggles write back into the controlled
+			 * group value. addValue/removeValue are idempotent to avoid value-array churn.
+			 */
 			watch(
 				() => this.opts.checked.current,
 				(checked) => {
@@ -1571,7 +1583,7 @@ interface MenuGroupStateOpts extends WithRefOpts {}
 
 export class MenuGroupState {
 	static create(opts: MenuGroupStateOpts) {
-		return MenuGroupContext.set(new MenuGroupState(opts, MenuRootContext.get()));
+		return setMenuGroup(new MenuGroupState(opts, getMenuRoot()));
 	}
 
 	readonly opts: MenuGroupStateOpts;
@@ -1602,13 +1614,13 @@ interface MenuGroupHeadingStateOpts extends WithRefOpts {}
 export class MenuGroupHeadingState {
 	static create(opts: MenuGroupHeadingStateOpts) {
 		// Try to get checkbox group first, then radio group, then regular group
-		const checkboxGroup = MenuCheckboxGroupContext.getOr(null);
+		const checkboxGroup = getMenuCheckboxGroupOr(null);
 		if (checkboxGroup) return new MenuGroupHeadingState(opts, checkboxGroup);
 
-		const radioGroup = MenuRadioGroupContext.getOr(null);
+		const radioGroup = getMenuRadioGroupOr(null);
 		if (radioGroup) return new MenuGroupHeadingState(opts, radioGroup);
 
-		return new MenuGroupHeadingState(opts, MenuGroupContext.get());
+		return new MenuGroupHeadingState(opts, getMenuGroup());
 	}
 	readonly opts: MenuGroupHeadingStateOpts;
 	readonly group: MenuGroupState | MenuRadioGroupState | MenuCheckboxGroupState;
@@ -1638,7 +1650,7 @@ interface MenuSeparatorStateOpts extends WithRefOpts {}
 
 export class MenuSeparatorState {
 	static create(opts: MenuSeparatorStateOpts) {
-		return new MenuSeparatorState(opts, MenuRootContext.get());
+		return new MenuSeparatorState(opts, getMenuRoot());
 	}
 
 	readonly opts: MenuSeparatorStateOpts;
@@ -1664,7 +1676,7 @@ export class MenuSeparatorState {
 
 export class MenuArrowState {
 	static create() {
-		return new MenuArrowState(MenuRootContext.get());
+		return new MenuArrowState(getMenuRoot());
 	}
 
 	readonly root: MenuRootState;
@@ -1689,8 +1701,8 @@ interface MenuRadioGroupStateOpts
 
 export class MenuRadioGroupState {
 	static create(opts: MenuRadioGroupStateOpts) {
-		return MenuGroupContext.set(
-			MenuRadioGroupContext.set(new MenuRadioGroupState(opts, MenuContentContext.get()))
+		return setMenuGroup(
+			setMenuRadioGroup(new MenuRadioGroupState(opts, getMenuContent()))
 		);
 	}
 	readonly opts: MenuRadioGroupStateOpts;
@@ -1731,7 +1743,7 @@ interface MenuRadioItemStateOpts
 
 export class MenuRadioItemState {
 	static create(opts: MenuRadioItemStateOpts & MenuItemCombinedProps) {
-		const radioGroup = MenuRadioGroupContext.get();
+		const radioGroup = getMenuRadioGroup();
 		const sharedItem = new MenuItemSharedState(opts, radioGroup.content);
 		const item = new MenuItemState(opts, sharedItem);
 		return new MenuRadioItemState(opts, item, radioGroup);
@@ -1780,7 +1792,7 @@ interface DropdownMenuTriggerStateOpts
 
 export class DropdownMenuTriggerState {
 	static create(opts: DropdownMenuTriggerStateOpts) {
-		return new DropdownMenuTriggerState(opts, MenuMenuContext.get());
+		return new DropdownMenuTriggerState(opts, getMenuMenu());
 	}
 
 	readonly opts: DropdownMenuTriggerStateOpts;
@@ -1872,7 +1884,7 @@ interface ContextMenuTriggerStateOpts
 
 export class ContextMenuTriggerState {
 	static create(opts: ContextMenuTriggerStateOpts) {
-		return new ContextMenuTriggerState(opts, MenuMenuContext.get());
+		return new ContextMenuTriggerState(opts, getMenuMenu());
 	}
 
 	readonly opts: ContextMenuTriggerStateOpts;
@@ -1914,7 +1926,7 @@ export class ContextMenuTriggerState {
 			}
 		);
 
-		onDestroyEffect(() => this.#clearLongPressTimer());
+		onDestroy(() => this.#clearLongPressTimer());
 	}
 
 	#clearLongPressTimer() {
@@ -1990,8 +2002,8 @@ interface MenuCheckboxGroupStateOpts
 
 export class MenuCheckboxGroupState {
 	static create(opts: MenuCheckboxGroupStateOpts) {
-		return MenuCheckboxGroupContext.set(
-			new MenuCheckboxGroupState(opts, MenuContentContext.get())
+		return setMenuCheckboxGroup(
+			new MenuCheckboxGroupState(opts, getMenuContent())
 		);
 	}
 
@@ -2042,7 +2054,7 @@ export class MenuCheckboxGroupState {
 
 export class MenuSubmenuState {
 	static create(opts: MenuMenuStateOpts) {
-		const menu = MenuMenuContext.get();
-		return MenuMenuContext.set(new MenuMenuState(opts, menu.root, menu));
+		const menu = getMenuMenu();
+		return setMenuMenu(new MenuMenuState(opts, menu.root, menu));
 	}
 }
