@@ -34,7 +34,6 @@
 	},
 	"files": [
 		"dist",
-		"bin",
 		"src/lib",
 		"!src/lib/registry/examples",
 		"!src/lib/**/*.test.*",
