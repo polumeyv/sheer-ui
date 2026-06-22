@@ -1,11 +1,13 @@
 import { declareVariants, type VariantProps } from 'overrule';
 
 export const inputVariants = declareVariants({
-	base: 'placeholder:text-muted-foreground w-full min-w-0 outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 px-2.5 py-1 text-sm ',
+	base: 'placeholder:text-muted-foreground w-full min-w-0 outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 h-9 px-2.5 py-1 ',
 	variants: {
 		variant: {
-			default: 'cn-input',
-			invisible: 'hide-input-identity',
+			default:
+				'rounded-md border border-input bg-transparent text-base shadow-xs transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
+			invisible:
+				'rounded-none border-0 bg-transparent text-sm shadow-none ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:bg-transparent',
 		},
 	},
 	defaultVariants: {

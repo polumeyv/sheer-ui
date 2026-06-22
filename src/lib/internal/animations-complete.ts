@@ -1,9 +1,10 @@
-import { afterTick, onDestroyEffect, type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
+import { onDestroy, tick } from "svelte";
+import { type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
 
 interface AnimationsCompleteOpts
 	extends ReadableBoxedValues<{
 		ref: HTMLElement | null;
-		afterTick: boolean;
+		deferToTick: boolean;
 	}> {}
 
 export class AnimationsComplete {
@@ -14,7 +15,7 @@ export class AnimationsComplete {
 
 	constructor(opts: AnimationsCompleteOpts) {
 		this.#opts = opts;
-		onDestroyEffect(() => this.#cleanup());
+		onDestroy(() => this.#cleanup());
 	}
 
 	#cleanup(): void {
@@ -81,7 +82,7 @@ export class AnimationsComplete {
 			});
 		};
 
-		if (!this.#opts.afterTick.current) {
+		if (!this.#opts.deferToTick.current) {
 			requestWaitForAnimations();
 			return;
 		}
@@ -116,8 +117,8 @@ export class AnimationsComplete {
 			fn();
 		};
 
-		if (this.#opts.afterTick) {
-			afterTick(execute);
+		if (this.#opts.deferToTick.current) {
+			tick().then(execute);
 		} else {
 			execute();
 		}

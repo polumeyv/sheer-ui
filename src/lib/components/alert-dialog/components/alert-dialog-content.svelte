@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { afterSleep, boxWith, mergeProps } from "$lib/internal/toolbelt.js";
+	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
 	import type { AlertDialogContentProps } from "../types.js";
 	import DismissibleLayer from "../../utilities/dismissible-layer/dismissible-layer.svelte";
 	import EscapeLayer from "../../utilities/escape-layer/escape-layer.svelte";
@@ -59,7 +59,7 @@
 			onOpenAutoFocus(e);
 			if (e.defaultPrevented) return;
 			e.preventDefault();
-			afterSleep(0, () => contentState.opts.ref.current?.focus());
+			setTimeout(() => contentState.opts.ref.current?.focus(), 0);
 		}}
 	>
 		{#snippet focusScope({ props: focusScopeProps })}

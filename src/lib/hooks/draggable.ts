@@ -1,4 +1,5 @@
 import type { Attachment } from 'svelte/attachments';
+import { on } from 'svelte/events';
 
 export function draggable(get: () => { x: number; y: number }, set: (p: { x: number; y: number }) => void): Attachment<HTMLElement> {
 	return (node) => {
@@ -15,15 +16,15 @@ export function draggable(get: () => { x: number; y: number }, set: (p: { x: num
 			dragging = false;
 			node.releasePointerCapture(e.pointerId);
 		};
-		node.addEventListener('pointerdown', down);
-		node.addEventListener('pointermove', move);
-		node.addEventListener('pointerup', up);
-		node.addEventListener('pointerleave', up);
+		const cleanup = [
+			on(node, 'pointerdown', down),
+			on(node, 'pointermove', move),
+			on(node, 'pointerup', up),
+			on(node, 'pointerleave', up),
+		];
+
 		return () => {
-			node.removeEventListener('pointerdown', down);
-			node.removeEventListener('pointermove', move);
-			node.removeEventListener('pointerup', up);
-			node.removeEventListener('pointerleave', up);
+			cleanup.forEach((remove) => remove());
 		};
 	};
 }

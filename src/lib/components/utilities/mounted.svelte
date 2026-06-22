@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { onMountEffect } from "$lib/internal/toolbelt.js";
+	import { onMount } from "svelte";
 
 	let {
 		mounted = $bindable(false),
 		onMountedChange = () => {},
 	}: { mounted?: boolean; onMountedChange?: (mounted: boolean) => void } = $props();
 
-	onMountEffect(() => {
+	onMount(() => {
 		mounted = true;
 		onMountedChange(true);
 		return () => {

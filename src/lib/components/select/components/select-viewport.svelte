@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "svelte-toolbelt";
+	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
 	import type { SelectViewportProps } from "../types.js";
 	import { SelectViewportState } from "../select.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";

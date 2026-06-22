@@ -1,6 +1,6 @@
 <script lang="ts">
 import * as DialogPrimitive from '$lib/components/dialog/index.js';
-import { type WithChildren, box, mergeProps } from 'svelte-toolbelt';
+import { type WithChildren, box, mergeProps } from '$lib/internal/toolbelt.js';
 import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
 import { useId } from '$lib/internal/use-id.js';
 import { useDrawerOverlay } from './util/use-drawer-overlay.svelte.js';

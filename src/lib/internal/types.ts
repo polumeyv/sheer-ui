@@ -1,7 +1,8 @@
 // oxlint-disable no-explicit-any
 import type { Snippet } from "svelte";
 
-import type { attachRef, Box, ReadableBoxedValues, WritableBoxedValues } from "$lib/internal/toolbelt.js";
+import type { RefAttachment as InternalRefAttachment } from "$lib/internal/attachments.js";
+import type { Box, ReadableBoxedValues, WritableBoxedValues } from "$lib/internal/toolbelt.js";
 import type { StyleProperties } from "$lib/shared/index.js";
 
 export type OnChangeFn<T> = (value: T) => void;
@@ -91,4 +92,4 @@ export type BitsMouseEvent<T extends HTMLElement = HTMLElement> = BitsEvent<Mous
 export type BitsFocusEvent<T extends HTMLElement = HTMLElement> = BitsEvent<FocusEvent, T>;
 export type BitsInputEvent<T extends HTMLElement = HTMLElement> = BitsEvent<InputEvent, T>;
 
-export type RefAttachment<T extends HTMLElement = HTMLElement> = ReturnType<typeof attachRef<T>>;
+export type RefAttachment<T extends HTMLElement = HTMLElement> = InternalRefAttachment<T>;

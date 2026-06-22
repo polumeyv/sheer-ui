@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { untrack } from "svelte";
 	import { boxWith, mergeProps, type WritableBox } from "$lib/internal/toolbelt.js";
 	import type { SliderRootProps } from "../types.js";
 	import { SliderRootState } from "../slider.svelte.js";
 	import SliderRange from "./slider-range.svelte";
 	import SliderThumb from "./slider-thumb.svelte";
 	import { createId } from "$lib/internal/create-id.js";
-	import { watch } from "runed";
+	import { watch } from "$lib/internal/toolbelt.js";
 	import { cn } from "$lib/utils.js";
 
 	const uid = $props.id();
@@ -32,6 +33,9 @@
 		...restProps
 	}: SliderRootProps = $props();
 
+	// Slider mode is construction-static: the root state chooses a single/multiple class once.
+	const valueType = untrack(() => type);
+
 	const min = $derived.by(() => {
 		if (minProp !== undefined) return minProp;
 		if (Array.isArray(step)) return Math.min(...step);
@@ -44,21 +48,25 @@
 		return 100;
 	});
 
-	function handleDefaultValue() {
+	function repairUndefinedMultipleControlledValue() {
 		if (value !== undefined) return;
-		if (type === "single") {
-			return min;
-		}
-		return [];
+		if (valueType !== "multiple") return;
+		value = [];
 	}
 
-	// SSR
-	handleDefaultValue();
+	// SSR/initial setup: multiple Slider owns an array shape, even when empty.
+	repairUndefinedMultipleControlledValue();
 
 	watch.pre(
 		() => value,
 		() => {
-			handleDefaultValue();
+			/**
+			 * Parent spread-prop resets can make the bindable value undefined again.
+			 * Repairing multiple mode here prevents internal range math from reading
+			 * an undefined array. Single mode is normalized by the root state to the
+			 * current min/step grid so existing onValueChange behavior is preserved.
+			 */
+			repairUndefinedMultipleControlledValue();
 		}
 	);
 
@@ -86,7 +94,7 @@
 		autoSort: boxWith(() => autoSort),
 		orientation: boxWith(() => orientation),
 		thumbPositioning: boxWith(() => thumbPositioning),
-		type,
+		type: valueType,
 		trackPadding: boxWith(() => trackPadding),
 	});
 

@@ -5,16 +5,10 @@
  * Incredible thought must have went into solving all the intricacies of this component.
  */
 
-import { Context, useDebounce, watch } from "runed";
-import { untrack } from "svelte";
+import { useDebounce, watch } from "$lib/internal/toolbelt.js";
+import { createContext, untrack } from "svelte";
 import {
-	simpleBox,
-	executeCallbacks,
-	attachRef,
-	DOMContext,
-	getWindow,
-	type ReadableBoxedValues,
-} from "$lib/internal/toolbelt.js";
+	simpleBox, executeCallbacks, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
 import type { ScrollAreaType } from "./types.js";
 import type { BitsPointerEvent, RefAttachment, WithRefOpts } from "$lib/internal/types.js";
 import { type Direction, type Orientation, mergeProps, useId } from "$lib/shared/index.js";
@@ -29,19 +23,11 @@ const scrollAreaAttrs = createBitsAttrs({
 	parts: ["root", "viewport", "corner", "thumb", "scrollbar"],
 });
 
-export const ScrollAreaRootContext = new Context<ScrollAreaRootState>("ScrollArea.Root");
-export const ScrollAreaScrollbarContext = new Context<ScrollAreaScrollbarState>(
-	"ScrollArea.Scrollbar"
-);
-export const ScrollAreaScrollbarVisibleContext = new Context<ScrollAreaScrollbarVisibleState>(
-	"ScrollArea.ScrollbarVisible"
-);
-export const ScrollAreaScrollbarAxisContext = new Context<ScrollbarAxis>(
-	"ScrollArea.ScrollbarAxis"
-);
-export const ScrollAreaScrollbarSharedContext = new Context<ScrollAreaScrollbarSharedState>(
-	"ScrollArea.ScrollbarShared"
-);
+export const [getScrollAreaRoot, setScrollAreaRoot] = createContext<ScrollAreaRootState>();
+export const [getScrollAreaScrollbar, setScrollAreaScrollbar] = createContext<ScrollAreaScrollbarState>();
+export const [getScrollAreaScrollbarVisible, setScrollAreaScrollbarVisible] = createContext<ScrollAreaScrollbarVisibleState>();
+export const [getScrollAreaScrollbarAxis, setScrollAreaScrollbarAxis] = createContext<ScrollbarAxis>();
+export const [getScrollAreaScrollbarShared, setScrollAreaScrollbarShared] = createContext<ScrollAreaScrollbarSharedState>();
 
 interface Sizes {
 	content: number;
@@ -63,7 +49,7 @@ interface ScrollAreaRootStateOpts
 
 export class ScrollAreaRootState {
 	static create(opts: ScrollAreaRootStateOpts) {
-		return ScrollAreaRootContext.set(new ScrollAreaRootState(opts));
+		return setScrollAreaRoot(new ScrollAreaRootState(opts));
 	}
 
 	readonly opts: ScrollAreaRootStateOpts;
@@ -105,7 +91,7 @@ interface ScrollAreaViewportStateOpts extends WithRefOpts {}
 
 export class ScrollAreaViewportState {
 	static create(opts: ScrollAreaViewportStateOpts) {
-		return new ScrollAreaViewportState(opts, ScrollAreaRootContext.get());
+		return new ScrollAreaViewportState(opts, getScrollAreaRoot());
 	}
 
 	readonly opts: ScrollAreaViewportStateOpts;
@@ -163,8 +149,8 @@ interface ScrollAreaScrollbarStateOpts
 
 export class ScrollAreaScrollbarState {
 	static create(opts: ScrollAreaScrollbarStateOpts) {
-		return ScrollAreaScrollbarContext.set(
-			new ScrollAreaScrollbarState(opts, ScrollAreaRootContext.get())
+		return setScrollAreaScrollbar(
+			new ScrollAreaScrollbarState(opts, getScrollAreaRoot())
 		);
 	}
 	readonly opts: ScrollAreaScrollbarStateOpts;
@@ -197,7 +183,7 @@ export class ScrollAreaScrollbarState {
 
 export class ScrollAreaScrollbarHoverState {
 	static create() {
-		return new ScrollAreaScrollbarHoverState(ScrollAreaScrollbarContext.get());
+		return new ScrollAreaScrollbarHoverState(getScrollAreaScrollbar());
 	}
 	readonly scrollbar: ScrollAreaScrollbarState;
 	root: ScrollAreaRootState;
@@ -249,7 +235,7 @@ export class ScrollAreaScrollbarHoverState {
 
 export class ScrollAreaScrollbarScrollState {
 	static create() {
-		return new ScrollAreaScrollbarScrollState(ScrollAreaScrollbarContext.get());
+		return new ScrollAreaScrollbarScrollState(getScrollAreaScrollbar());
 	}
 	readonly scrollbar: ScrollAreaScrollbarState;
 	readonly root: ScrollAreaRootState;
@@ -335,7 +321,7 @@ export class ScrollAreaScrollbarScrollState {
 
 export class ScrollAreaScrollbarAutoState {
 	static create() {
-		return new ScrollAreaScrollbarAutoState(ScrollAreaScrollbarContext.get());
+		return new ScrollAreaScrollbarAutoState(getScrollAreaScrollbar());
 	}
 	readonly scrollbar: ScrollAreaScrollbarState;
 	readonly root: ScrollAreaRootState;
@@ -367,8 +353,8 @@ export class ScrollAreaScrollbarAutoState {
 
 export class ScrollAreaScrollbarVisibleState {
 	static create() {
-		return ScrollAreaScrollbarVisibleContext.set(
-			new ScrollAreaScrollbarVisibleState(ScrollAreaScrollbarContext.get())
+		return setScrollAreaScrollbarVisible(
+			new ScrollAreaScrollbarVisibleState(getScrollAreaScrollbar())
 		);
 	}
 	readonly scrollbar: ScrollAreaScrollbarState;
@@ -490,8 +476,8 @@ interface ScrollbarAxisState {
 
 export class ScrollAreaScrollbarXState implements ScrollbarAxisState {
 	static create(opts: ScrollbarAxisStateOpts) {
-		return ScrollAreaScrollbarAxisContext.set(
-			new ScrollAreaScrollbarXState(opts, ScrollAreaScrollbarVisibleContext.get())
+		return setScrollAreaScrollbarAxis(
+			new ScrollAreaScrollbarXState(opts, getScrollAreaScrollbarVisible())
 		);
 	}
 	readonly opts: ScrollbarAxisStateOpts;
@@ -590,8 +576,8 @@ export class ScrollAreaScrollbarXState implements ScrollbarAxisState {
 
 export class ScrollAreaScrollbarYState implements ScrollbarAxisState {
 	static create(opts: ScrollbarAxisStateOpts) {
-		return ScrollAreaScrollbarAxisContext.set(
-			new ScrollAreaScrollbarYState(opts, ScrollAreaScrollbarVisibleContext.get())
+		return setScrollAreaScrollbarAxis(
+			new ScrollAreaScrollbarYState(opts, getScrollAreaScrollbarVisible())
 		);
 	}
 	readonly opts: ScrollbarAxisStateOpts;
@@ -694,8 +680,8 @@ type ScrollbarAxis = ScrollAreaScrollbarXState | ScrollAreaScrollbarYState;
 
 export class ScrollAreaScrollbarSharedState {
 	static create() {
-		return ScrollAreaScrollbarSharedContext.set(
-			new ScrollAreaScrollbarSharedState(ScrollAreaScrollbarAxisContext.get())
+		return setScrollAreaScrollbarShared(
+			new ScrollAreaScrollbarSharedState(getScrollAreaScrollbarAxis())
 		);
 	}
 	readonly scrollbarState: ScrollbarAxis;
@@ -828,7 +814,7 @@ interface ScrollAreaThumbImplStateOpts
 
 export class ScrollAreaThumbImplState {
 	static create(opts: ScrollAreaThumbImplStateOpts) {
-		return new ScrollAreaThumbImplState(opts, ScrollAreaScrollbarSharedContext.get());
+		return new ScrollAreaThumbImplState(opts, getScrollAreaScrollbarShared());
 	}
 	readonly opts: ScrollAreaThumbImplStateOpts;
 	readonly scrollbarState: ScrollAreaScrollbarSharedState;
@@ -912,7 +898,7 @@ interface ScrollAreaCornerImplStateOpts extends WithRefOpts {}
 
 export class ScrollAreaCornerImplState {
 	static create(opts: ScrollAreaCornerImplStateOpts) {
-		return new ScrollAreaCornerImplState(opts, ScrollAreaRootContext.get());
+		return new ScrollAreaCornerImplState(opts, getScrollAreaRoot());
 	}
 
 	readonly opts: ScrollAreaCornerImplStateOpts;

@@ -1,11 +1,13 @@
+import { createContext } from "svelte";
 import {
+	type ReadableBox,
 	type ReadableBoxedValues,
 	type WritableBoxedValues,
 	attachRef,
 	boxWith,
 	DOMContext,
 } from "$lib/internal/toolbelt.js";
-import { Context, watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
 import { kbd } from "$lib/internal/kbd.js";
 import {
 	createBitsAttrs,
@@ -33,7 +35,7 @@ const popoverAttrs = createBitsAttrs({
 	parts: ["root", "trigger", "content", "close", "overlay"],
 });
 
-const PopoverRootContext = new Context<PopoverRootState>("Popover.Root");
+const [getPopoverRoot, setPopoverRoot] = createContext<PopoverRootState>();
 
 interface PopoverRootStateOpts
 	extends WritableBoxedValues<{
@@ -45,7 +47,7 @@ interface PopoverRootStateOpts
 
 export class PopoverRootState {
 	static create(opts: PopoverRootStateOpts) {
-		return PopoverRootContext.set(new PopoverRootState(opts));
+		return setPopoverRoot(new PopoverRootState(opts));
 	}
 
 	readonly opts: PopoverRootStateOpts;
@@ -59,7 +61,8 @@ export class PopoverRootState {
 	openedViaHover = $state(false);
 	hasInteractedWithContent = $state(false);
 	hoverCooldown = $state(false);
-	closeDelay = $state(0);
+	#closeDelaySource = $state<ReadableBox<number>>(boxWith(() => 0));
+	closeDelay = $derived.by(() => this.#closeDelaySource.current);
 	#closeTimeout: number | null = null;
 	#domContext: DOMContext | null = null;
 
@@ -93,6 +96,10 @@ export class PopoverRootState {
 
 	setDomContext(ctx: DOMContext) {
 		this.#domContext = ctx;
+	}
+
+	setCloseDelaySource(source: ReadableBox<number>) {
+		this.#closeDelaySource = source;
 	}
 
 	#clearCloseTimeout() {
@@ -167,7 +174,7 @@ interface PopoverTriggerStateOpts
 
 export class PopoverTriggerState {
 	static create(opts: PopoverTriggerStateOpts) {
-		return new PopoverTriggerState(opts, PopoverRootContext.get());
+		return new PopoverTriggerState(opts, getPopoverRoot());
 	}
 
 	readonly opts: PopoverTriggerStateOpts;
@@ -191,12 +198,7 @@ export class PopoverTriggerState {
 		this.onpointerenter = this.onpointerenter.bind(this);
 		this.onpointerleave = this.onpointerleave.bind(this);
 
-		watch(
-			() => this.opts.closeDelay.current,
-			(delay) => {
-				this.root.closeDelay = delay;
-			}
-		);
+		this.root.setCloseDelaySource(this.opts.closeDelay);
 	}
 
 	#clearOpenTimeout() {
@@ -324,7 +326,7 @@ interface PopoverContentStateOpts
 
 export class PopoverContentState {
 	static create(opts: PopoverContentStateOpts) {
-		return new PopoverContentState(opts, PopoverRootContext.get());
+		return new PopoverContentState(opts, getPopoverRoot());
 	}
 
 	readonly opts: PopoverContentStateOpts;
@@ -441,7 +443,7 @@ interface PopoverCloseStateOpts extends WithRefOpts {}
 
 export class PopoverCloseState {
 	static create(opts: PopoverCloseStateOpts) {
-		return new PopoverCloseState(opts, PopoverRootContext.get());
+		return new PopoverCloseState(opts, getPopoverRoot());
 	}
 
 	readonly opts: PopoverCloseStateOpts;
@@ -483,7 +485,7 @@ interface PopoverOverlayStateOpts extends WithRefOpts {}
 
 export class PopoverOverlayState {
 	static create(opts: PopoverOverlayStateOpts) {
-		return new PopoverOverlayState(opts, PopoverRootContext.get());
+		return new PopoverOverlayState(opts, getPopoverRoot());
 	}
 
 	readonly opts: PopoverOverlayStateOpts;

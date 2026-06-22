@@ -1,9 +1,9 @@
 import { type ComponentProps } from "svelte";
-import { useRefById, type ReadableBoxedValues, type WithRefProps } from "svelte-toolbelt";
+import { useRefById, type ReadableBoxedValues, type WithRefProps } from "$lib/internal/toolbelt.js";
 import * as DrawerPrimitive from "$lib/components/dialog/index.js";
-import { DrawerContext } from "./context.js";
+import { getDrawer } from "./context.js";
 import type { DrawerDirection } from "./types.js";
-import { watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
 import { useScaleBackground } from "./use-scale-background.svelte.js";
 
 type DrawerPrimitiveContentProps = Pick<
@@ -23,7 +23,7 @@ interface UseDrawerContentProps
 		ReadableBoxedValues<Required<DrawerPrimitiveContentProps>> {}
 
 export function useDrawerContent(opts: UseDrawerContentProps) {
-	const ctx = DrawerContext.get();
+	const ctx = getDrawer();
 	let mounted = $state(false);
 	useRefById({
 		id: opts.id,

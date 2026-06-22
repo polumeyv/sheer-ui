@@ -1,4 +1,5 @@
-import { attachRef, type ReadableBoxedValues } from "svelte-toolbelt";
+import { attachRef } from "$lib/internal/attachments.js";
+import type { ReadableBoxedValues } from "$lib/internal/toolbelt.js";
 import type { RefAttachment, WithRefOpts } from "$lib/internal/types.js";
 import { createBitsAttrs } from "$lib/internal/attrs.js";
 

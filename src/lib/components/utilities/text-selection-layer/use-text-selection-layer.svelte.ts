@@ -6,7 +6,7 @@ import {
 	contains,
 	executeCallbacks,
 } from "$lib/internal/toolbelt.js";
-import { watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
 import { on } from "svelte/events";
 import type { PointerHandler, TextSelectionLayerImplProps } from "./types.js";
 import { isHTMLElement } from "$lib/internal/is.js";

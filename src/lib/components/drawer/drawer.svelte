@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as DialogPrimitive from '$lib/components/dialog/index.js';
-	import { box } from 'svelte-toolbelt';
+	import { box } from '$lib/internal/toolbelt.js';
 	import type { RootProps } from './util/components/drawer/index.js';
 	import { noop } from './util/internal/noop.js';
 	import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT } from './util/internal/constants.js';

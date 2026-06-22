@@ -1,16 +1,7 @@
-import { Context, Previous, watch } from "runed";
-import {
-	afterSleep,
-	afterTick,
-	onDestroyEffect,
-	attachRef,
-	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	type Box,
-	boxWith,
-} from "$lib/internal/toolbelt.js";
+import { Previous, watch } from "$lib/internal/toolbelt.js";
+import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, type Box, boxWith } from "$lib/internal/toolbelt.js";
 import { on } from "svelte/events";
+import { createContext, onDestroy, tick } from "svelte";
 import { backward, forward, next, prev } from "$lib/internal/arrays.js";
 import {
 	boolToStr,
@@ -70,9 +61,9 @@ const selectAttrs = createBitsAttrs({
 	],
 });
 
-const SelectRootContext = new Context<SelectRoot>("Select.Root | Combobox.Root");
-const SelectGroupContext = new Context<SelectGroupState>("Select.Group | Combobox.Group");
-const SelectContentContext = new Context<SelectContentState>("Select.Content | Combobox.Content");
+const [getSelectRoot, setSelectRoot] = createContext<SelectRoot>();
+const [getSelectGroup, setSelectGroup] = createContext<SelectGroupState>();
+const [getSelectContent, setSelectContent] = createContext<SelectContentState>();
 
 interface SelectBaseRootStateOpts
 	extends ReadableBoxedValues<{
@@ -296,7 +287,7 @@ export class SelectSingleRootState extends SelectBaseRootState {
 	}
 
 	setInitialHighlightedNode() {
-		afterTick(() => {
+		tick().then(() => {
 			if (
 				this.highlightedNode &&
 				this.domContext.getDocument().contains(this.highlightedNode)
@@ -360,7 +351,7 @@ class SelectMultipleRootState extends SelectBaseRootState {
 	}
 
 	setInitialHighlightedNode() {
-		afterTick(() => {
+		tick().then(() => {
 			if (!this.domContext) return;
 			if (
 				this.highlightedNode &&
@@ -409,7 +400,7 @@ export class SelectRootState {
 				? new SelectSingleRootState(rest as SelectSingleRootStateOpts)
 				: new SelectMultipleRootState(rest as SelectMultipleRootStateOpts);
 
-		return SelectRootContext.set(rootState);
+		return setSelectRoot(rootState);
 	}
 }
 
@@ -423,7 +414,7 @@ type SelectValueStateProps = WithRefOpts<
 
 export class SelectValueState {
 	static create(opts: SelectValueStateProps) {
-		return new SelectValueState(opts, SelectRootContext.get());
+		return new SelectValueState(opts, getSelectRoot());
 	}
 	readonly root: SelectRoot;
 	readonly opts: SelectValueStateProps;
@@ -502,7 +493,7 @@ interface SelectInputStateOpts
 
 export class SelectInputState {
 	static create(opts: SelectInputStateOpts) {
-		return new SelectInputState(opts, SelectRootContext.get());
+		return new SelectInputState(opts, getSelectRoot());
 	}
 	readonly opts: SelectInputStateOpts;
 	readonly root: SelectRoot;
@@ -661,7 +652,7 @@ interface SelectComboTriggerStateOpts extends WithRefOpts {}
 
 export class SelectComboTriggerState {
 	static create(opts: SelectComboTriggerStateOpts) {
-		return new SelectComboTriggerState(opts, SelectRootContext.get());
+		return new SelectComboTriggerState(opts, getSelectRoot());
 	}
 	readonly opts: SelectComboTriggerStateOpts;
 	readonly root: SelectBaseRootState;
@@ -719,7 +710,7 @@ interface SelectTriggerStateOpts extends WithRefOpts {}
 
 export class SelectTriggerState {
 	static create(opts: SelectTriggerStateOpts) {
-		return new SelectTriggerState(opts, SelectRootContext.get());
+		return new SelectTriggerState(opts, getSelectRoot());
 	}
 	readonly opts: SelectTriggerStateOpts;
 	readonly root: SelectRoot;
@@ -988,7 +979,7 @@ interface SelectContentStateOpts
 
 export class SelectContentState {
 	static create(opts: SelectContentStateOpts) {
-		return SelectContentContext.set(new SelectContentState(opts, SelectRootContext.get()));
+		return setSelectContent(new SelectContentState(opts, getSelectRoot()));
 	}
 	readonly opts: SelectContentStateOpts;
 	readonly root: SelectRoot;
@@ -1006,7 +997,7 @@ export class SelectContentState {
 			this.root.domContext = this.domContext;
 		}
 
-		onDestroyEffect(() => {
+		onDestroy(() => {
 			this.root.contentNode = null;
 			this.root.contentIsPositioned = false;
 			this.isPositioned = false;
@@ -1119,7 +1110,7 @@ interface SelectItemStateOpts
 
 export class SelectItemState {
 	static create(opts: SelectItemStateOpts) {
-		return new SelectItemState(opts, SelectRootContext.get());
+		return new SelectItemState(opts, getSelectRoot());
 	}
 	readonly opts: SelectItemStateOpts;
 	readonly root: SelectRoot;
@@ -1265,7 +1256,7 @@ interface SelectGroupStateOpts extends WithRefOpts {}
 
 export class SelectGroupState {
 	static create(opts: SelectGroupStateOpts) {
-		return SelectGroupContext.set(new SelectGroupState(opts, SelectRootContext.get()));
+		return setSelectGroup(new SelectGroupState(opts, getSelectRoot()));
 	}
 	readonly opts: SelectGroupStateOpts;
 	readonly root: SelectBaseRootState;
@@ -1294,7 +1285,7 @@ interface SelectGroupHeadingStateOpts extends WithRefOpts {}
 
 export class SelectGroupHeadingState {
 	static create(opts: SelectGroupHeadingStateOpts) {
-		return new SelectGroupHeadingState(opts, SelectGroupContext.get());
+		return new SelectGroupHeadingState(opts, getSelectGroup());
 	}
 	readonly opts: SelectGroupHeadingStateOpts;
 	readonly group: SelectGroupState;
@@ -1323,7 +1314,7 @@ interface SelectHiddenInputStateOpts
 
 export class SelectHiddenInputState {
 	static create(opts: SelectHiddenInputStateOpts) {
-		return new SelectHiddenInputState(opts, SelectRootContext.get());
+		return new SelectHiddenInputState(opts, getSelectRoot());
 	}
 	readonly opts: SelectHiddenInputStateOpts;
 	readonly root: SelectBaseRootState;
@@ -1361,7 +1352,7 @@ interface SelectViewportStateOpts extends WithRefOpts {}
 
 export class SelectViewportState {
 	static create(opts: SelectViewportStateOpts) {
-		return new SelectViewportState(opts, SelectContentContext.get());
+		return new SelectViewportState(opts, getSelectContent());
 	}
 	readonly opts: SelectViewportStateOpts;
 	readonly content: SelectContentState;
@@ -1494,7 +1485,7 @@ export class SelectScrollButtonImplState {
 export class SelectScrollDownButtonState {
 	static create(opts: SelectScrollButtonImplStateOpts) {
 		return new SelectScrollDownButtonState(
-			new SelectScrollButtonImplState(opts, SelectContentContext.get())
+			new SelectScrollButtonImplState(opts, getSelectContent())
 		);
 	}
 	readonly scrollButtonState: SelectScrollButtonImplState;
@@ -1539,11 +1530,11 @@ export class SelectScrollDownButtonState {
 				if (this.scrollIntoViewTimer) {
 					clearTimeout(this.scrollIntoViewTimer);
 				}
-				this.scrollIntoViewTimer = afterSleep(5, () => {
+				this.scrollIntoViewTimer = setTimeout(() => {
 					const activeItem = this.root.highlightedNode;
 					if (!activeItem) return;
 					this.root.scrollHighlightedNodeIntoView(activeItem);
-				});
+				}, 5);
 			}
 		);
 	}
@@ -1581,7 +1572,7 @@ export class SelectScrollDownButtonState {
 export class SelectScrollUpButtonState {
 	static create(opts: SelectScrollButtonImplStateOpts) {
 		return new SelectScrollUpButtonState(
-			new SelectScrollButtonImplState(opts, SelectContentContext.get())
+			new SelectScrollButtonImplState(opts, getSelectContent())
 		);
 	}
 	readonly scrollButtonState: SelectScrollButtonImplState;

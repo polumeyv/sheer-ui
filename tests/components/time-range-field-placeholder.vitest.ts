@@ -1,0 +1,261 @@
+import { Time } from "@internationalized/date";
+import { flushSync, mount, unmount } from "svelte";
+import { describe, expect, test } from "vitest";
+import type { TimeRange } from "../../src/lib/shared/date/types.js";
+import TimeRangeFieldPlaceholderFixture from "./time-range-field-placeholder.fixture.svelte";
+
+type FixtureProps = Partial<{
+	placeholder: Time;
+	value: TimeRange<Time>;
+	granularity: "hour" | "minute" | "second";
+	hourCycle: 12 | 24;
+	startName: string;
+	endName: string;
+}>;
+
+function time(hour: number, minute = 0, second = 0) {
+	return new Time(hour, minute, second);
+}
+
+function range(start: Time | undefined, end: Time | undefined): TimeRange<Time> {
+	return { start, end };
+}
+
+function renderFixture(props: FixtureProps = {}) {
+	const target = document.createElement("div");
+	document.body.append(target);
+
+	const component = mount(TimeRangeFieldPlaceholderFixture, { props, target });
+	flushSync();
+
+	return { component, target };
+}
+
+function read(testId: "placeholder" | "value") {
+	const node = document.body.querySelector(`[data-testid="${testId}"]`);
+	if (!node) throw new Error(`Expected ${testId} readout to render`);
+	return node.textContent;
+}
+
+function getSegment(side: "start" | "end", part: "hour" | "minute" | "second") {
+	const node = document.body.querySelector<HTMLElement>(
+		`[data-side="${side}"][data-part="${part}"]`
+	);
+	if (!node) throw new Error(`Expected ${side} ${part} segment to render`);
+	return node;
+}
+
+function hasSegment(side: "start" | "end", part: "hour" | "minute" | "second") {
+	return document.body.querySelector(`[data-side="${side}"][data-part="${part}"]`) !== null;
+}
+
+function getHiddenInput(name: string) {
+	return document.body.querySelector<HTMLInputElement>(`input[aria-hidden="true"][name="${name}"]`);
+}
+
+function getForm() {
+	const form = document.body.querySelector<HTMLFormElement>("form");
+	if (!form) throw new Error("Expected form to render");
+	return form;
+}
+
+function cleanup(component: ReturnType<typeof mount>) {
+	unmount(component);
+	document.body.innerHTML = "";
+}
+
+describe("TimeRangeField placeholder and value ownership", () => {
+	test("assigns a deterministic default when initial placeholder is undefined", () => {
+		const { component } = renderFixture();
+
+		try {
+			expect(read("placeholder")).toBe("00:00:00");
+			expect(read("value")).toBe("{start:undefined,end:undefined}");
+			expect(getHiddenInput("startTime")?.value).toBe("");
+			expect(getHiddenInput("endTime")?.value).toBe("");
+		} finally {
+			cleanup(component);
+		}
+	});
+
+	test("preserves an explicit initial placeholder when no value overrides it", () => {
+		const { component } = renderFixture({
+			placeholder: time(13, 45, 30),
+		});
+
+		try {
+			expect(read("placeholder")).toBe("13:45:30");
+			expect(read("value")).toBe("{start:undefined,end:undefined}");
+		} finally {
+			cleanup(component);
+		}
+	});
+
+	test("repairs the deterministic default when bound placeholder is reset to undefined", () => {
+		const { component } = renderFixture();
+
+		try {
+			expect(read("placeholder")).toBe("00:00:00");
+
+			component.setPlaceholder(time(8, 5, 6));
+			flushSync();
+			expect(read("placeholder")).toBe("08:05:06");
+
+			component.setPlaceholder(undefined);
+			flushSync();
+			expect(read("placeholder")).toBe("00:00:00");
+		} finally {
+			cleanup(component);
+		}
+	});
+
+	test("syncs placeholder and start/end field state from an initial complete range value", () => {
+		const { component } = renderFixture({
+			placeholder: time(1, 2, 3),
+			value: range(time(9, 15, 30), time(17, 45, 0)),
+		});
+
+		try {
+			expect(read("placeholder")).toBe("09:15:30");
+			expect(read("value")).toBe("{start:09:15:30,end:17:45:00}");
+			expect(getHiddenInput("startTime")?.value).toBe("09:15:30");
+			expect(getHiddenInput("endTime")?.value).toBe("17:45:00");
+		} finally {
+			cleanup(component);
+		}
+	});
+
+	test("keeps partial range value and submits only the completed side", () => {
+		const { component } = renderFixture({
+			placeholder: time(1, 2, 3),
+			value: range(time(9, 15, 30), undefined),
+		});
+
+		try {
+			expect(read("placeholder")).toBe("09:15:30");
+			expect(read("value")).toBe("{start:09:15:30,end:undefined}");
+			expect(getHiddenInput("startTime")?.value).toBe("09:15:30");
+			expect(getHiddenInput("endTime")?.value).toBe("");
+			expect(new FormData(getForm()).get("startTime")).toBe("09:15:30");
+			expect(new FormData(getForm()).get("endTime")).toBe("");
+		} finally {
+			cleanup(component);
+		}
+	});
+
+	test("resetting value to undefined repairs to an empty range and keeps the last placeholder", () => {
+		const { component } = renderFixture({
+			placeholder: time(1, 2, 3),
+			value: range(time(9, 15, 30), time(17, 45, 0)),
+		});
+
+		try {
+			expect(read("placeholder")).toBe("09:15:30");
+			expect(read("value")).toBe("{start:09:15:30,end:17:45:00}");
+
+			component.setValue(undefined);
+			flushSync();
+
+			expect(read("placeholder")).toBe("09:15:30");
+			expect(read("value")).toBe("{start:undefined,end:undefined}");
+			expect(getHiddenInput("startTime")?.value).toBe("");
+			expect(getHiddenInput("endTime")?.value).toBe("");
+		} finally {
+			cleanup(component);
+		}
+	});
+
+	test("partial segment input does not submit placeholder as form value", () => {
+		const { component } = renderFixture({
+			placeholder: time(9, 15, 30),
+			granularity: "second",
+			hourCycle: 24,
+		});
+
+		try {
+			getSegment("start", "hour").dispatchEvent(
+				new KeyboardEvent("keydown", { key: "1", bubbles: true })
+			);
+			flushSync();
+
+			expect(read("placeholder")).toBe("09:15:30");
+			expect(read("value")).toBe("{start:undefined,end:undefined}");
+			expect(getHiddenInput("startTime")?.value).toBe("");
+			expect(getHiddenInput("endTime")?.value).toBe("");
+			expect(new FormData(getForm()).get("startTime")).toBe("");
+			expect(new FormData(getForm()).get("endTime")).toBe("");
+		} finally {
+			cleanup(component);
+		}
+	});
+
+	test("complete value renders and submits both form payloads", () => {
+		const { component } = renderFixture({
+			value: range(time(9, 15, 30), time(17, 45, 0)),
+			startName: "bookingStart",
+			endName: "bookingEnd",
+		});
+
+		try {
+			expect(getHiddenInput("bookingStart")?.value).toBe("09:15:30");
+			expect(getHiddenInput("bookingEnd")?.value).toBe("17:45:00");
+			expect(new FormData(getForm()).get("bookingStart")).toBe("09:15:30");
+			expect(new FormData(getForm()).get("bookingEnd")).toBe("17:45:00");
+		} finally {
+			cleanup(component);
+		}
+	});
+
+	test("respects hour, minute, and second granularity for both range inputs", () => {
+		const { component: hourComponent } = renderFixture({
+			placeholder: time(9, 15, 30),
+			granularity: "hour",
+			hourCycle: 24,
+		});
+
+		try {
+			expect(hasSegment("start", "hour")).toBe(true);
+			expect(hasSegment("start", "minute")).toBe(false);
+			expect(hasSegment("start", "second")).toBe(false);
+			expect(hasSegment("end", "hour")).toBe(true);
+			expect(hasSegment("end", "minute")).toBe(false);
+			expect(hasSegment("end", "second")).toBe(false);
+		} finally {
+			cleanup(hourComponent);
+		}
+
+		const { component: minuteComponent } = renderFixture({
+			placeholder: time(9, 15, 30),
+			granularity: "minute",
+			hourCycle: 24,
+		});
+
+		try {
+			expect(hasSegment("start", "hour")).toBe(true);
+			expect(hasSegment("start", "minute")).toBe(true);
+			expect(hasSegment("start", "second")).toBe(false);
+			expect(hasSegment("end", "hour")).toBe(true);
+			expect(hasSegment("end", "minute")).toBe(true);
+			expect(hasSegment("end", "second")).toBe(false);
+		} finally {
+			cleanup(minuteComponent);
+		}
+
+		const { component: secondComponent } = renderFixture({
+			placeholder: time(9, 15, 30),
+			granularity: "second",
+			hourCycle: 24,
+		});
+
+		try {
+			expect(hasSegment("start", "hour")).toBe(true);
+			expect(hasSegment("start", "minute")).toBe(true);
+			expect(hasSegment("start", "second")).toBe(true);
+			expect(hasSegment("end", "hour")).toBe(true);
+			expect(hasSegment("end", "minute")).toBe(true);
+			expect(hasSegment("end", "second")).toBe(true);
+		} finally {
+			cleanup(secondComponent);
+		}
+	});
+});

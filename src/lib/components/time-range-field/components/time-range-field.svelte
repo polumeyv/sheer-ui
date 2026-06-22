@@ -6,7 +6,7 @@
 </script>
 
 <script lang="ts" generics="T extends TimeValue = Time">
-	import { watch } from "runed";
+	import { watch } from "$lib/internal/toolbelt.js";
 	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
 	import { TimeRangeFieldRootState } from "../time-range-field.svelte.js";
 	import type { TimeRangeFieldRootProps } from "../types.js";
@@ -46,40 +46,44 @@
 	let startValue = $state<T | undefined>(value?.start);
 	let endValue = $state<T | undefined>(value?.end);
 
-	function handleDefaultPlaceholder() {
+	function repairUndefinedControlledPlaceholder() {
 		if (placeholder !== undefined) return;
 		const defaultPlaceholder = getDefaultTime({ granularity, defaultValue: value?.start });
 		placeholder = defaultPlaceholder;
 	}
 
-	// SSR
-	handleDefaultPlaceholder();
+	// SSR/initial setup: TimeRangeField needs a writable placeholder for segment state.
+	repairUndefinedControlledPlaceholder();
 
 	watch.pre(
 		() => placeholder,
 		() => {
-			handleDefaultPlaceholder();
+			/**
+			 * Parent spread-prop resets can make the bindable placeholder undefined again.
+			 * Repairing it is intentional: this is writable segment/focus state, and
+			 * parents using bind:placeholder should observe the repaired value.
+			 */
+			repairUndefinedControlledPlaceholder();
 		}
 	);
 
-	function handleDefaultValue() {
+	function repairUndefinedControlledValue() {
 		if (value !== undefined) return;
 		const defaultValue = { start: undefined, end: undefined };
 		value = defaultValue;
 	}
 
-	// SSR
-	handleDefaultValue();
+	// SSR/initial setup: range field state owns a TimeRange object, even when empty.
+	repairUndefinedControlledValue();
 
-	/**
-	 * Covers an edge case where when a spread props object is reassigned,
-	 * the props are reset to their default values, which would make value
-	 * undefined which causes errors to be thrown.
-	 */
 	watch.pre(
 		() => value,
 		() => {
-			handleDefaultValue();
+			/**
+			 * Parent spread-prop resets can make value undefined again. Repairing it
+			 * preserves the controlled range object used by the field state machine.
+			 */
+			repairUndefinedControlledValue();
 		}
 	);
 

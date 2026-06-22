@@ -1,3 +1,5 @@
+import { on } from 'svelte/events'
+
 type EventNameType = keyof DocumentEventMap | keyof WindowEventMap
 type EventHandlerType = (evt: any) => void // eslint-disable-line @typescript-eslint/no-explicit-any
 type EventOptionsType = boolean | AddEventListenerOptions | undefined
@@ -16,6 +18,11 @@ export type EventStoreType = {
 export function EventStore(): EventStoreType {
   let listeners: EventRemoverType[] = []
 
+  function normalizeEventOptions(options: EventOptionsType): AddEventListenerOptions | undefined {
+    if (typeof options === 'boolean') return { capture: options }
+    return options
+  }
+
   function add(
     node: EventTarget,
     type: EventNameType,
@@ -25,8 +32,7 @@ export function EventStore(): EventStoreType {
     let removeListener: EventRemoverType
 
     if ('addEventListener' in node) {
-      node.addEventListener(type, handler, options)
-      removeListener = () => node.removeEventListener(type, handler, options)
+      removeListener = on(node, type, handler, normalizeEventOptions(options))
     } else {
       const legacyMediaQueryList = <MediaQueryList>node
       legacyMediaQueryList.addListener(handler)

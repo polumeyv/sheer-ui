@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { watch } from "runed";
+	import { watch } from "$lib/internal/toolbelt.js";
 	import { boxWith } from "$lib/internal/toolbelt.js";
 	import { DateFieldRootState } from "../date-field.svelte.js";
 	import type { DateFieldRootProps } from "../types.js";
@@ -27,57 +27,60 @@
 		children,
 	}: DateFieldRootProps = $props();
 
-	function handleDefaultPlaceholder(setPlaceholder = true) {
-		if (placeholder !== undefined) return placeholder;
-
-		const defaultPlaceholder = getDefaultDate({
+	function getDefaultPlaceholder() {
+		return getDefaultDate({
 			granularity,
 			defaultValue: value,
 			minValue,
 			maxValue,
 		});
+	}
 
-		if (setPlaceholder) {
-			placeholder = defaultPlaceholder;
-		}
+	function repairUndefinedControlledPlaceholder() {
+		if (placeholder !== undefined) return placeholder;
 
+		const defaultPlaceholder = getDefaultPlaceholder();
+		placeholder = defaultPlaceholder;
 		return defaultPlaceholder;
 	}
 
-	// SSR
-	handleDefaultPlaceholder();
+	function readControlledPlaceholder() {
+		return placeholder ?? getDefaultPlaceholder();
+	}
+
+	// SSR/initial setup. Segment state requires a writable DateValue placeholder.
+	repairUndefinedControlledPlaceholder();
 
 	/**
-	 * Covers an edge case where when a spread props object is reassigned,
-	 * the props are reset to their default values, which would make placeholder
-	 * undefined which causes errors to be thrown.
+	 * Parent spread-prop resets can make the bindable placeholder undefined again.
+	 * Repairing it is intentional: this is writable segment/focus state, and
+	 * parents using bind:placeholder should observe the repaired value.
 	 */
 	watch.pre(
 		() => placeholder,
 		() => {
-			handleDefaultPlaceholder();
+			repairUndefinedControlledPlaceholder();
 		}
 	);
 
-	DateFieldRootState.create({
-		value: boxWith(
-			() => value,
-			(v) => {
-				value = v;
-				onValueChange(v);
-			}
-		),
-		placeholder: boxWith(
-			() => {
-				if (placeholder === undefined) return handleDefaultPlaceholder(false);
-				return placeholder;
-			},
-			(v) => {
-				if (v === undefined) return;
-				placeholder = v;
-				onPlaceholderChange(v);
-			}
-		),
+		DateFieldRootState.create({
+			value: boxWith(
+				() => value,
+				(v) => {
+					value = v;
+					onValueChange(v);
+				}
+			),
+			placeholder: boxWith(
+				() => {
+					return readControlledPlaceholder();
+				},
+				(v) => {
+					if (v === undefined) return;
+					placeholder = v;
+					onPlaceholderChange(v);
+				}
+			),
 		disabled: boxWith(() => disabled),
 		granularity: boxWith(() => granularity),
 		hideTimeZone: boxWith(() => hideTimeZone),

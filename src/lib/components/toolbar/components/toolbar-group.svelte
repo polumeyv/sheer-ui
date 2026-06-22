@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { untrack } from "svelte";
 	import { type WritableBox, boxWith } from "$lib/internal/toolbelt.js";
 	import { mergeProps } from "$lib/internal/toolbelt.js";
 	import type { ToolbarGroupProps } from "../types.js";
 	import { ToolbarGroupState } from "../toolbar.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { watch } from "runed";
 
 	const uid = $props.id();
 
@@ -20,27 +20,31 @@
 		...restProps
 	}: ToolbarGroupProps = $props();
 
+	// Mode is construction-static: ToolbarGroupState chooses a single/multiple class once.
+	const valueType = untrack(() => type);
+
+	function getDefaultValue(): string | string[] {
+		return valueType === "single" ? "" : [];
+	}
+
 	function handleDefaultValue() {
 		if (value !== undefined) return;
-		value = type === "single" ? "" : [];
+		value = getDefaultValue();
+	}
+
+	function getValue() {
+		return value ?? getDefaultValue();
 	}
 
 	// SSR
 	handleDefaultValue();
 
-	watch.pre(
-		() => value,
-		() => {
-			handleDefaultValue();
-		}
-	);
-
 	const groupState = ToolbarGroupState.create({
 		id: boxWith(() => id),
 		disabled: boxWith(() => disabled),
-		type,
+		type: valueType,
 		value: boxWith(
-			() => value!,
+			() => getValue(),
 			(v) => {
 				value = v;
 				// @ts-expect-error - we know

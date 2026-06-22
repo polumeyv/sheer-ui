@@ -1,10 +1,20 @@
-import { Context } from "runed";
+import { createContext } from "svelte";
 import { boxWith, type ReadableBox, type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
 import type { BitsConfigPropsWithoutChildren } from "$lib/components/utilities/config/types.js";
 
 type BitsConfigStateProps = ReadableBoxedValues<BitsConfigPropsWithoutChildren>;
 
-export const BitsConfigContext = new Context<BitsConfigState>("BitsConfig");
+const [getBitsConfigContext, setBitsConfigContext] = createContext<BitsConfigState>();
+const missingContextErrorUrl = "https://svelte.dev/e/missing_context";
+
+function getBitsConfigContextOr<TFallback>(fallback: TFallback): BitsConfigState | TFallback {
+	try {
+		return getBitsConfigContext();
+	} catch (error) {
+		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
+		throw error;
+	}
+}
 
 /**
  * Gets the current Bits UI configuration state from the context.
@@ -13,7 +23,7 @@ export const BitsConfigContext = new Context<BitsConfigState>("BitsConfig");
  */
 export function getBitsConfig() {
 	const fallback = new BitsConfigState(null, {});
-	return BitsConfigContext.getOr(fallback).opts;
+	return getBitsConfigContextOr(fallback).opts;
 }
 
 /**
@@ -33,7 +43,7 @@ export function getBitsConfig() {
  * ```
  */
 export function useBitsConfig(opts: BitsConfigStateProps) {
-	return BitsConfigContext.set(new BitsConfigState(BitsConfigContext.getOr(null), opts));
+	return setBitsConfigContext(new BitsConfigState(getBitsConfigContextOr(null), opts));
 }
 
 /**

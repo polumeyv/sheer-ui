@@ -19,7 +19,6 @@
 	import type { ToggleGroupRootProps } from "../types.js";
 	import { ToggleGroupRootState } from "../toggle-group.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
-	import { watch } from "runed";
 
 	const uid = $props.id();
 
@@ -44,25 +43,29 @@
 	// Context for toggle group items (values are stable, no reactivity needed)
 	setToggleGroupCtx(untrack(() => ({ variant, size, spacing })));
 
+	// Mode is construction-static: ToggleGroupRootState chooses a single/multiple class once.
+	const valueType = untrack(() => type);
+
+	function getDefaultValue(): string | string[] {
+		return valueType === "single" ? "" : [];
+	}
+
 	function handleDefaultValue() {
 		if (value !== undefined) return;
-		value = type === "single" ? "" : [];
+		value = getDefaultValue();
+	}
+
+	function getValue() {
+		return value ?? getDefaultValue();
 	}
 
 	// SSR
 	handleDefaultValue();
 
-	watch.pre(
-		() => value,
-		() => {
-			handleDefaultValue();
-		}
-	);
-
 	const rootState = ToggleGroupRootState.create({
 		id: boxWith(() => id),
 		value: boxWith(
-			() => value!,
+			() => getValue(),
 			(v) => {
 				value = v;
 				// @ts-expect-error - we know
@@ -73,7 +76,7 @@
 		loop: boxWith(() => loop),
 		orientation: boxWith(() => orientation),
 		rovingFocus: boxWith(() => rovingFocus),
-		type,
+		type: valueType,
 		ref: boxWith(
 			() => ref,
 			(v) => (ref = v)

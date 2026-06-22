@@ -1,4 +1,4 @@
-import { onDestroyEffect } from "$lib/internal/toolbelt.js";
+import { onDestroy } from "svelte";
 import type { AnyFn } from "./types.js";
 
 export class TimeoutFn<T extends AnyFn> {
@@ -13,7 +13,7 @@ export class TimeoutFn<T extends AnyFn> {
 		this.stop = this.stop.bind(this);
 		this.start = this.start.bind(this);
 
-		onDestroyEffect(this.stop);
+		onDestroy(this.stop);
 	}
 
 	#clear() {

@@ -1,21 +1,21 @@
-import { computePosition } from "@floating-ui/dom";
-import { simpleBox } from "$lib/internal/toolbelt.js";
-import type { UseFloatingOptions, UseFloatingReturn } from "./types.js";
-import { get, getDPR, roundByDPR } from "./floating-utils.svelte.js";
+import { computePosition } from '@floating-ui/dom';
+import { simpleBox } from '$lib/internal/toolbelt.js';
+import type { UseFloatingOptions, UseFloatingReturn } from './types.js';
+import { get } from './floating-utils.svelte.js';
+
+const roundByDPR = (value: number, dpr: number): number => Math.round(value * dpr) / dpr;
 
 export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
-	/** Options */
 	const whileElementsMountedOption = options.whileElementsMounted;
 	const openOption = $derived(get(options.open) ?? true);
 	const middlewareOption = $derived(get(options.middleware));
 	const transformOption = $derived(get(options.transform) ?? true);
-	const placementOption = $derived(get(options.placement) ?? "bottom");
-	const strategyOption = $derived(get(options.strategy) ?? "absolute");
+	const placementOption = $derived(get(options.placement) ?? 'bottom');
+	const strategyOption = $derived(get(options.strategy) ?? 'absolute');
 	const sideOffsetOption = $derived(get(options.sideOffset) ?? 0);
 	const alignOffsetOption = $derived(get(options.alignOffset) ?? 0);
 	const reference = options.reference;
 
-	/** State */
 	let x = $state(0);
 	let y = $state(0);
 
@@ -23,27 +23,29 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 
 	// svelte-ignore state_referenced_locally
 	let strategy = $state(strategyOption);
+
 	// svelte-ignore state_referenced_locally
 	let placement = $state(placementOption);
+
 	let middlewareData = $state({});
 	let isPositioned = $state(false);
 	let hasWhileMountedPosition = false;
 	let updateRequestId = 0;
+
 	const floatingStyles = $derived.by(() => {
-		// preserve last known position when floating ref is null (during transitions)
-		const xVal = floating.current ? roundByDPR(floating.current, x) : x;
-		const yVal = floating.current ? roundByDPR(floating.current, y) : y;
+		const node = floating.current;
+		const dpr = node?.ownerDocument.defaultView?.devicePixelRatio ?? 1;
+
+		const xVal = node ? roundByDPR(x, dpr) : x;
+		const yVal = node ? roundByDPR(y, dpr) : y;
 
 		if (transformOption) {
 			return {
 				position: strategy,
-				left: "0",
-				top: "0",
+				left: '0',
+				top: '0',
 				transform: `translate(${xVal}px, ${yVal}px)`,
-				...(floating.current &&
-					getDPR(floating.current) >= 1.5 && {
-						willChange: "transform",
-					}),
+				...(dpr >= 1.5 && { willChange: 'transform' }),
 			};
 		}
 
@@ -54,7 +56,6 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 		};
 	});
 
-	/** Effects */
 	let whileElementsMountedCleanup: (() => void) | undefined;
 
 	function update() {
@@ -69,15 +70,10 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 			placement: placementOption,
 			strategy: strategyOption,
 		}).then((position) => {
-			// ignore stale async resolutions when newer updates were requested.
 			if (requestId !== updateRequestId) return;
-			// ignore stale resolutions after ref replacement.
 			if (reference.current !== referenceNode || floating.current !== floatingNode) return;
 
-			const referenceHidden = isReferenceHidden(referenceNode);
-			if (referenceHidden) {
-				// keep last good coordinates when the anchor disappears to avoid
-				// a transient jump to viewport origin before close propagates.
+			if (isReferenceHidden(referenceNode)) {
 				middlewareData = {
 					...middlewareData,
 					hide: {
@@ -89,15 +85,8 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 				return;
 			}
 
-			// ignore bad coordinates that cause jumping during close transitions
 			if (!openOption && x !== 0 && y !== 0) {
-				// if we had a good position and now getting coordinates near
-				// the expected offset bounds during close, ignore it
-				const maxExpectedOffset = Math.max(
-					Math.abs(sideOffsetOption),
-					Math.abs(alignOffsetOption),
-					15
-				);
+				const maxExpectedOffset = Math.max(Math.abs(sideOffsetOption), Math.abs(alignOffsetOption), 15);
 				if (position.x <= maxExpectedOffset && position.y <= maxExpectedOffset) return;
 			}
 
@@ -111,10 +100,8 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 	}
 
 	function cleanup() {
-		if (typeof whileElementsMountedCleanup === "function") {
-			whileElementsMountedCleanup();
-			whileElementsMountedCleanup = undefined;
-		}
+		whileElementsMountedCleanup?.();
+		whileElementsMountedCleanup = undefined;
 		updateRequestId++;
 	}
 
@@ -127,14 +114,9 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 		}
 
 		if (!openOption) return;
-
 		if (reference.current === null || floating.current === null) return;
 
-		whileElementsMountedCleanup = whileElementsMountedOption(
-			reference.current,
-			floating.current,
-			update
-		);
+		whileElementsMountedCleanup = whileElementsMountedOption(reference.current, floating.current, update);
 	}
 
 	function reset() {
@@ -144,26 +126,23 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 	}
 
 	function trackWhileMountedDeps() {
-		return [
-			middlewareOption,
-			placementOption,
-			strategyOption,
-			sideOffsetOption,
-			alignOffsetOption,
-			openOption,
-		] as const;
+		return [middlewareOption, placementOption, strategyOption, sideOffsetOption, alignOffsetOption, openOption] as const;
 	}
 
 	$effect(() => {
 		if (whileElementsMountedOption !== undefined) return;
 		if (!openOption) return;
+
 		update();
 	});
+
 	$effect(attach);
+
 	$effect(() => {
 		if (whileElementsMountedOption === undefined) return;
 
 		trackWhileMountedDeps();
+
 		if (!openOption) {
 			hasWhileMountedPosition = false;
 			return;
@@ -174,7 +153,6 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 			return;
 		}
 
-		// skip the first post-position run, since autoUpdate already computed it
 		if (!hasWhileMountedPosition) {
 			hasWhileMountedPosition = true;
 			return;
@@ -182,6 +160,7 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 
 		update();
 	});
+
 	$effect(reset);
 	$effect(() => cleanup);
 
@@ -210,8 +189,9 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 }
 
 function isReferenceHidden(node: unknown): boolean {
-	if (!(node instanceof Element)) return false;
+	if (typeof Element === 'undefined' || !(node instanceof Element)) return false;
 	if (!node.isConnected) return true;
-	if (node instanceof HTMLElement && node.hidden) return true;
+	if (typeof HTMLElement !== 'undefined' && node instanceof HTMLElement && node.hidden) return true;
+
 	return node.getClientRects().length === 0;
 }

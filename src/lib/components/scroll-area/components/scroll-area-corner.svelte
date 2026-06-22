@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ScrollAreaCornerProps } from "../types.js";
-	import { ScrollAreaRootContext } from "../scroll-area.svelte.js";
+	import { getScrollAreaRoot } from "../scroll-area.svelte.js";
 	import ScrollAreaCornerImpl from "./scroll-area-corner-impl.svelte";
 	import { createId } from "$lib/internal/create-id.js";
 
@@ -12,7 +12,7 @@
 		...restProps
 	}: ScrollAreaCornerProps = $props();
 
-	const scrollAreaState = ScrollAreaRootContext.get();
+	const scrollAreaState = getScrollAreaRoot();
 
 	const hasBothScrollbarsVisible = $derived(
 		Boolean(scrollAreaState.scrollbarXNode && scrollAreaState.scrollbarYNode)

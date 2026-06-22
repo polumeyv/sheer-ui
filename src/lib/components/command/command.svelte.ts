@@ -1,12 +1,6 @@
-import {
-	afterSleep,
-	afterTick,
-	srOnlyStyles,
-	attachRef,
-	type WritableBoxedValues,
-	type ReadableBoxedValues,
-} from "$lib/internal/toolbelt.js";
-import { Context, watch } from "runed";
+import { srOnlyStyles, attachRef, type WritableBoxedValues, type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
+import { watch } from "$lib/internal/toolbelt.js";
+import { createContext, tick } from "svelte";
 import { findNextSibling, findPreviousSibling } from "./utils.js";
 import type { CommandState } from "./types.js";
 import type {
@@ -49,9 +43,22 @@ const COMMAND_GROUP_HEADING_SELECTOR = commandAttrs.selector("group-heading");
 const COMMAND_ITEM_SELECTOR = commandAttrs.selector("item");
 const COMMAND_VALID_ITEM_SELECTOR = `${commandAttrs.selector("item")}:not([aria-disabled="true"])`;
 
-const CommandRootContext = new Context<CommandRootState>("Command.Root");
-const CommandListContext = new Context<CommandListState>("Command.List");
-const CommandGroupContainerContext = new Context<CommandGroupContainerState>("Command.Group");
+const [getCommandRoot, setCommandRoot] = createContext<CommandRootState>();
+const [getCommandList, setCommandList] = createContext<CommandListState>();
+const [getCommandGroupContainer, setCommandGroupContainer] = createContext<CommandGroupContainerState>();
+
+const missingContextErrorUrl = "https://svelte.dev/e/missing_context";
+
+function getCommandGroupContainerOr<TFallback>(
+	fallback: TFallback
+): CommandGroupContainerState | TFallback {
+	try {
+		return getCommandGroupContainer();
+	} catch (error) {
+		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
+		throw error;
+	}
+}
 
 interface GridItem {
 	index: number;
@@ -94,7 +101,7 @@ const defaultState = {
 
 export class CommandRootState {
 	static create(opts: CommandRootStateOpts) {
-		return CommandRootContext.set(new CommandRootState(opts));
+		return setCommandRoot(new CommandRootState(opts));
 	}
 	readonly opts: CommandRootStateOpts;
 	readonly attachment: RefAttachment;
@@ -123,7 +130,7 @@ export class CommandRootState {
 		if (this.#updateScheduled) return;
 		this.#updateScheduled = true;
 
-		afterTick(() => {
+		tick().then(() => {
 			this.#updateScheduled = false;
 
 			const currentState = this.#snapshot();
@@ -276,7 +283,7 @@ export class CommandRootState {
 	 */
 	setValue(value: string, opts?: boolean) {
 		if (value !== this.opts.value.current && value === "") {
-			afterTick(() => {
+			tick().then(() => {
 				this.key++;
 			});
 		}
@@ -288,7 +295,7 @@ export class CommandRootState {
 	 * Selects first non-disabled item on next tick.
 	 */
 	#selectFirstItem(): void {
-		afterTick(() => {
+		tick().then(() => {
 			const item = this.getValidItems().find(
 				(item) => item.getAttribute("aria-disabled") !== "true"
 			);
@@ -305,7 +312,7 @@ export class CommandRootState {
 	 * Called during initial mount when a value is provided.
 	 */
 	#scrollInitialValue(): void {
-		afterTick(() => {
+		tick().then(() => {
 			const shouldPreventScroll = this.opts.disableInitialScroll.current;
 			if (!shouldPreventScroll) {
 				this.#scrollSelectedIntoView();
@@ -450,7 +457,7 @@ export class CommandRootState {
 	 * Special handling for first items in groups.
 	 */
 	#scrollSelectedIntoView(): void {
-		afterTick(() => {
+		tick().then(() => {
 			const item = this.#getSelectedItem();
 			if (!item) return;
 			const grandparent = item.parentElement?.parentElement;
@@ -626,7 +633,7 @@ export class CommandRootState {
 		// Schedule sorting to run after this tick when all items are added not each time an item is added
 		if (!this.sortAfterTick) {
 			this.sortAfterTick = true;
-			afterTick(() => {
+			tick().then(() => {
 				this.#sort();
 				this.sortAfterTick = false;
 			});
@@ -660,7 +667,7 @@ export class CommandRootState {
 		// Schedule sorting and filtering to run after this tick when all items are added not each time an item is added
 		if (!this.sortAndFilterAfterTick) {
 			this.sortAndFilterAfterTick = true;
-			afterTick(() => {
+			tick().then(() => {
 				this.#filterItems();
 				this.#sort();
 				this.sortAndFilterAfterTick = false;
@@ -1139,7 +1146,7 @@ interface CommandEmptyStateOpts
 
 export class CommandEmptyState {
 	static create(opts: CommandEmptyStateOpts) {
-		return new CommandEmptyState(opts, CommandRootContext.get());
+		return new CommandEmptyState(opts, getCommandRoot());
 	}
 
 	readonly opts: CommandEmptyStateOpts;
@@ -1183,8 +1190,8 @@ interface CommandGroupContainerStateOpts
 
 export class CommandGroupContainerState {
 	static create(opts: CommandGroupContainerStateOpts) {
-		return CommandGroupContainerContext.set(
-			new CommandGroupContainerState(opts, CommandRootContext.get())
+		return setCommandGroupContainer(
+			new CommandGroupContainerState(opts, getCommandRoot())
 		);
 	}
 
@@ -1245,7 +1252,7 @@ interface CommandGroupHeadingStateOpts extends WithRefOpts {}
 
 export class CommandGroupHeadingState {
 	static create(opts: CommandGroupHeadingStateOpts) {
-		return new CommandGroupHeadingState(opts, CommandGroupContainerContext.get());
+		return new CommandGroupHeadingState(opts, getCommandGroupContainer());
 	}
 
 	readonly opts: CommandGroupHeadingStateOpts;
@@ -1272,7 +1279,7 @@ interface CommandGroupItemsStateOpts extends WithRefOpts {}
 
 export class CommandGroupItemsState {
 	static create(opts: CommandGroupItemsStateOpts) {
-		return new CommandGroupItemsState(opts, CommandGroupContainerContext.get());
+		return new CommandGroupItemsState(opts, getCommandGroupContainer());
 	}
 
 	readonly opts: CommandGroupItemsStateOpts;
@@ -1308,7 +1315,7 @@ interface CommandInputStateOpts
 
 export class CommandInputState {
 	static create(opts: CommandInputStateOpts) {
-		return new CommandInputState(opts, CommandRootContext.get());
+		return new CommandInputState(opts, getCommandRoot());
 	}
 
 	readonly opts: CommandInputStateOpts;
@@ -1331,7 +1338,7 @@ export class CommandInputState {
 			() => {
 				const node = this.opts.ref.current;
 				if (node && this.opts.autofocus.current) {
-					afterSleep(10, () => node.focus());
+					setTimeout(() => node.focus(), 10);
 				}
 			}
 		);
@@ -1380,8 +1387,8 @@ interface CommandItemStateOpts
 
 export class CommandItemState {
 	static create(opts: Omit<CommandItemStateOpts, "group">) {
-		const group = CommandGroupContainerContext.getOr(null);
-		return new CommandItemState({ ...opts, group }, CommandRootContext.get());
+		const group = getCommandGroupContainerOr(null);
+		return new CommandItemState({ ...opts, group }, getCommandRoot());
 	}
 	readonly opts: CommandItemStateOpts;
 	readonly root: CommandRootState;
@@ -1412,7 +1419,7 @@ export class CommandItemState {
 	constructor(opts: CommandItemStateOpts, root: CommandRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.#group = CommandGroupContainerContext.getOr(null);
+		this.#group = getCommandGroupContainerOr(null);
 		this.trueValue = opts.value.current;
 		this.attachment = attachRef(this.opts.ref);
 
@@ -1530,7 +1537,7 @@ interface CommandSeparatorStateOpts
 
 export class CommandSeparatorState {
 	static create(opts: CommandSeparatorStateOpts) {
-		return new CommandSeparatorState(opts, CommandRootContext.get());
+		return new CommandSeparatorState(opts, getCommandRoot());
 	}
 
 	readonly opts: CommandSeparatorStateOpts;
@@ -1566,7 +1573,7 @@ interface CommandListStateOpts
 
 export class CommandListState {
 	static create(opts: CommandListStateOpts) {
-		return CommandListContext.set(new CommandListState(opts, CommandRootContext.get()));
+		return setCommandList(new CommandListState(opts, getCommandRoot()));
 	}
 
 	readonly opts: CommandListStateOpts;
@@ -1599,7 +1606,7 @@ interface CommandLabelStateOpts
 
 export class CommandLabelState {
 	static create(opts: CommandLabelStateOpts) {
-		return new CommandLabelState(opts, CommandRootContext.get());
+		return new CommandLabelState(opts, getCommandRoot());
 	}
 	readonly opts: CommandLabelStateOpts;
 	readonly root: CommandRootState;
@@ -1626,7 +1633,7 @@ interface CommandViewportStateOpts extends WithRefOpts {}
 
 export class CommandViewportState {
 	static create(opts: CommandViewportStateOpts) {
-		return new CommandViewportState(opts, CommandListContext.get());
+		return new CommandViewportState(opts, getCommandList());
 	}
 
 	readonly opts: CommandViewportStateOpts;

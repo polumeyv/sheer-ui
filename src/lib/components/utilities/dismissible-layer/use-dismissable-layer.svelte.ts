@@ -1,14 +1,12 @@
 import {
 	type ReadableBox,
 	type WritableBox,
-	afterSleep,
-	afterTick,
 	executeCallbacks,
-	onDestroyEffect,
 	type ReadableBoxedValues,
 } from "$lib/internal/toolbelt.js";
-import { watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
 import { on } from "svelte/events";
+import { onMount, tick } from "svelte";
 import type { DismissibleLayerImplProps, InteractOutsideBehaviorType } from "./types.js";
 import { type EventCallback } from "$lib/internal/events.js";
 import { debounce } from "$lib/internal/debounce.js";
@@ -68,17 +66,17 @@ export class DismissibleLayerState {
 
 		watch([() => this.opts.enabled.current, () => this.opts.ref.current], () => {
 			if (!this.opts.enabled.current || !this.opts.ref.current) return;
-			afterSleep(1, () => {
+			setTimeout(() => {
 				if (!this.opts.ref.current) return;
 				globalThis.bitsDismissableLayers.set(this, this.#behaviorType);
 
 				unsubEvents();
 				unsubEvents = this.#addEventListeners();
-			});
+			}, 1);
 			return cleanup;
 		});
 
-		onDestroyEffect(() => {
+		onMount(() => () => {
 			this.#resetState.destroy();
 			globalThis.bitsDismissableLayers.delete(this);
 			this.#handleInteractOutside.destroy();
@@ -90,7 +88,7 @@ export class DismissibleLayerState {
 	#handleFocus = (event: FocusEvent) => {
 		if (event.defaultPrevented) return;
 		if (!this.opts.ref.current) return;
-		afterTick(() => {
+		tick().then(() => {
 			if (!this.opts.ref.current || this.#isTargetWithinLayer(event.target as HTMLElement))
 				return;
 

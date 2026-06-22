@@ -2,7 +2,7 @@
 	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
 	import { untrack, type Snippet } from 'svelte';
 	import type { NavigationMenuContentProps } from '../types.js';
-	import { NavigationMenuItemContext, NavigationMenuItemState, NavigationMenuContentImplState } from '../navigation-menu.svelte.js';
+	import { setNavigationMenuItem, NavigationMenuItemState, NavigationMenuContentImplState } from '../navigation-menu.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import DismissibleLayer from '../../utilities/dismissible-layer/dismissible-layer.svelte';
 	import EscapeLayer from '../../utilities/escape-layer/escape-layer.svelte';
@@ -43,7 +43,7 @@
 	);
 
 	if (itemState) {
-		NavigationMenuItemContext.set(itemState);
+		setNavigationMenuItem(itemState);
 	}
 
 	const mergedProps = $derived(mergeProps(restProps, contentImplState.props));

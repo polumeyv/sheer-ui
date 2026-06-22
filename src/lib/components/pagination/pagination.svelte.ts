@@ -1,5 +1,5 @@
+import { createContext } from "svelte";
 import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
-import { Context } from "runed";
 import type { Page, PageItem } from "./types.js";
 import type {
 	BitsKeyboardEvent,
@@ -18,7 +18,7 @@ const paginationAttrs = createBitsAttrs({
 	parts: ["root", "page", "prev", "next"],
 });
 
-const PaginationRootContext = new Context<PaginationRootState>("Pagination.Root");
+const [getPaginationRoot, setPaginationRoot] = createContext<PaginationRootState>();
 
 interface PaginationRootStateOpts
 	extends WithRefOpts,
@@ -35,7 +35,7 @@ interface PaginationRootStateOpts
 
 export class PaginationRootState {
 	static create(opts: PaginationRootStateOpts) {
-		return PaginationRootContext.set(new PaginationRootState(opts));
+		return setPaginationRoot(new PaginationRootState(opts));
 	}
 	readonly opts: PaginationRootStateOpts;
 	readonly attachment: RefAttachment;
@@ -113,7 +113,7 @@ interface PaginationPageStateOpts
 
 export class PaginationPageState {
 	static create(opts: PaginationPageStateOpts) {
-		return new PaginationPageState(opts, PaginationRootContext.get());
+		return new PaginationPageState(opts, getPaginationRoot());
 	}
 	readonly opts: PaginationPageStateOpts;
 	readonly root: PaginationRootState;
@@ -176,7 +176,7 @@ interface PaginationButtonStateOpts
 
 export class PaginationButtonState {
 	static create(opts: PaginationButtonStateOpts) {
-		return new PaginationButtonState(opts, PaginationRootContext.get());
+		return new PaginationButtonState(opts, getPaginationRoot());
 	}
 	readonly opts: PaginationButtonStateOpts;
 	readonly root: PaginationRootState;

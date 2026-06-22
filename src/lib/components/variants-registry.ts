@@ -9,7 +9,7 @@ import { itemVariants, itemMediaVariants } from './item/variants';
 import { emptyMediaVariants } from './empty/variants';
 import { sidebarMenuButtonVariants } from './sidebar/variants';
 import { toggleVariants } from './toggle/variants';
-import { alertVariants } from './alert/variants';
+import { alertVariants } from './alert';
 import { navigationMenuTriggerStyle } from './navigation-menu/variants';
 import { sheetVariants } from './sheet/variants';
 

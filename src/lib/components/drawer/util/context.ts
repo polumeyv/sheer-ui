@@ -1,6 +1,6 @@
-import { Context } from "runed";
+import { createContext } from "svelte";
 import type { DrawerDirection } from "./types.js";
-import type { ReadableBoxedValues, WritableBoxedValues } from "svelte-toolbelt";
+import type { ReadableBoxedValues, WritableBoxedValues } from "$lib/internal/toolbelt.js";
 
 interface DrawerContextValue
 	extends ReadableBoxedValues<{
@@ -42,4 +42,4 @@ interface DrawerContextValue
 	readonly shouldFade: boolean;
 }
 
-export const DrawerContext = new Context<DrawerContextValue>("Drawer.Root");
+export const [getDrawer, setDrawer] = createContext<DrawerContextValue>();

@@ -1,4 +1,28 @@
 import type { Getter } from "$lib/internal/toolbelt.js";
+import { createAttachmentKey, type Attachment } from "svelte/attachments";
+
+export function resizeAttachment<T extends Element = HTMLElement>(
+	onResize: ResizeObserverCallback,
+	options?: ResizeObserverOptions
+) {
+	return {
+		[createAttachmentKey()]: ((node: T) => {
+			let rAF = 0;
+			const resizeObserver = new ResizeObserver((entries, observer) => {
+				window.cancelAnimationFrame(rAF);
+				rAF = window.requestAnimationFrame(() => onResize(entries, observer));
+			});
+
+			resizeObserver.observe(node, options);
+
+			return () => {
+				window.cancelAnimationFrame(rAF);
+				resizeObserver.unobserve(node);
+				resizeObserver.disconnect();
+			};
+		}) satisfies Attachment<T>,
+	};
+}
 
 export class SvelteResizeObserver {
 	#node: Getter<HTMLElement | null>;

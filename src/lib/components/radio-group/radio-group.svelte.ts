@@ -1,5 +1,6 @@
+import { createContext } from "svelte";
 import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
-import { Context, watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
 import type {
 	BitsFocusEvent,
 	BitsKeyboardEvent,
@@ -22,7 +23,7 @@ const radioGroupAttrs = createBitsAttrs({
 	parts: ["root", "item"],
 });
 
-const RadioGroupRootContext = new Context<RadioGroupRootState>("RadioGroup.Root");
+const [getRadioGroupRoot, setRadioGroupRoot] = createContext<RadioGroupRootState>();
 
 interface RadioGroupRootStateOpts
 	extends WithRefOpts,
@@ -37,7 +38,7 @@ interface RadioGroupRootStateOpts
 		WritableBoxedValues<{ value: string }> {}
 export class RadioGroupRootState {
 	static create(opts: RadioGroupRootStateOpts) {
-		return RadioGroupRootContext.set(new RadioGroupRootState(opts));
+		return setRadioGroupRoot(new RadioGroupRootState(opts));
 	}
 
 	readonly opts: RadioGroupRootStateOpts;
@@ -90,7 +91,7 @@ interface RadioGroupItemStateOpts
 
 export class RadioGroupItemState {
 	static create(opts: RadioGroupItemStateOpts) {
-		return new RadioGroupItemState(opts, RadioGroupRootContext.get());
+		return new RadioGroupItemState(opts, getRadioGroupRoot());
 	}
 
 	readonly opts: RadioGroupItemStateOpts;
@@ -182,7 +183,7 @@ export class RadioGroupItemState {
 
 export class RadioGroupInputState {
 	static create() {
-		return new RadioGroupInputState(RadioGroupRootContext.get());
+		return new RadioGroupInputState(getRadioGroupRoot());
 	}
 
 	readonly root: RadioGroupRootState;

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from 'svelte-toolbelt';
+	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
 	import { SelectItemState } from '../select.svelte.js';
 	import type { SelectItemProps } from '../types.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import Mounted from '../../utilities/mounted.svelte';
+	import { mountedAttachment } from '$lib/internal/attachments.js';
 
 	const uid = $props.id();
 
@@ -33,7 +33,11 @@
 		onUnhighlight: boxWith(() => onUnhighlight),
 	});
 
-	const mergedProps = $derived(mergeProps(restProps, itemState.props));
+	const mountedProps = mountedAttachment((mounted) => {
+		itemState.mounted = mounted;
+	});
+
+	const mergedProps = $derived(mergeProps(restProps, itemState.props, mountedProps));
 </script>
 
 {#if child}
@@ -43,5 +47,3 @@
 		{@render children?.(itemState.snippetProps)}
 	</div>
 {/if}
-
-<Mounted bind:mounted={itemState.mounted} />

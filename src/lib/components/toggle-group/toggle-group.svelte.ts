@@ -1,10 +1,5 @@
-import {
-	type WritableBox,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	attachRef,
-} from "$lib/internal/toolbelt.js";
-import { Context } from "runed";
+import { createContext } from "svelte";
+import { type WritableBox, type ReadableBoxedValues, type WritableBoxedValues, attachRef } from "$lib/internal/toolbelt.js";
 import {
 	createBitsAttrs,
 	getAriaChecked,
@@ -27,7 +22,7 @@ export const toggleGroupAttrs = createBitsAttrs({
 	parts: ["root", "item"],
 });
 
-const ToggleGroupRootContext = new Context<ToggleGroup>("ToggleGroup.Root");
+const [getToggleGroupRoot, setToggleGroupRoot] = createContext<ToggleGroup>();
 
 interface ToggleGroupBaseStateOpts
 	extends WithRefOpts,
@@ -153,7 +148,7 @@ export class ToggleGroupRootState {
 			type === "single"
 				? new ToggleGroupSingleState(rest as ToggleGroupSingleStateOpts)
 				: new ToggleGroupMultipleState(rest as ToggleGroupMultipleStateOpts);
-		return ToggleGroupRootContext.set(rootState);
+		return setToggleGroupRoot(rootState);
 	}
 }
 
@@ -166,7 +161,7 @@ interface ToggleGroupItemStateOpts
 
 export class ToggleGroupItemState {
 	static create(opts: ToggleGroupItemStateOpts) {
-		return new ToggleGroupItemState(opts, ToggleGroupRootContext.get());
+		return new ToggleGroupItemState(opts, getToggleGroupRoot());
 	}
 	readonly opts: ToggleGroupItemStateOpts;
 	readonly root: ToggleGroup;

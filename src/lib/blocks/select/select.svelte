@@ -51,7 +51,7 @@
 <Select.Root type="single" {items} bind:value {allowDeselect} {onValueChange}>
 	<Select.Trigger
 		class={cn(
-			'inline-flex h-9 w-[296px] touch-none select-none items-center rounded-md border border-input bg-background px-[11px] text-sm transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] data-[placeholder]:text-muted-foreground',
+			'inline-flex h-9 w-74 touch-none select-none items-center rounded-md border border-input bg-background px-2.75 text-sm transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] data-placeholder:text-muted-foreground',
 			triggerClass,
 		)}
 		aria-label={label}>
@@ -62,7 +62,7 @@
 	<Select.Portal>
 		<Select.Content
 			class={cn(
-				'z-50 h-96 max-h-[var(--bits-select-content-available-height)] w-[var(--bits-select-anchor-width)] min-w-[var(--bits-select-anchor-width)] select-none overflow-hidden rounded-xl border bg-popover px-1 py-3 text-popover-foreground shadow-md outline-hidden transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[side=bottom]:starting:-translate-y-1 data-[side=top]:starting:translate-y-1 data-[side=left]:starting:translate-x-1 data-[side=right]:starting:-translate-x-1',
+				'z-50 h-96 max-h-(--bits-select-content-available-height) w-(--bits-select-anchor-width) min-w-(--bits-select-anchor-width) select-none overflow-hidden rounded-xl border bg-popover px-1 py-3 text-popover-foreground shadow-md outline-hidden transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[side=bottom]:starting:-translate-y-1 data-[side=top]:starting:translate-y-1 data-[side=left]:starting:translate-x-1 data-[side=right]:starting:-translate-x-1',
 				contentClass,
 			)}
 			{sideOffset}>

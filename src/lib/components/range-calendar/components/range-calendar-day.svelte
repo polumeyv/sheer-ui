@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "svelte-toolbelt";
+	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
 	import type { RangeCalendarDayProps } from "../types.js";
 	import { RangeCalendarDayState } from "../range-calendar.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";

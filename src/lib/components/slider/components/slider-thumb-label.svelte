@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
 	import type { SliderThumbLabelProps } from "../types.js";
-	import { SliderRootContext, SliderThumbLabelState } from "../slider.svelte.js";
+	import { getSliderRoot, SliderThumbLabelState } from "../slider.svelte.js";
 	import { createId } from "$lib/internal/create-id.js";
 
 	const uid = $props.id();
@@ -16,7 +16,7 @@
 		...restProps
 	}: SliderThumbLabelProps = $props();
 
-	const root = SliderRootContext.get();
+	const root = getSliderRoot();
 
 	const position = $derived.by(() => {
 		if (positionProp !== undefined) return positionProp;

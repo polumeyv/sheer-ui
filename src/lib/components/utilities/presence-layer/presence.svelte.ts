@@ -1,5 +1,6 @@
-import { onDestroyEffect, type ReadableBox, type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
-import { watch } from "runed";
+import { onDestroy } from "svelte";
+import { type ReadableBox, type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
+import { watch } from "$lib/internal/toolbelt.js";
 import { AnimationsComplete } from "$lib/internal/animations-complete.js";
 import type { TransitionState } from "$lib/internal/attrs.js";
 
@@ -24,9 +25,9 @@ export class Presence {
 		this.#isPresent = opts.open.current;
 		this.#afterAnimations = new AnimationsComplete({
 			ref: this.opts.ref,
-			afterTick: this.opts.open,
+			deferToTick: this.opts.open,
 		});
-		onDestroyEffect(() => this.#clearTransitionFrame());
+		onDestroy(() => this.#clearTransitionFrame());
 
 		watch(
 			() => this.present.current,

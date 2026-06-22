@@ -1,10 +1,10 @@
 <script lang="ts">
 	import FloatingLayer from '../../utilities/floating-layer/components/floating-layer.svelte';
-	import { type WritableBox, boxWith } from 'svelte-toolbelt';
+	import { type WritableBox, boxWith } from '$lib/internal/toolbelt.js';
 	import { SelectRootState } from '../select.svelte.js';
 	import type { SelectRootProps } from '../types.js';
 	import SelectHiddenInput from './select-hidden-input.svelte';
-	import { watch } from 'runed';
+	import { watch } from '$lib/internal/toolbelt.js';
 
 	let {
 		value = $bindable(),
@@ -24,18 +24,22 @@
 		children,
 	}: SelectRootProps = $props();
 
-	function handleDefaultValue() {
+	function repairUndefinedControlledValue() {
 		if (value !== undefined) return;
 		value = type === 'single' ? '' : [];
 	}
 
-	// SSR
-	handleDefaultValue();
+	// SSR/initial setup: Select owns a mode-specific controlled value.
+	repairUndefinedControlledValue();
 
 	watch.pre(
 		() => value,
 		() => {
-			handleDefaultValue();
+			/**
+			 * Parent spread-prop resets can make the bindable value undefined again.
+			 * Repairing it preserves the controlled value shape observed by bind:value.
+			 */
+			repairUndefinedControlledValue();
 		},
 	);
 

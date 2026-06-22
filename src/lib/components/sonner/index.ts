@@ -1,7 +1,9 @@
-import { toast } from 'svelte-sonner';
+import { toast } from './vendor/index.js';
 
 export { default as Toaster } from './sonner.svelte';
 export { toast };
+export { useSonner } from './vendor/index.js';
+export type { ExternalToast, ToastOptions, ToastT, ToasterProps } from './vendor/index.js';
 
 /** Common error tuples for toast.error(...TOAST_ERRORS.connection) */
 export const TOAST_ERRORS = {

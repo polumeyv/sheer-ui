@@ -1,17 +1,17 @@
 import { declareVariants, type VariantProps } from 'overrule';
 
 export const itemVariants = declareVariants({
-	base: 'cn-item group/item focus-visible:border-ring focus-visible:ring-ring/50 flex w-full flex-wrap items-center transition-colors duration-100 outline-none focus-visible:ring-[3px] [a]:transition-colors',
+	base: 'rounded-md border text-sm [a]:hover:bg-muted group/item focus-visible:border-ring focus-visible:ring-ring/50 flex w-full flex-wrap items-center transition-colors duration-100 outline-none focus-visible:ring-[3px] [a]:transition-colors',
 	variants: {
 		variant: {
-			default: 'cn-item-variant-default',
-			outline: 'cn-item-variant-outline',
-			muted: 'cn-item-variant-muted',
+			default: 'border-transparent',
+			outline: 'border-border',
+			muted: 'border-transparent bg-muted/50',
 		},
 		size: {
-			default: 'cn-item-size-default',
-			sm: 'cn-item-size-sm',
-			xs: 'cn-item-size-xs',
+			default: 'gap-3.5 px-4 py-3.5',
+			sm: 'gap-2.5 px-3 py-2.5',
+			xs: 'gap-2 px-2.5 py-2 in-data-[slot=dropdown-menu-content]:p-0',
 		},
 	},
 	defaultVariants: {
@@ -24,12 +24,12 @@ export type ItemSize = VariantProps<typeof itemVariants>['size'];
 export type ItemVariant = VariantProps<typeof itemVariants>['variant'];
 
 export const itemMediaVariants = declareVariants({
-	base: 'cn-item-media flex shrink-0 items-center justify-center [&_svg]:pointer-events-none',
+	base: 'gap-2 group-has-data-[slot=item-description]/item:translate-y-0.5 group-has-data-[slot=item-description]/item:self-start flex shrink-0 items-center justify-center [&_svg]:pointer-events-none',
 	variants: {
 		variant: {
-			default: 'cn-item-media-variant-default',
-			icon: 'cn-item-media-variant-icon',
-			image: 'cn-item-media-variant-image',
+			default: 'bg-transparent',
+			icon: "[&_svg:not([class*='size-'])]:size-4",
+			image: 'size-10 overflow-hidden rounded-sm group-data-[size=sm]/item:size-8 group-data-[size=xs]/item:size-6 [&_img]:size-full [&_img]:object-cover',
 		},
 	},
 	defaultVariants: {

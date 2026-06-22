@@ -2,19 +2,11 @@
  * This logic is adapted from the @melt-ui/svelte slider, which was mostly written by
  * Abdelrahman (https://github.com/abdel-17)
  */
-import { untrack } from "svelte";
+import { createContext, onMount, untrack } from "svelte";
 import {
-	executeCallbacks,
-	onMountEffect,
-	attachRef,
-	type Box,
-	type ReadableBox,
-	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-} from "$lib/internal/toolbelt.js";
+	executeCallbacks, attachRef, type Box, type ReadableBox, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
 import { on } from "svelte/events";
-import { Context, watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
 import {
 	getRangeStyles,
 	getThumbStyles,
@@ -29,7 +21,7 @@ import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef } from "$lib/internal
 import { kbd } from "$lib/internal/kbd.js";
 import { isElementOrSVGElement } from "$lib/internal/is.js";
 import { isValidIndex } from "$lib/internal/arrays.js";
-import { SvelteResizeObserver } from "$lib/internal/svelte-resize-observer.svelte.js";
+import { resizeAttachment } from "$lib/internal/svelte-resize-observer.svelte.js";
 import type {
 	BitsKeyboardEvent,
 	OnChangeFn,
@@ -45,7 +37,7 @@ const sliderAttrs = createBitsAttrs({
 	parts: ["root", "thumb", "range", "tick", "tick-label", "thumb-label"],
 });
 
-export const SliderRootContext = new Context<SliderRoot>("Slider.Root");
+export const [getSliderRoot, setSliderRoot] = createContext<SliderRoot>();
 
 interface SliderBaseRootStateOpts
 	extends WithRefOpts,
@@ -84,12 +76,12 @@ abstract class SliderBaseRootState {
 		this.opts = opts;
 		this.attachment = attachRef(opts.ref);
 		this.domContext = new DOMContext(this.opts.ref);
-		new SvelteResizeObserver(() => this.opts.ref.current, this.#handleLayoutChange);
 	}
 
 	#handleLayoutChange = (): void => {
 		this.#layoutVersion += 1;
 	};
+	readonly #resizeAttachment = resizeAttachment(this.#handleLayoutChange);
 
 	isThumbActive(_index: number) {
 		return this.isActive;
@@ -165,6 +157,7 @@ abstract class SliderBaseRootState {
 				},
 				[sliderAttrs.root]: "",
 				...this.attachment,
+				...this.#resizeAttachment,
 			}) as const
 	);
 }
@@ -186,7 +179,7 @@ class SliderSingleRootState extends SliderBaseRootState {
 		super(opts);
 		this.opts = opts;
 
-		onMountEffect(() => {
+		onMount(() => {
 			return executeCallbacks(
 				on(this.domContext.getDocument(), "pointerdown", this.handlePointerDown),
 				on(this.domContext.getDocument(), "pointerup", this.handlePointerUp),
@@ -195,6 +188,11 @@ class SliderSingleRootState extends SliderBaseRootState {
 			);
 		});
 
+		/**
+		 * Controlled value normalization: external bind:value/min/max/step changes
+		 * can move the value off the active step grid. Write the repaired value
+		 * through the box so bind:value and onValueChange observe the normalized value.
+		 */
 		watch(
 			[
 				() => this.opts.step.current,
@@ -413,7 +411,7 @@ class SliderMultiRootState extends SliderBaseRootState {
 		super(opts);
 		this.opts = opts;
 
-		onMountEffect(() => {
+		onMount(() => {
 			return executeCallbacks(
 				on(this.domContext.getDocument(), "pointerdown", this.handlePointerDown),
 				on(this.domContext.getDocument(), "pointerup", this.handlePointerUp),
@@ -422,6 +420,11 @@ class SliderMultiRootState extends SliderBaseRootState {
 			);
 		});
 
+		/**
+		 * Controlled value normalization: external bind:value/min/max/step changes
+		 * can move any thumb off the active step grid. Write the repaired array
+		 * through the box so bind:value and onValueChange observe the normalized value.
+		 */
 		watch(
 			[
 				() => this.opts.step.current,
@@ -735,7 +738,7 @@ export class SliderRootState {
 			type === "single"
 				? new SliderSingleRootState(rest as SliderSingleRootStateOpts)
 				: new SliderMultiRootState(rest as SliderMultiRootStateOpts);
-		return SliderRootContext.set(rootState);
+		return setSliderRoot(rootState);
 	}
 }
 
@@ -752,7 +755,7 @@ interface SliderRangeStateOpts extends WithRefOpts {}
 
 export class SliderRangeState {
 	static create(opts: SliderRangeStateOpts) {
-		return new SliderRangeState(opts, SliderRootContext.get());
+		return new SliderRangeState(opts, getSliderRoot());
 	}
 	readonly opts: SliderRangeStateOpts;
 	readonly root: SliderRoot;
@@ -824,7 +827,7 @@ interface SliderThumbStateOpts
 
 export class SliderThumbState {
 	static create(opts: SliderThumbStateOpts) {
-		return new SliderThumbState(opts, SliderRootContext.get());
+		return new SliderThumbState(opts, getSliderRoot());
 	}
 	readonly opts: SliderThumbStateOpts;
 	readonly root: SliderRoot;
@@ -950,7 +953,7 @@ interface SliderTickStateOpts
 
 export class SliderTickState {
 	static create(opts: SliderTickStateOpts) {
-		return new SliderTickState(opts, SliderRootContext.get());
+		return new SliderTickState(opts, getSliderRoot());
 	}
 	readonly opts: SliderTickStateOpts;
 	readonly root: SliderRoot;
@@ -981,7 +984,7 @@ interface SliderTickLabelStateOpts
 
 export class SliderTickLabelState {
 	static create(opts: SliderTickLabelStateOpts) {
-		return new SliderTickLabelState(opts, SliderRootContext.get());
+		return new SliderTickLabelState(opts, getSliderRoot());
 	}
 	readonly opts: SliderTickLabelStateOpts;
 	readonly root: SliderRoot;
@@ -1026,7 +1029,7 @@ interface SliderThumbLabelStateOpts
 
 export class SliderThumbLabelState {
 	static create(opts: SliderThumbLabelStateOpts) {
-		return new SliderThumbLabelState(opts, SliderRootContext.get());
+		return new SliderThumbLabelState(opts, getSliderRoot());
 	}
 	readonly opts: SliderThumbLabelStateOpts;
 	readonly root: SliderRoot;

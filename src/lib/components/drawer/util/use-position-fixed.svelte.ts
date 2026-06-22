@@ -1,8 +1,7 @@
-import type { Box, Getter } from "svelte-toolbelt";
+import type { Box, Getter } from "$lib/internal/toolbelt.js";
 import { isSafari } from "./internal/browser.js";
-import { onMount } from "svelte";
-import { on } from "svelte/events";
-import { watch } from "runed";
+import { watch } from "$lib/internal/toolbelt.js";
+import { windowScroll } from "$lib/internal/window-state.svelte.js";
 
 let previousBodyPosition: Record<string, string> | null = null;
 
@@ -31,7 +30,6 @@ export function usePositionFixed({
 	hasBeenOpened: Getter<boolean>;
 }) {
 	let activeUrl = $state(typeof window !== "undefined" ? window.location.href : "");
-	let scrollPos = 0;
 
 	function setPositionFixed() {
 		// All browsers on iOS will return true here.
@@ -49,6 +47,7 @@ export function usePositionFixed({
 
 			// Update the dom inside an animation frame
 			const { scrollX, innerHeight } = window;
+			const scrollPos = windowScroll.current.scrollY;
 
 			document.body.style.setProperty("position", "fixed", "important");
 			Object.assign(document.body.style, {
@@ -97,16 +96,6 @@ export function usePositionFixed({
 			previousBodyPosition = null;
 		}
 	}
-
-	onMount(() => {
-		function onScroll() {
-			scrollPos = window.scrollY;
-		}
-
-		onScroll();
-
-		return on(window, "scroll", onScroll);
-	});
 
 	watch([() => modal.current, () => activeUrl], () => {
 		if (!modal.current) return;

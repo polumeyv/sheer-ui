@@ -1,14 +1,7 @@
-import {
-	afterSleep,
-	onDestroyEffect,
-	attachRef,
-	DOMContext,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	boxWith,
-} from "$lib/internal/toolbelt.js";
-import { Context, watch } from "runed";
+import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, boxWith } from "$lib/internal/toolbelt.js";
+import { watch } from "$lib/internal/toolbelt.js";
 import { on } from "svelte/events";
+import { createContext, onDestroy } from "svelte";
 import {
 	createBitsAttrs,
 	boolToStr,
@@ -32,7 +25,7 @@ const linkPreviewAttrs = createBitsAttrs({
 	parts: ["content", "trigger"],
 });
 
-const LinkPreviewRootContext = new Context<LinkPreviewRootState>("LinkPreview.Root");
+const [getLinkPreviewRoot, setLinkPreviewRoot] = createContext<LinkPreviewRootState>();
 
 interface LinkPreviewRootStateOpts
 	extends WritableBoxedValues<{
@@ -47,7 +40,7 @@ interface LinkPreviewRootStateOpts
 
 export class LinkPreviewRootState {
 	static create(opts: LinkPreviewRootStateOpts) {
-		return LinkPreviewRootContext.set(new LinkPreviewRootState(opts));
+		return setLinkPreviewRoot(new LinkPreviewRootState(opts));
 	}
 
 	readonly opts: LinkPreviewRootStateOpts;
@@ -87,7 +80,7 @@ export class LinkPreviewRootState {
 					this.containsSelection = false;
 					this.isPointerDownOnContent = false;
 
-					afterSleep(1, () => {
+					setTimeout(() => {
 						const isSelection =
 							this.domContext.getDocument().getSelection()?.toString() !== "";
 
@@ -96,7 +89,7 @@ export class LinkPreviewRootState {
 						} else {
 							this.hasSelection = false;
 						}
-					});
+					}, 1);
 				};
 
 				const unsubListener = on(
@@ -162,7 +155,7 @@ interface LinkPreviewTriggerStateOpts extends WithRefOpts {}
 
 export class LinkPreviewTriggerState {
 	static create(opts: LinkPreviewTriggerStateOpts) {
-		return new LinkPreviewTriggerState(opts, LinkPreviewRootContext.get());
+		return new LinkPreviewTriggerState(opts, getLinkPreviewRoot());
 	}
 
 	readonly opts: LinkPreviewTriggerStateOpts;
@@ -229,7 +222,7 @@ interface LinkPreviewContentStateOpts
 
 export class LinkPreviewContentState {
 	static create(opts: LinkPreviewContentStateOpts) {
-		return new LinkPreviewContentState(opts, LinkPreviewRootContext.get());
+		return new LinkPreviewContentState(opts, getLinkPreviewRoot());
 	}
 
 	readonly opts: LinkPreviewContentStateOpts;
@@ -254,7 +247,7 @@ export class LinkPreviewContentState {
 			},
 		});
 
-		onDestroyEffect(() => {
+		onDestroy(() => {
 			this.root.clearTimeout();
 		});
 	}
