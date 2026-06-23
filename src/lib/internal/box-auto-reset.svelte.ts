@@ -1,4 +1,4 @@
-import { type WritableBox, boxWith } from "$lib/internal/toolbelt.js";
+import { type WritableBox, boxWith } from '$lib/internal/tools/index.js';
 
 type BoxAutoResetOptions<T> = {
 	afterMs?: number;
@@ -43,6 +43,6 @@ export function boxAutoReset<T>(defaultValue: T, options: BoxAutoResetOptions<T>
 			onChange?.(v);
 			if (timeout) getWindow().clearTimeout(timeout);
 			timeout = resetAfter();
-		}
+		},
 	);
 }

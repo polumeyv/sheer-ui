@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { PopoverTriggerProps } from "../types.js";
-	import { PopoverTriggerState } from "../popover.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import FloatingLayerAnchor from "$lib/components/utilities/floating-layer/components/floating-layer-anchor.svelte";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { PopoverTriggerProps } from '../types.js';
+	import { PopoverTriggerState } from '../popover.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import FloatingLayerAnchor from '$lib/components/utilities/floating-layer/components/floating-layer-anchor.svelte';
 
 	const uid = $props.id();
 
@@ -12,7 +13,7 @@
 		child,
 		id = createId(uid),
 		ref = $bindable(null),
-		type = "button",
+		type = 'button',
 		disabled = false,
 		openOnHover = false,
 		openDelay = 700,
@@ -24,7 +25,7 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		disabled: boxWith(() => Boolean(disabled)),
 		openOnHover: boxWith(() => openOnHover),
@@ -32,9 +33,7 @@
 		closeDelay: boxWith(() => closeDelay),
 	});
 
-	const mergedProps = $derived(
-		mergeProps({ "data-slot": "popover-trigger" }, restProps, triggerState.props, { type })
-	);
+	const mergedProps = $derived(mergeProps({ 'data-slot': 'popover-trigger' }, restProps, triggerState.props, { type }));
 </script>
 
 <FloatingLayerAnchor {id} ref={triggerState.opts.ref}>

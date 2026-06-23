@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { PopoverContentProps } from "../types.js";
-	import { PopoverContentState } from "../popover.svelte.js";
-	import PopperLayer from "$lib/components/utilities/popper-layer/popper-layer.svelte";
-	import { createId } from "$lib/internal/create-id.js";
-	import { getFloatingContentCSSVars } from "$lib/internal/floating-svelte/floating-utils.svelte.js";
-	import PopperLayerForceMount from "$lib/components/utilities/popper-layer/popper-layer-force-mount.svelte";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { PopoverContentProps } from '../types.js';
+	import { PopoverContentState } from '../popover.svelte.js';
+	import PopperLayer from '$lib/components/utilities/popper-layer/popper-layer.svelte';
+	import { createId } from '$lib/internal/create-id.js';
+	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
 
 	const uid = $props.id();
 
@@ -30,7 +30,7 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		onInteractOutside: boxWith(() => onInteractOutside),
 		onEscapeKeydown: boxWith(() => onEscapeKeydown),
@@ -40,12 +40,13 @@
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "popover-content",
-				class: "bg-popover text-popover-foreground transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[side=bottom]:starting:-translate-y-2 data-[side=top]:starting:translate-y-2 data-[side=left]:starting:translate-x-2 data-[side=right]:starting:-translate-x-2 z-50 w-72 origin-(--bits-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden",
+				'data-slot': 'popover-content',
+				class:
+					'bg-popover text-popover-foreground transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[side=bottom]:starting:-translate-y-2 data-[side=top]:starting:translate-y-2 data-[side=left]:starting:translate-x-2 data-[side=right]:starting:-translate-x-2 z-50 w-72 origin-(--bits-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden',
 			},
 			restProps,
-			contentState.props
-		)
+			contentState.props,
+		),
 	);
 
 	// respect user's trapFocus setting, but disable when hover-opened without interaction
@@ -60,70 +61,30 @@
 	}
 </script>
 
-{#if forceMount}
-	<PopperLayerForceMount
-		{...mergedProps}
-		{...contentState.popperProps}
-		ref={contentState.opts.ref}
-		enabled={contentState.root.opts.open.current}
-		{id}
-		trapFocus={effectiveTrapFocus}
-		{preventScroll}
-		loop
-		forceMount={true}
-		{customAnchor}
-		onOpenAutoFocus={handleOpenAutoFocus}
-		{onCloseAutoFocus}
-		shouldRender={contentState.shouldRender}
-	>
-		{#snippet popper({ props, wrapperProps })}
-			{@const finalProps = mergeProps(
-				props,
-				{ style: getFloatingContentCSSVars("popover") },
-				{ style }
-			)}
-			{#if child}
-				{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
-			{:else}
-				<div {...wrapperProps}>
-					<div {...finalProps}>
-						{@render children?.()}
-					</div>
+<PopperLayer
+	{...mergedProps}
+	{...contentState.popperProps}
+	ref={contentState.opts.ref}
+	open={contentState.root.opts.open.current}
+	{id}
+	trapFocus={effectiveTrapFocus}
+	{preventScroll}
+	loop
+	{forceMount}
+	{customAnchor}
+	onOpenAutoFocus={handleOpenAutoFocus}
+	{onCloseAutoFocus}
+	shouldRender={contentState.shouldRender}>
+	{#snippet popper({ props, wrapperProps })}
+		{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('popover') }, { style })}
+		{#if child}
+			{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
+		{:else}
+			<div {...wrapperProps}>
+				<div {...finalProps}>
+					{@render children?.()}
 				</div>
-			{/if}
-		{/snippet}
-	</PopperLayerForceMount>
-{:else if !forceMount}
-	<PopperLayer
-		{...mergedProps}
-		{...contentState.popperProps}
-		ref={contentState.opts.ref}
-		open={contentState.root.opts.open.current}
-		{id}
-		trapFocus={effectiveTrapFocus}
-		{preventScroll}
-		loop
-		forceMount={false}
-		{customAnchor}
-		onOpenAutoFocus={handleOpenAutoFocus}
-		{onCloseAutoFocus}
-		shouldRender={contentState.shouldRender}
-	>
-		{#snippet popper({ props, wrapperProps })}
-			{@const finalProps = mergeProps(
-				props,
-				{ style: getFloatingContentCSSVars("popover") },
-				{ style }
-			)}
-			{#if child}
-				{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
-			{:else}
-				<div {...wrapperProps}>
-					<div {...finalProps}>
-						{@render children?.()}
-					</div>
-				</div>
-			{/if}
-		{/snippet}
-	</PopperLayer>
-{/if}
+			</div>
+		{/if}
+	{/snippet}
+</PopperLayer>

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { boxWith } from "$lib/internal/toolbelt.js";
-	import type { FocusScopeImplProps } from "./types.js";
-	import { FocusScope } from "./focus-scope.svelte.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import type { FocusScopeImplProps } from './types.js';
+	import { FocusScope } from './focus-scope.svelte.js';
 
 	let {
 		enabled = false,

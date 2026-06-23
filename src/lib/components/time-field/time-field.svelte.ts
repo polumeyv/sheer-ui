@@ -1,9 +1,7 @@
 import type { Updater } from 'svelte/store';
 import { CalendarDateTime, Time, ZonedDateTime } from '@internationalized/date';
-import {
-	attachRef, type WritableBox, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, simpleBox } from "$lib/internal/toolbelt.js";
-import { createContext, onMount, untrack } from "svelte";
-import { watch } from "$lib/internal/toolbelt.js";
+import { attachRef, type WritableBox, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, simpleBox } from '$lib/internal/tools/index.js';
+import { createContext, onMount, untrack } from 'svelte';
 import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
 import { isBrowser, isNumberString } from '$lib/internal/is.js';
@@ -265,14 +263,14 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 			}
 		});
 
-		watch(
-			() => this.validationStatus,
-			() => {
+		$effect(() => {
+			this.validationStatus;
+			untrack(() => {
 				if (this.validationStatus !== false) {
 					this.onInvalid.current?.(this.validationStatus.reason, this.validationStatus.message);
 				}
-			},
-		);
+			});
+		});
 	}
 
 	#initializeTimeSegmentValues(): TimeSegmentObj {

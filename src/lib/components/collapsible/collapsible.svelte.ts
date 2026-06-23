@@ -1,32 +1,20 @@
-import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
-import { watch } from "$lib/internal/toolbelt.js";
-import { createContext, tick } from "svelte";
-import {
-	createBitsAttrs,
-	boolToStr,
-	boolToEmptyStrOrUndef,
-	getDataOpenClosed,
-	getDataTransitionAttrs,
-} from "$lib/internal/attrs.js";
-import { kbd } from "$lib/internal/kbd.js";
-import type {
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	OnChangeFn,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import { on } from "svelte/events";
-import { PresenceManager } from "$lib/internal/presence-manager.svelte.js";
-import { createAttachmentKey, type Attachment } from "svelte/attachments";
+import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { createContext, tick, untrack } from 'svelte';
+import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed, getDataTransitionAttrs } from '$lib/internal/attrs.js';
+import { kbd } from '$lib/internal/kbd.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { on } from 'svelte/events';
+import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
+import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 
 const collapsibleAttrs = createBitsAttrs({
-	component: "collapsible",
-	parts: ["root", "content", "trigger"],
+	component: 'collapsible',
+	parts: ['root', 'content', 'trigger'],
 });
 
 interface CollapsibleRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		WritableBoxedValues<{
 			open: boolean;
 		}>,
@@ -71,16 +59,17 @@ export class CollapsibleRootState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-state": getDataOpenClosed(this.opts.open.current),
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-				[collapsibleAttrs.root]: "",
+				'data-state': getDataOpenClosed(this.opts.open.current),
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
+				[collapsibleAttrs.root]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface CollapsibleContentStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			forceMount: boolean;
 			hiddenUntilFound: boolean;
@@ -124,30 +113,34 @@ export class CollapsibleContentState {
 			};
 		});
 
-		watch([() => this.opts.ref.current, () => this.present], ([node]) => {
-			if (!node) return;
-			tick().then(() => {
-				if (!this.opts.ref.current) return;
-				// get the dimensions of the element
-				this.#originalStyles = this.#originalStyles || {
-					transitionDuration: node.style.transitionDuration,
-					animationName: node.style.animationName,
-				};
+		$effect(() => {
+			const node = this.opts.ref.current;
+			const _present = this.present;
+			untrack(() => {
+				if (!node) return;
+				tick().then(() => {
+					if (!this.opts.ref.current) return;
+					// get the dimensions of the element
+					this.#originalStyles = this.#originalStyles || {
+						transitionDuration: node.style.transitionDuration,
+						animationName: node.style.animationName,
+					};
 
-				// block any animations/transitions so the element renders at full dimensions
-				node.style.transitionDuration = "0s";
-				node.style.animationName = "none";
+					// block any animations/transitions so the element renders at full dimensions
+					node.style.transitionDuration = '0s';
+					node.style.animationName = 'none';
 
-				const rect = node.getBoundingClientRect();
-				this.#height = rect.height;
-				this.#width = rect.width;
+					const rect = node.getBoundingClientRect();
+					this.#height = rect.height;
+					this.#width = rect.width;
 
-				// unblock any animations/transitions that were originally set if not the initial render
-				if (!this.#isMountAnimationPrevented) {
-					const { animationName, transitionDuration } = this.#originalStyles;
-					node.style.transitionDuration = transitionDuration;
-					node.style.animationName = animationName;
-				}
+					// unblock any animations/transitions that were originally set if not the initial render
+					if (!this.#isMountAnimationPrevented) {
+						const { animationName, transitionDuration } = this.#originalStyles;
+						node.style.transitionDuration = transitionDuration;
+						node.style.animationName = animationName;
+					}
+				});
 			});
 		});
 	}
@@ -169,7 +162,7 @@ export class CollapsibleContentState {
 			});
 		};
 
-		return on(node, "beforematch", handleBeforeMatch);
+		return on(node, 'beforematch', handleBeforeMatch);
 	}
 
 	readonly snippetProps = $derived.by(() => ({
@@ -181,21 +174,14 @@ export class CollapsibleContentState {
 			({
 				id: this.opts.id.current,
 				style: {
-					"--bits-collapsible-content-height": this.#height
-						? `${this.#height}px`
-						: undefined,
-					"--bits-collapsible-content-width": this.#width
-						? `${this.#width}px`
-						: undefined,
+					'--bits-collapsible-content-height': this.#height ? `${this.#height}px` : undefined,
+					'--bits-collapsible-content-width': this.#width ? `${this.#width}px` : undefined,
 				},
-				hidden:
-					this.opts.hiddenUntilFound.current && !this.root.opts.open.current
-						? "until-found"
-						: undefined,
-				"data-state": getDataOpenClosed(this.root.opts.open.current),
+				hidden: this.opts.hiddenUntilFound.current && !this.root.opts.open.current ? 'until-found' : undefined,
+				'data-state': getDataOpenClosed(this.root.opts.open.current),
 				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
-				"data-disabled": boolToEmptyStrOrUndef(this.root.opts.disabled.current),
-				[collapsibleAttrs.content]: "",
+				'data-disabled': boolToEmptyStrOrUndef(this.root.opts.disabled.current),
+				[collapsibleAttrs.content]: '',
 				...(this.opts.hiddenUntilFound.current && !this.shouldRender
 					? {}
 					: {
@@ -206,12 +192,13 @@ export class CollapsibleContentState {
 									: !this.shouldRender,
 						}),
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface CollapsibleTriggerStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean | null | undefined;
 		}> {}
@@ -253,17 +240,17 @@ export class CollapsibleTriggerState {
 		() =>
 			({
 				id: this.opts.id.current,
-				type: "button",
+				type: 'button',
 				disabled: this.#isDisabled,
-				"aria-controls": this.root.contentId,
-				"aria-expanded": boolToStr(this.root.opts.open.current),
-				"data-state": getDataOpenClosed(this.root.opts.open.current),
-				"data-disabled": boolToEmptyStrOrUndef(this.#isDisabled),
-				[collapsibleAttrs.trigger]: "",
+				'aria-controls': this.root.contentId,
+				'aria-expanded': boolToStr(this.root.opts.open.current),
+				'data-state': getDataOpenClosed(this.root.opts.open.current),
+				'data-disabled': boolToEmptyStrOrUndef(this.#isDisabled),
+				[collapsibleAttrs.trigger]: '',
 				//
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }

@@ -1,15 +1,15 @@
 <script lang="ts">
 	// Date Picker composes the DateField, Popover, and Calendar components
-	import { watch } from "$lib/internal/toolbelt.js";
-	import { boxWith } from "$lib/internal/toolbelt.js";
-	import type { DateValue } from "@internationalized/date";
-	import { DatePickerRootState } from "../date-picker.svelte.js";
-	import type { DatePickerRootProps } from "../types.js";
-	import { PopoverRootState } from "$lib/components/popover/popover.svelte.js";
-	import { DateFieldRootState } from "$lib/components/date-field/date-field.svelte.js";
-	import { FloatingLayer } from "$lib/components/utilities/floating-layer/index.js";
-	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
-	import { resolveLocaleProp } from "$lib/components/utilities/config/prop-resolvers.js";
+	import { untrack } from 'svelte';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import type { DateValue } from '@internationalized/date';
+	import { DatePickerRootState } from '../date-picker.svelte.js';
+	import type { DatePickerRootProps } from '../types.js';
+	import { PopoverRootState } from '$lib/components/popover/popover.svelte.js';
+	import { DateFieldRootState } from '$lib/components/date-field/date-field.svelte.js';
+	import { FloatingLayer } from '$lib/components/utilities/floating-layer/index.js';
+	import { getDefaultDate } from '$lib/internal/date-time/utils.js';
+	import { resolveLocaleProp } from '$lib/components/utilities/config/prop-resolvers.js';
 
 	let {
 		open = $bindable(false),
@@ -32,12 +32,12 @@
 		locale,
 		hideTimeZone = false,
 		required = false,
-		calendarLabel = "Event",
+		calendarLabel = 'Event',
 		disableDaysOutsideMonth = true,
 		preventDeselect = false,
 		pagedNavigation = false,
 		weekStartsOn,
-		weekdayFormat = "narrow",
+		weekdayFormat = 'narrow',
 		isDateDisabled = () => false,
 		fixedWeeks = false,
 		numberOfMonths = 1,
@@ -45,16 +45,18 @@
 		initialFocus = false,
 		errorMessageId,
 		children,
-		monthFormat = "long",
-		yearFormat = "numeric",
+		monthFormat = 'long',
+		yearFormat = 'numeric',
 	}: DatePickerRootProps = $props();
 
-	const defaultPlaceholder = getDefaultDate({
-		granularity,
-		defaultValue: value,
-		minValue,
-		maxValue,
-	});
+	const defaultPlaceholder = untrack(() =>
+		getDefaultDate({
+			granularity,
+			defaultValue: value,
+			minValue,
+			maxValue,
+		}),
+	);
 
 	function repairUndefinedControlledPlaceholder() {
 		if (placeholder !== undefined) return;
@@ -69,12 +71,13 @@
 	 * Repairing it is intentional: this is writable focus/navigation state, and
 	 * parents using bind:placeholder should observe the repaired value.
 	 */
-	watch.pre(
-		() => placeholder,
-		() => {
+	$effect.pre(() => {
+		placeholder;
+
+		untrack(() => {
 			repairUndefinedControlledPlaceholder();
-		}
-	);
+		});
+	});
 
 	function onDateSelect() {
 		if (closeOnDateSelect) {
@@ -88,21 +91,21 @@
 			(v) => {
 				open = v;
 				onOpenChange(v);
-			}
+			},
 		),
 		value: boxWith(
 			() => value,
 			(v) => {
 				value = v;
 				onValueChange(v);
-			}
+			},
 		),
 		placeholder: boxWith(
 			() => placeholder as DateValue,
 			(v) => {
 				placeholder = v;
 				onPlaceholderChange(v as DateValue);
-			}
+			},
 		),
 		isDateUnavailable: boxWith(() => isDateUnavailable),
 		minValue: boxWith(() => minValue),

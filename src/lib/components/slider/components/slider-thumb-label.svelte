@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { SliderThumbLabelProps } from "../types.js";
-	import { getSliderRoot, SliderThumbLabelState } from "../slider.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { SliderThumbLabelProps } from '../types.js';
+	import { getSliderRoot, SliderThumbLabelState } from '../slider.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -21,12 +22,12 @@
 	const position = $derived.by(() => {
 		if (positionProp !== undefined) return positionProp;
 		switch (root.direction) {
-			case "lr":
-			case "rl":
-				return "top";
-			case "tb":
-			case "bt":
-				return "left";
+			case 'lr':
+			case 'rl':
+				return 'top';
+			case 'tb':
+			case 'bt':
+				return 'left';
 		}
 	});
 
@@ -34,7 +35,7 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		index: boxWith(() => index),
 		position: boxWith(() => position),

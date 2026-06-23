@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { watch } from "$lib/internal/toolbelt.js";
-	import { boxWith } from "$lib/internal/toolbelt.js";
-	import { DateFieldRootState } from "../date-field.svelte.js";
-	import type { DateFieldRootProps } from "../types.js";
-	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
-	import { resolveLocaleProp } from "$lib/components/utilities/config/prop-resolvers.js";
+	import { untrack } from 'svelte';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { DateFieldRootState } from '../date-field.svelte.js';
+	import type { DateFieldRootProps } from '../types.js';
+	import { getDefaultDate } from '$lib/internal/date-time/utils.js';
+	import { resolveLocaleProp } from '$lib/components/utilities/config/prop-resolvers.js';
 
 	let {
 		disabled = false,
@@ -56,31 +56,32 @@
 	 * Repairing it is intentional: this is writable segment/focus state, and
 	 * parents using bind:placeholder should observe the repaired value.
 	 */
-	watch.pre(
-		() => placeholder,
-		() => {
-			repairUndefinedControlledPlaceholder();
-		}
-	);
+	$effect.pre(() => {
+		placeholder;
 
-		DateFieldRootState.create({
-			value: boxWith(
-				() => value,
-				(v) => {
-					value = v;
-					onValueChange(v);
-				}
-			),
-			placeholder: boxWith(
-				() => {
-					return readControlledPlaceholder();
-				},
-				(v) => {
-					if (v === undefined) return;
-					placeholder = v;
-					onPlaceholderChange(v);
-				}
-			),
+		untrack(() => {
+			repairUndefinedControlledPlaceholder();
+		});
+	});
+
+	DateFieldRootState.create({
+		value: boxWith(
+			() => value,
+			(v) => {
+				value = v;
+				onValueChange(v);
+			},
+		),
+		placeholder: boxWith(
+			() => {
+				return readControlledPlaceholder();
+			},
+			(v) => {
+				if (v === undefined) return;
+				placeholder = v;
+				onPlaceholderChange(v);
+			},
+		),
 		disabled: boxWith(() => disabled),
 		granularity: boxWith(() => granularity),
 		hideTimeZone: boxWith(() => hideTimeZone),

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import './layout.css';
-	import { ModeWatcher } from 'mode-watcher';
 	import * as Sidebar from '$lib/components/sidebar/index.js';
-	import { ThemeToggle } from '$lib/components/theme-toggle/index.js';
+	import { ModeWatcher, ThemeToggle } from '$lib/components/theme-toggle/index.js';
 	import AppSidebar from './components/_app-sidebar.svelte';
 
 	let { children } = $props();

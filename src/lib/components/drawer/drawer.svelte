@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as DialogPrimitive from '$lib/components/dialog/index.js';
-	import { box } from '$lib/internal/toolbelt.js';
+	import { box } from '$lib/internal/tools/index.js';
 	import type { RootProps } from './util/components/drawer/index.js';
 	import { noop } from './util/internal/noop.js';
 	import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT } from './util/internal/constants.js';
@@ -253,90 +253,6 @@
 		width: max(100%, 2.75rem); /* 44px */
 		height: max(100%, 2.75rem); /* 44px */
 		touch-action: inherit;
-	}
-
-	/* This will allow us to not animate via animation, but still benefit from delaying unmount via Radix. */
-
-	@keyframes -global-fake-animation {
-		from {
-		}
-		to {
-		}
-	}
-
-	@keyframes -global-fadeIn {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
-
-	@keyframes -global-fadeOut {
-		to {
-			opacity: 0;
-		}
-	}
-
-	@keyframes -global-slideFromBottom {
-		from {
-			transform: translate3d(0, var(--initial-transform, 100%), 0);
-		}
-		to {
-			transform: translate3d(0, 0, 0);
-		}
-	}
-
-	@keyframes -global-slideToBottom {
-		to {
-			transform: translate3d(0, var(--initial-transform, 100%), 0);
-		}
-	}
-
-	@keyframes -global-slideFromTop {
-		from {
-			transform: translate3d(0, calc(var(--initial-transform, 100%) * -1), 0);
-		}
-		to {
-			transform: translate3d(0, 0, 0);
-		}
-	}
-
-	@keyframes -global-slideToTop {
-		to {
-			transform: translate3d(0, calc(var(--initial-transform, 100%) * -1), 0);
-		}
-	}
-
-	@keyframes -global-slideFromLeft {
-		from {
-			transform: translate3d(calc(var(--initial-transform, 100%) * -1), 0, 0);
-		}
-		to {
-			transform: translate3d(0, 0, 0);
-		}
-	}
-
-	@keyframes -global-slideToLeft {
-		to {
-			transform: translate3d(calc(var(--initial-transform, 100%) * -1), 0, 0);
-		}
-	}
-
-	@keyframes -global-slideFromRight {
-		from {
-			transform: translate3d(var(--initial-transform, 100%), 0, 0);
-		}
-		to {
-			transform: translate3d(0, 0, 0);
-		}
-	}
-
-	@keyframes -global-slideToRight {
-		to {
-			transform: translate3d(var(--initial-transform, 100%), 0, 0);
-		}
 	}
 
 	@media (hover: hover) and (pointer: fine) {

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith } from "$lib/internal/toolbelt.js";
-	import type { MenubarMenuProps } from "../types.js";
-	import { MenubarMenuState } from "../menubar.svelte.js";
-	import Menu from "$lib/components/menu/components/menu.svelte";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import type { MenubarMenuProps } from '../types.js';
+	import { MenubarMenuState } from '../menubar.svelte.js';
+	import Menu from '$lib/components/menu/components/menu.svelte';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -23,6 +23,4 @@
 	dir={menuState.root.opts.dir.current}
 	_internal_variant="menubar"
 	{...restProps}
-	_internal_should_skip_exit_animation={() =>
-		menuState.root.skipExitAnimationForMenuValue === menuState.opts.value.current}
-/>
+	_internal_should_skip_exit_animation={() => menuState.root.skipExitAnimationForMenuValue === menuState.opts.value.current} />

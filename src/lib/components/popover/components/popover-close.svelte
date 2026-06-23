@@ -1,27 +1,32 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { PopoverCloseProps } from "../types.js";
-	import { PopoverCloseState } from "../popover.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { PopoverCloseProps } from '../types.js';
+	import { PopoverCloseState } from '../popover.svelte.js';
+
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
-	let {
-		child,
-		children,
-		id = createId(uid),
-		ref = $bindable(null),
-		...restProps
-	}: PopoverCloseProps = $props();
+	let { child, children, id = createId(uid), ref = $bindable(null), ...restProps }: PopoverCloseProps = $props();
 
 	const closeState = PopoverCloseState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(value) => (ref = value),
 		),
 	});
-	const mergedProps = $derived(mergeProps({ "data-slot": "popover-close" }, restProps, closeState.props));
+
+	const mergedProps = $derived(
+		mergeProps(
+			restProps,
+			{
+				'data-slot': 'popover-close',
+			},
+			closeState.props,
+		),
+	);
 </script>
 
 {#if child}

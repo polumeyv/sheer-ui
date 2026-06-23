@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { boxWith } from "$lib/internal/toolbelt.js";
-	import type { PresenceLayerImplProps } from "./types.js";
-	import { Presence } from "./presence.svelte.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
+	import type { PresenceLayerImplProps } from './types.js';
 
 	let { open, forceMount, presence, ref }: PresenceLayerImplProps = $props();
 
-	const presenceState = new Presence({
+	const presenceManager = new PresenceManager({
 		open: boxWith(() => open),
-		ref,
+		ref: boxWith(() => ref.current),
 	});
 </script>
 
-{#if forceMount || open || presenceState.isPresent}
+{#if forceMount || open || presenceManager.shouldRender}
 	{@render presence?.({
-		present: presenceState.isPresent,
-		transitionStatus: presenceState.transitionStatus,
+		present: presenceManager.shouldRender,
+		transitionStatus: presenceManager.transitionStatus,
 	})}
 {/if}

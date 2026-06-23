@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { NavigationMenuSubProps } from "../types.js";
-	import { NavigationMenuSubState } from "../navigation-menu.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { NavigationMenuSubProps } from '../types.js';
+	import { NavigationMenuSubState } from '../navigation-menu.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -11,9 +12,9 @@
 		children,
 		id = createId(uid),
 		ref = $bindable(null),
-		value = $bindable(""),
+		value = $bindable(''),
 		onValueChange = () => {},
-		orientation = "horizontal",
+		orientation = 'horizontal',
 		...restProps
 	}: NavigationMenuSubProps = $props();
 
@@ -24,12 +25,12 @@
 			(v) => {
 				value = v;
 				onValueChange(v);
-			}
+			},
 		),
 		orientation: boxWith(() => orientation),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 

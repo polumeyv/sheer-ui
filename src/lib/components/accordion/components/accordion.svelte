@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { untrack } from "svelte";
-	import { type WritableBox, boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import { AccordionRootState } from "../accordion.svelte.js";
-	import type { AccordionRootProps } from "../types.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { untrack } from 'svelte';
+	import { type WritableBox, boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import { AccordionRootState } from '../accordion.svelte.js';
+	import type { AccordionRootProps } from '../types.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -17,7 +18,7 @@
 		id = createId(uid),
 		onValueChange = () => {},
 		loop = true,
-		orientation = "vertical",
+		orientation = 'vertical',
 		...restProps
 	}: AccordionRootProps = $props();
 
@@ -25,7 +26,7 @@
 	const valueType = untrack(() => type);
 
 	function getDefaultValue(): string | string[] {
-		return valueType === "single" ? "" : [];
+		return valueType === 'single' ? '' : [];
 	}
 
 	function handleDefaultValue() {
@@ -48,7 +49,7 @@
 				value = v;
 				// oxlint-disable-next-line no-explicit-any
 				onValueChange(v as any);
-			}
+			},
 		) as WritableBox<string> | WritableBox<string[]>,
 		id: boxWith(() => id),
 		disabled: boxWith(() => disabled),
@@ -56,11 +57,11 @@
 		orientation: boxWith(() => orientation),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
-	const mergedProps = $derived(mergeProps({ "data-slot": "accordion" }, restProps, rootState.props));
+	const mergedProps = $derived(mergeProps({ 'data-slot': 'accordion' }, restProps, rootState.props));
 </script>
 
 {#if child}

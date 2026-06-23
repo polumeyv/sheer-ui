@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith } from "../../src/lib/internal/toolbelt.js";
+	import { boxWith } from "../../src/lib/internal/tools/index.js";
 	import { FloatingLayer } from "../../src/lib/components/utilities/floating-layer/index.js";
 
 	let {

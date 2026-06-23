@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
 	import type { CheckboxRootProps } from '../types.js';
 	import { getCheckboxGroupOr, CheckboxRootState } from '../checkbox.svelte.js';
 	import CheckboxInput from './checkbox-input.svelte';
 	import { createId } from '$lib/internal/create-id.js';
-	import { watch } from '$lib/internal/toolbelt.js';
+	import { untrack } from 'svelte';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 
@@ -38,16 +39,16 @@
 	// Initial setup: grouped checkboxes derive their checked state from the group value.
 	syncCheckedFromGroupValue();
 
-	watch.pre(
-		() => value,
-		() => {
+	$effect.pre(() => {
+		value;
+		untrack(() => {
 			/**
 			 * Dynamic item values are supported: when a checkbox changes which group
 			 * value it represents, checked must be repaired from the current group value.
 			 */
 			syncCheckedFromGroupValue();
-		},
-	);
+		});
+	});
 
 	const rootState = CheckboxRootState.create(
 		{

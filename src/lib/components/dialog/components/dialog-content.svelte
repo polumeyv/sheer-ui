@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
 	import { DialogContentState } from '../dialog.svelte.js';
 	import type { DialogContentProps } from '../types.js';
 	import DismissibleLayer from '../../utilities/dismissible-layer/dismissible-layer.svelte';

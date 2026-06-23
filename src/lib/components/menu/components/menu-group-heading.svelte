@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { MenuGroupHeadingProps } from "../types.js";
-	import { MenuGroupHeadingState } from "../menu.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { MenuGroupHeadingProps } from '../types.js';
+	import { MenuGroupHeadingState } from '../menu.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -21,19 +22,19 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "dropdown-menu-group-heading",
-				"data-inset": inset,
-				class: "px-2 py-1.5 text-sm font-semibold data-[inset]:ps-8",
+				'data-slot': 'dropdown-menu-group-heading',
+				'data-inset': inset,
+				class: 'px-2 py-1.5 text-sm font-semibold data-[inset]:ps-8',
 			},
 			restProps,
-			groupHeadingState.props
-		)
+			groupHeadingState.props,
+		),
 	);
 </script>
 

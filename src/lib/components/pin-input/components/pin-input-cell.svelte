@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
 	import type { PinInputCellProps } from '../types.js';
 	import { PinInputCellState } from '../pin-input.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
@@ -23,9 +24,9 @@
 			{
 				'data-slot': 'pin-input-slot',
 				class: cn(
-					'border-border aria-invalid:border-destructive dark:bg-border/30 relative flex size-9 items-center justify-center border-y border-e text-sm transition-all outline-none first:rounded-s-md first:border-s last:rounded-e-md',
+					'relative flex size-9 items-center justify-center border-y border-e border-border text-sm transition-all outline-none first:rounded-s-md first:border-s last:rounded-e-md aria-invalid:border-destructive dark:bg-border/30',
 					cell.isActive &&
-						'border-ring ring-ring/50 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40 aria-invalid:ring-destructive/20 ring-offset-background z-10 ring-[3px]',
+						'z-10 border-ring ring-[3px] ring-ring/50 ring-offset-background aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40',
 				),
 			},
 			restProps,

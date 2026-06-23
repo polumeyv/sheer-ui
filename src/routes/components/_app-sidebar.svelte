@@ -1,14 +1,12 @@
 <script lang="ts">
-	import { page } from "$app/state";
-	import * as Sidebar from "$lib/components/sidebar/index.js";
-	import { components } from "./_registry.js";
+	import { page } from '$app/state';
+	import * as Sidebar from '$lib/components/sidebar/index.js';
+	import { components } from './_registry.js';
 
-	let query = $state("");
+	let query = $state('');
 
 	const filtered = $derived(
-		query.trim()
-			? components.filter((c) => c.name.toLowerCase().includes(query.trim().toLowerCase()))
-			: components,
+		query.trim() ? components.filter((c) => c.name.toLowerCase().includes(query.trim().toLowerCase())) : components,
 	);
 </script>
 

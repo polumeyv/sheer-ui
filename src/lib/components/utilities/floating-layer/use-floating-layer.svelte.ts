@@ -12,7 +12,7 @@ import {
 	simpleBox,
 	boxFrom,
 	boxWith,
-} from '$lib/internal/toolbelt.js';
+} from '$lib/internal/tools/index.js';
 import type { Arrayable, WithRefOpts } from '$lib/internal/types.js';
 import { isNotNull } from '$lib/internal/is.js';
 import { useId } from '$lib/internal/use-id.js';

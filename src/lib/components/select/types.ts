@@ -1,21 +1,11 @@
-import type { Expand } from "$lib/internal/toolbelt.js";
-import type { PortalProps } from "../utilities/portal/types.js";
-import type { PopperLayerProps, PopperLayerStaticProps } from "../utilities/popper-layer/types.js";
-import type { ArrowProps, ArrowPropsWithoutHTML } from "../utilities/arrow/types.js";
-import type {
-	BitsPrimitiveButtonAttributes,
-	BitsPrimitiveDivAttributes,
-	BitsPrimitiveSpanAttributes,
-} from "$lib/shared/attributes.js";
-import type {
-	OnChangeFn,
-	WithChild,
-	WithChildNoChildrenSnippetProps,
-	WithChildren,
-	Without,
-} from "$lib/internal/types.js";
-import type { FloatingContentSnippetProps, StaticContentSnippetProps } from "$lib/shared/types.js";
-import type { HTMLInputAttributes } from "svelte/elements";
+import type { Expand } from '$lib/internal/tools/index.js';
+import type { PortalProps } from '../utilities/portal/types.js';
+import type { PopperLayerProps, PopperLayerStaticProps } from '../utilities/popper-layer/types.js';
+import type { ArrowProps, ArrowPropsWithoutHTML } from '../utilities/arrow/types.js';
+import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes, BitsPrimitiveSpanAttributes } from '$lib/shared/attributes.js';
+import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '$lib/internal/types.js';
+import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/shared/types.js';
+import type { HTMLInputAttributes } from 'svelte/elements';
 
 export type SelectBaseRootPropsWithoutHTML = WithChildren<{
 	/**
@@ -68,7 +58,7 @@ export type SelectBaseRootPropsWithoutHTML = WithChildren<{
 	 *
 	 * @defaultValue `"nearest"`
 	 */
-	scrollAlignment?: "nearest" | "center";
+	scrollAlignment?: 'nearest' | 'center';
 
 	/**
 	 * Optionally provide an array of `value` and `label` pairs that will be used to match
@@ -99,7 +89,7 @@ export type SelectBaseRootPropsWithoutHTML = WithChildren<{
 	/**
 	 * The autocomplete attribute to forward to the hidden input element.
 	 */
-	autocomplete?: HTMLInputAttributes["autocomplete"];
+	autocomplete?: HTMLInputAttributes['autocomplete'];
 }>;
 
 export type SelectSingleRootPropsWithoutHTML = {
@@ -120,7 +110,7 @@ export type SelectSingleRootPropsWithoutHTML = {
 	 *
 	 * @required
 	 */
-	type: "single";
+	type: 'single';
 };
 
 export type SelectMultipleRootPropsWithoutHTML = {
@@ -141,22 +131,16 @@ export type SelectMultipleRootPropsWithoutHTML = {
 	 *
 	 * @required
 	 */
-	type: "multiple";
+	type: 'multiple';
 };
 
 export type SelectSingleRootProps = SelectBaseRootPropsWithoutHTML &
 	SelectSingleRootPropsWithoutHTML &
-	Without<
-		BitsPrimitiveDivAttributes,
-		SelectSingleRootPropsWithoutHTML | SelectBaseRootPropsWithoutHTML
-	>;
+	Without<BitsPrimitiveDivAttributes, SelectSingleRootPropsWithoutHTML | SelectBaseRootPropsWithoutHTML>;
 
 export type SelectMultipleRootProps = SelectBaseRootPropsWithoutHTML &
 	SelectMultipleRootPropsWithoutHTML &
-	Without<
-		BitsPrimitiveDivAttributes,
-		SelectMultipleRootPropsWithoutHTML | SelectBaseRootPropsWithoutHTML
-	>;
+	Without<BitsPrimitiveDivAttributes, SelectMultipleRootPropsWithoutHTML | SelectBaseRootPropsWithoutHTML>;
 
 export type SelectRootPropsWithoutHTML = SelectBaseRootPropsWithoutHTML &
 	(SelectSingleRootPropsWithoutHTML | SelectMultipleRootPropsWithoutHTML);
@@ -166,12 +150,12 @@ export type SelectRootProps = SelectRootPropsWithoutHTML;
 export type SelectValueSnippetProps = {
 	selection:
 		| {
-				type: "single";
+				type: 'single';
 				selected?: { value: string; label: string };
 				setValue: (value: string) => void;
 		  }
 		| {
-				type: "multiple";
+				type: 'multiple';
 				selected: { value: string; label: string }[];
 				setValue: (value: string[]) => void;
 		  };
@@ -181,8 +165,7 @@ export type SelectValueSnippetProps = {
 
 export type SelectValuePropsWithoutHTML = WithChild<{}, SelectValueSnippetProps>;
 
-export type SelectValueProps = SelectValuePropsWithoutHTML &
-	Without<BitsPrimitiveSpanAttributes, SelectValuePropsWithoutHTML>;
+export type SelectValueProps = SelectValuePropsWithoutHTML & Without<BitsPrimitiveSpanAttributes, SelectValuePropsWithoutHTML>;
 
 export type _SharedSelectContentProps = {
 	/**
@@ -195,22 +178,16 @@ export type _SharedSelectContentProps = {
 
 export type SelectContentPropsWithoutHTML = Expand<
 	WithChildNoChildrenSnippetProps<
-		Omit<PopperLayerProps, "content" | "onOpenAutoFocus" | "trapFocus" | "onCloseAutoFocus"> &
-			_SharedSelectContentProps,
+		Omit<PopperLayerProps, 'content' | 'onOpenAutoFocus' | 'trapFocus' | 'onCloseAutoFocus'> & _SharedSelectContentProps,
 		FloatingContentSnippetProps
 	>
 >;
 
-export type SelectContentProps = SelectContentPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, SelectContentPropsWithoutHTML>;
+export type SelectContentProps = SelectContentPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, SelectContentPropsWithoutHTML>;
 
 export type SelectContentStaticPropsWithoutHTML = Expand<
 	WithChildNoChildrenSnippetProps<
-		Omit<
-			PopperLayerStaticProps,
-			"content" | "onOpenAutoFocus" | "onCloseAutoFocus" | "trapFocus"
-		> &
-			_SharedSelectContentProps,
+		Omit<PopperLayerStaticProps, 'content' | 'onOpenAutoFocus' | 'onCloseAutoFocus' | 'trapFocus'> & _SharedSelectContentProps,
 		StaticContentSnippetProps
 	>
 >;
@@ -220,8 +197,7 @@ export type SelectContentStaticProps = SelectContentStaticPropsWithoutHTML &
 
 export type SelectTriggerPropsWithoutHTML = WithChild;
 
-export type SelectTriggerProps = SelectTriggerPropsWithoutHTML &
-	Without<BitsPrimitiveButtonAttributes, SelectTriggerPropsWithoutHTML>;
+export type SelectTriggerProps = SelectTriggerPropsWithoutHTML & Without<BitsPrimitiveButtonAttributes, SelectTriggerPropsWithoutHTML>;
 
 export type SelectItemSnippetProps = { selected: boolean; highlighted: boolean };
 
@@ -264,13 +240,11 @@ export type SelectItemPropsWithoutHTML = WithChild<
 	SelectItemSnippetProps
 >;
 
-export type SelectItemProps = SelectItemPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, SelectItemPropsWithoutHTML>;
+export type SelectItemProps = SelectItemPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, SelectItemPropsWithoutHTML>;
 
 export type SelectGroupPropsWithoutHTML = WithChild;
 
-export type SelectGroupProps = SelectGroupPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, SelectGroupPropsWithoutHTML>;
+export type SelectGroupProps = SelectGroupPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, SelectGroupPropsWithoutHTML>;
 
 export type SelectGroupHeadingPropsWithoutHTML = WithChild;
 
@@ -279,8 +253,7 @@ export type SelectGroupHeadingProps = SelectGroupHeadingPropsWithoutHTML &
 
 export type SelectSeparatorPropsWithoutHTML = WithChild;
 
-export type SelectSeparatorProps = SelectSeparatorPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, SelectSeparatorPropsWithoutHTML>;
+export type SelectSeparatorProps = SelectSeparatorPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, SelectSeparatorPropsWithoutHTML>;
 
 export type SelectPortalPropsWithoutHTML = PortalProps;
 
@@ -292,8 +265,7 @@ export type SelectArrowProps = ArrowProps;
 
 export type SelectViewportPropsWithoutHTML = WithChild;
 
-export type SelectViewportProps = SelectViewportPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, SelectViewportPropsWithoutHTML>;
+export type SelectViewportProps = SelectViewportPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, SelectViewportPropsWithoutHTML>;
 
 export type SelectScrollButtonPropsWithoutHTML = WithChild<{
 	/**

@@ -1,17 +1,6 @@
-import {
-	type DateValue,
-	endOfMonth,
-	isSameDay,
-	isSameMonth,
-	startOfMonth,
-} from "@internationalized/date";
-import {
-	type ReadableBox,
-	type WritableBox,
-	getDocument,
-	styleToString,
-} from "$lib/internal/toolbelt.js";
-import { tick, untrack } from "svelte";
+import { type DateValue, endOfMonth, isSameDay, isSameMonth, startOfMonth } from '@internationalized/date';
+import { type ReadableBox, type WritableBox, getDocument, styleToString } from '$lib/internal/tools/index.js';
+import { tick, untrack } from 'svelte';
 import {
 	getDaysInMonth,
 	getLastFirstDayOfWeek,
@@ -22,14 +11,13 @@ import {
 	parseAnyDateValue,
 	parseStringToDateValue,
 	toDate,
-} from "./utils.js";
-import type { Formatter } from "./formatter.js";
-import { createBitsAttrs, boolToEmptyStrOrUndef } from "$lib/internal/attrs.js";
-import { chunk, isValidIndex } from "$lib/internal/arrays.js";
-import { isBrowser, isHTMLElement } from "$lib/internal/is.js";
-import { kbd } from "$lib/internal/kbd.js";
-import type { DateMatcher, Month } from "$lib/shared/index.js";
-import { watch } from "$lib/internal/toolbelt.js";
+} from './utils.js';
+import type { Formatter } from './formatter.js';
+import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
+import { chunk, isValidIndex } from '$lib/internal/arrays.js';
+import { isBrowser, isHTMLElement } from '$lib/internal/is.js';
+import { kbd } from '$lib/internal/kbd.js';
+import type { DateMatcher, Month } from '$lib/shared/index.js';
 
 /**
  * Checks if a given node is a calendar cell element.
@@ -38,7 +26,7 @@ import { watch } from "$lib/internal/toolbelt.js";
  */
 export function isCalendarDayNode(node: unknown): node is HTMLElement {
 	if (!isHTMLElement(node)) return false;
-	if (!node.hasAttribute("data-bits-day")) return false;
+	if (!node.hasAttribute('data-bits-day')) return false;
 	return true;
 }
 
@@ -104,11 +92,11 @@ function createMonth(props: CreateMonthProps): Month<DateValue> {
 
 	const lastSunday =
 		weekStartsOn !== undefined
-			? getLastFirstDayOfWeek(firstDayOfMonth, weekStartsOn, "en-US")
+			? getLastFirstDayOfWeek(firstDayOfMonth, weekStartsOn, 'en-US')
 			: getLastFirstDayOfWeek(firstDayOfMonth, 0, locale);
 	const nextSaturday =
 		weekStartsOn !== undefined
-			? getNextLastDayOfWeek(lastDayOfMonth, weekStartsOn, "en-US")
+			? getNextLastDayOfWeek(lastDayOfMonth, weekStartsOn, 'en-US')
 			: getNextLastDayOfWeek(lastDayOfMonth, 0, locale);
 
 	const lastMonthDays = getDaysBetween(lastSunday.subtract({ days: 1 }), firstDayOfMonth);
@@ -164,7 +152,7 @@ export function createMonths(props: SetMonthProps) {
 			createMonth({
 				...monthProps,
 				dateObj,
-			})
+			}),
 		);
 		return months;
 	}
@@ -173,7 +161,7 @@ export function createMonths(props: SetMonthProps) {
 		createMonth({
 			...monthProps,
 			dateObj,
-		})
+		}),
 	);
 
 	// Create all the months, starting with the current month
@@ -183,7 +171,7 @@ export function createMonths(props: SetMonthProps) {
 			createMonth({
 				...monthProps,
 				dateObj: nextMonth,
-			})
+			}),
 		);
 	}
 
@@ -194,9 +182,7 @@ export function getSelectableCells(calendarNode: HTMLElement | null) {
 	if (!calendarNode) return [];
 	const selectableSelector = `[data-bits-day]:not([data-disabled]):not([data-outside-visible-months])`;
 
-	return Array.from(calendarNode.querySelectorAll(selectableSelector)).filter(
-		(el): el is HTMLElement => isHTMLElement(el)
-	);
+	return Array.from(calendarNode.querySelectorAll(selectableSelector)).filter((el): el is HTMLElement => isHTMLElement(el));
 }
 
 /**
@@ -209,7 +195,7 @@ export function getSelectableCells(calendarNode: HTMLElement | null) {
  * @param placeholder - The placeholder value store which will be set to the extracted date.
  */
 export function setPlaceholderToNodeValue(node: HTMLElement, placeholder: WritableBox<DateValue>) {
-	const cellValue = node.getAttribute("data-value");
+	const cellValue = node.getAttribute('data-value');
 	if (!cellValue) return;
 	placeholder.current = parseStringToDateValue(cellValue, placeholder.current);
 }
@@ -373,12 +359,7 @@ const SELECT_KEYS: string[] = [kbd.ENTER, kbd.SPACE];
 /**
  * Shared keyboard event handler for the calendar and range calendar.
  */
-export function handleCalendarKeydown({
-	event,
-	handleCellClick,
-	shiftFocus,
-	placeholderValue,
-}: HandleCalendarKeydownProps) {
+export function handleCalendarKeydown({ event, handleCellClick, shiftFocus, placeholderValue }: HandleCalendarKeydownProps) {
 	const currentCell = event.target;
 	if (!isCalendarDayNode(currentCell)) return;
 	// oxlint-disable-next-line no-explicit-any
@@ -402,7 +383,7 @@ export function handleCalendarKeydown({
 	}
 
 	if (SELECT_KEYS.includes(event.key)) {
-		const cellValue = currentCell.getAttribute("data-value");
+		const cellValue = currentCell.getAttribute('data-value');
 		if (!cellValue) return;
 		handleCellClick(event, parseStringToDateValue(cellValue, placeholderValue));
 	}
@@ -485,7 +466,7 @@ export function handleCalendarPrevPage({
 
 type GetWeekdaysProps = {
 	months: Month<DateValue>[];
-	weekdayFormat: Intl.DateTimeFormatOptions["weekday"];
+	weekdayFormat: Intl.DateTimeFormatOptions['weekday'];
 	formatter: Formatter;
 };
 
@@ -542,30 +523,26 @@ type CreateAccessibleHeadingProps = {
  * Creates an accessible heading element for the calendar.
  * Returns a function that removes the heading element.
  */
-export function createAccessibleHeading({
-	calendarNode,
-	label,
-	accessibleHeadingId,
-}: CreateAccessibleHeadingProps) {
+export function createAccessibleHeading({ calendarNode, label, accessibleHeadingId }: CreateAccessibleHeadingProps) {
 	const doc = getDocument(calendarNode);
-	const div = doc.createElement("div");
+	const div = doc.createElement('div');
 	div.style.cssText = styleToString({
-		border: "0px",
-		clip: "rect(0px, 0px, 0px, 0px)",
-		clipPath: "inset(50%)",
-		height: "1px",
-		margin: "-1px",
-		overflow: "hidden",
-		padding: "0px",
-		position: "absolute",
-		whiteSpace: "nowrap",
-		width: "1px",
+		border: '0px',
+		clip: 'rect(0px, 0px, 0px, 0px)',
+		clipPath: 'inset(50%)',
+		height: '1px',
+		margin: '-1px',
+		overflow: 'hidden',
+		padding: '0px',
+		position: 'absolute',
+		whiteSpace: 'nowrap',
+		width: '1px',
 	});
-	const h2 = doc.createElement("div");
+	const h2 = doc.createElement('div');
 	h2.textContent = label;
 	h2.id = accessibleHeadingId;
-	h2.role = "heading";
-	h2.ariaLevel = "2";
+	h2.role = 'heading';
+	h2.ariaLevel = '2';
 	calendarNode.insertBefore(div, calendarNode.firstChild);
 	div.appendChild(h2);
 
@@ -625,11 +602,7 @@ type GetIsNextButtonDisabledProps = {
 	disabled: boolean;
 };
 
-export function getIsNextButtonDisabled({
-	maxValue,
-	months,
-	disabled,
-}: GetIsNextButtonDisabledProps) {
+export function getIsNextButtonDisabled({ maxValue, months, disabled }: GetIsNextButtonDisabledProps) {
 	if (!maxValue || !months.length) return false;
 	if (disabled) return true;
 	const lastMonthInView = months[months.length - 1]?.value;
@@ -648,11 +621,7 @@ type GetIsPrevButtonDisabledProps = {
 	disabled: boolean;
 };
 
-export function getIsPrevButtonDisabled({
-	minValue,
-	months,
-	disabled,
-}: GetIsPrevButtonDisabledProps) {
+export function getIsPrevButtonDisabled({ minValue, months, disabled }: GetIsPrevButtonDisabledProps) {
 	if (!minValue || !months.length) return false;
 	if (disabled) return true;
 	const firstMonthInView = months[0]?.value;
@@ -671,15 +640,8 @@ type GetCalendarHeadingValueProps = {
 	locale: string;
 };
 
-export function getCalendarHeadingValue({
-	months,
-	locale,
-	formatter,
-}: GetCalendarHeadingValueProps) {
-	if (!months.length) return "";
-	if (locale !== formatter.getLocale()) {
-		formatter.setLocale(locale);
-	}
+export function getCalendarHeadingValue({ months, locale, formatter }: GetCalendarHeadingValueProps) {
+	if (!months.length) return '';
 	if (months.length === 1) {
 		const month = toDate(months[0]!.value);
 		return `${formatter.fullMonthAndYear(month)}`;
@@ -710,42 +672,36 @@ type GetCalendarElementProps = {
 	readonly: boolean;
 };
 
-export function getCalendarElementProps({
-	fullCalendarLabel,
-	id,
-	isInvalid,
-	disabled,
-	readonly,
-}: GetCalendarElementProps) {
+export function getCalendarElementProps({ fullCalendarLabel, id, isInvalid, disabled, readonly }: GetCalendarElementProps) {
 	return {
 		id,
-		role: "application",
-		"aria-label": fullCalendarLabel,
-		"data-invalid": boolToEmptyStrOrUndef(isInvalid),
-		"data-disabled": boolToEmptyStrOrUndef(disabled),
-		"data-readonly": boolToEmptyStrOrUndef(readonly),
+		role: 'application',
+		'aria-label': fullCalendarLabel,
+		'data-invalid': boolToEmptyStrOrUndef(isInvalid),
+		'data-disabled': boolToEmptyStrOrUndef(disabled),
+		'data-readonly': boolToEmptyStrOrUndef(readonly),
 	} as const;
 }
 
 export type CalendarParts =
-	| "root"
-	| "grid"
-	| "cell"
-	| "next-button"
-	| "prev-button"
-	| "day"
-	| "grid-body"
-	| "grid-head"
-	| "grid-row"
-	| "head-cell"
-	| "header"
-	| "heading"
-	| "month-select"
-	| "year-select";
+	| 'root'
+	| 'grid'
+	| 'cell'
+	| 'next-button'
+	| 'prev-button'
+	| 'day'
+	| 'grid-body'
+	| 'grid-head'
+	| 'grid-row'
+	| 'head-cell'
+	| 'header'
+	| 'heading'
+	| 'month-select'
+	| 'year-select';
 
 export function pickerOpenFocus(e: Event) {
 	const doc = getDocument(e.target as HTMLElement);
-	const nodeToFocus = doc.querySelector<HTMLElement>("[data-bits-day][data-focused]");
+	const nodeToFocus = doc.querySelector<HTMLElement>('[data-bits-day][data-focused]');
 	if (nodeToFocus) {
 		e.preventDefault();
 		nodeToFocus?.focus();
@@ -754,13 +710,11 @@ export function pickerOpenFocus(e: Event) {
 
 export function getFirstNonDisabledDateInView(calendarRef: HTMLElement): DateValue | undefined {
 	if (!isBrowser) return;
-	const daysInView = Array.from(
-		calendarRef.querySelectorAll<HTMLElement>("[data-bits-day]:not([aria-disabled=true])")
-	);
+	const daysInView = Array.from(calendarRef.querySelectorAll<HTMLElement>('[data-bits-day]:not([aria-disabled=true])'));
 	if (daysInView.length === 0) return;
 	const element = daysInView[0];
-	const value = element?.getAttribute("data-value");
-	const type = element?.getAttribute("data-type");
+	const value = element?.getAttribute('data-value');
+	const type = element?.getAttribute('data-type');
 	if (!value || !type) return;
 	return parseAnyDateValue(value, type);
 }
@@ -792,9 +746,9 @@ export function useEnsureNonDisabledPlaceholder({
 		return false;
 	}
 
-	watch(
-		() => ref.current,
-		() => {
+	$effect(() => {
+		ref.current;
+		untrack(() => {
 			if (!ref.current) return;
 			/**
 			 * If the placeholder is still the default placeholder and it's a disabled date, find
@@ -808,16 +762,11 @@ export function useEnsureNonDisabledPlaceholder({
 			 * Perhaps in the future we can introduce a dev-only log message to prevent this from
 			 * being a silent error.
 			 */
-			if (
-				placeholder.current &&
-				isSameDay(placeholder.current, defaultPlaceholder) &&
-				isDisabled(defaultPlaceholder)
-			) {
-				placeholder.current =
-					getFirstNonDisabledDateInView(ref.current) ?? defaultPlaceholder;
+			if (placeholder.current && isSameDay(placeholder.current, defaultPlaceholder) && isDisabled(defaultPlaceholder)) {
+				placeholder.current = getFirstNonDisabledDateInView(ref.current) ?? defaultPlaceholder;
 			}
-		}
-	);
+		});
+	});
 }
 
 export function getDateWithPreviousTime(date: DateValue | undefined, prev: DateValue | undefined) {
@@ -836,22 +785,22 @@ export function getDateWithPreviousTime(date: DateValue | undefined, prev: DateV
 }
 
 export const calendarAttrs = createBitsAttrs({
-	component: "calendar",
+	component: 'calendar',
 	parts: [
-		"root",
-		"grid",
-		"cell",
-		"next-button",
-		"prev-button",
-		"day",
-		"grid-body",
-		"grid-head",
-		"grid-row",
-		"head-cell",
-		"header",
-		"heading",
-		"month-select",
-		"year-select",
+		'root',
+		'grid',
+		'cell',
+		'next-button',
+		'prev-button',
+		'day',
+		'grid-body',
+		'grid-head',
+		'grid-row',
+		'head-cell',
+		'header',
+		'heading',
+		'month-select',
+		'year-select',
 	],
 });
 
@@ -874,8 +823,7 @@ export function getDefaultYears(opts: GetDefaultYearsProps) {
 	} else {
 		// (111 years: latestYear - 100 to latestYear + 10)
 		const initialMinYear = latestYear - 100;
-		minYear =
-			opts.placeholderYear < initialMinYear ? opts.placeholderYear - 10 : initialMinYear;
+		minYear = opts.placeholderYear < initialMinYear ? opts.placeholderYear - 10 : initialMinYear;
 	}
 
 	if (opts.maxValue) {

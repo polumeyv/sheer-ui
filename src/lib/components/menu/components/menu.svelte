@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { boxWith } from "$lib/internal/toolbelt.js";
-	import type { MenuRootProps } from "../types.js";
-	import { MenuMenuState, MenuRootState } from "../menu.svelte.js";
-	import FloatingLayer from "$lib/components/utilities/floating-layer/components/floating-layer.svelte";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import type { MenuRootProps } from '../types.js';
+	import { MenuMenuState, MenuRootState } from '../menu.svelte.js';
+	import FloatingLayer from '$lib/components/utilities/floating-layer/components/floating-layer.svelte';
 
 	let {
 		open = $bindable(false),
-		dir = "ltr",
+		dir = 'ltr',
 		// debugMode = false,
 		onOpenChange = () => {},
 		onOpenChangeComplete = () => {},
-		_internal_variant: variant = "dropdown-menu",
+		_internal_variant: variant = 'dropdown-menu',
 		_internal_should_skip_exit_animation: shouldSkipExitAnimation = undefined,
 		children,
 	}: MenuRootProps & {
-		_internal_variant?: "context-menu" | "dropdown-menu" | "menubar";
+		_internal_variant?: 'context-menu' | 'dropdown-menu' | 'menubar';
 		_internal_should_skip_exit_animation?: () => boolean;
 	} = $props();
 
@@ -36,11 +36,11 @@
 				(v) => {
 					open = v;
 					onOpenChange(v);
-				}
+				},
 			),
 			onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
 		},
-		root
+		root,
 	);
 </script>
 

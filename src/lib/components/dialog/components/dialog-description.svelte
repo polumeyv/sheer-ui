@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
 	import { DialogDescriptionState } from '../dialog.svelte.js';
 	import type { DialogDescriptionProps } from '../types.js';
 	import { createId } from '$lib/internal/create-id.js';

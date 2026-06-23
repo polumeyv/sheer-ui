@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/toolbelt.js";
-	import {
-		ScrollAreaScrollbarAutoState,
-		ScrollAreaScrollbarHoverState,
-	} from "../scroll-area.svelte.js";
-	import type { _ScrollbarStubProps } from "../types.js";
-	import ScrollAreaScrollbarVisible from "./scroll-area-scrollbar-visible.svelte";
-	import PresenceLayer from "$lib/components/utilities/presence-layer/presence-layer.svelte";
+	import { mergeProps } from '$lib/merge-props.js';
+	import { ScrollAreaScrollbarAutoState, ScrollAreaScrollbarHoverState } from '../scroll-area.svelte.js';
+	import type { _ScrollbarStubProps } from '../types.js';
+	import ScrollAreaScrollbarVisible from './scroll-area-scrollbar-visible.svelte';
+	import PresenceLayer from '$lib/components/utilities/presence-layer/presence-layer.svelte';
 
 	let { forceMount = false, ...restProps }: _ScrollbarStubProps = $props();
 
@@ -14,13 +11,11 @@
 	const scrollbarAutoState = ScrollAreaScrollbarAutoState.create();
 	const mergedProps = $derived(
 		mergeProps(restProps, scrollbarHoverState.props, scrollbarAutoState.props, {
-			"data-state": scrollbarHoverState.isVisible ? "visible" : "hidden",
-		})
+			'data-state': scrollbarHoverState.isVisible ? 'visible' : 'hidden',
+		}),
 	);
 
-	const open = $derived(
-		forceMount || (scrollbarHoverState.isVisible && scrollbarAutoState.isVisible)
-	);
+	const open = $derived(forceMount || (scrollbarHoverState.isVisible && scrollbarAutoState.isVisible));
 </script>
 
 <PresenceLayer {open} ref={scrollbarAutoState.scrollbar.opts.ref}>

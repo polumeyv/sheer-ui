@@ -1,10 +1,10 @@
-import { type Box, type ReadableBox, box } from "$lib/internal/toolbelt.js";
-import { getElemDirection } from "./locale.js";
-import { getDirectionalKeys } from "./get-directional-keys.js";
-import { kbd } from "./kbd.js";
-import type { Orientation } from "$lib/shared/index.js";
-import { BROWSER } from "esm-env";
-import { isHTMLElement } from "./is.js";
+import { type Box, type ReadableBox, box } from '$lib/internal/tools/index.js';
+import { getElemDirection } from './locale.js';
+import { getDirectionalKeys } from './get-directional-keys.js';
+import { kbd } from './kbd.js';
+import type { Orientation } from '$lib/shared/index.js';
+import { BROWSER } from 'esm-env';
+import { isHTMLElement } from './is.js';
 
 type RovingFocusGroupOptions = (
 	| {
@@ -56,17 +56,11 @@ export class RovingFocusGroup {
 		if (!BROWSER || !this.#opts.rootNode.current) return [];
 
 		if (this.#opts.candidateSelector) {
-			const candidates = Array.from(
-				this.#opts.rootNode.current.querySelectorAll<HTMLElement>(
-					this.#opts.candidateSelector
-				)
-			);
+			const candidates = Array.from(this.#opts.rootNode.current.querySelectorAll<HTMLElement>(this.#opts.candidateSelector));
 			return candidates;
 		} else if (this.#opts.candidateAttr) {
 			const candidates = Array.from(
-				this.#opts.rootNode.current.querySelectorAll<HTMLElement>(
-					`[${this.#opts.candidateAttr}]:not([data-disabled])`
-				)
+				this.#opts.rootNode.current.querySelectorAll<HTMLElement>(`[${this.#opts.candidateAttr}]:not([data-disabled])`),
 			);
 			return candidates;
 		}

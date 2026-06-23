@@ -1,26 +1,20 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import { TimeFieldInputState } from "../time-field.svelte.js";
-	import type { TimeFieldInputProps } from "../types.js";
-	import DateFieldHiddenInput from "./time-field-hidden-input.svelte";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import { TimeFieldInputState } from '../time-field.svelte.js';
+	import type { TimeFieldInputProps } from '../types.js';
+	import DateFieldHiddenInput from './time-field-hidden-input.svelte';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
-	let {
-		id = createId(uid),
-		ref = $bindable(null),
-		name = "",
-		children,
-		child,
-		...restProps
-	}: TimeFieldInputProps = $props();
+	let { id = createId(uid), ref = $bindable(null), name = '', children, child, ...restProps }: TimeFieldInputProps = $props();
 
 	const inputState = TimeFieldInputState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		name: boxWith(() => name),
 	});

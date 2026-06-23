@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { PaginationRootProps } from "../types.js";
-	import { PaginationRootState } from "../pagination.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { PaginationRootProps } from '../types.js';
+	import { PaginationRootState } from '../pagination.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -15,7 +16,7 @@
 		siblingCount = 1,
 		onPageChange = () => {},
 		loop = false,
-		orientation = "horizontal",
+		orientation = 'horizontal',
 		child,
 		children,
 		...restProps
@@ -30,28 +31,28 @@
 			(v) => {
 				page = v;
 				onPageChange?.(v);
-			}
+			},
 		),
 		loop: boxWith(() => loop),
 		siblingCount: boxWith(() => siblingCount),
 		orientation: boxWith(() => orientation),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				role: "navigation",
-				"aria-label": "pagination",
-				"data-slot": "pagination",
-				class: "mx-auto flex w-full items-center justify-center gap-1 data-[orientation=vertical]:flex-col",
+				role: 'navigation',
+				'aria-label': 'pagination',
+				'data-slot': 'pagination',
+				class: 'mx-auto flex w-full items-center justify-center gap-1 data-[orientation=vertical]:flex-col',
 			},
 			restProps,
-			rootState.props
-		)
+			rootState.props,
+		),
 	);
 </script>
 

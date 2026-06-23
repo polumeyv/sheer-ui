@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { AvatarRootProps } from "../types.js";
-	import { AvatarRootState } from "../avatar.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { AvatarRootProps } from '../types.js';
+	import { AvatarRootState } from '../avatar.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
 	let {
 		delayMs = 0,
-		loadingStatus = $bindable("loading"),
+		loadingStatus = $bindable('loading'),
 		onLoadingStatusChange,
 		child,
 		children,
@@ -26,24 +27,24 @@
 					loadingStatus = v;
 					onLoadingStatusChange?.(v);
 				}
-			}
+			},
 		),
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "avatar",
-				class: "relative flex size-8 shrink-0 overflow-hidden rounded-full",
+				'data-slot': 'avatar',
+				class: 'relative flex size-8 shrink-0 overflow-hidden rounded-full',
 			},
 			restProps,
-			rootState.props
-		)
+			rootState.props,
+		),
 	);
 </script>
 

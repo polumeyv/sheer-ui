@@ -1,15 +1,16 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { ToolbarRootProps } from "../types.js";
-	import { ToolbarRootState } from "../toolbar.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { ToolbarRootProps } from '../types.js';
+	import { ToolbarRootState } from '../toolbar.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
 	let {
 		ref = $bindable(null),
 		id = createId(uid),
-		orientation = "horizontal",
+		orientation = 'horizontal',
 		loop = true,
 		child,
 		children,
@@ -22,17 +23,11 @@
 		loop: boxWith(() => loop),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
-	const mergedProps = $derived(
-		mergeProps(
-			{ "data-slot": "toolbar", class: "flex items-center gap-1" },
-			restProps,
-			rootState.props
-		)
-	);
+	const mergedProps = $derived(mergeProps({ 'data-slot': 'toolbar', class: 'flex items-center gap-1' }, restProps, rootState.props));
 </script>
 
 {#if child}

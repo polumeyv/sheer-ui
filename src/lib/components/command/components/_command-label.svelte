@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { boxWith } from "$lib/internal/toolbelt.js";
-	import { CommandLabelState } from "../command.svelte.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { CommandLabelState } from '../command.svelte.js';
 
-	import type { WithChildren } from "$lib/internal/types.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import { mergeProps } from "$lib/internal/toolbelt.js";
-	import type { BitsPrimitiveLabelAttributes, WithElementRef } from "$lib/shared/index.js";
+	import type { WithChildren } from '$lib/internal/types.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { BitsPrimitiveLabelAttributes, WithElementRef } from '$lib/shared/index.js';
 
 	const uid = $props.id();
 	let {
@@ -19,7 +19,7 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
 	import type { ContextMenuContentStaticProps } from '../types.js';
 	import { CONTEXT_MENU_TRIGGER_ATTR, MenuContentState } from '$lib/components/menu/menu.svelte.js';
 	import { useId } from '$lib/internal/use-id.js';
 	import PopperLayer from '$lib/components/utilities/popper-layer/popper-layer.svelte';
 	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
-	import PopperLayerForceMount from '$lib/components/utilities/popper-layer/popper-layer-force-mount.svelte';
 
 	let {
 		id = useId(),
@@ -69,64 +69,32 @@
 	}
 </script>
 
-{#if forceMount}
-	<PopperLayerForceMount
-		{...mergedProps}
-		{...contentState.popperProps}
-		ref={contentState.opts.ref}
-		isStatic
-		side="right"
-		sideOffset={2}
-		align="start"
-		enabled={contentState.parentMenu.opts.open.current}
-		{preventScroll}
-		onInteractOutside={handleInteractOutside}
-		onEscapeKeydown={handleEscapeKeydown}
-		{isValidEvent}
-		trapFocus
-		{loop}
-		{forceMount}
-		{id}
-		shouldRender={contentState.shouldRender}>
-		{#snippet popper({ props })}
-			{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('context-menu') }, { style })}
-			{#if child}
-				{@render child({ props: finalProps, ...contentState.snippetProps })}
-			{:else}
-				<div {...finalProps}>
-					{@render children?.()}
-				</div>
-			{/if}
-		{/snippet}
-	</PopperLayerForceMount>
-{:else if !forceMount}
-	<PopperLayer
-		{...mergedProps}
-		{...contentState.popperProps}
-		ref={contentState.opts.ref}
-		isStatic
-		side="right"
-		sideOffset={2}
-		align="start"
-		open={contentState.parentMenu.opts.open.current}
-		{preventScroll}
-		onInteractOutside={handleInteractOutside}
-		onEscapeKeydown={handleEscapeKeydown}
-		{isValidEvent}
-		trapFocus
-		{loop}
-		forceMount={false}
-		{id}
-		shouldRender={contentState.shouldRender}>
-		{#snippet popper({ props })}
-			{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('context-menu') }, { style })}
-			{#if child}
-				{@render child({ props: finalProps, ...contentState.snippetProps })}
-			{:else}
-				<div {...finalProps}>
-					{@render children?.()}
-				</div>
-			{/if}
-		{/snippet}
-	</PopperLayer>
-{/if}
+<PopperLayer
+	{...mergedProps}
+	{...contentState.popperProps}
+	ref={contentState.opts.ref}
+	isStatic
+	side="right"
+	sideOffset={2}
+	align="start"
+	open={contentState.parentMenu.opts.open.current}
+	{preventScroll}
+	onInteractOutside={handleInteractOutside}
+	onEscapeKeydown={handleEscapeKeydown}
+	{isValidEvent}
+	trapFocus
+	{loop}
+	{forceMount}
+	{id}
+	shouldRender={contentState.shouldRender}>
+	{#snippet popper({ props })}
+		{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('context-menu') }, { style })}
+		{#if child}
+			{@render child({ props: finalProps, ...contentState.snippetProps })}
+		{:else}
+			<div {...finalProps}>
+				{@render children?.()}
+			</div>
+		{/if}
+	{/snippet}
+</PopperLayer>

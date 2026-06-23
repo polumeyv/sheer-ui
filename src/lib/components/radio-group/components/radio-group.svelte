@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { RadioGroupRootProps } from "../types.js";
-	import { RadioGroupRootState } from "../radio-group.svelte.js";
-	import RadioGroupInput from "./radio-group-input.svelte";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { RadioGroupRootProps } from '../types.js';
+	import { RadioGroupRootState } from '../radio-group.svelte.js';
+	import RadioGroupInput from './radio-group-input.svelte';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -11,9 +12,9 @@
 		disabled = false,
 		children,
 		child,
-		value = $bindable(""),
+		value = $bindable(''),
 		ref = $bindable(null),
-		orientation = "vertical",
+		orientation = 'vertical',
 		loop = true,
 		name = undefined,
 		required = false,
@@ -37,17 +38,15 @@
 				if (v === value) return;
 				value = v;
 				onValueChange?.(v);
-			}
+			},
 		),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
-	const mergedProps = $derived(
-		mergeProps({ "data-slot": "radio-group", class: "grid gap-3" }, restProps, rootState.props)
-	);
+	const mergedProps = $derived(mergeProps({ 'data-slot': 'radio-group', class: 'grid gap-3' }, restProps, rootState.props));
 </script>
 
 {#if child}

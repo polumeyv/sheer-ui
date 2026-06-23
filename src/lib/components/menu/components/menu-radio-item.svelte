@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { MenuRadioItemProps } from "../types.js";
-	import { MenuRadioItemState } from "../menu.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import CircleIcon from "@lucide/svelte/icons/circle";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { MenuRadioItemProps } from '../types.js';
+	import { MenuRadioItemState } from '../menu.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import CircleIcon from '@lucide/svelte/icons/circle';
 
 	const uid = $props.id();
 
@@ -26,7 +27,7 @@
 		onSelect: boxWith(() => handleSelect),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		closeOnSelect: boxWith(() => closeOnSelect),
 	});
@@ -40,12 +41,13 @@
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "dropdown-menu-radio-item",
-				class: "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-md py-1.5 ps-8 pe-2 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				'data-slot': 'dropdown-menu-radio-item',
+				class:
+					"focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-md py-1.5 ps-8 pe-2 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 			},
 			restProps,
-			radioItemState.props
-		)
+			radioItemState.props,
+		),
 	);
 </script>
 

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
 	import type { CalendarGridBodyProps } from '../types.js';
 	import { CalendarGridBodyState } from '../calendar.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';

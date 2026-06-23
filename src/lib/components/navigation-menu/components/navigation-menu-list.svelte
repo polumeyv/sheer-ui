@@ -1,49 +1,58 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { NavigationMenuListProps } from "../types.js";
-	import { NavigationMenuListState } from "../navigation-menu.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import Mounted from "$lib/components/utilities/mounted.svelte";
+	import { boxWith, mountedAttachment } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+
+	import type { NavigationMenuListProps } from '../types.js';
+	import { NavigationMenuListState } from '../navigation-menu.svelte.js';
+
+	import { createId } from '$lib/internal/create-id.js';
+	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
 	let {
 		id = createId(uid),
+		ref = $bindable(null),
+		class: className,
 		children,
 		child,
-		ref = $bindable(null),
 		...restProps
-	}: NavigationMenuListProps = $props();
+	}: NavigationMenuListProps & {
+		class?: string;
+	} = $props();
 
 	const listState = NavigationMenuListState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(value) => (ref = value),
 		),
 	});
 
+	const listClass = $derived(cn('group flex flex-1 list-none items-center justify-center gap-0', className));
+
 	const mergedProps = $derived(
 		mergeProps(
-			{
-				"data-slot": "navigation-menu-list",
-				class: "group flex flex-1 list-none items-center justify-center gap-1",
-			},
 			restProps,
-			listState.props
-		)
+			{
+				'data-slot': 'navigation-menu-list',
+				class: listClass,
+			},
+			listState.props,
+		),
 	);
-	const wrapperProps = $derived(mergeProps(listState.wrapperProps));
+
+	const mounted = mountedAttachment<HTMLElement>((m) => (listState.wrapperMounted = m));
+
+	const wrapperProps = $derived(mergeProps(listState.wrapperProps, mounted));
 </script>
 
 {#if child}
 	{@render child({ props: mergedProps, wrapperProps })}
-	<Mounted bind:mounted={listState.wrapperMounted} />
 {:else}
 	<div {...wrapperProps}>
 		<ul {...mergedProps}>
 			{@render children?.()}
 		</ul>
 	</div>
-	<Mounted bind:mounted={listState.wrapperMounted} />
 {/if}

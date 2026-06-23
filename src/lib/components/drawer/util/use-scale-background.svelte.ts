@@ -1,7 +1,6 @@
-import { watch } from '$lib/internal/toolbelt.js';
 import { BORDER_RADIUS, TRANSITIONS, WINDOW_TOP_OFFSET } from './internal/constants.js';
 import { assignStyle, isVertical } from './helpers.js';
-import { executeCallbacks } from '$lib/internal/toolbelt.js';
+import { executeCallbacks } from '$lib/internal/tools/index.js';
 import { noop } from './internal/noop.js';
 import { getDrawer } from './context.js';
 
@@ -12,7 +11,10 @@ export function useScaleBackground() {
 
 	const getScale = () => (window.innerWidth - WINDOW_TOP_OFFSET) / window.innerWidth;
 
-	watch([() => ctx.open.current, () => ctx.shouldScaleBackground.current, () => ctx.setBackgroundColorOnScale.current], () => {
+	$effect(() => {
+		ctx.open.current;
+		ctx.shouldScaleBackground.current;
+		ctx.setBackgroundColorOnScale.current;
 		if (ctx.open.current && ctx.shouldScaleBackground.current) {
 			if (timeoutId) clearTimeout(timeoutId);
 			const wrapper =

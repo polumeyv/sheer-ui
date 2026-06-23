@@ -1,4 +1,4 @@
-import { guard, join } from 'overrule';
+import { join } from 'overrule';
 
 export type ClassValue = Parameters<typeof join>[number];
 
@@ -6,14 +6,14 @@ export type ClassValue = Parameters<typeof join>[number];
  * Plain class join — conflict resolution is an authoring-time invariant, not a
  * runtime feature. Base/variant/caller classes must never set the same property
  * for the same modifier prefix (use a trailing `!` for deliberate overrides).
- * The dev-only `guard` warns on violations; variants.test.ts guards the library.
+ * variants.test.ts guards the library; the runtime conflict warning is disabled.
  * Ships zero tailwind-merge bytes in production.
  */
-export const cn = import.meta.env.DEV ? guard(join) : join;
+export const cn = join;
 
 // Snippet/ref prop helpers used across the styled bits-ui components (the
 // shadcn-svelte convention). The reactive accessor/box types live in
-// @polumeyv/tools and `$lib/internal/types` — these are only the surface props.
+// `$lib/internal/tools` and `$lib/internal/types` — these are only the surface props.
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type WithoutChild<T> = T extends { child?: any } ? Omit<T, 'child'> : T;

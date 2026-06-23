@@ -1,6 +1,6 @@
 <script lang="ts">
-	import HiddenInput from "$lib/components/utilities/hidden-input.svelte";
-	import { RadioGroupInputState } from "../radio-group.svelte.js";
+	import HiddenInput from '$lib/components/utilities/hidden-input.svelte';
+	import { RadioGroupInputState } from '../radio-group.svelte.js';
 
 	const inputState = RadioGroupInputState.create();
 </script>

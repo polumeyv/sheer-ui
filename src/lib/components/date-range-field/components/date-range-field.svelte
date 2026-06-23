@@ -1,13 +1,14 @@
 <script lang="ts">
-	import { watch } from "$lib/internal/toolbelt.js";
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { DateValue } from "@internationalized/date";
-	import { DateRangeFieldRootState } from "../date-range-field.svelte.js";
-	import type { DateRangeFieldRootProps } from "../types.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import type { DateRange } from "$lib/shared/index.js";
-	import { getDefaultDate } from "$lib/internal/date-time/utils.js";
-	import { resolveLocaleProp } from "$lib/components/utilities/config/prop-resolvers.js";
+	import { untrack } from 'svelte';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { DateValue } from '@internationalized/date';
+	import { DateRangeFieldRootState } from '../date-range-field.svelte.js';
+	import type { DateRangeFieldRootProps } from '../types.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import type { DateRange } from '$lib/shared/index.js';
+	import { getDefaultDate } from '$lib/internal/date-time/utils.js';
+	import { resolveLocaleProp } from '$lib/components/utilities/config/prop-resolvers.js';
 
 	const uid = $props.id();
 
@@ -55,17 +56,18 @@
 	// SSR/initial setup: DateRangeField needs a writable placeholder for segment state.
 	repairUndefinedControlledPlaceholder();
 
-	watch.pre(
-		() => placeholder,
-		() => {
+	$effect.pre(() => {
+		placeholder;
+
+		untrack(() => {
 			/**
 			 * Parent spread-prop resets can make the bindable placeholder undefined again.
 			 * Repairing it is intentional: this is writable segment/focus state, and
 			 * parents using bind:placeholder should observe the repaired value.
 			 */
 			repairUndefinedControlledPlaceholder();
-		}
-	);
+		});
+	});
 
 	function repairUndefinedControlledValue() {
 		if (value !== undefined) return;
@@ -76,22 +78,23 @@
 	// SSR/initial setup: range field state owns a DateRange object, even when empty.
 	repairUndefinedControlledValue();
 
-	watch.pre(
-		() => value,
-		() => {
+	$effect.pre(() => {
+		value;
+
+		untrack(() => {
 			/**
 			 * Parent spread-prop resets can make value undefined again. Repairing it
 			 * preserves the controlled range object used by the field state machine.
 			 */
 			repairUndefinedControlledValue();
-		}
-	);
+		});
+	});
 
 	const rootState = DateRangeFieldRootState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		disabled: boxWith(() => disabled),
 		readonly: boxWith(() => readonly),
@@ -108,7 +111,7 @@
 			(v) => {
 				placeholder = v;
 				onPlaceholderChange(v);
-			}
+			},
 		),
 		readonlySegments: boxWith(() => readonlySegments),
 		value: boxWith(
@@ -116,21 +119,21 @@
 			(v) => {
 				value = v;
 				onValueChange(v);
-			}
+			},
 		),
 		startValue: boxWith(
 			() => startValue,
 			(v) => {
 				startValue = v;
 				onStartValueChange(v);
-			}
+			},
 		),
 		endValue: boxWith(
 			() => endValue,
 			(v) => {
 				endValue = v;
 				onEndValueChange(v);
-			}
+			},
 		),
 		onInvalid: boxWith(() => onInvalid),
 		errorMessageId: boxWith(() => errorMessageId),

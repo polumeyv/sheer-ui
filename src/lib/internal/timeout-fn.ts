@@ -1,38 +1,28 @@
-import { onDestroy } from "svelte";
-import type { AnyFn } from "./types.js";
+import { onDestroy } from 'svelte';
+import type { AnyFn } from './types.js';
 
-export class TimeoutFn<T extends AnyFn> {
-	readonly #interval: number;
-	readonly #cb: T;
-	#timer: number | null = null;
+/**
+ * A self-cancelling timeout. `start()` (re)schedules `cb` after `getInterval()` ms,
+ * `stop()` clears it; auto-stops when the owning component is destroyed.
+ */
+export function timeoutFn<T extends AnyFn>(cb: T, getInterval: () => number) {
+	let timer: number | null = null;
 
-	constructor(cb: T, interval: number) {
-		this.#cb = cb;
-		this.#interval = interval;
+	const stop = () => {
+		if (timer === null) return;
+		window.clearTimeout(timer);
+		timer = null;
+	};
 
-		this.stop = this.stop.bind(this);
-		this.start = this.start.bind(this);
+	const start = (...args: Parameters<T> | []) => {
+		stop();
+		timer = window.setTimeout(() => {
+			timer = null;
+			cb(...args);
+		}, getInterval());
+	};
 
-		onDestroy(this.stop);
-	}
+	onDestroy(stop);
 
-	#clear() {
-		if (this.#timer !== null) {
-			window.clearTimeout(this.#timer);
-			this.#timer = null;
-		}
-	}
-
-	stop() {
-		this.#clear();
-	}
-
-	start(...args: Parameters<T> | []) {
-		this.#clear();
-		this.#timer = window.setTimeout(() => {
-			this.#timer = null;
-
-			this.#cb(...args);
-		}, this.#interval);
-	}
+	return { start, stop };
 }

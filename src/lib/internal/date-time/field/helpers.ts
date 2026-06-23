@@ -1,8 +1,8 @@
-import type { DateValue } from "@internationalized/date";
-import { styleToString } from "$lib/internal/toolbelt.js";
-import type { Formatter } from "../formatter.js";
-import { getPlaceholder } from "../placeholders.js";
-import { hasTime, isZonedDateTime } from "../utils.js";
+import type { DateValue } from '@internationalized/date';
+import { styleToString } from '$lib/internal/tools/index.js';
+import type { Formatter } from '../formatter.js';
+import { getPlaceholder } from '../placeholders.js';
+import { hasTime, isZonedDateTime } from '../utils.js';
 import type {
 	DateAndTimeSegmentObj,
 	DateSegmentPart,
@@ -12,35 +12,30 @@ import type {
 	SegmentStateMap,
 	SegmentValueObj,
 	TimeSegmentPart,
-} from "./types.js";
-import {
-	ALL_SEGMENT_PARTS,
-	DATE_SEGMENT_PARTS,
-	EDITABLE_SEGMENT_PARTS,
-	EDITABLE_TIME_SEGMENT_PARTS,
-} from "./parts.js";
-import { getSegments } from "./segments.js";
-import { isBrowser, isNull, isNumberString } from "$lib/internal/is.js";
-import { useId } from "$lib/internal/use-id.js";
-import { kbd } from "$lib/internal/kbd.js";
-import type { Granularity, HourCycle } from "$lib/shared/date/types.js";
+} from './types.js';
+import { ALL_SEGMENT_PARTS, DATE_SEGMENT_PARTS, EDITABLE_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';
+import { getSegments } from './segments.js';
+import { isBrowser, isNull, isNumberString } from '$lib/internal/is.js';
+import { useId } from '$lib/internal/use-id.js';
+import { kbd } from '$lib/internal/kbd.js';
+import type { Granularity, HourCycle, TimeSegmentValueObj } from '$lib/shared/date/types.js';
 
-export function initializeSegmentValues(granularity: Granularity) {
-	const calendarDateTimeGranularities = ["hour", "minute", "second"];
-	const initialParts = EDITABLE_SEGMENT_PARTS.map((part) => {
-		if (part === "dayPeriod") {
-			return [part, "AM"];
-		}
-		return [part, null];
-	}).filter(([key]) => {
-		if (key === "literal" || key === null) return false;
-		if (granularity === "day") {
-			return !calendarDateTimeGranularities.includes(key!);
-		} else {
-			return true;
-		}
-	});
-	return Object.fromEntries(initialParts) as SegmentValueObj;
+export function initializeSegmentValues(): TimeSegmentValueObj;
+export function initializeSegmentValues(granularity: Granularity): SegmentValueObj;
+export function initializeSegmentValues(granularity?: Granularity) {
+	const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
+
+	const parts = granularity !== undefined ? EDITABLE_SEGMENT_PARTS : EDITABLE_TIME_SEGMENT_PARTS;
+
+	return Object.fromEntries(
+		parts
+			.map((part) => [part, part === 'dayPeriod' ? 'AM' : null])
+			.filter(([key]) => {
+				if (key === 'literal' || key === null) return false;
+				if (granularity === 'day') return !calendarDateTimeGranularities.includes(key!);
+				return true;
+			}),
+	) as SegmentValueObj | TimeSegmentValueObj;
 }
 
 type SharedContentProps = {
@@ -65,12 +60,12 @@ function createContentObj(props: CreateContentObjProps) {
 
 	const content = Object.keys(segmentValues).reduce((obj, part) => {
 		if (!isSegmentPart(part)) return obj;
-		if ("hour" in segmentValues && part === "dayPeriod") {
+		if ('hour' in segmentValues && part === 'dayPeriod') {
 			const value = segmentValues[part];
 			if (!isNull(value)) {
 				obj[part] = value;
 			} else {
-				obj[part] = getPlaceholder(part, "AM", locale);
+				obj[part] = getPlaceholder(part, 'AM', locale);
 			}
 		} else {
 			obj[part] = getPartContent(part);
@@ -80,26 +75,24 @@ function createContentObj(props: CreateContentObjProps) {
 	}, {} as SegmentContentObj);
 
 	function getPartContent(part: DateSegmentPart | TimeSegmentPart) {
-		if ("hour" in segmentValues) {
+		if ('hour' in segmentValues) {
 			const value = segmentValues[part];
-			const leadingZero = typeof value === "string" && value?.startsWith("0");
+			const leadingZero = typeof value === 'string' && value?.startsWith('0');
 			const intValue = value !== null ? Number.parseInt(value) : null;
 
-			if (value === "0" && part !== "year") {
-				return "0";
+			if (value === '0' && part !== 'year') {
+				return '0';
 			} else if (!isNull(value) && !isNull(intValue)) {
 				const formatted = formatter.part(dateRef.set({ [part]: value }), part, {
-					hourCycle: props.hourCycle === 24 ? "h23" : undefined,
+					hourCycle: props.hourCycle === 24 ? 'h23' : undefined,
 				});
 
 				/**
 				 * If we're operating in a 12 hour clock and the part is an hour, we handle
 				 * the conversion to 12 hour format with 2 digit hours and leading zeros here.
 				 */
-				const is12HourMode =
-					props.hourCycle === 12 ||
-					(props.hourCycle === undefined && getDefaultHourCycle(locale) === 12);
-				if (part === "hour" && is12HourMode) {
+				const is12HourMode = props.hourCycle === 12 || (props.hourCycle === undefined && getDefaultHourCycle(locale) === 12);
+				if (part === 'hour' && is12HourMode) {
 					/**
 					 * If the value is over 12, we convert to 12 hour format and add leading
 					 * zeroes if the value is less than 10.
@@ -107,7 +100,7 @@ function createContentObj(props: CreateContentObjProps) {
 					if (intValue > 12) {
 						const hour = intValue - 12;
 						if (hour === 0) {
-							return "12";
+							return '12';
 						} else if (hour < 10) {
 							return `0${hour}`;
 						} else {
@@ -119,7 +112,7 @@ function createContentObj(props: CreateContentObjProps) {
 					 * If the value is 0, we convert to 12, since 0 is not a valid 12 hour time.
 					 */
 					if (intValue === 0) {
-						return "12";
+						return '12';
 					}
 
 					/**
@@ -135,7 +128,7 @@ function createContentObj(props: CreateContentObjProps) {
 					return `${intValue}`;
 				}
 
-				if (part === "year") {
+				if (part === 'year') {
 					return `${value}`;
 				}
 
@@ -144,17 +137,17 @@ function createContentObj(props: CreateContentObjProps) {
 				}
 				return formatted;
 			} else {
-				return getPlaceholder(part, "", locale);
+				return getPlaceholder(part, '', locale);
 			}
 		} else {
 			if (isDateSegmentPart(part)) {
 				const value = segmentValues[part];
-				const leadingZero = typeof value === "string" && value?.startsWith("0");
-				if (value === "0") {
-					return "0";
+				const leadingZero = typeof value === 'string' && value?.startsWith('0');
+				if (value === '0') {
+					return '0';
 				} else if (!isNull(value)) {
 					const formatted = formatter.part(dateRef.set({ [part]: value }), part);
-					if (part === "year") {
+					if (part === 'year') {
 						return `${value}`;
 					}
 					if (leadingZero && formatted.length === 1) {
@@ -162,10 +155,10 @@ function createContentObj(props: CreateContentObjProps) {
 					}
 					return formatted;
 				} else {
-					return getPlaceholder(part, "", locale);
+					return getPlaceholder(part, '', locale);
 				}
 			}
-			return "";
+			return '';
 		}
 	}
 
@@ -177,7 +170,7 @@ function createContentArr(props: CreateContentArrProps) {
 	const parts = formatter.toParts(dateRef, getOptsByGranularity(granularity, hourCycle));
 	const segmentContentArr = parts
 		.map((part) => {
-			const defaultParts = ["literal", "dayPeriod", "timeZoneName", null];
+			const defaultParts = ['literal', 'dayPeriod', 'timeZoneName', null];
 
 			if (defaultParts.includes(part.type) || !isSegmentPart(part.type)) {
 				return {
@@ -192,7 +185,7 @@ function createContentArr(props: CreateContentArrProps) {
 		})
 		.filter((segment): segment is { part: SegmentPart; value: string } => {
 			if (isNull(segment.part) || isNull(segment.value)) return false;
-			if (segment.part === "timeZoneName" && (!isZonedDateTime(dateRef) || hideTimeZone)) {
+			if (segment.part === 'timeZoneName' && (!isZonedDateTime(dateRef) || hideTimeZone)) {
 				return false;
 			}
 			return true;
@@ -216,27 +209,27 @@ export function createContent(props: CreateContentProps) {
 
 function getOptsByGranularity(granularity: Granularity, hourCycle: HourCycle | undefined) {
 	const opts: Intl.DateTimeFormatOptions = {
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
-		timeZoneName: "short",
-		hourCycle: hourCycle === 24 ? "h23" : undefined,
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit',
+		hour: '2-digit',
+		minute: '2-digit',
+		second: '2-digit',
+		timeZoneName: 'short',
+		hourCycle: hourCycle === 24 ? 'h23' : undefined,
 		hour12: hourCycle === 24 ? false : undefined,
 	};
 
-	if (granularity === "day") {
+	if (granularity === 'day') {
 		delete opts.second;
 		delete opts.hour;
 		delete opts.minute;
 		delete opts.timeZoneName;
 	}
-	if (granularity === "hour") {
+	if (granularity === 'hour') {
 		delete opts.minute;
 	}
-	if (granularity === "minute") {
+	if (granularity === 'minute') {
 		delete opts.second;
 	}
 
@@ -258,7 +251,7 @@ export function initSegmentIds() {
 	return Object.fromEntries(
 		ALL_SEGMENT_PARTS.map((part) => {
 			return [part, useId()];
-		}).filter(([key]) => key !== "literal")
+		}).filter(([key]) => key !== 'literal'),
 	);
 }
 
@@ -302,7 +295,7 @@ export function getValueFromSegments(props: GetValueFromSegments) {
 	let date = dateRef;
 
 	for (const part of usedSegments) {
-		if ("hour" in segmentObj) {
+		if ('hour' in segmentObj) {
 			const value = segmentObj[part];
 			if (isNull(value)) continue;
 			date = date.set({ [part]: segmentObj[part] });
@@ -324,13 +317,10 @@ export function getValueFromSegments(props: GetValueFromSegments) {
  * @param segmentValues - The current `SegmentValueObj`
  * @param fieldNode  - The id of the date field
  */
-export function areAllSegmentsFilled(
-	segmentValues: SegmentValueObj,
-	fieldNode: HTMLElement | null
-) {
+export function areAllSegmentsFilled(segmentValues: SegmentValueObj, fieldNode: HTMLElement | null) {
 	const usedSegments = getUsedSegments(fieldNode);
 	for (const part of usedSegments) {
-		if ("hour" in segmentValues) {
+		if ('hour' in segmentValues) {
 			if (segmentValues[part] === null) {
 				return false;
 			}
@@ -348,18 +338,16 @@ export function areAllSegmentsFilled(
  * by checking if it has the correct keys and values for each key.
  */
 export function isDateAndTimeSegmentObj(obj: unknown): obj is DateAndTimeSegmentObj {
-	if (typeof obj !== "object" || obj === null) {
+	if (typeof obj !== 'object' || obj === null) {
 		return false;
 	}
 	return Object.entries(obj).every(([key, value]) => {
-		const validKey =
-			EDITABLE_TIME_SEGMENT_PARTS.includes(key as TimeSegmentPart) ||
-			DATE_SEGMENT_PARTS.includes(key as DateSegmentPart);
+		const validKey = EDITABLE_TIME_SEGMENT_PARTS.includes(key as TimeSegmentPart) || DATE_SEGMENT_PARTS.includes(key as DateSegmentPart);
 
 		const validValue =
-			key === "dayPeriod"
-				? value === "AM" || value === "PM" || value === null
-				: typeof value === "string" || typeof value === "number" || value === null;
+			key === 'dayPeriod'
+				? value === 'AM' || value === 'PM' || value === null
+				: typeof value === 'string' || typeof value === 'number' || value === null;
 
 		return validKey && validValue;
 	});
@@ -369,13 +357,10 @@ export function isDateAndTimeSegmentObj(obj: unknown): obj is DateAndTimeSegment
  * Infer the granularity to use based on the
  * value and granularity props.
  */
-export function inferGranularity(
-	value: DateValue,
-	granularity: Granularity | undefined
-): Granularity {
+export function inferGranularity(value: DateValue, granularity: Granularity | undefined): Granularity {
 	if (granularity) return granularity;
-	if (hasTime(value)) return "minute";
-	return "day";
+	if (hasTime(value)) return 'minute';
+	return 'day';
 }
 
 export function isAcceptableSegmentKey(key: string) {
@@ -426,9 +411,9 @@ export function setDescription(props: SetDescriptionProps) {
 	const valueString = formatter.selectedDate(value);
 	const el = doc.getElementById(id);
 	if (!el) {
-		const div = doc.createElement("div");
+		const div = doc.createElement('div');
 		div.style.cssText = styleToString({
-			display: "none",
+			display: 'none',
 		});
 		div.id = id;
 		div.innerText = `Selected Date: ${valueString}`;
@@ -451,9 +436,9 @@ export function removeDescriptionElement(id: string, doc: Document) {
 }
 
 export function getDefaultHourCycle(locale: string): 12 | 24 {
-	const formatter = new Intl.DateTimeFormat(locale, { hour: "numeric" });
-	const parts = formatter.formatToParts(new Date("2023-01-01T13:00:00"));
-	const hourPart = parts.find((part) => part.type === "hour");
+	const formatter = new Intl.DateTimeFormat(locale, { hour: 'numeric' });
+	const parts = formatter.formatToParts(new Date('2023-01-01T13:00:00'));
+	const hourPart = parts.find((part) => part.type === 'hour');
 
-	return hourPart?.value === "1" ? 12 : 24;
+	return hourPart?.value === '1' ? 12 : 24;
 }

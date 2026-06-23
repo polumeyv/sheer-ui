@@ -1,0 +1,232 @@
+import type { Expand, Getter, MaybeBoxOrGetter } from '../types.js';
+import { isFunction, isObject } from '../utils/is.js';
+
+export const BoxSymbol = Symbol('box');
+export const isWritableSymbol = Symbol('is-writable');
+
+export type ReadableBox<T> = {
+	readonly [BoxSymbol]: true;
+	readonly current: T;
+};
+
+export type WritableBox<T> = ReadableBox<T> & {
+	readonly [isWritableSymbol]: true;
+	current: T;
+};
+
+function createWritableBox<T>(): WritableBox<T | undefined>;
+function createWritableBox<T>(initialValue: T): WritableBox<T>;
+function createWritableBox(initialValue?: unknown) {
+	let current = $state(initialValue);
+
+	return {
+		[BoxSymbol]: true,
+		[isWritableSymbol]: true,
+		get current() {
+			return current as unknown;
+		},
+		set current(v: unknown) {
+			current = v;
+		},
+	};
+}
+
+/**
+ * Creates a writable box.
+ *
+ * @returns A box with a `current` property which can be set to a new value.
+ * Useful to pass state to other functions.
+ */
+function boxBase<T>(): WritableBox<T | undefined>;
+
+/**
+ * Creates a writable box with an initial value.
+ *
+ * @param initialValue The initial value of the box.
+ * @returns A box with a `current` property which can be set to a new value.
+ * Useful to pass state to other functions.
+ */
+function boxBase<T>(initialValue: T): WritableBox<T>;
+function boxBase(initialValue?: unknown) {
+	return createWritableBox(initialValue);
+}
+
+/**
+ * Creates a readonly box.
+ *
+ * @param getter Function to get the value of the box.
+ * @returns A box with a `current` property whose value is the result of the getter.
+ * Useful to pass state to other functions.
+ */
+function boxWith<T>(getter: () => T): ReadableBox<T>;
+
+/**
+ * Creates a writable box.
+ *
+ * @param getter Function to get the value of the box.
+ * @param setter Function to set the value of the box.
+ * @returns A box with a `current` property which can be set to a new value.
+ * Useful to pass state to other functions.
+ */
+function boxWith<T>(getter: () => T, setter: (v: T) => void): WritableBox<T>;
+
+function boxWith<T>(getter: () => T, setter?: (v: T) => void) {
+	const derived = $derived.by(getter);
+
+	if (setter) {
+		return {
+			[BoxSymbol]: true,
+			[isWritableSymbol]: true,
+			get current() {
+				return derived;
+			},
+			set current(v: T) {
+				setter(v);
+			},
+		};
+	}
+
+	return {
+		[BoxSymbol]: true,
+		get current() {
+			return getter();
+		},
+	};
+}
+
+export const box = Object.assign(boxBase, {
+	with: boxWith,
+});
+
+/**
+ * @returns Whether the value is a Box.
+ */
+export function isBox(value: unknown): value is ReadableBox<unknown> {
+	return isObject(value) && BoxSymbol in value;
+}
+
+/**
+ * @returns Whether the value is a WritableBox.
+ */
+export function isWritableBox(value: unknown): value is WritableBox<unknown> {
+	return isBox(value) && isWritableSymbol in value;
+}
+
+/**
+ * Creates a box from either a static value, a box, or a getter function.
+ * Useful when you want to receive any of these types of values and generate a boxed version of it.
+ *
+ * @returns A box with a `current` property whose value.
+ */
+export function boxFrom<T>(value: T | WritableBox<T>): WritableBox<T>;
+export function boxFrom<T>(value: ReadableBox<T>): ReadableBox<T>;
+export function boxFrom<T>(value: Getter<T>): ReadableBox<T>;
+export function boxFrom<T>(value: MaybeBoxOrGetter<T>): ReadableBox<T>;
+export function boxFrom<T>(value: T): WritableBox<T>;
+export function boxFrom<T>(value: MaybeBoxOrGetter<T>) {
+	if (isBox(value)) return value;
+	if (isFunction(value)) return boxWith(value);
+	return createWritableBox(value);
+}
+
+type GetKeys<T, U> = {
+	[K in keyof T]: T[K] extends U ? K : never;
+}[keyof T];
+
+type RemoveValues<T, U> = Omit<T, GetKeys<T, U>>;
+
+type BoxFlatten<R extends Record<string, unknown>> = Expand<
+	RemoveValues<
+		{
+			[K in keyof R]: R[K] extends WritableBox<infer T> ? T : never;
+		},
+		never
+	> &
+		RemoveValues<
+			{
+				readonly [K in keyof R]: R[K] extends WritableBox<infer _> ? never : R[K] extends ReadableBox<infer T> ? T : never;
+			},
+			never
+		>
+> &
+	RemoveValues<
+		{
+			[K in keyof R]: R[K] extends ReadableBox<infer _> ? never : R[K];
+		},
+		never
+	>;
+
+/**
+ * Function that gets an object of boxes, and returns an object of reactive values.
+ *
+ * @example
+ * const count = box(0)
+ * const flat = boxFlatten({ count, double: boxWith(() => count.current) })
+ * // type of flat is { count: number, readonly double: number }
+ */
+export function boxFlatten<R extends Record<string, unknown>>(boxes: R): BoxFlatten<R> {
+	return Object.entries(boxes).reduce<BoxFlatten<R>>((acc, [key, b]) => {
+		if (!isBox(b)) {
+			return Object.assign(acc, { [key]: b });
+		}
+
+		if (isWritableBox(b)) {
+			Object.defineProperty(acc, key, {
+				get() {
+					return b.current;
+				},
+				set(v) {
+					b.current = v;
+				},
+			});
+		} else {
+			Object.defineProperty(acc, key, {
+				get() {
+					return b.current;
+				},
+			});
+		}
+
+		return acc;
+	}, {} as BoxFlatten<R>);
+}
+
+/**
+ * Function that converts a box to a readonly box.
+ *
+ * @example
+ * const count = box(0) // WritableBox<number>
+ * const countReadonly = toReadonlyBox(count) // ReadableBox<number>
+ */
+export function toReadonlyBox<T>(b: ReadableBox<T>): ReadableBox<T> {
+	if (!isWritableBox(b)) return b;
+
+	return {
+		[BoxSymbol]: true,
+		get current() {
+			return b.current;
+		},
+	};
+}
+
+/**
+ * Creates a writable box.
+ *
+ * @returns A box with a `current` property which can be set to a new value.
+ * Useful to pass state to other functions.
+ */
+export function simpleBox<T>(): WritableBox<T | undefined>;
+
+/**
+ * Creates a writable box with an initial value.
+ *
+ * @param initialValue The initial value of the box.
+ * @returns A box with a `current` property which can be set to a new value.
+ * Useful to pass state to other functions.
+ */
+export function simpleBox<T>(initialValue: T): WritableBox<T>;
+export function simpleBox(initialValue?: unknown) {
+	return createWritableBox(initialValue);
+}
+
+export { boxWith };

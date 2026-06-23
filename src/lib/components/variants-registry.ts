@@ -3,14 +3,13 @@
  * Used by variants.test.ts to prove class strings stay disjoint (merge-is-a-no-op).
  */
 import { buttonVariants } from './button/variants';
-import { badgeVariants } from './badge/variants';
+import { badgeVariants } from './badge';
 import { fieldVariants } from './field/variants';
-import { itemVariants, itemMediaVariants } from './item/variants';
 import { emptyMediaVariants } from './empty/variants';
 import { sidebarMenuButtonVariants } from './sidebar/variants';
 import { toggleVariants } from './toggle/variants';
 import { alertVariants } from './alert';
-import { navigationMenuTriggerStyle } from './navigation-menu/variants';
+import { navigationMenuTriggerStyle } from './navigation-menu/components/navigation-menu-trigger.svelte';
 import { sheetVariants } from './sheet/variants';
 
 export type RegistryEntry = {
@@ -31,8 +30,6 @@ export const registry: RegistryEntry[] = [
 	},
 	{ name: 'badge', fn: badgeVariants, axes: { variant: ['default', 'secondary', 'destructive', 'outline', 'bronze', 'gold', 'platinum'] } },
 	{ name: 'field', fn: fieldVariants, axes: { orientation: ['vertical', 'horizontal', 'responsive'] } },
-	{ name: 'item', fn: itemVariants, axes: { variant: ['default', 'outline', 'muted'], size: ['default', 'sm', 'lg'] } },
-	{ name: 'item-media', fn: itemMediaVariants, axes: { variant: ['default', 'icon', 'image'] } },
 	{ name: 'empty-media', fn: emptyMediaVariants, axes: { variant: ['default', 'icon'] } },
 	{
 		name: 'sidebar-menu-button',

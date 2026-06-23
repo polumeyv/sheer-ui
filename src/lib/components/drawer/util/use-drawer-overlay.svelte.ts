@@ -1,5 +1,5 @@
-import { useRefById, type WithRefProps } from "$lib/internal/toolbelt.js";
-import { getDrawer } from "./context.js";
+import { useRefById, type WithRefProps } from '$lib/internal/tools/index.js';
+import { getDrawer } from './context.js';
 
 type UseDrawerOverlayProps = WithRefProps;
 
@@ -27,10 +27,10 @@ export function useDrawerOverlay(opts: UseDrawerOverlayProps) {
 	const props = $derived({
 		id: opts.id.current,
 		onmouseup: ctx.onRelease,
-		"data-vaul-overlay": "",
-		"data-vaul-snap-points": ctx.open.current && hasSnapPoints ? "true" : "false",
-		"data-vaul-snap-points-overlay": ctx.open.current && ctx.shouldFade ? "true" : "false",
-		"data-vaul-animate": ctx.shouldAnimate ? "true" : "false",
+		'data-vaul-overlay': '',
+		'data-vaul-snap-points': ctx.open.current && hasSnapPoints ? 'true' : 'false',
+		'data-vaul-snap-points-overlay': ctx.open.current && ctx.shouldFade ? 'true' : 'false',
+		'data-vaul-animate': ctx.shouldAnimate ? 'true' : 'false',
 	});
 
 	return {

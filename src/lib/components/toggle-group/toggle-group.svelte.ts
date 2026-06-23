@@ -1,31 +1,21 @@
-import { createContext } from "svelte";
-import { type WritableBox, type ReadableBoxedValues, type WritableBoxedValues, attachRef } from "$lib/internal/toolbelt.js";
-import {
-	createBitsAttrs,
-	getAriaChecked,
-	boolToStr,
-	boolToEmptyStrOrUndef,
-	boolToTrueOrUndef,
-} from "$lib/internal/attrs.js";
-import { kbd } from "$lib/internal/kbd.js";
-import type { Orientation } from "$lib/shared/index.js";
-import type {
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import { RovingFocusGroup } from "$lib/internal/roving-focus-group.js";
+import { createContext } from 'svelte';
+import { type WritableBox, type ReadableBoxedValues, type WritableBoxedValues, attachRef } from '$lib/internal/tools/index.js';
+import { createBitsAttrs, getAriaChecked, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '$lib/internal/attrs.js';
+import { kbd } from '$lib/internal/kbd.js';
+import type { Orientation } from '$lib/shared/index.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
 
 export const toggleGroupAttrs = createBitsAttrs({
-	component: "toggle-group",
-	parts: ["root", "item"],
+	component: 'toggle-group',
+	parts: ['root', 'item'],
 });
 
 const [getToggleGroupRoot, setToggleGroupRoot] = createContext<ToggleGroup>();
 
 interface ToggleGroupBaseStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 			rovingFocus: boolean;
@@ -53,17 +43,18 @@ abstract class ToggleGroupBaseState {
 		() =>
 			({
 				id: this.opts.id.current,
-				[toggleGroupAttrs.root]: "",
-				role: "group",
-				"data-orientation": this.opts.orientation.current,
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
+				[toggleGroupAttrs.root]: '',
+				role: 'group',
+				'data-orientation': this.opts.orientation.current,
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface ToggleGroupSingleStateOpts
-	extends ToggleGroupBaseStateOpts,
+	extends
+		ToggleGroupBaseStateOpts,
 		WritableBoxedValues<{
 			value: string;
 		}> {}
@@ -71,7 +62,7 @@ interface ToggleGroupSingleStateOpts
 class ToggleGroupSingleState extends ToggleGroupBaseState {
 	readonly opts: ToggleGroupSingleStateOpts;
 	isMulti = false;
-	readonly anyPressed = $derived.by(() => this.opts.value.current !== "");
+	readonly anyPressed = $derived.by(() => this.opts.value.current !== '');
 
 	constructor(opts: ToggleGroupSingleStateOpts) {
 		super(opts);
@@ -84,7 +75,7 @@ class ToggleGroupSingleState extends ToggleGroupBaseState {
 
 	toggleItem(item: string, id: string) {
 		if (this.includesItem(item)) {
-			this.opts.value.current = "";
+			this.opts.value.current = '';
 		} else {
 			this.opts.value.current = item;
 			this.rovingFocusGroup.setCurrentTabStopId(id);
@@ -97,7 +88,8 @@ class ToggleGroupSingleState extends ToggleGroupBaseState {
 //
 
 interface ToggleGroupMultipleStateOpts
-	extends ToggleGroupBaseStateOpts,
+	extends
+		ToggleGroupBaseStateOpts,
 		WritableBoxedValues<{
 			value: string[];
 		}> {}
@@ -130,14 +122,15 @@ class ToggleGroupMultipleState extends ToggleGroupBaseState {
 type ToggleGroup = ToggleGroupSingleState | ToggleGroupMultipleState;
 
 interface ToggleGroupRootOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 			rovingFocus: boolean;
 			loop: boolean;
 			orientation: Orientation;
 		}> {
-	type: "single" | "multiple";
+	type: 'single' | 'multiple';
 	value: WritableBox<string> | WritableBox<string[]>;
 }
 
@@ -145,7 +138,7 @@ export class ToggleGroupRootState {
 	static create(opts: ToggleGroupRootOpts): ToggleGroup {
 		const { type, ...rest } = opts;
 		const rootState =
-			type === "single"
+			type === 'single'
 				? new ToggleGroupSingleState(rest as ToggleGroupSingleStateOpts)
 				: new ToggleGroupMultipleState(rest as ToggleGroupMultipleStateOpts);
 		return setToggleGroupRoot(rootState);
@@ -153,7 +146,8 @@ export class ToggleGroupRootState {
 }
 
 interface ToggleGroupItemStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			value: string;
 			disabled: boolean;
@@ -166,9 +160,7 @@ export class ToggleGroupItemState {
 	readonly opts: ToggleGroupItemStateOpts;
 	readonly root: ToggleGroup;
 	readonly attachment: RefAttachment;
-	readonly #isDisabled = $derived.by(
-		() => this.opts.disabled.current || this.root.opts.disabled.current
-	);
+	readonly #isDisabled = $derived.by(() => this.opts.disabled.current || this.root.opts.disabled.current);
 	readonly isPressed = $derived.by(() => this.root.includesItem(this.opts.value.current));
 
 	readonly #ariaChecked = $derived.by(() => {
@@ -227,24 +219,24 @@ export class ToggleGroupItemState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: this.root.isMulti ? undefined : "radio",
+				role: this.root.isMulti ? undefined : 'radio',
 				tabindex: this.#tabIndex,
-				"data-orientation": this.root.opts.orientation.current,
-				"data-disabled": boolToEmptyStrOrUndef(this.#isDisabled),
-				"data-state": getToggleItemDataState(this.isPressed),
-				"data-value": this.opts.value.current,
-				"aria-pressed": this.#ariaPressed,
-				"aria-checked": this.#ariaChecked,
+				'data-orientation': this.root.opts.orientation.current,
+				'data-disabled': boolToEmptyStrOrUndef(this.#isDisabled),
+				'data-state': getToggleItemDataState(this.isPressed),
+				'data-value': this.opts.value.current,
+				'aria-pressed': this.#ariaPressed,
+				'aria-checked': this.#ariaChecked,
 				disabled: boolToTrueOrUndef(this.#isDisabled),
-				[toggleGroupAttrs.item]: "",
+				[toggleGroupAttrs.item]: '',
 				//
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 function getToggleItemDataState(condition: boolean) {
-	return condition ? "on" : "off";
+	return condition ? 'on' : 'off';
 }

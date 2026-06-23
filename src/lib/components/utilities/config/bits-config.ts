@@ -1,11 +1,11 @@
-import { createContext } from "svelte";
-import { boxWith, type ReadableBox, type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
-import type { BitsConfigPropsWithoutChildren } from "$lib/components/utilities/config/types.js";
+import { createContext } from 'svelte';
+import { boxWith, type ReadableBox, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
+import type { BitsConfigPropsWithoutChildren } from '$lib/components/utilities/config/types.js';
 
 type BitsConfigStateProps = ReadableBoxedValues<BitsConfigPropsWithoutChildren>;
 
 const [getBitsConfigContext, setBitsConfigContext] = createContext<BitsConfigState>();
-const missingContextErrorUrl = "https://svelte.dev/e/missing_context";
+const missingContextErrorUrl = 'https://svelte.dev/e/missing_context';
 
 function getBitsConfigContextOr<TFallback>(fallback: TFallback): BitsConfigState | TFallback {
 	try {
@@ -96,10 +96,7 @@ type ConfigOptionResolver = <T>(getter: ConfigOptionGetter<T>) => ReadableBox<T 
  * // even when child didn't specify `defaultPortalTo`
  * ```
  */
-function createConfigResolver(
-	parent: BitsConfigState | null,
-	currentOpts: BitsConfigStateProps
-): ConfigOptionResolver {
+function createConfigResolver(parent: BitsConfigState | null, currentOpts: BitsConfigStateProps): ConfigOptionResolver {
 	return <T>(getter: ConfigOptionGetter<T>) => {
 		const configOption = boxWith(() => {
 			// try current opts first

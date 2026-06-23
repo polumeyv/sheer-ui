@@ -2,11 +2,17 @@
  * This logic is adapted from the @melt-ui/svelte slider, which was mostly written by
  * Abdelrahman (https://github.com/abdel-17)
  */
-import { createContext, onMount, untrack } from "svelte";
+import { createContext, onMount, untrack } from 'svelte';
 import {
-	executeCallbacks, attachRef, type Box, type ReadableBox, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
-import { on } from "svelte/events";
-import { watch } from "$lib/internal/toolbelt.js";
+	executeCallbacks,
+	attachRef,
+	type Box,
+	type ReadableBox,
+	DOMContext,
+	type ReadableBoxedValues,
+	type WritableBoxedValues,
+} from '$lib/internal/tools/index.js';
+import { on } from 'svelte/events';
 import {
 	getRangeStyles,
 	getThumbStyles,
@@ -16,31 +22,27 @@ import {
 	getAdjacentStepValue,
 	getTickLabelStyles,
 	getThumbLabelStyles,
-} from "./helpers.js";
-import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef } from "$lib/internal/attrs.js";
-import { kbd } from "$lib/internal/kbd.js";
-import { isElementOrSVGElement } from "$lib/internal/is.js";
-import { isValidIndex } from "$lib/internal/arrays.js";
-import { resizeAttachment } from "$lib/internal/svelte-resize-observer.svelte.js";
-import type {
-	BitsKeyboardEvent,
-	OnChangeFn,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import type { Direction, Orientation, SliderThumbPositioning } from "$lib/shared/index.js";
-import { linearScale } from "$lib/internal/math.js";
-import type { SliderLabelPosition } from "./types.js";
+} from './helpers.js';
+import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
+import { kbd } from '$lib/internal/kbd.js';
+import { isElementOrSVGElement } from '$lib/internal/is.js';
+import { isValidIndex } from '$lib/internal/arrays.js';
+import { resizeAttachment } from '$lib/internal/svelte-resize-observer.svelte.js';
+import type { BitsKeyboardEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { Direction, Orientation, SliderThumbPositioning } from '$lib/shared/index.js';
+import { linearScale } from '$lib/internal/math.js';
+import type { SliderLabelPosition } from './types.js';
 
 const sliderAttrs = createBitsAttrs({
-	component: "slider",
-	parts: ["root", "thumb", "range", "tick", "tick-label", "thumb-label"],
+	component: 'slider',
+	parts: ['root', 'thumb', 'range', 'tick', 'tick-label', 'thumb-label'],
 });
 
 export const [getSliderRoot, setSliderRoot] = createContext<SliderRoot>();
 
 interface SliderBaseRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 			orientation: Orientation;
@@ -58,11 +60,11 @@ abstract class SliderBaseRootState {
 	readonly attachment: RefAttachment;
 	isActive = $state(false);
 	#layoutVersion = $state(0);
-	readonly direction: "rl" | "lr" | "tb" | "bt" = $derived.by(() => {
-		if (this.opts.orientation.current === "horizontal") {
-			return this.opts.dir.current === "rtl" ? "rl" : "lr";
+	readonly direction: 'rl' | 'lr' | 'tb' | 'bt' = $derived.by(() => {
+		if (this.opts.orientation.current === 'horizontal') {
+			return this.opts.dir.current === 'rtl' ? 'rl' : 'lr';
 		} else {
-			return this.opts.dir.current === "rtl" ? "tb" : "bt";
+			return this.opts.dir.current === 'rtl' ? 'tb' : 'bt';
 		}
 	});
 
@@ -89,13 +91,13 @@ abstract class SliderBaseRootState {
 
 	readonly #touchAction = $derived.by(() => {
 		if (this.opts.disabled.current) return undefined;
-		return this.opts.orientation.current === "horizontal" ? "pan-y" : "pan-x";
+		return this.opts.orientation.current === 'horizontal' ? 'pan-y' : 'pan-x';
 	});
 
 	getAllThumbs = () => {
 		const node = this.opts.ref.current;
 		if (!node) return [];
-		return Array.from(node.querySelectorAll<HTMLElement>(sliderAttrs.selector("thumb")));
+		return Array.from(node.querySelectorAll<HTMLElement>(sliderAttrs.selector('thumb')));
 	};
 
 	getThumbScale = (): [number, number] => {
@@ -107,12 +109,12 @@ abstract class SliderBaseRootState {
 			return [trackPadding, 100 - trackPadding];
 		}
 
-		if (this.opts.thumbPositioning.current === "exact") {
+		if (this.opts.thumbPositioning.current === 'exact') {
 			// User opted out of containment
 			return [0, 100];
 		}
 
-		const isVertical = this.opts.orientation.current === "vertical";
+		const isVertical = this.opts.orientation.current === 'vertical';
 
 		// this assumes all thumbs are the same width
 		const activeThumb = this.getAllThumbs()[0];
@@ -121,9 +123,7 @@ abstract class SliderBaseRootState {
 		// if thumb size is undefined or 0, fallback to a 0-100 scale
 		if (thumbSize === undefined || Number.isNaN(thumbSize) || thumbSize === 0) return [0, 100];
 
-		const trackSize = isVertical
-			? this.opts.ref.current?.offsetHeight
-			: this.opts.ref.current?.offsetWidth;
+		const trackSize = isVertical ? this.opts.ref.current?.offsetHeight : this.opts.ref.current?.offsetWidth;
 
 		// if track size is undefined or 0, fallback to a 0-100 scale
 		if (trackSize === undefined || Number.isNaN(trackSize) || trackSize === 0) return [0, 100];
@@ -150,20 +150,21 @@ abstract class SliderBaseRootState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-orientation": this.opts.orientation.current,
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
+				'data-orientation': this.opts.orientation.current,
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
 				style: {
 					touchAction: this.#touchAction,
 				},
-				[sliderAttrs.root]: "",
+				[sliderAttrs.root]: '',
 				...this.attachment,
 				...this.#resizeAttachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface SliderSingleRootStateOpts
-	extends SliderBaseRootStateOpts,
+	extends
+		SliderBaseRootStateOpts,
 		ReadableBoxedValues<{
 			onValueCommit: OnChangeFn<number>;
 		}>,
@@ -181,10 +182,10 @@ class SliderSingleRootState extends SliderBaseRootState {
 
 		onMount(() => {
 			return executeCallbacks(
-				on(this.domContext.getDocument(), "pointerdown", this.handlePointerDown),
-				on(this.domContext.getDocument(), "pointerup", this.handlePointerUp),
-				on(this.domContext.getDocument(), "pointermove", this.handlePointerMove),
-				on(this.domContext.getDocument(), "pointerleave", this.handlePointerUp)
+				on(this.domContext.getDocument(), 'pointerdown', this.handlePointerDown),
+				on(this.domContext.getDocument(), 'pointerup', this.handlePointerUp),
+				on(this.domContext.getDocument(), 'pointermove', this.handlePointerMove),
+				on(this.domContext.getDocument(), 'pointerleave', this.handlePointerUp),
 			);
 		});
 
@@ -193,14 +194,12 @@ class SliderSingleRootState extends SliderBaseRootState {
 		 * can move the value off the active step grid. Write the repaired value
 		 * through the box so bind:value and onValueChange observe the normalized value.
 		 */
-		watch(
-			[
-				() => this.opts.step.current,
-				() => this.opts.min.current,
-				() => this.opts.max.current,
-				() => this.opts.value.current,
-			],
-			([step, min, max, value]) => {
+		$effect(() => {
+			const step = this.opts.step.current;
+			const min = this.opts.min.current;
+			const max = this.opts.max.current;
+			const value = this.opts.value.current;
+			untrack(() => {
 				const steps = normalizeSteps(step, min, max);
 
 				const isValidValue = (v: number) => {
@@ -214,8 +213,8 @@ class SliderSingleRootState extends SliderBaseRootState {
 				if (!isValidValue(value)) {
 					this.opts.value.current = gcv(value);
 				}
-			}
-		);
+			});
+		});
 	}
 
 	isTickValueSelected = (tickValue: number) => {
@@ -256,25 +255,25 @@ class SliderSingleRootState extends SliderBaseRootState {
 
 		const { left, right, top, bottom } = sliderNode.getBoundingClientRect();
 
-		if (this.direction === "lr") {
+		if (this.direction === 'lr') {
 			this.applyPosition({
 				clientXY: e.clientX,
 				start: left,
 				end: right,
 			});
-		} else if (this.direction === "rl") {
+		} else if (this.direction === 'rl') {
 			this.applyPosition({
 				clientXY: e.clientX,
 				start: right,
 				end: left,
 			});
-		} else if (this.direction === "bt") {
+		} else if (this.direction === 'bt') {
 			this.applyPosition({
 				clientXY: e.clientY,
 				start: bottom,
 				end: top,
 			});
-		} else if (this.direction === "tb") {
+		} else if (this.direction === 'tb') {
 			this.applyPosition({
 				clientXY: e.clientY,
 				start: top,
@@ -315,16 +314,16 @@ class SliderSingleRootState extends SliderBaseRootState {
 			const style = getThumbStyles(this.direction, thumbPosition);
 
 			return {
-				role: "slider",
-				"aria-valuemin": this.opts.min.current,
-				"aria-valuemax": this.opts.max.current,
-				"aria-valuenow": thumbValue,
-				"aria-disabled": boolToStr(this.opts.disabled.current),
-				"aria-orientation": this.opts.orientation.current,
-				"data-value": thumbValue,
-				"data-orientation": this.opts.orientation.current,
+				role: 'slider',
+				'aria-valuemin': this.opts.min.current,
+				'aria-valuemax': this.opts.max.current,
+				'aria-valuenow': thumbValue,
+				'aria-disabled': boolToStr(this.opts.disabled.current),
+				'aria-orientation': this.opts.orientation.current,
+				'data-value': thumbValue,
+				'data-orientation': this.opts.orientation.current,
 				style,
-				[sliderAttrs.thumb]: "",
+				[sliderAttrs.thumb]: '',
 			} as const;
 		});
 	});
@@ -349,13 +348,13 @@ class SliderSingleRootState extends SliderBaseRootState {
 			const bounded = tickValue <= currValue;
 
 			return {
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-				"data-orientation": this.opts.orientation.current,
-				"data-bounded": bounded ? "" : undefined,
-				"data-value": tickValue,
-				"data-selected": this.isTickValueSelected(tickValue) ? "" : undefined,
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
+				'data-orientation': this.opts.orientation.current,
+				'data-bounded': bounded ? '' : undefined,
+				'data-value': tickValue,
+				'data-selected': this.isTickValueSelected(tickValue) ? '' : undefined,
 				style,
-				[sliderAttrs.tick]: "",
+				[sliderAttrs.tick]: '',
 			} as const;
 		});
 	});
@@ -366,7 +365,7 @@ class SliderSingleRootState extends SliderBaseRootState {
 
 	readonly tickItemsArr = $derived.by(() => {
 		return this.ticksPropsArr.map((tick, i) => ({
-			value: tick["data-value"],
+			value: tick['data-value'],
 			index: i,
 		}));
 	});
@@ -388,12 +387,13 @@ class SliderSingleRootState extends SliderBaseRootState {
 				thumbs: this.thumbsRenderArr,
 				tickItems: this.tickItemsArr,
 				thumbItems: this.thumbItemsArr,
-			}) as const
+			}) as const,
 	);
 }
 
 interface SliderMultiRootStateOpts
-	extends SliderBaseRootStateOpts,
+	extends
+		SliderBaseRootStateOpts,
 		ReadableBoxedValues<{
 			onValueCommit: OnChangeFn<number[]>;
 		}>,
@@ -413,10 +413,10 @@ class SliderMultiRootState extends SliderBaseRootState {
 
 		onMount(() => {
 			return executeCallbacks(
-				on(this.domContext.getDocument(), "pointerdown", this.handlePointerDown),
-				on(this.domContext.getDocument(), "pointerup", this.handlePointerUp),
-				on(this.domContext.getDocument(), "pointermove", this.handlePointerMove),
-				on(this.domContext.getDocument(), "pointerleave", this.handlePointerUp)
+				on(this.domContext.getDocument(), 'pointerdown', this.handlePointerDown),
+				on(this.domContext.getDocument(), 'pointerup', this.handlePointerUp),
+				on(this.domContext.getDocument(), 'pointermove', this.handlePointerMove),
+				on(this.domContext.getDocument(), 'pointerleave', this.handlePointerUp),
 			);
 		});
 
@@ -425,14 +425,12 @@ class SliderMultiRootState extends SliderBaseRootState {
 		 * can move any thumb off the active step grid. Write the repaired array
 		 * through the box so bind:value and onValueChange observe the normalized value.
 		 */
-		watch(
-			[
-				() => this.opts.step.current,
-				() => this.opts.min.current,
-				() => this.opts.max.current,
-				() => this.opts.value.current,
-			],
-			([step, min, max, value]) => {
+		$effect(() => {
+			const step = this.opts.step.current;
+			const min = this.opts.min.current;
+			const max = this.opts.max.current;
+			const value = this.opts.value.current;
+			untrack(() => {
 				const steps = normalizeSteps(step, min, max);
 
 				const isValidValue = (v: number) => {
@@ -446,8 +444,8 @@ class SliderMultiRootState extends SliderBaseRootState {
 				if (value.some((v) => !isValidValue(v))) {
 					this.opts.value.current = value.map(gcv);
 				}
-			}
-		);
+			});
+		});
 	}
 
 	isTickValueSelected = (tickValue: number) => {
@@ -458,17 +456,7 @@ class SliderMultiRootState extends SliderBaseRootState {
 		return this.isActive && this.activeThumb?.idx === index;
 	}
 
-	applyPosition({
-		clientXY,
-		activeThumbIdx,
-		start,
-		end,
-	}: {
-		clientXY: number;
-		activeThumbIdx: number;
-		start: number;
-		end: number;
-	}) {
+	applyPosition({ clientXY, activeThumbIdx, start, end }: { clientXY: number; activeThumbIdx: number; start: number; end: number }) {
 		const min = this.opts.min.current;
 		const max = this.opts.max.current;
 		const percent = (clientXY - start) / (end - start);
@@ -493,7 +481,7 @@ class SliderMultiRootState extends SliderBaseRootState {
 		}
 
 		const distances = thumbs.map((thumb) => {
-			if (this.opts.orientation.current === "horizontal") {
+			if (this.opts.orientation.current === 'horizontal') {
 				const { left, right } = thumb.getBoundingClientRect();
 				return Math.abs(e.clientX - (left + right) / 2);
 			} else {
@@ -524,28 +512,28 @@ class SliderMultiRootState extends SliderBaseRootState {
 		const { left, right, top, bottom } = sliderNode.getBoundingClientRect();
 
 		const direction = this.direction;
-		if (direction === "lr") {
+		if (direction === 'lr') {
 			this.applyPosition({
 				clientXY: e.clientX,
 				activeThumbIdx: activeThumb.idx,
 				start: left,
 				end: right,
 			});
-		} else if (direction === "rl") {
+		} else if (direction === 'rl') {
 			this.applyPosition({
 				clientXY: e.clientX,
 				activeThumbIdx: activeThumb.idx,
 				start: right,
 				end: left,
 			});
-		} else if (direction === "bt") {
+		} else if (direction === 'bt') {
 			this.applyPosition({
 				clientXY: e.clientY,
 				activeThumbIdx: activeThumb.idx,
 				start: bottom,
 				end: top,
 			});
-		} else if (direction === "tb") {
+		} else if (direction === 'tb') {
 			this.applyPosition({
 				clientXY: e.clientY,
 				activeThumbIdx: activeThumb.idx,
@@ -583,9 +571,7 @@ class SliderMultiRootState extends SliderBaseRootState {
 	getAllThumbs = () => {
 		const node = this.opts.ref.current;
 		if (!node) return [];
-		const thumbs = Array.from(
-			node.querySelectorAll<HTMLElement>(sliderAttrs.selector("thumb"))
-		);
+		const thumbs = Array.from(node.querySelectorAll<HTMLElement>(sliderAttrs.selector('thumb')));
 		return thumbs;
 	};
 
@@ -616,8 +602,7 @@ class SliderMultiRootState extends SliderBaseRootState {
 
 		if (
 			this.opts.autoSort.current &&
-			((direction === -1 && thumbValue < newValue[idx - 1]!) ||
-				(direction === 1 && thumbValue > newValue[idx + 1]!))
+			((direction === -1 && thumbValue < newValue[idx - 1]!) || (direction === 1 && thumbValue > newValue[idx + 1]!))
 		) {
 			swap();
 			this.opts.value.current = newValue;
@@ -646,16 +631,16 @@ class SliderMultiRootState extends SliderBaseRootState {
 			const style = getThumbStyles(this.direction, thumbPosition);
 
 			return {
-				role: "slider",
-				"aria-valuemin": this.opts.min.current,
-				"aria-valuemax": this.opts.max.current,
-				"aria-valuenow": thumbValue,
-				"aria-disabled": boolToStr(this.opts.disabled.current),
-				"aria-orientation": this.opts.orientation.current,
-				"data-value": thumbValue,
-				"data-orientation": this.opts.orientation.current,
+				role: 'slider',
+				'aria-valuemin': this.opts.min.current,
+				'aria-valuemax': this.opts.max.current,
+				'aria-valuenow': thumbValue,
+				'aria-disabled': boolToStr(this.opts.disabled.current),
+				'aria-orientation': this.opts.orientation.current,
+				'data-value': thumbValue,
+				'data-orientation': this.opts.orientation.current,
 				style,
-				[sliderAttrs.thumb]: "",
+				[sliderAttrs.thumb]: '',
 			} as const;
 		});
 	});
@@ -678,17 +663,15 @@ class SliderMultiRootState extends SliderBaseRootState {
 
 			const style = getTickStyles(this.direction, tickPosition, offsetPercentage);
 			const bounded =
-				currValue.length === 1
-					? tickValue <= currValue[0]!
-					: currValue[0]! <= tickValue && tickValue <= currValue[currValue.length - 1]!;
+				currValue.length === 1 ? tickValue <= currValue[0]! : currValue[0]! <= tickValue && tickValue <= currValue[currValue.length - 1]!;
 
 			return {
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-				"data-orientation": this.opts.orientation.current,
-				"data-bounded": bounded ? "" : undefined,
-				"data-value": tickValue,
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
+				'data-orientation': this.opts.orientation.current,
+				'data-bounded': bounded ? '' : undefined,
+				'data-value': tickValue,
 				style,
-				[sliderAttrs.tick]: "",
+				[sliderAttrs.tick]: '',
 			} as const;
 		});
 	});
@@ -699,7 +682,7 @@ class SliderMultiRootState extends SliderBaseRootState {
 
 	readonly tickItemsArr = $derived.by(() => {
 		return this.ticksPropsArr.map((tick, i) => ({
-			value: tick["data-value"],
+			value: tick['data-value'],
 			index: i,
 		}));
 	});
@@ -719,14 +702,14 @@ class SliderMultiRootState extends SliderBaseRootState {
 				thumbs: this.thumbsRenderArr,
 				tickItems: this.tickItemsArr,
 				thumbItems: this.thumbItemsArr,
-			}) as const
+			}) as const,
 	);
 }
 
 type SliderRoot = SliderSingleRootState | SliderMultiRootState;
 
-interface SliderRootStateOpts extends Omit<SliderBaseRootStateOpts, "type"> {
-	type: "single" | "multiple";
+interface SliderRootStateOpts extends Omit<SliderBaseRootStateOpts, 'type'> {
+	type: 'single' | 'multiple';
 	value: Box<number> | Box<number[]>;
 	onValueCommit: ReadableBox<OnChangeFn<number>> | ReadableBox<OnChangeFn<number[]>>;
 }
@@ -735,21 +718,14 @@ export class SliderRootState {
 	static create(opts: SliderRootStateOpts): SliderRoot {
 		const { type, ...rest } = opts;
 		const rootState =
-			type === "single"
+			type === 'single'
 				? new SliderSingleRootState(rest as SliderSingleRootStateOpts)
 				: new SliderMultiRootState(rest as SliderMultiRootStateOpts);
 		return setSliderRoot(rootState);
 	}
 }
 
-const VALID_SLIDER_KEYS: string[] = [
-	kbd.ARROW_LEFT,
-	kbd.ARROW_RIGHT,
-	kbd.ARROW_UP,
-	kbd.ARROW_DOWN,
-	kbd.HOME,
-	kbd.END,
-];
+const VALID_SLIDER_KEYS: string[] = [kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.ARROW_UP, kbd.ARROW_DOWN, kbd.HOME, kbd.END];
 
 interface SliderRangeStateOpts extends WithRefOpts {}
 
@@ -771,15 +747,11 @@ export class SliderRangeState {
 		if (Array.isArray(this.root.opts.value.current)) {
 			// Multi-slider: range between min and max thumbs
 			const min =
-				this.root.opts.value.current.length > 1
-					? this.root.getPositionFromValue(Math.min(...this.root.opts.value.current) ?? 0)
-					: 0;
-			const max =
-				100 -
-				this.root.getPositionFromValue(Math.max(...this.root.opts.value.current) ?? 0);
+				this.root.opts.value.current.length > 1 ? this.root.getPositionFromValue(Math.min(...this.root.opts.value.current) ?? 0) : 0;
+			const max = 100 - this.root.getPositionFromValue(Math.max(...this.root.opts.value.current) ?? 0);
 
 			return {
-				position: "absolute",
+				position: 'absolute',
 				...getRangeStyles(this.root.direction, min, max),
 			};
 		} else {
@@ -799,7 +771,7 @@ export class SliderRangeState {
 					: 100 - this.root.getPositionFromValue(currentValue);
 
 			return {
-				position: "absolute",
+				position: 'absolute',
 				...getRangeStyles(this.root.direction, min, max),
 			};
 		}
@@ -809,17 +781,18 @@ export class SliderRangeState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-orientation": this.root.opts.orientation.current,
-				"data-disabled": boolToEmptyStrOrUndef(this.root.opts.disabled.current),
+				'data-orientation': this.root.opts.orientation.current,
+				'data-disabled': boolToEmptyStrOrUndef(this.root.opts.disabled.current),
 				style: this.rangeStyles,
-				[sliderAttrs.range]: "",
+				[sliderAttrs.range]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface SliderThumbStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			index: number;
 			disabled: boolean;
@@ -832,9 +805,7 @@ export class SliderThumbState {
 	readonly opts: SliderThumbStateOpts;
 	readonly root: SliderRoot;
 	readonly attachment: RefAttachment;
-	readonly #isDisabled = $derived.by(
-		() => this.root.opts.disabled.current || this.opts.disabled.current
-	);
+	readonly #isDisabled = $derived.by(() => this.root.opts.disabled.current || this.opts.disabled.current);
 
 	constructor(opts: SliderThumbStateOpts, root: SliderRoot) {
 		this.opts = opts;
@@ -883,43 +854,43 @@ export class SliderThumbState {
 				this.#updateValue(max);
 				break;
 			case kbd.ARROW_LEFT:
-				if (orientation !== "horizontal") break;
+				if (orientation !== 'horizontal') break;
 				if (e.metaKey) {
-					const newValue = direction === "rl" ? max : min;
+					const newValue = direction === 'rl' ? max : min;
 					this.#updateValue(newValue);
 				} else {
-					const stepDirection = direction === "rl" ? "next" : "prev";
+					const stepDirection = direction === 'rl' ? 'next' : 'prev';
 					const newValue = getAdjacentStepValue(thumbValue, steps, stepDirection);
 					this.#updateValue(newValue);
 				}
 				break;
 			case kbd.ARROW_RIGHT:
-				if (orientation !== "horizontal") break;
+				if (orientation !== 'horizontal') break;
 				if (e.metaKey) {
-					const newValue = direction === "rl" ? min : max;
+					const newValue = direction === 'rl' ? min : max;
 					this.#updateValue(newValue);
 				} else {
-					const stepDirection = direction === "rl" ? "prev" : "next";
+					const stepDirection = direction === 'rl' ? 'prev' : 'next';
 					const newValue = getAdjacentStepValue(thumbValue, steps, stepDirection);
 					this.#updateValue(newValue);
 				}
 				break;
 			case kbd.ARROW_UP:
 				if (e.metaKey) {
-					const newValue = direction === "tb" ? min : max;
+					const newValue = direction === 'tb' ? min : max;
 					this.#updateValue(newValue);
 				} else {
-					const stepDirection = direction === "tb" ? "prev" : "next";
+					const stepDirection = direction === 'tb' ? 'prev' : 'next';
 					const newValue = getAdjacentStepValue(thumbValue, steps, stepDirection);
 					this.#updateValue(newValue);
 				}
 				break;
 			case kbd.ARROW_DOWN:
 				if (e.metaKey) {
-					const newValue = direction === "tb" ? max : min;
+					const newValue = direction === 'tb' ? max : min;
 					this.#updateValue(newValue);
 				} else {
-					const stepDirection = direction === "tb" ? "next" : "prev";
+					const stepDirection = direction === 'tb' ? 'next' : 'prev';
 					const newValue = getAdjacentStepValue(thumbValue, steps, stepDirection);
 					this.#updateValue(newValue);
 				}
@@ -935,18 +906,17 @@ export class SliderThumbState {
 				...this.root.thumbsPropsArr[this.opts.index.current]!,
 				id: this.opts.id.current,
 				onkeydown: this.onkeydown,
-				"data-active": this.root.isThumbActive(this.opts.index.current) ? "" : undefined,
-				"data-disabled": boolToEmptyStrOrUndef(
-					this.opts.disabled.current || this.root.opts.disabled.current
-				),
+				'data-active': this.root.isThumbActive(this.opts.index.current) ? '' : undefined,
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current || this.root.opts.disabled.current),
 				tabindex: this.opts.disabled.current || this.root.opts.disabled.current ? -1 : 0,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface SliderTickStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			index: number;
 		}> {}
@@ -971,12 +941,13 @@ export class SliderTickState {
 				...this.root.ticksPropsArr[this.opts.index.current]!,
 				id: this.opts.id.current,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface SliderTickLabelStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			index: number;
 			position?: SliderLabelPosition;
@@ -1002,26 +973,27 @@ export class SliderTickLabelState {
 		const tickValue = steps[this.opts.index.current]!;
 		const tickPosition = this.root.getPositionFromValue(tickValue);
 
-		const labelPosition = this.opts.position?.current ?? "top";
+		const labelPosition = this.opts.position?.current ?? 'top';
 		const style = getTickLabelStyles(this.root.direction, tickPosition, labelPosition);
 
 		return {
 			id: this.opts.id.current,
-			"data-orientation": this.root.opts.orientation.current,
-			"data-disabled": boolToEmptyStrOrUndef(this.root.opts.disabled.current),
-			"data-bounded": tickProps["data-bounded"],
-			"data-value": tickValue,
-			"data-selected": this.root.isTickValueSelected(tickValue) ? "" : undefined,
-			"data-position": labelPosition,
+			'data-orientation': this.root.opts.orientation.current,
+			'data-disabled': boolToEmptyStrOrUndef(this.root.opts.disabled.current),
+			'data-bounded': tickProps['data-bounded'],
+			'data-value': tickValue,
+			'data-selected': this.root.isTickValueSelected(tickValue) ? '' : undefined,
+			'data-position': labelPosition,
 			style,
-			[sliderAttrs["tick-label"]]: "",
+			[sliderAttrs['tick-label']]: '',
 			...this.attachment,
 		} as const;
 	});
 }
 
 interface SliderThumbLabelStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			index: number;
 			position?: SliderLabelPosition;
@@ -1046,18 +1018,18 @@ export class SliderThumbLabelState {
 		const thumbValue = Array.isArray(value) ? value[this.opts.index.current]! : value;
 		const thumbPosition = this.root.getPositionFromValue(thumbValue);
 
-		const labelPosition = this.opts.position?.current ?? "top";
+		const labelPosition = this.opts.position?.current ?? 'top';
 		const style = getThumbLabelStyles(this.root.direction, thumbPosition, labelPosition);
 
 		return {
 			id: this.opts.id.current,
-			"data-orientation": this.root.opts.orientation.current,
-			"data-disabled": boolToEmptyStrOrUndef(this.root.opts.disabled.current),
-			"data-value": thumbValue,
-			"data-active": this.root.isThumbActive(this.opts.index.current) ? "" : undefined,
-			"data-position": labelPosition,
+			'data-orientation': this.root.opts.orientation.current,
+			'data-disabled': boolToEmptyStrOrUndef(this.root.opts.disabled.current),
+			'data-value': thumbValue,
+			'data-active': this.root.isThumbActive(this.opts.index.current) ? '' : undefined,
+			'data-position': labelPosition,
 			style,
-			[sliderAttrs["thumb-label"]]: "",
+			[sliderAttrs['thumb-label']]: '',
 			...this.attachment,
 		} as const;
 	});

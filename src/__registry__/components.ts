@@ -52,7 +52,6 @@ export const components = [
 	{"slug":"skeleton","name":"Skeleton","description":"Show a placeholder while content is loading."},
 	{"slug":"slider","name":"Slider","description":"An input where the user selects a value from within a given range."},
 	{"slug":"sonner","name":"Sonner","description":"An opinionated toast component."},
-	{"slug":"spinner","name":"Spinner","description":"An indicator that shows a loading state."},
 	{"slug":"switch","name":"Switch","description":"A control that allows the user to toggle between checked and not checked."},
 	{"slug":"switch-native","name":"Switch (Native)","description":"A native checkbox-based switch control."},
 	{"slug":"table","name":"Table","description":"A responsive table component."},
@@ -69,205 +68,202 @@ export const components = [
 
 export const componentDemos = {
 	"accordion": [
-		{ key: "01-accordion", name: "accordion-01-accordion", path: "/src/lib/registry/examples/accordion/01-accordion.svelte", sourcePath: "../lib/registry/examples/accordion/01-accordion.svelte" },
+		{ key: "demo", name: "accordion-demo", path: "/src/lib/registry/accordion-demo.svelte", sourcePath: "../lib/registry/accordion-demo.svelte" },
 	],
 	"alert": [
-		{ key: "01-alert", name: "alert-01-alert", path: "/src/lib/registry/examples/alert/01-alert.svelte", sourcePath: "../lib/registry/examples/alert/01-alert.svelte" },
+		{ key: "demo", name: "alert-demo", path: "/src/lib/registry/alert-demo.svelte", sourcePath: "../lib/registry/alert-demo.svelte" },
 	],
 	"alert-dialog": [
-		{ key: "01-alert-dialog", name: "alert-dialog-01-alert-dialog", path: "/src/lib/registry/examples/alert-dialog/01-alert-dialog.svelte", sourcePath: "../lib/registry/examples/alert-dialog/01-alert-dialog.svelte" },
+		{ key: "demo", name: "alert-dialog-demo", path: "/src/lib/registry/alert-dialog-demo.svelte", sourcePath: "../lib/registry/alert-dialog-demo.svelte" },
 	],
 	"avatar": [
-		{ key: "01-avatar", name: "avatar-01-avatar", path: "/src/lib/registry/examples/avatar/01-avatar.svelte", sourcePath: "../lib/registry/examples/avatar/01-avatar.svelte" },
-		{ key: "02-group", name: "avatar-02-group", path: "/src/lib/registry/examples/avatar/02-group.svelte", sourcePath: "../lib/registry/examples/avatar/02-group.svelte" },
+		{ key: "demo", name: "avatar-demo", path: "/src/lib/registry/avatar-demo.svelte", sourcePath: "../lib/registry/avatar-demo.svelte" },
+		{ key: "group", name: "avatar-group", path: "/src/lib/registry/avatar-group.svelte", sourcePath: "../lib/registry/avatar-group.svelte" },
 	],
 	"badge": [
-		{ key: "01-variants", name: "badge-01-variants", path: "/src/lib/registry/examples/badge/01-variants.svelte", sourcePath: "../lib/registry/examples/badge/01-variants.svelte" },
+		{ key: "demo", name: "badge-demo", path: "/src/lib/registry/badge-demo.svelte", sourcePath: "../lib/registry/badge-demo.svelte" },
 	],
 	"breadcrumb": [
-		{ key: "01-breadcrumb", name: "breadcrumb-01-breadcrumb", path: "/src/lib/registry/examples/breadcrumb/01-breadcrumb.svelte", sourcePath: "../lib/registry/examples/breadcrumb/01-breadcrumb.svelte" },
+		{ key: "demo", name: "breadcrumb-demo", path: "/src/lib/registry/breadcrumb-demo.svelte", sourcePath: "../lib/registry/breadcrumb-demo.svelte" },
 	],
 	"button": [
-		{ key: "01-variants", name: "button-01-variants", path: "/src/lib/registry/examples/button/01-variants.svelte", sourcePath: "../lib/registry/examples/button/01-variants.svelte" },
-		{ key: "02-sizes", name: "button-02-sizes", path: "/src/lib/registry/examples/button/02-sizes.svelte", sourcePath: "../lib/registry/examples/button/02-sizes.svelte" },
-		{ key: "03-with-icon", name: "button-03-with-icon", path: "/src/lib/registry/examples/button/03-with-icon.svelte", sourcePath: "../lib/registry/examples/button/03-with-icon.svelte" },
+		{ key: "demo", name: "button-demo", path: "/src/lib/registry/button-demo.svelte", sourcePath: "../lib/registry/button-demo.svelte" },
+		{ key: "sizes", name: "button-sizes", path: "/src/lib/registry/button-sizes.svelte", sourcePath: "../lib/registry/button-sizes.svelte" },
+		{ key: "with-icon", name: "button-with-icon", path: "/src/lib/registry/button-with-icon.svelte", sourcePath: "../lib/registry/button-with-icon.svelte" },
 	],
 	"calendar": [
-		{ key: "01-calendar", name: "calendar-01-calendar", path: "/src/lib/registry/examples/calendar/01-calendar.svelte", sourcePath: "../lib/registry/examples/calendar/01-calendar.svelte" },
+		{ key: "demo", name: "calendar-demo", path: "/src/lib/registry/calendar-demo.svelte", sourcePath: "../lib/registry/calendar-demo.svelte" },
 	],
 	"card": [
-		{ key: "01-card", name: "card-01-card", path: "/src/lib/registry/examples/card/01-card.svelte", sourcePath: "../lib/registry/examples/card/01-card.svelte" },
+		{ key: "demo", name: "card-demo", path: "/src/lib/registry/card-demo.svelte", sourcePath: "../lib/registry/card-demo.svelte" },
 	],
 	"carousel": [
-		{ key: "01-carousel", name: "carousel-01-carousel", path: "/src/lib/registry/examples/carousel/01-carousel.svelte", sourcePath: "../lib/registry/examples/carousel/01-carousel.svelte" },
+		{ key: "demo", name: "carousel-demo", path: "/src/lib/registry/carousel-demo.svelte", sourcePath: "../lib/registry/carousel-demo.svelte" },
 	],
 	"chart": [
-		{ key: "01-chart", name: "chart-01-chart", path: "/src/lib/registry/examples/chart/01-chart.svelte", sourcePath: "../lib/registry/examples/chart/01-chart.svelte" },
+		{ key: "demo", name: "chart-demo", path: "/src/lib/registry/chart-demo.svelte", sourcePath: "../lib/registry/chart-demo.svelte" },
 	],
 	"checkbox": [
-		{ key: "01-checkbox", name: "checkbox-01-checkbox", path: "/src/lib/registry/examples/checkbox/01-checkbox.svelte", sourcePath: "../lib/registry/examples/checkbox/01-checkbox.svelte" },
-		{ key: "02-group", name: "checkbox-02-group", path: "/src/lib/registry/examples/checkbox/02-group.svelte", sourcePath: "../lib/registry/examples/checkbox/02-group.svelte" },
-		{ key: "03-disabled", name: "checkbox-03-disabled", path: "/src/lib/registry/examples/checkbox/03-disabled.svelte", sourcePath: "../lib/registry/examples/checkbox/03-disabled.svelte" },
+		{ key: "demo", name: "checkbox-demo", path: "/src/lib/registry/checkbox-demo.svelte", sourcePath: "../lib/registry/checkbox-demo.svelte" },
+		{ key: "disabled", name: "checkbox-disabled", path: "/src/lib/registry/checkbox-disabled.svelte", sourcePath: "../lib/registry/checkbox-disabled.svelte" },
+		{ key: "group", name: "checkbox-group", path: "/src/lib/registry/checkbox-group.svelte", sourcePath: "../lib/registry/checkbox-group.svelte" },
 	],
 	"collapsible": [
-		{ key: "01-collapsible", name: "collapsible-01-collapsible", path: "/src/lib/registry/examples/collapsible/01-collapsible.svelte", sourcePath: "../lib/registry/examples/collapsible/01-collapsible.svelte" },
+		{ key: "demo", name: "collapsible-demo", path: "/src/lib/registry/collapsible-demo.svelte", sourcePath: "../lib/registry/collapsible-demo.svelte" },
 	],
 	"combobox": [
-		{ key: "01-combobox", name: "combobox-01-combobox", path: "/src/lib/registry/examples/combobox/01-combobox.svelte", sourcePath: "../lib/registry/examples/combobox/01-combobox.svelte" },
+		{ key: "demo", name: "combobox-demo", path: "/src/lib/registry/combobox-demo.svelte", sourcePath: "../lib/registry/combobox-demo.svelte" },
 	],
 	"command": [
-		{ key: "01-command", name: "command-01-command", path: "/src/lib/registry/examples/command/01-command.svelte", sourcePath: "../lib/registry/examples/command/01-command.svelte" },
+		{ key: "demo", name: "command-demo", path: "/src/lib/registry/command-demo.svelte", sourcePath: "../lib/registry/command-demo.svelte" },
 	],
 	"context-menu": [
-		{ key: "01-context-menu", name: "context-menu-01-context-menu", path: "/src/lib/registry/examples/context-menu/01-context-menu.svelte", sourcePath: "../lib/registry/examples/context-menu/01-context-menu.svelte" },
+		{ key: "demo", name: "context-menu-demo", path: "/src/lib/registry/context-menu-demo.svelte", sourcePath: "../lib/registry/context-menu-demo.svelte" },
 	],
 	"data-table": [
-		{ key: "01-data-table", name: "data-table-01-data-table", path: "/src/lib/registry/examples/data-table/01-data-table.svelte", sourcePath: "../lib/registry/examples/data-table/01-data-table.svelte" },
+		{ key: "demo", name: "data-table-demo", path: "/src/lib/registry/data-table-demo.svelte", sourcePath: "../lib/registry/data-table-demo.svelte" },
 	],
 	"date-field": [
-		{ key: "01-date-field", name: "date-field-01-date-field", path: "/src/lib/registry/examples/date-field/01-date-field.svelte", sourcePath: "../lib/registry/examples/date-field/01-date-field.svelte" },
+		{ key: "demo", name: "date-field-demo", path: "/src/lib/registry/date-field-demo.svelte", sourcePath: "../lib/registry/date-field-demo.svelte" },
 	],
 	"date-picker": [
-		{ key: "01-date-picker", name: "date-picker-01-date-picker", path: "/src/lib/registry/examples/date-picker/01-date-picker.svelte", sourcePath: "../lib/registry/examples/date-picker/01-date-picker.svelte" },
-		{ key: "02-presets", name: "date-picker-02-presets", path: "/src/lib/registry/examples/date-picker/02-presets.svelte", sourcePath: "../lib/registry/examples/date-picker/02-presets.svelte" },
-		{ key: "03-range", name: "date-picker-03-range", path: "/src/lib/registry/examples/date-picker/03-range.svelte", sourcePath: "../lib/registry/examples/date-picker/03-range.svelte" },
+		{ key: "demo", name: "date-picker-demo", path: "/src/lib/registry/date-picker-demo.svelte", sourcePath: "../lib/registry/date-picker-demo.svelte" },
+		{ key: "presets", name: "date-picker-presets", path: "/src/lib/registry/date-picker-presets.svelte", sourcePath: "../lib/registry/date-picker-presets.svelte" },
+		{ key: "range", name: "date-picker-range", path: "/src/lib/registry/date-picker-range.svelte", sourcePath: "../lib/registry/date-picker-range.svelte" },
 	],
 	"date-range-field": [
-		{ key: "01-date-range-field", name: "date-range-field-01-date-range-field", path: "/src/lib/registry/examples/date-range-field/01-date-range-field.svelte", sourcePath: "../lib/registry/examples/date-range-field/01-date-range-field.svelte" },
+		{ key: "demo", name: "date-range-field-demo", path: "/src/lib/registry/date-range-field-demo.svelte", sourcePath: "../lib/registry/date-range-field-demo.svelte" },
 	],
 	"dialog": [
-		{ key: "01-dialog", name: "dialog-01-dialog", path: "/src/lib/registry/examples/dialog/01-dialog.svelte", sourcePath: "../lib/registry/examples/dialog/01-dialog.svelte" },
+		{ key: "demo", name: "dialog-demo", path: "/src/lib/registry/dialog-demo.svelte", sourcePath: "../lib/registry/dialog-demo.svelte" },
 	],
 	"drawer": [
-		{ key: "01-drawer", name: "drawer-01-drawer", path: "/src/lib/registry/examples/drawer/01-drawer.svelte", sourcePath: "../lib/registry/examples/drawer/01-drawer.svelte" },
+		{ key: "demo", name: "drawer-demo", path: "/src/lib/registry/drawer-demo.svelte", sourcePath: "../lib/registry/drawer-demo.svelte" },
 	],
 	"dropdown-menu": [
-		{ key: "01-dropdown-menu", name: "dropdown-menu-01-dropdown-menu", path: "/src/lib/registry/examples/dropdown-menu/01-dropdown-menu.svelte", sourcePath: "../lib/registry/examples/dropdown-menu/01-dropdown-menu.svelte" },
+		{ key: "demo", name: "dropdown-menu-demo", path: "/src/lib/registry/dropdown-menu-demo.svelte", sourcePath: "../lib/registry/dropdown-menu-demo.svelte" },
 	],
 	"empty": [
-		{ key: "01-empty", name: "empty-01-empty", path: "/src/lib/registry/examples/empty/01-empty.svelte", sourcePath: "../lib/registry/examples/empty/01-empty.svelte" },
+		{ key: "demo", name: "empty-demo", path: "/src/lib/registry/empty-demo.svelte", sourcePath: "../lib/registry/empty-demo.svelte" },
 	],
 	"field": [
-		{ key: "01-field", name: "field-01-field", path: "/src/lib/registry/examples/field/01-field.svelte", sourcePath: "../lib/registry/examples/field/01-field.svelte" },
+		{ key: "demo", name: "field-demo", path: "/src/lib/registry/field-demo.svelte", sourcePath: "../lib/registry/field-demo.svelte" },
 	],
 	"heading": [
-		{ key: "01-heading", name: "heading-01-heading", path: "/src/lib/registry/examples/heading/01-heading.svelte", sourcePath: "../lib/registry/examples/heading/01-heading.svelte" },
+		{ key: "demo", name: "heading-demo", path: "/src/lib/registry/heading-demo.svelte", sourcePath: "../lib/registry/heading-demo.svelte" },
 	],
 	"input": [
-		{ key: "01-input", name: "input-01-input", path: "/src/lib/registry/examples/input/01-input.svelte", sourcePath: "../lib/registry/examples/input/01-input.svelte" },
+		{ key: "demo", name: "input-demo", path: "/src/lib/registry/input-demo.svelte", sourcePath: "../lib/registry/input-demo.svelte" },
 	],
 	"item": [
-		{ key: "01-item", name: "item-01-item", path: "/src/lib/registry/examples/item/01-item.svelte", sourcePath: "../lib/registry/examples/item/01-item.svelte" },
+		{ key: "demo", name: "item-demo", path: "/src/lib/registry/item-demo.svelte", sourcePath: "../lib/registry/item-demo.svelte" },
 	],
 	"kbd": [
-		{ key: "01-kbd", name: "kbd-01-kbd", path: "/src/lib/registry/examples/kbd/01-kbd.svelte", sourcePath: "../lib/registry/examples/kbd/01-kbd.svelte" },
+		{ key: "demo", name: "kbd-demo", path: "/src/lib/registry/kbd-demo.svelte", sourcePath: "../lib/registry/kbd-demo.svelte" },
 	],
 	"label": [
-		{ key: "01-label", name: "label-01-label", path: "/src/lib/registry/examples/label/01-label.svelte", sourcePath: "../lib/registry/examples/label/01-label.svelte" },
+		{ key: "demo", name: "label-demo", path: "/src/lib/registry/label-demo.svelte", sourcePath: "../lib/registry/label-demo.svelte" },
 	],
 	"link-preview": [
-		{ key: "01-link-preview", name: "link-preview-01-link-preview", path: "/src/lib/registry/examples/link-preview/01-link-preview.svelte", sourcePath: "../lib/registry/examples/link-preview/01-link-preview.svelte" },
+		{ key: "demo", name: "link-preview-demo", path: "/src/lib/registry/link-preview-demo.svelte", sourcePath: "../lib/registry/link-preview-demo.svelte" },
 	],
 	"menubar": [
-		{ key: "01-menubar", name: "menubar-01-menubar", path: "/src/lib/registry/examples/menubar/01-menubar.svelte", sourcePath: "../lib/registry/examples/menubar/01-menubar.svelte" },
+		{ key: "demo", name: "menubar-demo", path: "/src/lib/registry/menubar-demo.svelte", sourcePath: "../lib/registry/menubar-demo.svelte" },
 	],
 	"meter": [
-		{ key: "01-meter", name: "meter-01-meter", path: "/src/lib/registry/examples/meter/01-meter.svelte", sourcePath: "../lib/registry/examples/meter/01-meter.svelte" },
+		{ key: "demo", name: "meter-demo", path: "/src/lib/registry/meter-demo.svelte", sourcePath: "../lib/registry/meter-demo.svelte" },
 	],
 	"native-select": [
-		{ key: "01-native-select", name: "native-select-01-native-select", path: "/src/lib/registry/examples/native-select/01-native-select.svelte", sourcePath: "../lib/registry/examples/native-select/01-native-select.svelte" },
+		{ key: "demo", name: "native-select-demo", path: "/src/lib/registry/native-select-demo.svelte", sourcePath: "../lib/registry/native-select-demo.svelte" },
 	],
 	"navigation-menu": [
-		{ key: "01-navigation-menu", name: "navigation-menu-01-navigation-menu", path: "/src/lib/registry/examples/navigation-menu/01-navigation-menu.svelte", sourcePath: "../lib/registry/examples/navigation-menu/01-navigation-menu.svelte" },
+		{ key: "demo", name: "navigation-menu-demo", path: "/src/lib/registry/navigation-menu-demo.svelte", sourcePath: "../lib/registry/navigation-menu-demo.svelte" },
 	],
 	"pagination": [
-		{ key: "01-pagination", name: "pagination-01-pagination", path: "/src/lib/registry/examples/pagination/01-pagination.svelte", sourcePath: "../lib/registry/examples/pagination/01-pagination.svelte" },
+		{ key: "demo", name: "pagination-demo", path: "/src/lib/registry/pagination-demo.svelte", sourcePath: "../lib/registry/pagination-demo.svelte" },
 	],
 	"pin-input": [
-		{ key: "01-pin-input", name: "pin-input-01-pin-input", path: "/src/lib/registry/examples/pin-input/01-pin-input.svelte", sourcePath: "../lib/registry/examples/pin-input/01-pin-input.svelte" },
+		{ key: "demo", name: "pin-input-demo", path: "/src/lib/registry/pin-input-demo.svelte", sourcePath: "../lib/registry/pin-input-demo.svelte" },
 	],
 	"popover": [
-		{ key: "01-popover", name: "popover-01-popover", path: "/src/lib/registry/examples/popover/01-popover.svelte", sourcePath: "../lib/registry/examples/popover/01-popover.svelte" },
+		{ key: "demo", name: "popover-demo", path: "/src/lib/registry/popover-demo.svelte", sourcePath: "../lib/registry/popover-demo.svelte" },
 	],
 	"progress": [
-		{ key: "01-progress", name: "progress-01-progress", path: "/src/lib/registry/examples/progress/01-progress.svelte", sourcePath: "../lib/registry/examples/progress/01-progress.svelte" },
+		{ key: "demo", name: "progress-demo", path: "/src/lib/registry/progress-demo.svelte", sourcePath: "../lib/registry/progress-demo.svelte" },
 	],
 	"radio-group": [
-		{ key: "01-radio-group", name: "radio-group-01-radio-group", path: "/src/lib/registry/examples/radio-group/01-radio-group.svelte", sourcePath: "../lib/registry/examples/radio-group/01-radio-group.svelte" },
+		{ key: "demo", name: "radio-group-demo", path: "/src/lib/registry/radio-group-demo.svelte", sourcePath: "../lib/registry/radio-group-demo.svelte" },
 	],
 	"range-calendar": [
-		{ key: "01-range-calendar", name: "range-calendar-01-range-calendar", path: "/src/lib/registry/examples/range-calendar/01-range-calendar.svelte", sourcePath: "../lib/registry/examples/range-calendar/01-range-calendar.svelte" },
+		{ key: "demo", name: "range-calendar-demo", path: "/src/lib/registry/range-calendar-demo.svelte", sourcePath: "../lib/registry/range-calendar-demo.svelte" },
 	],
 	"resizable": [
-		{ key: "01-resizable", name: "resizable-01-resizable", path: "/src/lib/registry/examples/resizable/01-resizable.svelte", sourcePath: "../lib/registry/examples/resizable/01-resizable.svelte" },
+		{ key: "demo", name: "resizable-demo", path: "/src/lib/registry/resizable-demo.svelte", sourcePath: "../lib/registry/resizable-demo.svelte" },
 	],
 	"scroll-area": [
-		{ key: "01-scroll-area", name: "scroll-area-01-scroll-area", path: "/src/lib/registry/examples/scroll-area/01-scroll-area.svelte", sourcePath: "../lib/registry/examples/scroll-area/01-scroll-area.svelte" },
+		{ key: "demo", name: "scroll-area-demo", path: "/src/lib/registry/scroll-area-demo.svelte", sourcePath: "../lib/registry/scroll-area-demo.svelte" },
 	],
 	"select": [
-		{ key: "01-select", name: "select-01-select", path: "/src/lib/registry/examples/select/01-select.svelte", sourcePath: "../lib/registry/examples/select/01-select.svelte" },
+		{ key: "demo", name: "select-demo", path: "/src/lib/registry/select-demo.svelte", sourcePath: "../lib/registry/select-demo.svelte" },
 	],
 	"separator": [
-		{ key: "01-separator", name: "separator-01-separator", path: "/src/lib/registry/examples/separator/01-separator.svelte", sourcePath: "../lib/registry/examples/separator/01-separator.svelte" },
+		{ key: "demo", name: "separator-demo", path: "/src/lib/registry/separator-demo.svelte", sourcePath: "../lib/registry/separator-demo.svelte" },
 	],
 	"sheet": [
-		{ key: "01-sheet", name: "sheet-01-sheet", path: "/src/lib/registry/examples/sheet/01-sheet.svelte", sourcePath: "../lib/registry/examples/sheet/01-sheet.svelte" },
-		{ key: "02-side", name: "sheet-02-side", path: "/src/lib/registry/examples/sheet/02-side.svelte", sourcePath: "../lib/registry/examples/sheet/02-side.svelte" },
+		{ key: "demo", name: "sheet-demo", path: "/src/lib/registry/sheet-demo.svelte", sourcePath: "../lib/registry/sheet-demo.svelte" },
+		{ key: "side", name: "sheet-side", path: "/src/lib/registry/sheet-side.svelte", sourcePath: "../lib/registry/sheet-side.svelte" },
 	],
 	"sidebar": [
-		{ key: "01-sidebar", name: "sidebar-01-sidebar", path: "/src/lib/registry/examples/sidebar/01-sidebar.svelte", sourcePath: "../lib/registry/examples/sidebar/01-sidebar.svelte" },
+		{ key: "demo", name: "sidebar-demo", path: "/src/lib/registry/sidebar-demo.svelte", sourcePath: "../lib/registry/sidebar-demo.svelte" },
 	],
 	"skeleton": [
-		{ key: "01-skeleton", name: "skeleton-01-skeleton", path: "/src/lib/registry/examples/skeleton/01-skeleton.svelte", sourcePath: "../lib/registry/examples/skeleton/01-skeleton.svelte" },
+		{ key: "demo", name: "skeleton-demo", path: "/src/lib/registry/skeleton-demo.svelte", sourcePath: "../lib/registry/skeleton-demo.svelte" },
 	],
 	"slider": [
-		{ key: "01-slider", name: "slider-01-slider", path: "/src/lib/registry/examples/slider/01-slider.svelte", sourcePath: "../lib/registry/examples/slider/01-slider.svelte" },
-		{ key: "02-range", name: "slider-02-range", path: "/src/lib/registry/examples/slider/02-range.svelte", sourcePath: "../lib/registry/examples/slider/02-range.svelte" },
+		{ key: "demo", name: "slider-demo", path: "/src/lib/registry/slider-demo.svelte", sourcePath: "../lib/registry/slider-demo.svelte" },
+		{ key: "range", name: "slider-range", path: "/src/lib/registry/slider-range.svelte", sourcePath: "../lib/registry/slider-range.svelte" },
 	],
 	"sonner": [
-		{ key: "01-sonner", name: "sonner-01-sonner", path: "/src/lib/registry/examples/sonner/01-sonner.svelte", sourcePath: "../lib/registry/examples/sonner/01-sonner.svelte" },
-	],
-	"spinner": [
-		{ key: "01-spinner", name: "spinner-01-spinner", path: "/src/lib/registry/examples/spinner/01-spinner.svelte", sourcePath: "../lib/registry/examples/spinner/01-spinner.svelte" },
+		{ key: "demo", name: "sonner-demo", path: "/src/lib/registry/sonner-demo.svelte", sourcePath: "../lib/registry/sonner-demo.svelte" },
 	],
 	"switch": [
-		{ key: "01-switch", name: "switch-01-switch", path: "/src/lib/registry/examples/switch/01-switch.svelte", sourcePath: "../lib/registry/examples/switch/01-switch.svelte" },
+		{ key: "demo", name: "switch-demo", path: "/src/lib/registry/switch-demo.svelte", sourcePath: "../lib/registry/switch-demo.svelte" },
 	],
 	"switch-native": [
-		{ key: "01-switch-native", name: "switch-native-01-switch-native", path: "/src/lib/registry/examples/switch-native/01-switch-native.svelte", sourcePath: "../lib/registry/examples/switch-native/01-switch-native.svelte" },
+		{ key: "demo", name: "switch-native-demo", path: "/src/lib/registry/switch-native-demo.svelte", sourcePath: "../lib/registry/switch-native-demo.svelte" },
 	],
 	"table": [
-		{ key: "01-table", name: "table-01-table", path: "/src/lib/registry/examples/table/01-table.svelte", sourcePath: "../lib/registry/examples/table/01-table.svelte" },
+		{ key: "demo", name: "table-demo", path: "/src/lib/registry/table-demo.svelte", sourcePath: "../lib/registry/table-demo.svelte" },
 	],
 	"tabs": [
-		{ key: "01-tabs", name: "tabs-01-tabs", path: "/src/lib/registry/examples/tabs/01-tabs.svelte", sourcePath: "../lib/registry/examples/tabs/01-tabs.svelte" },
+		{ key: "demo", name: "tabs-demo", path: "/src/lib/registry/tabs-demo.svelte", sourcePath: "../lib/registry/tabs-demo.svelte" },
 	],
 	"textarea": [
-		{ key: "01-textarea", name: "textarea-01-textarea", path: "/src/lib/registry/examples/textarea/01-textarea.svelte", sourcePath: "../lib/registry/examples/textarea/01-textarea.svelte" },
+		{ key: "demo", name: "textarea-demo", path: "/src/lib/registry/textarea-demo.svelte", sourcePath: "../lib/registry/textarea-demo.svelte" },
 	],
 	"theme-toggle": [
-		{ key: "01-theme-toggle", name: "theme-toggle-01-theme-toggle", path: "/src/lib/registry/examples/theme-toggle/01-theme-toggle.svelte", sourcePath: "../lib/registry/examples/theme-toggle/01-theme-toggle.svelte" },
+		{ key: "demo", name: "theme-toggle-demo", path: "/src/lib/registry/theme-toggle-demo.svelte", sourcePath: "../lib/registry/theme-toggle-demo.svelte" },
 	],
 	"time-field": [
-		{ key: "01-time-field", name: "time-field-01-time-field", path: "/src/lib/registry/examples/time-field/01-time-field.svelte", sourcePath: "../lib/registry/examples/time-field/01-time-field.svelte" },
+		{ key: "demo", name: "time-field-demo", path: "/src/lib/registry/time-field-demo.svelte", sourcePath: "../lib/registry/time-field-demo.svelte" },
 	],
 	"time-range-field": [
-		{ key: "01-time-range-field", name: "time-range-field-01-time-range-field", path: "/src/lib/registry/examples/time-range-field/01-time-range-field.svelte", sourcePath: "../lib/registry/examples/time-range-field/01-time-range-field.svelte" },
+		{ key: "demo", name: "time-range-field-demo", path: "/src/lib/registry/time-range-field-demo.svelte", sourcePath: "../lib/registry/time-range-field-demo.svelte" },
 	],
 	"toggle": [
-		{ key: "01-toggle", name: "toggle-01-toggle", path: "/src/lib/registry/examples/toggle/01-toggle.svelte", sourcePath: "../lib/registry/examples/toggle/01-toggle.svelte" },
-		{ key: "02-outline", name: "toggle-02-outline", path: "/src/lib/registry/examples/toggle/02-outline.svelte", sourcePath: "../lib/registry/examples/toggle/02-outline.svelte" },
-		{ key: "03-disabled", name: "toggle-03-disabled", path: "/src/lib/registry/examples/toggle/03-disabled.svelte", sourcePath: "../lib/registry/examples/toggle/03-disabled.svelte" },
+		{ key: "demo", name: "toggle-demo", path: "/src/lib/registry/toggle-demo.svelte", sourcePath: "../lib/registry/toggle-demo.svelte" },
+		{ key: "disabled", name: "toggle-disabled", path: "/src/lib/registry/toggle-disabled.svelte", sourcePath: "../lib/registry/toggle-disabled.svelte" },
+		{ key: "outline", name: "toggle-outline", path: "/src/lib/registry/toggle-outline.svelte", sourcePath: "../lib/registry/toggle-outline.svelte" },
 	],
 	"toggle-group": [
-		{ key: "01-toggle-group", name: "toggle-group-01-toggle-group", path: "/src/lib/registry/examples/toggle-group/01-toggle-group.svelte", sourcePath: "../lib/registry/examples/toggle-group/01-toggle-group.svelte" },
-		{ key: "02-multiple", name: "toggle-group-02-multiple", path: "/src/lib/registry/examples/toggle-group/02-multiple.svelte", sourcePath: "../lib/registry/examples/toggle-group/02-multiple.svelte" },
+		{ key: "demo", name: "toggle-group-demo", path: "/src/lib/registry/toggle-group-demo.svelte", sourcePath: "../lib/registry/toggle-group-demo.svelte" },
+		{ key: "multiple", name: "toggle-group-multiple", path: "/src/lib/registry/toggle-group-multiple.svelte", sourcePath: "../lib/registry/toggle-group-multiple.svelte" },
 	],
 	"toolbar": [
-		{ key: "01-toolbar", name: "toolbar-01-toolbar", path: "/src/lib/registry/examples/toolbar/01-toolbar.svelte", sourcePath: "../lib/registry/examples/toolbar/01-toolbar.svelte" },
+		{ key: "demo", name: "toolbar-demo", path: "/src/lib/registry/toolbar-demo.svelte", sourcePath: "../lib/registry/toolbar-demo.svelte" },
 	],
 	"tooltip": [
-		{ key: "01-tooltip", name: "tooltip-01-tooltip", path: "/src/lib/registry/examples/tooltip/01-tooltip.svelte", sourcePath: "../lib/registry/examples/tooltip/01-tooltip.svelte" },
+		{ key: "demo", name: "tooltip-demo", path: "/src/lib/registry/tooltip-demo.svelte", sourcePath: "../lib/registry/tooltip-demo.svelte" },
 	],
 } as const;
 

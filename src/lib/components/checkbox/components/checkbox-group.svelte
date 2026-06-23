@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { CheckboxGroupProps } from "../types.js";
-	import { CheckboxGroupState } from "../checkbox.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import { arraysAreEqual } from "$lib/internal/arrays.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { CheckboxGroupProps } from '../types.js';
+	import { CheckboxGroupState } from '../checkbox.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { arraysAreEqual } from '$lib/internal/arrays.js';
 
 	const uid = $props.id();
 
@@ -25,7 +26,7 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		disabled: boxWith(() => Boolean(disabled)),
 		required: boxWith(() => Boolean(required)),
@@ -37,7 +38,7 @@
 				if (arraysAreEqual(value, v)) return;
 				value = $state.snapshot(v);
 				onValueChange(v);
-			}
+			},
 		),
 		onValueChange: boxWith(() => onValueChange),
 	});

@@ -1,5 +1,5 @@
-import { simpleBox } from "$lib/internal/toolbelt.js";
-import { FocusScope } from "./focus-scope.svelte.js";
+import { simpleBox } from '$lib/internal/tools/index.js';
+import { FocusScope } from './focus-scope.svelte.js';
 
 export class FocusScopeManager {
 	static instance: FocusScopeManager;

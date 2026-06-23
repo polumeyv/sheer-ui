@@ -1,15 +1,16 @@
-import { attachRef } from "$lib/internal/attachments.js";
-import type { ReadableBoxedValues } from "$lib/internal/toolbelt.js";
-import type { RefAttachment, WithRefOpts } from "$lib/internal/types.js";
-import { createBitsAttrs } from "$lib/internal/attrs.js";
+import { attachRef } from '$lib/internal/attachments.js';
+import type { ReadableBoxedValues } from '$lib/internal/tools/index.js';
+import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { createBitsAttrs } from '$lib/internal/attrs.js';
 
 const meterAttrs = createBitsAttrs({
-	component: "meter",
-	parts: ["root"],
+	component: 'meter',
+	parts: ['root'],
 });
 
 interface MeterRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			value: number;
 			max: number;
@@ -32,16 +33,16 @@ export class MeterRootState {
 	readonly props = $derived.by(
 		() =>
 			({
-				role: "meter",
+				role: 'meter',
 				value: this.opts.value.current,
-				"aria-valuemin": this.opts.min.current,
-				"aria-valuemax": this.opts.max.current,
-				"aria-valuenow": this.opts.value.current,
-				"data-value": this.opts.value.current,
-				"data-max": this.opts.max.current,
-				"data-min": this.opts.min.current,
-				[meterAttrs.root]: "",
+				'aria-valuemin': this.opts.min.current,
+				'aria-valuemax': this.opts.max.current,
+				'aria-valuenow': this.opts.value.current,
+				'data-value': this.opts.value.current,
+				'data-max': this.opts.max.current,
+				'data-min': this.opts.min.current,
+				[meterAttrs.root]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }

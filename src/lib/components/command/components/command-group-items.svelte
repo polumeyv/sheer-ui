@@ -1,24 +1,19 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { CommandGroupItemsProps } from "../types.js";
-	import { CommandGroupItemsState } from "../command.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { CommandGroupItemsProps } from '../types.js';
+	import { CommandGroupItemsState } from '../command.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
-	let {
-		id = createId(uid),
-		ref = $bindable(null),
-		children,
-		child,
-		...restProps
-	}: CommandGroupItemsProps = $props();
+	let { id = createId(uid), ref = $bindable(null), children, child, ...restProps }: CommandGroupItemsProps = $props();
 
 	const groupItemsState = CommandGroupItemsState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 

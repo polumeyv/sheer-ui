@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
-	import { IsMounted } from '$lib/internal/toolbelt.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import { onMount } from 'svelte';
 	import type { ScrollAreaThumbProps } from '../types.js';
 	import { ScrollAreaThumbImplState } from '../scroll-area.svelte.js';
 
@@ -16,7 +17,10 @@
 		present: boolean;
 	} = $props();
 
-	const isMounted = new IsMounted();
+	let isMounted = $state(false);
+	onMount(() => {
+		isMounted = true;
+	});
 
 	const thumbState = ScrollAreaThumbImplState.create({
 		id: boxWith(() => id),
@@ -24,7 +28,7 @@
 			() => ref,
 			(v) => (ref = v),
 		),
-		mounted: boxWith(() => isMounted.current),
+		mounted: boxWith(() => isMounted),
 	});
 
 	const mergedProps = $derived(

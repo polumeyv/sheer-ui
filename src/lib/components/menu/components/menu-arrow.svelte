@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { mergeProps } from "$lib/internal/toolbelt.js";
-	import type { MenuArrowProps } from "../types.js";
-	import { MenuArrowState } from "../menu.svelte.js";
-	import FloatingLayerArrow from "$lib/components/utilities/floating-layer/components/floating-layer-arrow.svelte";
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { MenuArrowProps } from '../types.js';
+	import { MenuArrowState } from '../menu.svelte.js';
+	import FloatingLayerArrow from '$lib/components/utilities/floating-layer/components/floating-layer-arrow.svelte';
 
 	let { ref = $bindable(null), ...restProps }: MenuArrowProps = $props();
 

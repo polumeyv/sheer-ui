@@ -1,7 +1,7 @@
 <script lang="ts" module>
-	import { createContext } from "svelte";
-	import type { VariantProps } from "overrule";
-	import { toggleVariants } from "$lib/components/toggle/variants.js";
+	import { createContext } from 'svelte';
+	import type { VariantProps } from 'overrule';
+	import { toggleVariants } from '$lib/components/toggle/variants.js';
 
 	type ToggleVariants = VariantProps<typeof toggleVariants>;
 
@@ -13,12 +13,12 @@
 </script>
 
 <script lang="ts">
-	import { untrack } from "svelte";
-	import { type WritableBox, boxWith } from "$lib/internal/toolbelt.js";
-	import { mergeProps } from "$lib/internal/toolbelt.js";
-	import type { ToggleGroupRootProps } from "../types.js";
-	import { ToggleGroupRootState } from "../toggle-group.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { untrack } from 'svelte';
+	import { type WritableBox, boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { ToggleGroupRootProps } from '../types.js';
+	import { ToggleGroupRootState } from '../toggle-group.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -30,13 +30,13 @@
 		type,
 		disabled = false,
 		loop = true,
-		orientation = "horizontal",
+		orientation = 'horizontal',
 		rovingFocus = true,
 		child,
 		children,
-		size = "default",
+		size = 'default',
 		spacing = 0,
-		variant = "default",
+		variant = 'default',
 		...restProps
 	}: ToggleGroupRootProps & ToggleVariants & { spacing?: number } = $props();
 
@@ -47,7 +47,7 @@
 	const valueType = untrack(() => type);
 
 	function getDefaultValue(): string | string[] {
-		return valueType === "single" ? "" : [];
+		return valueType === 'single' ? '' : [];
 	}
 
 	function handleDefaultValue() {
@@ -70,7 +70,7 @@
 				value = v;
 				// @ts-expect-error - we know
 				onValueChange(v);
-			}
+			},
 		) as WritableBox<string> | WritableBox<string[]>,
 		disabled: boxWith(() => disabled),
 		loop: boxWith(() => loop),
@@ -79,23 +79,24 @@
 		type: valueType,
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "toggle-group",
-				"data-variant": variant,
-				"data-size": size,
-				"data-spacing": spacing,
+				'data-slot': 'toggle-group',
+				'data-variant': variant,
+				'data-size': size,
+				'data-spacing': spacing,
 				style: `--gap: ${spacing}`,
-				class: "group/toggle-group flex w-fit items-center gap-[--spacing(var(--gap))] rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs",
+				class:
+					'group/toggle-group flex w-fit items-center gap-[--spacing(var(--gap))] rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs',
 			},
 			restProps,
-			rootState.props
-		)
+			rootState.props,
+		),
 	);
 </script>
 

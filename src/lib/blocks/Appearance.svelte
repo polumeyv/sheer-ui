@@ -3,7 +3,7 @@
 	import * as Item from '$lib/components/item';
 	import { Separator } from '$lib/components/separator';
 	import { RadioGroup } from '$lib/components/radio-group';
-	import { setMode, userPrefersMode } from 'mode-watcher';
+	import { setMode, userPrefersMode } from '../components/theme-toggle/vendor/index.js';
 	import type { Snippet } from 'svelte';
 
 	type Mode = (typeof userPrefersMode)['current'];

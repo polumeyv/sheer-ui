@@ -1,32 +1,21 @@
-import { createContext } from "svelte";
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
-import { watch } from "$lib/internal/toolbelt.js";
-import type {
-	BitsFocusEvent,
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import {
-	createBitsAttrs,
-	getAriaChecked,
-	boolToEmptyStrOrUndef,
-	boolToStr,
-} from "$lib/internal/attrs.js";
-import type { Orientation } from "$lib/shared/index.js";
-import { kbd } from "$lib/internal/kbd.js";
-import { RovingFocusGroup } from "$lib/internal/roving-focus-group.js";
+import { createContext, untrack } from 'svelte';
+import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { createBitsAttrs, getAriaChecked, boolToEmptyStrOrUndef, boolToStr } from '$lib/internal/attrs.js';
+import type { Orientation } from '$lib/shared/index.js';
+import { kbd } from '$lib/internal/kbd.js';
+import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
 
 const radioGroupAttrs = createBitsAttrs({
-	component: "radio-group",
-	parts: ["root", "item"],
+	component: 'radio-group',
+	parts: ['root', 'item'],
 });
 
 const [getRadioGroupRoot, setRadioGroupRoot] = createContext<RadioGroupRootState>();
 
 interface RadioGroupRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 			required: boolean;
@@ -42,7 +31,7 @@ export class RadioGroupRootState {
 	}
 
 	readonly opts: RadioGroupRootStateOpts;
-	readonly hasValue = $derived.by(() => this.opts.value.current !== "");
+	readonly hasValue = $derived.by(() => this.opts.value.current !== '');
 	readonly rovingFocusGroup: RovingFocusGroup;
 	readonly attachment: RefAttachment;
 
@@ -69,21 +58,22 @@ export class RadioGroupRootState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "radiogroup",
-				"aria-required": boolToStr(this.opts.required.current),
-				"aria-disabled": boolToStr(this.opts.disabled.current),
-				"aria-readonly": this.opts.readonly.current ? "true" : undefined,
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-				"data-readonly": boolToEmptyStrOrUndef(this.opts.readonly.current),
-				"data-orientation": this.opts.orientation.current,
-				[radioGroupAttrs.root]: "",
+				role: 'radiogroup',
+				'aria-required': boolToStr(this.opts.required.current),
+				'aria-disabled': boolToStr(this.opts.disabled.current),
+				'aria-readonly': this.opts.readonly.current ? 'true' : undefined,
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
+				'data-readonly': boolToEmptyStrOrUndef(this.opts.readonly.current),
+				'data-orientation': this.opts.orientation.current,
+				[radioGroupAttrs.root]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface RadioGroupItemStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 			value: string;
@@ -98,9 +88,7 @@ export class RadioGroupItemState {
 	readonly root: RadioGroupRootState;
 	readonly attachment: RefAttachment;
 	readonly checked = $derived.by(() => this.root.opts.value.current === this.opts.value.current);
-	readonly #isDisabled = $derived.by(
-		() => this.opts.disabled.current || this.root.opts.disabled.current
-	);
+	readonly #isDisabled = $derived.by(() => this.opts.disabled.current || this.root.opts.disabled.current);
 	readonly #isReadonly = $derived.by(() => this.root.opts.readonly.current);
 	readonly #isChecked = $derived.by(() => this.root.isChecked(this.opts.value.current));
 	#tabIndex = $state(-1);
@@ -121,11 +109,15 @@ export class RadioGroupItemState {
 			this.#tabIndex = this.root.rovingFocusGroup.getTabIndex(this.opts.ref.current);
 		});
 
-		watch([() => this.opts.value.current, () => this.root.opts.value.current], () => {
-			if (this.opts.value.current === this.root.opts.value.current) {
-				this.root.rovingFocusGroup.setCurrentTabStopId(this.opts.id.current);
-				this.#tabIndex = 0;
-			}
+		$effect(() => {
+			this.opts.value.current;
+			this.root.opts.value.current;
+			untrack(() => {
+				if (this.opts.value.current === this.root.opts.value.current) {
+					this.root.rovingFocusGroup.setCurrentTabStopId(this.opts.id.current);
+					this.#tabIndex = 0;
+				}
+			});
 		});
 
 		this.onclick = this.onclick.bind(this);
@@ -162,22 +154,22 @@ export class RadioGroupItemState {
 			({
 				id: this.opts.id.current,
 				disabled: this.#isDisabled ? true : undefined,
-				"data-value": this.opts.value.current,
-				"data-orientation": this.root.opts.orientation.current,
-				"data-disabled": boolToEmptyStrOrUndef(this.#isDisabled),
-				"data-readonly": boolToEmptyStrOrUndef(this.#isReadonly),
-				"data-state": this.#isChecked ? "checked" : "unchecked",
-				"aria-checked": getAriaChecked(this.#isChecked, false),
-				[radioGroupAttrs.item]: "",
-				type: "button",
-				role: "radio",
+				'data-value': this.opts.value.current,
+				'data-orientation': this.root.opts.orientation.current,
+				'data-disabled': boolToEmptyStrOrUndef(this.#isDisabled),
+				'data-readonly': boolToEmptyStrOrUndef(this.#isReadonly),
+				'data-state': this.#isChecked ? 'checked' : 'unchecked',
+				'aria-checked': getAriaChecked(this.#isChecked, false),
+				[radioGroupAttrs.item]: '',
+				type: 'button',
+				role: 'radio',
 				tabindex: this.#tabIndex,
 				//
 				onkeydown: this.onkeydown,
 				onfocus: this.onfocus,
 				onclick: this.onclick,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -206,6 +198,6 @@ export class RadioGroupInputState {
 				required: this.root.opts.required.current,
 				disabled: this.root.opts.disabled.current,
 				onfocus: this.onfocus,
-			}) as const
+			}) as const,
 	);
 }

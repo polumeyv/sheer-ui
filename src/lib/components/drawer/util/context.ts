@@ -1,9 +1,10 @@
-import { createContext } from "svelte";
-import type { DrawerDirection } from "./types.js";
-import type { ReadableBoxedValues, WritableBoxedValues } from "$lib/internal/toolbelt.js";
+import { createContext } from 'svelte';
+import type { DrawerDirection } from './types.js';
+import type { ReadableBoxedValues, WritableBoxedValues } from '$lib/internal/tools/index.js';
 
 interface DrawerContextValue
-	extends ReadableBoxedValues<{
+	extends
+		ReadableBoxedValues<{
 			dismissible: boolean;
 			snapPoints: (number | string)[] | null | undefined;
 			modal: boolean;

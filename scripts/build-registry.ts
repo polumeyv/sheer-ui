@@ -5,7 +5,7 @@ import { components } from "../src/routes/components/_registry.js";
 const ROOT = process.cwd();
 const SRC_DIR = path.join(ROOT, "src");
 const GENERATED_DIR = path.join(SRC_DIR, "__registry__");
-const EXAMPLES_DIR = path.join(SRC_DIR, "lib", "registry", "examples");
+const REGISTRY_DIR = path.join(SRC_DIR, "lib", "registry");
 const BLOCKS_DIR = path.join(SRC_DIR, "lib", "blocks");
 
 type DemoEntry = {
@@ -31,28 +31,37 @@ function quote(value: string) {
 function readDemoEntries() {
 	const demosBySlug = new Map<string, DemoEntry[]>();
 
-	if (!fs.existsSync(EXAMPLES_DIR)) return demosBySlug;
+	if (!fs.existsSync(REGISTRY_DIR)) return demosBySlug;
 
-	for (const slugDir of fs.readdirSync(EXAMPLES_DIR, { withFileTypes: true })) {
-		if (!slugDir.isDirectory()) continue;
+	// Demos live flat in registry/ named `<slug>-<descriptor>.svelte` (shadcn
+	// convention; the default example is `<slug>-demo.svelte`). The owning slug
+	// is the longest known component slug that prefixes the filename — sort
+	// longest-first so multi-word slugs (alert-dialog, toggle-group) win over
+	// their shorter prefixes (alert, toggle).
+	const slugs = components.map((component) => component.slug).sort((a, b) => b.length - a.length);
 
-		const slug = slugDir.name;
-		const dir = path.join(EXAMPLES_DIR, slug);
-		const demos = fs
-			.readdirSync(dir, { withFileTypes: true })
-			.filter((entry) => entry.isFile() && entry.name.endsWith(".svelte"))
-			.map((entry) => {
-				const key = entry.name.slice(0, -".svelte".length);
-				return {
-					key,
-					name: `${slug}-${key}`,
-					path: `/src/lib/registry/examples/${slug}/${entry.name}`,
-					sourcePath: `../lib/registry/examples/${slug}/${entry.name}`,
-				};
-			})
-			.sort((a, b) => a.key.localeCompare(b.key));
+	for (const entry of fs.readdirSync(REGISTRY_DIR, { withFileTypes: true })) {
+		if (!entry.isFile() || !entry.name.endsWith(".svelte")) continue;
 
-		if (demos.length) demosBySlug.set(slug, demos);
+		const name = entry.name.slice(0, -".svelte".length);
+		const slug = slugs.find((s) => name === s || name.startsWith(`${s}-`));
+		if (!slug) {
+			throw new Error(`Demo file has no matching component slug: ${entry.name}`);
+		}
+
+		const key = name === slug ? "demo" : name.slice(slug.length + 1);
+		const demos = demosBySlug.get(slug) ?? [];
+		demos.push({
+			key,
+			name,
+			path: `/src/lib/registry/${entry.name}`,
+			sourcePath: `../lib/registry/${entry.name}`,
+		});
+		demosBySlug.set(slug, demos);
+	}
+
+	for (const demos of demosBySlug.values()) {
+		demos.sort((a, b) => a.key.localeCompare(b.key));
 	}
 
 	return demosBySlug;
