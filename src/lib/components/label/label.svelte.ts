@@ -1,4 +1,4 @@
-import { attachRef } from "$lib/internal/attachments.js";
+import { attachRef } from '$lib/internal/tools/index.js';
 import type { BitsMouseEvent, RefAttachment, WithRefOpts } from "$lib/internal/types.js";
 import { createBitsAttrs } from "$lib/internal/attrs.js";
 

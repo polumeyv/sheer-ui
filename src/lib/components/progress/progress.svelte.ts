@@ -1,5 +1,4 @@
-import { attachRef } from '$lib/internal/attachments.js';
-import type { ReadableBoxedValues } from '$lib/internal/tools/index.js';
+import { attachRef, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 
