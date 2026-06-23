@@ -1,9 +1,8 @@
 <script lang="ts">
 	import CheckIcon from '@lucide/svelte/icons/check';
 
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith, mountedAttachment } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
-	import { mountedAttachment } from '$lib/internal/attachments.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { cn } from '$lib/utils.js';
 
