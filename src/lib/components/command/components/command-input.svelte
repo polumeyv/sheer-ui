@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { CommandInputProps } from "../types.js";
-	import { CommandInputState } from "../command.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import SearchIcon from "@lucide/svelte/icons/search";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { CommandInputProps } from '../types.js';
+	import { CommandInputState } from '../command.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import SearchIcon from '@lucide/svelte/icons/search';
 
 	const uid = $props.id();
 
 	let {
-		value = $bindable(""),
+		value = $bindable(''),
 		autofocus = false,
 		id = createId(uid),
 		ref = $bindable(null),
@@ -20,13 +21,13 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		value: boxWith(
 			() => value,
 			(v) => {
 				value = v;
-			}
+			},
 		),
 		autofocus: boxWith(() => autofocus ?? false),
 	});
@@ -34,12 +35,13 @@
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "command-input",
-				class: "placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
+				'data-slot': 'command-input',
+				class:
+					'placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
 			},
 			restProps,
-			inputState.props
-		)
+			inputState.props,
+		),
 	);
 </script>
 

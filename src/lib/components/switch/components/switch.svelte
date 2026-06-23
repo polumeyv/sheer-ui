@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
 	import type { SwitchRootProps } from '../types.js';
 	import { SwitchRootState } from '../switch.svelte.js';
 	import SwitchInput from './switch-input.svelte';

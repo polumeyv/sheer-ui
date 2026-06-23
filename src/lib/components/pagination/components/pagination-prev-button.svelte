@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { PaginationPrevButtonProps } from "../types.js";
-	import { PaginationButtonState } from "../pagination.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import ChevronLeftIcon from "@lucide/svelte/icons/chevron-left";
-	import { buttonVariants } from "$lib/components/button";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { PaginationPrevButtonProps } from '../types.js';
+	import { PaginationButtonState } from '../pagination.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
+	import { buttonVariants } from '$lib/components/button';
 
 	const uid = $props.id();
 
@@ -13,17 +14,17 @@
 		child,
 		children,
 		ref = $bindable(null),
-		type = "button",
+		type = 'button',
 		disabled = false,
 		...restProps
 	}: PaginationPrevButtonProps = $props();
 
 	const prevButtonState = PaginationButtonState.create({
-		type: "prev",
+		type: 'prev',
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		disabled: boxWith(() => Boolean(disabled)),
 	});
@@ -31,17 +32,17 @@
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"aria-label": "Go to previous page",
+				'aria-label': 'Go to previous page',
 				class: buttonVariants({
-					size: "default",
-					variant: "ghost",
-					class: "gap-1! sm:ps-2.5",
+					size: 'default',
+					variant: 'ghost',
+					class: 'gap-1! sm:ps-2.5',
 				}),
 			},
 			restProps,
 			prevButtonState.props,
-			{ type }
-		)
+			{ type },
+		),
 	);
 </script>
 

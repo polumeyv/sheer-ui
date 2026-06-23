@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { watch } from '$lib/internal/toolbelt.js';
-	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
 	import { type DateValue } from '@internationalized/date';
 	import { CalendarRootState } from '../calendar.svelte.js';
 	import type { CalendarRootProps } from '../types.js';
@@ -41,11 +41,13 @@
 		...restProps
 	}: CalendarRootProps = $props();
 
-	const defaultPlaceholder = untrack(() => getDefaultDate({
-		defaultValue: value,
-		minValue,
-		maxValue,
-	}));
+	const defaultPlaceholder = untrack(() =>
+		getDefaultDate({
+			defaultValue: value,
+			minValue,
+			maxValue,
+		}),
+	);
 
 	function repairUndefinedControlledPlaceholder() {
 		if (placeholder !== undefined) return;
@@ -55,36 +57,23 @@
 	// SSR/initial setup: Calendar needs a writable placeholder for view navigation.
 	repairUndefinedControlledPlaceholder();
 
-	watch.pre(
-		() => placeholder,
-		() => {
-			/**
-			 * Parent spread-prop resets can make the bindable placeholder undefined again.
-			 * Repairing it is intentional: this is writable view/navigation state, and
-			 * parents using bind:placeholder should observe the repaired value.
-			 */
-			repairUndefinedControlledPlaceholder();
-		},
-	);
+	$effect.pre(() => {
+		placeholder;
+		untrack(() => repairUndefinedControlledPlaceholder());
+	});
 
-	function repairUndefinedControlledValue() {
+	const repairUndefinedControlledValue = () => {
 		if (value !== undefined) return;
 		value = type === 'single' ? undefined : [];
-	}
+	};
 
 	// SSR/initial setup: multiple mode owns an empty selection array, not undefined.
 	repairUndefinedControlledValue();
 
-	watch.pre(
-		() => value,
-		() => {
-			/**
-			 * Parent spread-prop resets can make value undefined again. Multiple mode
-			 * repairs that to an empty selection array; single mode remains undefined.
-			 */
-			repairUndefinedControlledValue();
-		},
-	);
+	$effect.pre(() => {
+		value;
+		untrack(() => repairUndefinedControlledValue());
+	});
 
 	const rootState = CalendarRootState.create({
 		id: boxWith(() => id),

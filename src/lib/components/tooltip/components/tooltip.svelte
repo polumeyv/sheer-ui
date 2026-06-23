@@ -3,10 +3,10 @@
 </script>
 
 <script lang="ts" generics="T = never">
-	import { boxWith } from "$lib/internal/toolbelt.js";
-	import type { TooltipRootProps } from "../types.js";
-	import { TooltipRootState } from "../tooltip.svelte.js";
-	import FloatingLayer from "$lib/components/utilities/floating-layer/components/floating-layer.svelte";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import type { TooltipRootProps } from '../types.js';
+	import { TooltipRootState } from '../tooltip.svelte.js';
+	import FloatingLayer from '$lib/components/utilities/floating-layer/components/floating-layer.svelte';
 
 	let {
 		open = $bindable(false),
@@ -28,13 +28,13 @@
 			(v) => {
 				open = v;
 				onOpenChange(v);
-			}
+			},
 		),
 		triggerId: boxWith(
 			() => triggerId,
 			(v) => {
 				triggerId = v;
-			}
+			},
 		),
 		delayDuration: boxWith(() => delayDuration),
 		disableCloseOnTriggerClick: boxWith(() => disableCloseOnTriggerClick),

@@ -1,6 +1,5 @@
-import { type Getter, getDocument } from '$lib/internal/toolbelt.js';
+import { type Getter, getDocument } from '$lib/internal/tools/index.js';
 import { on } from 'svelte/events';
-import { watch } from '$lib/internal/toolbelt.js';
 import { isElement } from './is.js';
 import type { Side } from '$lib/components/utilities/floating-layer/use-floating-layer.svelte.js';
 
@@ -111,7 +110,10 @@ export class SafePolygon {
 		const transitIntentTimeout = opts.transitIntentTimeout;
 		this.#transitIntentTimeout = typeof transitIntentTimeout === 'number' && transitIntentTimeout > 0 ? transitIntentTimeout : null;
 
-		watch([opts.triggerNode, opts.contentNode, opts.enabled], ([triggerNode, contentNode, enabled]) => {
+		$effect(() => {
+			const triggerNode = opts.triggerNode();
+			const contentNode = opts.contentNode();
+			const enabled = opts.enabled();
 			if (!triggerNode || !contentNode || !enabled) {
 				this.#trackedTriggerNode = null;
 				this.#clearTracking();

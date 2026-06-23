@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { MenubarRootProps } from "../types.js";
-	import { MenubarRootState } from "../menubar.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { MenubarRootProps } from '../types.js';
+	import { MenubarRootState } from '../menubar.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -11,8 +12,8 @@
 		children,
 		child,
 		ref = $bindable(null),
-		value = $bindable(""),
-		dir = "ltr",
+		value = $bindable(''),
+		dir = 'ltr',
 		loop = true,
 		onValueChange = () => {},
 		...restProps
@@ -25,25 +26,25 @@
 			(v) => {
 				value = v;
 				onValueChange?.(v);
-			}
+			},
 		),
 		dir: boxWith(() => dir),
 		loop: boxWith(() => loop),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "menubar",
-				class: "bg-background flex h-9 items-center gap-1 rounded-md border p-1 shadow-xs",
+				'data-slot': 'menubar',
+				class: 'bg-background flex h-9 items-center gap-1 rounded-md border p-1 shadow-xs',
 			},
 			restProps,
-			rootState.props
-		)
+			rootState.props,
+		),
 	);
 </script>
 

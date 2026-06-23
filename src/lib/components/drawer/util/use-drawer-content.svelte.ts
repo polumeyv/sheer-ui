@@ -1,26 +1,23 @@
-import { type ComponentProps } from "svelte";
-import { useRefById, type ReadableBoxedValues, type WithRefProps } from "$lib/internal/toolbelt.js";
-import * as DrawerPrimitive from "$lib/components/dialog/index.js";
-import { getDrawer } from "./context.js";
-import type { DrawerDirection } from "./types.js";
-import { watch } from "$lib/internal/toolbelt.js";
-import { useScaleBackground } from "./use-scale-background.svelte.js";
+import { type ComponentProps } from 'svelte';
+import { useRefById, type ReadableBoxedValues, type WithRefProps } from '$lib/internal/tools/index.js';
+import * as DrawerPrimitive from '$lib/components/dialog/index.js';
+import { getDrawer } from './context.js';
+import type { DrawerDirection } from './types.js';
+import { useScaleBackground } from './use-scale-background.svelte.js';
 
 type DrawerPrimitiveContentProps = Pick<
 	ComponentProps<typeof DrawerPrimitive.Content>,
-	| "onInteractOutside"
-	| "onOpenAutoFocus"
-	| "onFocusOutside"
-	| "onpointerdown"
-	| "onpointermove"
-	| "onpointerup"
-	| "onpointerout"
-	| "oncontextmenu"
+	| 'onInteractOutside'
+	| 'onOpenAutoFocus'
+	| 'onFocusOutside'
+	| 'onpointerdown'
+	| 'onpointermove'
+	| 'onpointerup'
+	| 'onpointerout'
+	| 'oncontextmenu'
 >;
 
-interface UseDrawerContentProps
-	extends WithRefProps,
-		ReadableBoxedValues<Required<DrawerPrimitiveContentProps>> {}
+interface UseDrawerContentProps extends WithRefProps, ReadableBoxedValues<Required<DrawerPrimitiveContentProps>> {}
 
 export function useDrawerContent(opts: UseDrawerContentProps) {
 	const ctx = getDrawer();
@@ -46,19 +43,15 @@ export function useDrawerContent(opts: UseDrawerContentProps) {
 
 	useScaleBackground();
 
-	function isDeltaInDirection(
-		delta: { x: number; y: number },
-		direction: DrawerDirection,
-		threshold = 0
-	) {
+	function isDeltaInDirection(delta: { x: number; y: number }, direction: DrawerDirection, threshold = 0) {
 		if (wasBeyondThePoint) return true;
 
 		const deltaY = Math.abs(delta.y);
 		const deltaX = Math.abs(delta.x);
 		const isDeltaX = deltaX > deltaY;
-		const dFactor = ["bottom", "right"].includes(direction) ? 1 : -1;
+		const dFactor = ['bottom', 'right'].includes(direction) ? 1 : -1;
 
-		if (direction === "left" || direction === "right") {
+		if (direction === 'left' || direction === 'right') {
 			const isReverseDirection = delta.x * dFactor < 0;
 			if (!isReverseDirection && deltaX >= 0 && deltaX <= threshold) {
 				return isDeltaX;
@@ -74,7 +67,9 @@ export function useDrawerContent(opts: UseDrawerContentProps) {
 		return true;
 	}
 
-	watch([() => hasSnapPoints, () => ctx.open.current], () => {
+	$effect(() => {
+		hasSnapPoints;
+		ctx.open.current;
 		if (hasSnapPoints && ctx.open.current) {
 			window.requestAnimationFrame(() => {
 				delayedSnapPoints = true;
@@ -132,20 +127,13 @@ export function useDrawerContent(opts: UseDrawerContentProps) {
 		const yPosition = e.pageY - pointerStart.y;
 		const xPosition = e.pageX - pointerStart.x;
 
-		const swipeStartThreshold = e.pointerType === "touch" ? 10 : 2;
+		const swipeStartThreshold = e.pointerType === 'touch' ? 10 : 2;
 		const delta = { x: xPosition, y: yPosition };
 
-		const isAllowedToSwipe = isDeltaInDirection(
-			delta,
-			ctx.direction.current,
-			swipeStartThreshold
-		);
+		const isAllowedToSwipe = isDeltaInDirection(delta, ctx.direction.current, swipeStartThreshold);
 		if (isAllowedToSwipe) {
 			ctx.onDrag(e);
-		} else if (
-			Math.abs(xPosition) > swipeStartThreshold ||
-			Math.abs(yPosition) > swipeStartThreshold
-		) {
+		} else if (Math.abs(xPosition) > swipeStartThreshold || Math.abs(yPosition) > swipeStartThreshold) {
 			pointerStart = null;
 		}
 	}
@@ -171,12 +159,12 @@ export function useDrawerContent(opts: UseDrawerContentProps) {
 
 	const props = $derived({
 		id: opts.id.current,
-		"data-vaul-drawer-direction": ctx.direction.current,
-		"data-vaul-drawer": "",
-		"data-vaul-delayed-snap-points": delayedSnapPoints ? "true" : "false",
-		"data-vaul-snap-points": ctx.open.current && hasSnapPoints ? "true" : "false",
-		"data-vaul-custom-container": ctx.container.current ? "true" : "false",
-		"data-vaul-animate": ctx.shouldAnimate ? "true" : "false",
+		'data-vaul-drawer-direction': ctx.direction.current,
+		'data-vaul-drawer': '',
+		'data-vaul-delayed-snap-points': delayedSnapPoints ? 'true' : 'false',
+		'data-vaul-snap-points': ctx.open.current && hasSnapPoints ? 'true' : 'false',
+		'data-vaul-custom-container': ctx.container.current ? 'true' : 'false',
+		'data-vaul-animate': ctx.shouldAnimate ? 'true' : 'false',
 		onpointerdown,
 		onOpenAutoFocus,
 		onInteractOutside,

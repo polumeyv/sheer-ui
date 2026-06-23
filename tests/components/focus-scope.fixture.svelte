@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith } from "../../src/lib/internal/toolbelt.js";
+	import { boxWith } from "../../src/lib/internal/tools/index.js";
 	import FocusScope from "../../src/lib/components/utilities/focus-scope/focus-scope.svelte";
 
 	let {

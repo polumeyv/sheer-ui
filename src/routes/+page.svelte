@@ -1,8 +1,8 @@
 <script lang="ts">
-	import * as Card from "$lib/components/card/index.js";
-	import { Badge } from "$lib/components/badge/index.js";
-	import { components } from "./components/_registry.js";
-	import { slugsWithDemos } from "./components/_demos.js";
+	import * as Card from '$lib/components/card/index.js';
+	import { Badge } from '$lib/components/badge';
+	import { components } from './components/_registry.js';
+	import { slugsWithDemos } from './components/_demos.js';
 </script>
 
 <svelte:head>
@@ -13,8 +13,7 @@
 	<div class="space-y-3">
 		<h1 class="text-4xl font-bold tracking-tight">@polumeyv/ui</h1>
 		<p class="text-muted-foreground max-w-2xl text-lg">
-			A Svelte 5 component library. Every component below is demoed with its own real styling — the
-			demo adds no CSS of its own.
+			A Svelte 5 component library. Every component below is demoed with its own real styling — the demo adds no CSS of its own.
 		</p>
 		<div class="flex flex-wrap items-center gap-2">
 			<Badge variant="secondary">Svelte 5</Badge>

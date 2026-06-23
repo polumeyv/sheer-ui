@@ -1,20 +1,11 @@
-import type { Expand } from "$lib/internal/toolbelt.js";
-import type { PopperLayerProps, PopperLayerStaticProps } from "../utilities/popper-layer/types.js";
-import type { ArrowProps, ArrowPropsWithoutHTML } from "../utilities/arrow/types.js";
-import type {
-	OnChangeFn,
-	WithChild,
-	WithChildNoChildrenSnippetProps,
-	WithChildren,
-	Without,
-} from "$lib/internal/types.js";
-import type {
-	BitsPrimitiveButtonAttributes,
-	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
-import type { Direction } from "$lib/shared/index.js";
-import type { PortalProps } from "$lib/components/utilities/portal/types.js";
-import type { FloatingContentSnippetProps, StaticContentSnippetProps } from "$lib/shared/types.js";
+import type { Expand } from '$lib/internal/tools/index.js';
+import type { PopperLayerProps, PopperLayerStaticProps } from '../utilities/popper-layer/types.js';
+import type { ArrowProps, ArrowPropsWithoutHTML } from '../utilities/arrow/types.js';
+import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '$lib/internal/types.js';
+import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/shared/attributes.js';
+import type { Direction } from '$lib/shared/index.js';
+import type { PortalProps } from '$lib/components/utilities/portal/types.js';
+import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/shared/types.js';
 
 export type MenuRootPropsWithoutHTML = WithChildren<{
 	/**
@@ -59,105 +50,95 @@ export type _SharedMenuContentProps = {
 };
 
 export type MenuContentPropsWithoutHTML = Expand<
-	WithChildNoChildrenSnippetProps<
-		Omit<PopperLayerProps, "content"> & _SharedMenuContentProps,
-		FloatingContentSnippetProps
-	>
+	WithChildNoChildrenSnippetProps<Omit<PopperLayerProps, 'content'> & _SharedMenuContentProps, FloatingContentSnippetProps>
 >;
 
-export type MenuContentProps = MenuContentPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, MenuContentPropsWithoutHTML>;
+export type MenuContentProps = MenuContentPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, MenuContentPropsWithoutHTML>;
 
 export type MenuContentStaticPropsWithoutHTML = Expand<
-	WithChildNoChildrenSnippetProps<
-		Omit<PopperLayerStaticProps, "content"> & _SharedMenuContentProps,
-		StaticContentSnippetProps
-	>
+	WithChildNoChildrenSnippetProps<Omit<PopperLayerStaticProps, 'content'> & _SharedMenuContentProps, StaticContentSnippetProps>
 >;
 
 export type MenuContentStaticProps = MenuContentStaticPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, MenuContentStaticPropsWithoutHTML>;
 
-export type MenuItemPropsWithoutHTML<U extends Record<PropertyKey, unknown> = { _default: never }> =
-	WithChild<
-		{
-			/**
-			 * When `true`, the user will not be able to interact with the menu item.
-			 *
-			 * @defaultValue false
-			 */
-			disabled?: boolean;
-
-			/**
-			 * Optional text to use for typeahead filtering. By default, typeahead will use
-			 * the `.textContent` of the menu item. When the content is more complex, you
-			 * can provide a string here instead.
-			 *
-			 * @defaultValue undefined
-			 */
-			textValue?: string;
-
-			/**
-			 * A callback fired when the menu item is selected.
-			 *
-			 * Prevent default behavior of selection with `event.preventDefault()`.
-			 */
-			onSelect?: (event: Event) => void;
-
-			/**
-			 * Whether or not the menu item should close when selected.
-			 * @defaultValue true
-			 */
-			closeOnSelect?: boolean;
-		},
-		U
-	>;
-
-export type MenuItemProps = MenuItemPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, MenuItemPropsWithoutHTML>;
-
-export type MenuCheckboxItemSnippetProps = { checked: boolean; indeterminate: boolean };
-
-export type MenuCheckboxItemPropsWithoutHTML =
-	MenuItemPropsWithoutHTML<MenuCheckboxItemSnippetProps> & {
+export type MenuItemPropsWithoutHTML<U extends Record<PropertyKey, unknown> = { _default: never }> = WithChild<
+	{
 		/**
-		 * The checked state of the checkbox. It can be one of:
-		 * - `true` for checked
-		 * - `false` for unchecked
+		 * When `true`, the user will not be able to interact with the menu item.
 		 *
 		 * @defaultValue false
 		 */
-		checked?: boolean;
+		disabled?: boolean;
 
 		/**
-		 * A callback that is fired when the checked state changes.
-		 */
-		onCheckedChange?: OnChangeFn<boolean>;
-
-		/**
-		 * Whether the checkbox is in an indeterminate state or not.
+		 * Optional text to use for typeahead filtering. By default, typeahead will use
+		 * the `.textContent` of the menu item. When the content is more complex, you
+		 * can provide a string here instead.
 		 *
-		 * @defaultValue false
+		 * @defaultValue undefined
 		 */
-		indeterminate?: boolean;
+		textValue?: string;
 
 		/**
-		 * A callback function called when the indeterminate state changes.
+		 * A callback fired when the menu item is selected.
+		 *
+		 * Prevent default behavior of selection with `event.preventDefault()`.
 		 */
-		onIndeterminateChange?: OnChangeFn<boolean>;
+		onSelect?: (event: Event) => void;
 
 		/**
 		 * Whether or not the menu item should close when selected.
-		 *
 		 * @defaultValue true
 		 */
 		closeOnSelect?: boolean;
+	},
+	U
+>;
 
-		/**
-		 * The value of the checkbox item when used in a checkbox group.
-		 */
-		value?: string;
-	};
+export type MenuItemProps = MenuItemPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, MenuItemPropsWithoutHTML>;
+
+export type MenuCheckboxItemSnippetProps = { checked: boolean; indeterminate: boolean };
+
+export type MenuCheckboxItemPropsWithoutHTML = MenuItemPropsWithoutHTML<MenuCheckboxItemSnippetProps> & {
+	/**
+	 * The checked state of the checkbox. It can be one of:
+	 * - `true` for checked
+	 * - `false` for unchecked
+	 *
+	 * @defaultValue false
+	 */
+	checked?: boolean;
+
+	/**
+	 * A callback that is fired when the checked state changes.
+	 */
+	onCheckedChange?: OnChangeFn<boolean>;
+
+	/**
+	 * Whether the checkbox is in an indeterminate state or not.
+	 *
+	 * @defaultValue false
+	 */
+	indeterminate?: boolean;
+
+	/**
+	 * A callback function called when the indeterminate state changes.
+	 */
+	onIndeterminateChange?: OnChangeFn<boolean>;
+
+	/**
+	 * Whether or not the menu item should close when selected.
+	 *
+	 * @defaultValue true
+	 */
+	closeOnSelect?: boolean;
+
+	/**
+	 * The value of the checkbox item when used in a checkbox group.
+	 */
+	value?: string;
+};
 
 export type MenuCheckboxItemProps = MenuCheckboxItemPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, MenuCheckboxItemPropsWithoutHTML>;
@@ -188,8 +169,7 @@ export type MenuTriggerPropsWithoutHTML = WithChild<{
 	disabled?: boolean | null | undefined;
 }>;
 
-export type MenuTriggerProps = MenuTriggerPropsWithoutHTML &
-	Without<BitsPrimitiveButtonAttributes, MenuTriggerPropsWithoutHTML>;
+export type MenuTriggerProps = MenuTriggerPropsWithoutHTML & Without<BitsPrimitiveButtonAttributes, MenuTriggerPropsWithoutHTML>;
 
 export type MenuSubPropsWithoutHTML = WithChildren<{
 	/**
@@ -212,17 +192,16 @@ export type MenuSubProps = MenuSubPropsWithoutHTML;
 
 export type MenuSubContentPropsWithoutHTML = Expand<
 	WithChildNoChildrenSnippetProps<
-		Omit<PopperLayerProps, "content" | "preventScroll"> & _SharedMenuContentProps,
+		Omit<PopperLayerProps, 'content' | 'preventScroll'> & _SharedMenuContentProps,
 		FloatingContentSnippetProps
 	>
 >;
 
-export type MenuSubContentProps = MenuSubContentPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, MenuSubContentPropsWithoutHTML>;
+export type MenuSubContentProps = MenuSubContentPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, MenuSubContentPropsWithoutHTML>;
 
 export type MenuSubContentStaticPropsWithoutHTML = Expand<
 	WithChildNoChildrenSnippetProps<
-		Omit<PopperLayerStaticProps, "content" | "preventScroll"> & _SharedMenuContentProps,
+		Omit<PopperLayerStaticProps, 'content' | 'preventScroll'> & _SharedMenuContentProps,
 		StaticContentSnippetProps
 	>
 >;
@@ -230,7 +209,7 @@ export type MenuSubContentStaticPropsWithoutHTML = Expand<
 export type MenuSubContentStaticProps = MenuSubContentStaticPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, MenuSubContentStaticPropsWithoutHTML>;
 
-export type MenuSubTriggerPropsWithoutHTML = Omit<MenuItemPropsWithoutHTML, "closeOnSelect"> & {
+export type MenuSubTriggerPropsWithoutHTML = Omit<MenuItemPropsWithoutHTML, 'closeOnSelect'> & {
 	/**
 	 * The amount of time in ms from when the mouse enters the subtrigger until
 	 * the submenu opens. This is useful for preventing the submenu from opening
@@ -244,19 +223,16 @@ export type MenuSubTriggerPropsWithoutHTML = Omit<MenuItemPropsWithoutHTML, "clo
 	openDelay?: number;
 };
 
-export type MenuSubTriggerProps = MenuSubTriggerPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, MenuSubTriggerPropsWithoutHTML>;
+export type MenuSubTriggerProps = MenuSubTriggerPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, MenuSubTriggerPropsWithoutHTML>;
 
 export type MenuSeparatorPropsWithoutHTML = WithChild;
-export type MenuSeparatorProps = MenuSeparatorPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, MenuSeparatorPropsWithoutHTML>;
+export type MenuSeparatorProps = MenuSeparatorPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, MenuSeparatorPropsWithoutHTML>;
 
 export type MenuArrowPropsWithoutHTML = ArrowPropsWithoutHTML;
 export type MenuArrowProps = ArrowProps;
 
 export type MenuGroupPropsWithoutHTML = WithChild;
-export type MenuGroupProps = MenuGroupPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, MenuGroupPropsWithoutHTML>;
+export type MenuGroupProps = MenuGroupPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, MenuGroupPropsWithoutHTML>;
 
 export type MenuGroupHeadingPropsWithoutHTML = WithChild;
 export type MenuGroupHeadingProps = MenuGroupHeadingPropsWithoutHTML &
@@ -276,8 +252,7 @@ export type MenuRadioGroupPropsWithoutHTML = WithChild<{
 	onValueChange?: OnChangeFn<string>;
 }>;
 
-export type MenuRadioGroupProps = MenuRadioGroupPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, MenuRadioGroupPropsWithoutHTML>;
+export type MenuRadioGroupProps = MenuRadioGroupPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, MenuRadioGroupPropsWithoutHTML>;
 
 export type MenuRadioItemSnippetProps = { checked: boolean };
 
@@ -294,8 +269,7 @@ export type MenuRadioItemPropsWithoutHTML = MenuItemPropsWithoutHTML<MenuRadioIt
 	closeOnSelect?: boolean;
 };
 
-export type MenuRadioItemProps = MenuRadioItemPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, MenuRadioItemPropsWithoutHTML>;
+export type MenuRadioItemProps = MenuRadioItemPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, MenuRadioItemPropsWithoutHTML>;
 
 export type MenuPortalPropsWithoutHTML = PortalProps;
 export type MenuPortalProps = MenuPortalPropsWithoutHTML;

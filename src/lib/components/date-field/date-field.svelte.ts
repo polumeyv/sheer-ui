@@ -1,8 +1,16 @@
 import type { Updater } from 'svelte/store';
 import type { DateValue } from '@internationalized/date';
-import { type ReadableBox, type WritableBox, boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, simpleBox } from "$lib/internal/toolbelt.js";
-import { createContext, onMount, untrack } from "svelte";
-import { watch } from "$lib/internal/toolbelt.js";
+import {
+	type ReadableBox,
+	type WritableBox,
+	boxWith,
+	attachRef,
+	DOMContext,
+	type ReadableBoxedValues,
+	type WritableBoxedValues,
+	simpleBox,
+} from '$lib/internal/tools/index.js';
+import { createContext, onMount, untrack } from 'svelte';
 import type { DateRangeFieldRootState } from '../date-range-field/date-range-field.svelte.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, WithRefOpts, RefAttachment } from '$lib/internal/types.js';
 import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
@@ -213,7 +221,7 @@ export class DateFieldRootState {
 		this.errorMessageId = rangeRoot ? rangeRoot.opts.errorMessageId : props.errorMessageId;
 		this.isInvalidProp = props.isInvalidProp;
 		this.formatter = createFormatter({
-			initialLocale: this.locale.current,
+			locale: this.locale,
 			monthFormat: boxWith(() => 'long'),
 			yearFormat: boxWith(() => 'numeric'),
 		});
@@ -238,12 +246,6 @@ export class DateFieldRootState {
 		onMount(() => () => {
 			if (rangeRoot) return;
 			removeDescriptionElement(this.descriptionId, this.domContext.getDocument());
-		});
-
-		$effect(() => {
-			if (rangeRoot) return;
-			if (this.formatter.getLocale() === this.locale.current) return;
-			this.formatter.setLocale(this.locale.current);
 		});
 
 		$effect(() => {
@@ -286,14 +288,15 @@ export class DateFieldRootState {
 			}
 		});
 
-		watch(
-			() => this.validationStatus,
-			() => {
+		$effect(() => {
+			this.validationStatus;
+
+			untrack(() => {
 				if (this.validationStatus !== false) {
 					this.onInvalid.current?.(this.validationStatus.reason, this.validationStatus.message);
 				}
-			},
-		);
+			});
+		});
 	}
 
 	setNameSource(name: ReadableBox<string>) {

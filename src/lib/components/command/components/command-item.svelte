@@ -1,15 +1,16 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { CommandItemProps } from "../types.js";
-	import { CommandItemState } from "../command.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { CommandItemProps } from '../types.js';
+	import { CommandItemState } from '../command.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
 	let {
 		id = createId(uid),
 		ref = $bindable(null),
-		value = "",
+		value = '',
 		disabled = false,
 		children,
 		child,
@@ -23,7 +24,7 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		value: boxWith(() => value),
 		disabled: boxWith(() => disabled),
@@ -35,12 +36,13 @@
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "command-item",
-				class: "aria-selected:bg-accent aria-selected:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				'data-slot': 'command-item',
+				class:
+					"aria-selected:bg-accent aria-selected:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 			},
 			restProps,
-			itemState.props
-		)
+			itemState.props,
+		),
 	);
 </script>
 

@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { getAllContexts, mount, unmount } from 'svelte';
+	import { getAllContexts, mount, unmount, untrack } from 'svelte';
 	import { DEV } from 'esm-env';
-	import { watch } from '$lib/internal/toolbelt.js';
 	import PortalConsumer from './portal-consumer.svelte';
 	import type { PortalProps } from './types.js';
 	import { isBrowser } from '$lib/internal/is.js';
@@ -46,20 +45,24 @@
 		}
 	}
 
-	watch([() => target, () => disabled], ([target, disabled]) => {
-		if (!target || disabled) {
-			unmountInstance();
-			return;
-		}
-		instance = mount(PortalConsumer, {
-			target: target,
-			props: { children },
-			context,
-		});
+	$effect(() => {
+		target;
+		disabled;
+		return untrack(() => {
+			if (!target || disabled) {
+				unmountInstance();
+				return;
+			}
+			instance = mount(PortalConsumer, {
+				target: target,
+				props: { children },
+				context,
+			});
 
-		return () => {
-			unmountInstance();
-		};
+			return () => {
+				unmountInstance();
+			};
+		});
 	});
 </script>
 

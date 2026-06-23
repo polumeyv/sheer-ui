@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { PinInputRootProps } from "../types.js";
-	import { PinInputRootState } from "../pin-input.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import { cn } from "$lib/utils.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { PinInputRootProps } from '../types.js';
+	import { PinInputRootState } from '../pin-input.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -13,16 +14,16 @@
 		ref = $bindable(null),
 		inputRef = $bindable(null),
 		maxlength = 6,
-		textalign = "left",
+		textalign = 'left',
 		pattern,
-		inputmode = "numeric",
+		inputmode = 'numeric',
 		onComplete = () => {},
-		pushPasswordManagerStrategy = "increase-width",
+		pushPasswordManagerStrategy = 'increase-width',
 		class: className,
 		children,
-		autocomplete = "one-time-code",
+		autocomplete = 'one-time-code',
 		disabled = false,
-		value = $bindable(""),
+		value = $bindable(''),
 		onValueChange = () => {},
 		pasteTransformer,
 		...restProps
@@ -32,11 +33,11 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		inputRef: boxWith(
 			() => inputRef,
-			(v) => (inputRef = v)
+			(v) => (inputRef = v),
 		),
 		inputId: boxWith(() => inputId),
 		autocomplete: boxWith(() => autocomplete),
@@ -51,22 +52,17 @@
 			(v) => {
 				value = v;
 				onValueChange(v);
-			}
+			},
 		),
 		pushPasswordManagerStrategy: boxWith(() => pushPasswordManagerStrategy),
 		pasteTransformer: boxWith(() => pasteTransformer),
 	});
 
-	const mergedInputProps = $derived(
-		mergeProps({ "data-slot": "pin-input" }, restProps, rootState.inputProps)
-	);
+	const mergedInputProps = $derived(mergeProps({ 'data-slot': 'pin-input' }, restProps, rootState.inputProps));
 	const mergedRootProps = $derived(
 		mergeProps(rootState.rootProps, {
-			class: cn(
-				"flex items-center gap-2 has-disabled:opacity-50 [&_input]:disabled:cursor-not-allowed",
-				className
-			),
-		})
+			class: cn('flex items-center gap-2 has-disabled:opacity-50 [&_input]:disabled:cursor-not-allowed', className),
+		}),
 	);
 	const mergedInputWrapperProps = $derived(mergeProps(rootState.inputWrapperProps, {}));
 </script>

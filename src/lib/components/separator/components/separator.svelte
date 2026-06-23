@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import { SeparatorRootState } from "../separator.svelte.js";
-	import type { SeparatorRootProps } from "../types.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import { SeparatorRootState } from '../separator.svelte.js';
+	import type { SeparatorRootProps } from '../types.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -12,14 +13,14 @@
 		child,
 		children,
 		decorative = false,
-		orientation = "horizontal",
+		orientation = 'horizontal',
 		...restProps
 	}: SeparatorRootProps = $props();
 
 	const rootState = SeparatorRootState.create({
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		id: boxWith(() => id),
 		decorative: boxWith(() => decorative),
@@ -29,12 +30,13 @@
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "separator",
-				class: "bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px",
+				'data-slot': 'separator',
+				class:
+					'bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px',
 			},
 			restProps,
-			rootState.props
-		)
+			rootState.props,
+		),
 	);
 </script>
 

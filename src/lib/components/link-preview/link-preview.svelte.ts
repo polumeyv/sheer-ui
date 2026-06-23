@@ -1,34 +1,23 @@
-import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, boxWith } from "$lib/internal/toolbelt.js";
-import { watch } from "$lib/internal/toolbelt.js";
-import { on } from "svelte/events";
-import { createContext, onDestroy } from "svelte";
-import {
-	createBitsAttrs,
-	boolToStr,
-	getDataOpenClosed,
-	getDataTransitionAttrs,
-} from "$lib/internal/attrs.js";
-import { isElement, isFocusVisible, isTouch } from "$lib/internal/is.js";
-import type {
-	BitsFocusEvent,
-	BitsPointerEvent,
-	OnChangeFn,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import { getTabbableCandidates } from "$lib/internal/focus.js";
-import { SafePolygon } from "$lib/internal/safe-polygon.svelte.js";
-import { PresenceManager } from "$lib/internal/presence-manager.svelte.js";
+import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, boxWith } from '$lib/internal/tools/index.js';
+import { on } from 'svelte/events';
+import { createContext, onDestroy, untrack } from 'svelte';
+import { createBitsAttrs, boolToStr, getDataOpenClosed, getDataTransitionAttrs } from '$lib/internal/attrs.js';
+import { isElement, isFocusVisible, isTouch } from '$lib/internal/is.js';
+import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { getTabbableCandidates } from '$lib/internal/focus.js';
+import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
+import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 
 const linkPreviewAttrs = createBitsAttrs({
-	component: "link-preview",
-	parts: ["content", "trigger"],
+	component: 'link-preview',
+	parts: ['content', 'trigger'],
 });
 
 const [getLinkPreviewRoot, setLinkPreviewRoot] = createContext<LinkPreviewRootState>();
 
 interface LinkPreviewRootStateOpts
-	extends WritableBoxedValues<{
+	extends
+		WritableBoxedValues<{
 			open: boolean;
 		}>,
 		ReadableBoxedValues<{
@@ -67,9 +56,9 @@ export class LinkPreviewRootState {
 			},
 		});
 
-		watch(
-			() => this.opts.open.current,
-			(isOpen) => {
+		$effect(() => {
+			const isOpen = this.opts.open.current;
+			return untrack(() => {
 				if (!isOpen) {
 					this.hasSelection = false;
 					return;
@@ -81,8 +70,7 @@ export class LinkPreviewRootState {
 					this.isPointerDownOnContent = false;
 
 					setTimeout(() => {
-						const isSelection =
-							this.domContext.getDocument().getSelection()?.toString() !== "";
+						const isSelection = this.domContext.getDocument().getSelection()?.toString() !== '';
 
 						if (isSelection) {
 							this.hasSelection = true;
@@ -92,17 +80,13 @@ export class LinkPreviewRootState {
 					}, 1);
 				};
 
-				const unsubListener = on(
-					this.domContext.getDocument(),
-					"pointerup",
-					handlePointerUp
-				);
+				const unsubListener = on(this.domContext.getDocument(), 'pointerup', handlePointerUp);
 
 				if (!this.contentNode) return;
 				const tabCandidates = getTabbableCandidates(this.contentNode);
 
 				for (const candidate of tabCandidates) {
-					candidate.setAttribute("tabindex", "-1");
+					candidate.setAttribute('tabindex', '-1');
 				}
 
 				return () => {
@@ -110,8 +94,8 @@ export class LinkPreviewRootState {
 					this.hasSelection = false;
 					this.isPointerDownOnContent = false;
 				};
-			}
-		);
+			});
+		});
 	}
 
 	clearTimeout() {
@@ -198,23 +182,24 @@ export class LinkPreviewTriggerState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"aria-haspopup": "dialog",
-				"aria-expanded": boolToStr(this.root.opts.open.current),
-				"data-state": getDataOpenClosed(this.root.opts.open.current),
-				"aria-controls": this.root.contentNode?.id,
-				role: "button",
-				[linkPreviewAttrs.trigger]: "",
+				'aria-haspopup': 'dialog',
+				'aria-expanded': boolToStr(this.root.opts.open.current),
+				'data-state': getDataOpenClosed(this.root.opts.open.current),
+				'aria-controls': this.root.contentNode?.id,
+				role: 'button',
+				[linkPreviewAttrs.trigger]: '',
 				onpointerenter: this.onpointerenter,
 				onfocus: this.onfocus,
 				onblur: this.onblur,
 				onpointerleave: this.onpointerleave,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface LinkPreviewContentStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			onInteractOutside: (e: PointerEvent) => void;
 			onEscapeKeydown: (e: KeyboardEvent) => void;
@@ -303,14 +288,14 @@ export class LinkPreviewContentState {
 			({
 				id: this.opts.id.current,
 				tabindex: -1,
-				"data-state": getDataOpenClosed(this.root.opts.open.current),
+				'data-state': getDataOpenClosed(this.root.opts.open.current),
 				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
-				[linkPreviewAttrs.content]: "",
+				[linkPreviewAttrs.content]: '',
 				onpointerdown: this.onpointerdown,
 				onpointerenter: this.onpointerenter,
 				onfocusout: this.onfocusout,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 
 	readonly popperProps = {

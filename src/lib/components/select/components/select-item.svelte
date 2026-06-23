@@ -1,9 +1,14 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
+	import CheckIcon from '@lucide/svelte/icons/check';
+
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import { mountedAttachment } from '$lib/internal/attachments.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { cn } from '$lib/utils.js';
+
 	import { SelectItemState } from '../select.svelte.js';
 	import type { SelectItemProps } from '../types.js';
-	import { createId } from '$lib/internal/create-id.js';
-	import { mountedAttachment } from '$lib/internal/attachments.js';
 
 	const uid = $props.id();
 
@@ -13,18 +18,21 @@
 		value,
 		label = value,
 		disabled = false,
+		class: className,
 		children,
 		child,
 		onHighlight = () => {},
 		onUnhighlight = () => {},
 		...restProps
-	}: SelectItemProps = $props();
+	}: SelectItemProps & {
+		class?: string;
+	} = $props();
 
 	const itemState = SelectItemState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v),
+			(value) => (ref = value),
 		),
 		value: boxWith(() => value),
 		disabled: boxWith(() => disabled),
@@ -37,13 +45,42 @@
 		itemState.mounted = mounted;
 	});
 
-	const mergedProps = $derived(mergeProps(restProps, itemState.props, mountedProps));
+	const itemClass = $derived(
+		cn(
+			"relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+			className,
+		),
+	);
+
+	const mergedProps = $derived(
+		mergeProps(
+			restProps,
+			{
+				'data-slot': 'select-item',
+				class: itemClass,
+			},
+			itemState.props,
+			mountedProps,
+		),
+	);
 </script>
 
 {#if child}
 	{@render child({ props: mergedProps, ...itemState.snippetProps })}
 {:else}
 	<div {...mergedProps}>
-		{@render children?.(itemState.snippetProps)}
+		<span class="absolute inset-e-2 flex size-3.5 items-center justify-center">
+			{#if itemState.snippetProps.selected}
+				<CheckIcon class="cn-select-item-indicator-icon" />
+			{/if}
+		</span>
+
+		<span class="flex flex-1 shrink-0 gap-2 whitespace-nowrap">
+			{#if children}
+				{@render children(itemState.snippetProps)}
+			{:else}
+				{label || value}
+			{/if}
+		</span>
 	</div>
 {/if}

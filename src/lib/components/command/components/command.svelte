@@ -1,23 +1,24 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import { CommandRootState } from "../command.svelte.js";
-	import type { CommandRootProps } from "../types.js";
-	import CommandLabel from "./_command-label.svelte";
-	import { createId } from "$lib/internal/create-id.js";
-	import { computeCommandScore } from "../index.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import { CommandRootState } from '../command.svelte.js';
+	import type { CommandRootProps } from '../types.js';
+	import CommandLabel from './_command-label.svelte';
+	import { createId } from '$lib/internal/create-id.js';
+	import { computeCommandScore } from '../index.js';
 
 	const uid = $props.id();
 
 	let {
 		id = createId(uid),
 		ref = $bindable(null),
-		value = $bindable(""),
+		value = $bindable(''),
 		onValueChange = () => {},
 		onStateChange = () => {},
 		loop = false,
 		shouldFilter = true,
 		filter = computeCommandScore,
-		label = "",
+		label = '',
 		vimBindings = true,
 		disablePointerSelection = false,
 		disableInitialScroll = false,
@@ -31,7 +32,7 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		filter: boxWith(() => filter),
 		shouldFilter: boxWith(() => shouldFilter),
@@ -43,7 +44,7 @@
 					value = v;
 					onValueChange(v);
 				}
-			}
+			},
 		),
 		vimBindings: boxWith(() => vimBindings),
 		disablePointerSelection: boxWith(() => disablePointerSelection),
@@ -70,8 +71,7 @@
 	 *   updateSelectedToIndex(index)
 	 * }
 	 */
-	export const updateSelectedToIndex: (typeof rootState)["updateSelectedToIndex"] = (i) =>
-		rootState.updateSelectedToIndex(i);
+	export const updateSelectedToIndex: (typeof rootState)['updateSelectedToIndex'] = (i) => rootState.updateSelectedToIndex(i);
 	/**
 	 * Moves selection to the first valid item in the next/previous group.
 	 * If no group is found, falls back to selecting the next/previous item globally.
@@ -84,8 +84,7 @@
 	 * // move to first item in previous group
 	 * updateSelectedByGroup(-1)
 	 */
-	export const updateSelectedByGroup: (typeof rootState)["updateSelectedByGroup"] = (c) =>
-		rootState.updateSelectedByGroup(c);
+	export const updateSelectedByGroup: (typeof rootState)['updateSelectedByGroup'] = (c) => rootState.updateSelectedByGroup(c);
 	/**
 	 * Updates selected item by moving up/down relative to current selection.
 	 * Handles wrapping when loop option is enabled.
@@ -106,8 +105,7 @@
 	 * // get all valid items
 	 * const items = getValidItems()
 	 */
-	export const updateSelectedByItem: (typeof rootState)["updateSelectedByItem"] = (c) =>
-		rootState.updateSelectedByItem(c);
+	export const updateSelectedByItem: (typeof rootState)['updateSelectedByItem'] = (c) => rootState.updateSelectedByItem(c);
 	/**
 	 * Gets all non-disabled, visible command items.
 	 *
@@ -119,12 +117,12 @@
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "command",
-				class: "bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md",
+				'data-slot': 'command',
+				class: 'bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md',
 			},
 			restProps,
-			rootState.props
-		)
+			rootState.props,
+		),
 	);
 </script>
 

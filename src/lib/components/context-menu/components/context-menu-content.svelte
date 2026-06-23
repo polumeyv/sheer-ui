@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
 	import type { ContextMenuContentProps } from '../types.js';
 	import { CONTEXT_MENU_TRIGGER_ATTR, MenuContentState } from '$lib/components/menu/menu.svelte.js';
 	import { useId } from '$lib/internal/use-id.js';
 	import PopperLayer from '$lib/components/utilities/popper-layer/popper-layer.svelte';
 	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
-	import PopperLayerForceMount from '$lib/components/utilities/popper-layer/popper-layer-force-mount.svelte';
 
 	let {
 		id = useId(),
@@ -95,34 +95,17 @@
 	}
 </script>
 
-{#if forceMount}
-	<PopperLayerForceMount {...mergedProps} {...contentState.popperProps} enabled={contentState.parentMenu.opts.open.current}>
-		{#snippet popper({ props, wrapperProps })}
-			{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('context-menu') }, { style })}
-			{#if child}
-				{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
-			{:else}
-				<div {...wrapperProps}>
-					<div {...finalProps}>
-						{@render children?.()}
-					</div>
+<PopperLayer {...mergedProps} {...contentState.popperProps} open={contentState.parentMenu.opts.open.current} {forceMount}>
+	{#snippet popper({ props, wrapperProps })}
+		{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('context-menu') }, { style })}
+		{#if child}
+			{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
+		{:else}
+			<div {...wrapperProps}>
+				<div {...finalProps}>
+					{@render children?.()}
 				</div>
-			{/if}
-		{/snippet}
-	</PopperLayerForceMount>
-{:else if !forceMount}
-	<PopperLayer {...mergedProps} {...contentState.popperProps} open={contentState.parentMenu.opts.open.current}>
-		{#snippet popper({ props, wrapperProps })}
-			{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('context-menu') }, { style })}
-			{#if child}
-				{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
-			{:else}
-				<div {...wrapperProps}>
-					<div {...finalProps}>
-						{@render children?.()}
-					</div>
-				</div>
-			{/if}
-		{/snippet}
-	</PopperLayer>
-{/if}
+			</div>
+		{/if}
+	{/snippet}
+</PopperLayer>

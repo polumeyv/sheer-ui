@@ -2,7 +2,7 @@
 	import type { Stripe, StripeElements } from '@stripe/stripe-js';
 	import { Button } from '$lib/components/button';
 	import { toastError } from '$lib/components/sonner';
-	import { Spinner } from '$lib/components/spinner';
+	import Loader2Icon from '@lucide/svelte/icons/loader-2';
 	import { loadStripe } from '@stripe/stripe-js';
 	import { untrack } from 'svelte';
 	import type { PaymentMethod } from '@polumeyv/lib/schemas';
@@ -54,7 +54,7 @@
 <div class="relative min-h-100">
 	{#if loading}
 		<div class="absolute inset-0 flex items-center justify-center">
-			<Spinner class="size-20 text-muted" />
+			<Loader2Icon class="size-20 animate-spin text-muted" />
 		</div>
 	{/if}
 	<div class="w-full pt-1 flex flex-col justify-between min-h-full" class:hidden={loading}>
@@ -110,7 +110,7 @@
 				<Button variant="outline" disabled={submitting} onclick={oncancel}>Cancel</Button>
 			{/if}
 			<Button disabled={submitting || !elements} onclick={submit}>
-				{#if submitting}<Spinner class="size-4" />{/if}
+				{#if submitting}<Loader2Icon class="size-4 animate-spin" />{/if}
 				{label}
 			</Button>
 		</div>

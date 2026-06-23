@@ -1,13 +1,10 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { ToggleRootProps } from "../types.js";
-	import { ToggleRootState } from "../toggle.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import {
-		toggleVariants,
-		type ToggleSize,
-		type ToggleVariant,
-	} from "$lib/components/toggle/variants.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { ToggleRootProps } from '../types.js';
+	import { ToggleRootState } from '../toggle.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { toggleVariants, type ToggleSize, type ToggleVariant } from '$lib/components/toggle/variants.js';
 
 	const uid = $props.id();
 
@@ -17,11 +14,11 @@
 		pressed = $bindable(false),
 		onPressedChange = () => {},
 		disabled = false,
-		type = "button",
+		type = 'button',
 		children,
 		child,
-		variant = "default",
-		size = "default",
+		variant = 'default',
+		size = 'default',
 		...restProps
 	}: ToggleRootProps & {
 		variant?: ToggleVariant;
@@ -34,23 +31,18 @@
 			(v) => {
 				pressed = v;
 				onPressedChange(v);
-			}
+			},
 		),
 		disabled: boxWith(() => disabled ?? false),
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
 	const mergedProps = $derived(
-		mergeProps(
-			{ "data-slot": "toggle", class: toggleVariants({ variant, size }) },
-			restProps,
-			toggleState.props,
-			{ type }
-		)
+		mergeProps({ 'data-slot': 'toggle', class: toggleVariants({ variant, size }) }, restProps, toggleState.props, { type }),
 	);
 </script>
 

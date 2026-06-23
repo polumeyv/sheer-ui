@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { BitsConfigProps } from "$lib/components/utilities/config/types.js";
-	import { useBitsConfig } from "../bits-config.js";
-	import { boxWith } from "$lib/internal/toolbelt.js";
+	import type { BitsConfigProps } from '$lib/components/utilities/config/types.js';
+	import { useBitsConfig } from '../bits-config.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
 
 	let { children, defaultPortalTo, defaultLocale }: BitsConfigProps = $props();
 

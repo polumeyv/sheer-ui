@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { boxWith } from "$lib/internal/toolbelt.js";
-	import type { DismissibleLayerImplProps } from "./types.js";
-	import { DismissibleLayerState } from "./use-dismissable-layer.svelte.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import type { DismissibleLayerImplProps } from './types.js';
+	import { DismissibleLayerState } from './use-dismissable-layer.svelte.js';
 
 	let {
-		interactOutsideBehavior = "close",
+		interactOutsideBehavior = 'close',
 		onInteractOutside = () => {},
 		onFocusOutside = () => {},
 		id,

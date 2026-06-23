@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // This code comes from https://github.com/adobe/react-spectrum/blob/main/packages/%40react-aria/overlays/src/usePreventScroll.ts
 
-import { watch } from '$lib/internal/toolbelt.js';
 import { isBrowser, isIOS } from '$lib/internal/is.js';
 import { on } from 'svelte/events';
 
@@ -40,12 +39,14 @@ let restore: () => void;
  * restores it on unmount. Also ensures that content does not
  * shift due to the scrollbars disappearing.
  */
-export const usePreventScroll = (opts: PreventScrollOptions) =>
-	watch(opts.isDisabled, () => {
+export const usePreventScroll = (opts: PreventScrollOptions) => {
+	$effect(() => {
+		opts.isDisabled();
 		if (opts.isDisabled()) return;
 		++preventScrollCount === 1 && isIOS && (restore = preventScrollMobileSafari());
 		return () => --preventScrollCount === 0 && restore?.();
 	});
+};
 
 // Mobile Safari is a whole different beast. Even with overflow: hidden,
 // it still scrolls the page in many situations:

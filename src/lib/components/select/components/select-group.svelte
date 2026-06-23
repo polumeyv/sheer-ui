@@ -1,22 +1,44 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from '$lib/internal/toolbelt.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+
 	import { SelectGroupState } from '../select.svelte.js';
 	import type { SelectGroupProps } from '../types.js';
+
 	import { createId } from '$lib/internal/create-id.js';
+	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
-	let { id = createId(uid), ref = $bindable(null), children, child, ...restProps }: SelectGroupProps = $props();
+	let {
+		id = createId(uid),
+		ref = $bindable(null),
+		class: className,
+		children,
+		child,
+		...restProps
+	}: SelectGroupProps & {
+		class?: string;
+	} = $props();
 
 	const groupState = SelectGroupState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v),
+			(value) => (ref = value),
 		),
 	});
 
-	const mergedProps = $derived(mergeProps(restProps, groupState.props));
+	const mergedProps = $derived(
+		mergeProps(
+			restProps,
+			{
+				'data-slot': 'select-group',
+				class: cn('scroll-my-1 p-1', className),
+			},
+			groupState.props,
+		),
+	);
 </script>
 
 {#if child}

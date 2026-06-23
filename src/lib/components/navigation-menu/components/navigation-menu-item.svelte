@@ -1,8 +1,12 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { NavigationMenuItemProps } from "../types.js";
-	import { NavigationMenuItemState } from "../navigation-menu.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+
+	import type { NavigationMenuItemProps } from '../types.js';
+	import { NavigationMenuItemState } from '../navigation-menu.svelte.js';
+
+	import { createId } from '$lib/internal/create-id.js';
+	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 	const defaultId = createId(uid);
@@ -11,17 +15,20 @@
 		id = defaultId,
 		value = defaultId,
 		ref = $bindable(null),
+		class: className,
 		child,
 		children,
 		openOnHover = true,
 		...restProps
-	}: NavigationMenuItemProps = $props();
+	}: NavigationMenuItemProps & {
+		class?: string;
+	} = $props();
 
 	const itemState = NavigationMenuItemState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(value) => (ref = value),
 		),
 		value: boxWith(() => value),
 		openOnHover: boxWith(() => openOnHover),
@@ -29,13 +36,13 @@
 
 	const mergedProps = $derived(
 		mergeProps(
-			{
-				"data-slot": "navigation-menu-item",
-				class: "relative",
-			},
 			restProps,
-			itemState.props
-		)
+			{
+				'data-slot': 'navigation-menu-item',
+				class: cn('relative', className),
+			},
+			itemState.props,
+		),
 	);
 </script>
 

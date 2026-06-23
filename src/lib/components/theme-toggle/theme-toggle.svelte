@@ -2,7 +2,7 @@
 	import SunIcon from '@lucide/svelte/icons/sun';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 
-	import { mode, toggleMode } from 'mode-watcher';
+	import { mode, toggleMode } from './vendor/index.js';
 	import { Button } from '../button';
 
 	let { variant = 'ghost' } = $props();
@@ -34,37 +34,11 @@
 <style>
 	.stage[data-phase='to-dark'] .sun,
 	.stage[data-phase='to-light'] .moon {
-		animation: leave 600ms ease-in both;
+		animation: theme-spin-out 600ms ease-in both;
 	}
 
 	.stage[data-phase='to-dark'] .moon,
 	.stage[data-phase='to-light'] .sun {
-		animation: enter 600ms ease-out both;
-	}
-
-	@keyframes leave {
-		0% {
-			opacity: 1;
-			transform: rotate(0deg);
-		}
-
-		50%,
-		100% {
-			opacity: 0;
-			transform: rotate(180deg);
-		}
-	}
-
-	@keyframes enter {
-		0%,
-		50% {
-			opacity: 0;
-			transform: rotate(180deg);
-		}
-
-		100% {
-			opacity: 1;
-			transform: rotate(360deg);
-		}
+		animation: theme-spin-in 600ms ease-out both;
 	}
 </style>

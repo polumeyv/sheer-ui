@@ -1,4 +1,4 @@
-import type { Getter, MaybeGetter } from '$lib/internal/toolbelt.js';
+import type { Getter, MaybeGetter } from '$lib/internal/tools/index.js';
 
 export const get = <T>(value: MaybeGetter<T>): T => (typeof value === 'function' ? (value as Getter<T>)() : value);
 

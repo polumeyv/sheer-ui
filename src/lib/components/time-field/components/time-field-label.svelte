@@ -1,24 +1,19 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import { TimeFieldLabelState } from "../time-field.svelte.js";
-	import type { TimeFieldLabelProps } from "../types.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import { TimeFieldLabelState } from '../time-field.svelte.js';
+	import type { TimeFieldLabelProps } from '../types.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
-	let {
-		id = createId(uid),
-		ref = $bindable(null),
-		children,
-		child,
-		...restProps
-	}: TimeFieldLabelProps = $props();
+	let { id = createId(uid), ref = $bindable(null), children, child, ...restProps }: TimeFieldLabelProps = $props();
 
 	const labelState = TimeFieldLabelState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 

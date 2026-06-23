@@ -1,9 +1,9 @@
-import type { Snippet } from "svelte";
-import type { ReadableBox } from "$lib/internal/toolbelt.js";
-import type { Align, Boundary, Side } from "./use-floating-layer.svelte.js";
-import type { Arrayable } from "$lib/internal/types.js";
-import type { Direction, StyleProperties } from "$lib/shared/index.js";
-import type { Measurable } from "$lib/internal/floating-svelte/types.js";
+import type { Snippet } from 'svelte';
+import type { ReadableBox } from '$lib/internal/tools/index.js';
+import type { Align, Boundary, Side } from './use-floating-layer.svelte.js';
+import type { Arrayable } from '$lib/internal/types.js';
+import type { Direction, StyleProperties } from '$lib/shared/index.js';
+import type { Measurable } from '$lib/internal/floating-svelte/types.js';
 
 export type FloatingLayerContentProps = {
 	/**
@@ -66,7 +66,7 @@ export type FloatingLayerContentProps = {
 	 */
 	collisionPadding?: number | Partial<Record<Side, number>>;
 
-	sticky?: "partial" | "always";
+	sticky?: 'partial' | 'always';
 
 	hideWhenDetached?: boolean;
 
@@ -77,7 +77,7 @@ export type FloatingLayerContentProps = {
 	 *
 	 * @defaultValue "optimized"
 	 */
-	updatePositionStrategy?: "optimized" | "always";
+	updatePositionStrategy?: 'optimized' | 'always';
 
 	content?: Snippet<[{ props: Record<string, unknown>; wrapperProps: Record<string, unknown> }]>;
 
@@ -85,7 +85,7 @@ export type FloatingLayerContentProps = {
 	 * The positioning strategy to use for the floating element.
 	 * @see https://floating-ui.com/docs/computeposition#strategy
 	 */
-	strategy?: "absolute" | "fixed" | undefined;
+	strategy?: 'absolute' | 'fixed' | undefined;
 
 	/**
 	 * The text direction of the content.

@@ -1,19 +1,15 @@
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
-import {
-	createBitsAttrs,
-	boolToStr,
-	boolToEmptyStrOrUndef,
-	boolToTrueOrUndef,
-} from "$lib/internal/attrs.js";
-import type { BitsMouseEvent, RefAttachment, WithRefOpts } from "$lib/internal/types.js";
+import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '$lib/internal/attrs.js';
+import type { BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 
 export const toggleAttrs = createBitsAttrs({
-	component: "toggle",
-	parts: ["root"],
+	component: 'toggle',
+	parts: ['root'],
 });
 
 interface ToggleRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 		}>,
@@ -46,18 +42,18 @@ export class ToggleRootState {
 	readonly props = $derived.by(
 		() =>
 			({
-				[toggleAttrs.root]: "",
+				[toggleAttrs.root]: '',
 				id: this.opts.id.current,
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-				"aria-pressed": boolToStr(this.opts.pressed.current),
-				"data-state": getToggleDataState(this.opts.pressed.current),
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
+				'aria-pressed': boolToStr(this.opts.pressed.current),
+				'data-state': getToggleDataState(this.opts.pressed.current),
 				disabled: boolToTrueOrUndef(this.opts.disabled.current),
 				onclick: this.onclick,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
-export function getToggleDataState(condition: boolean): "on" | "off" {
-	return condition ? "on" : "off";
+export function getToggleDataState(condition: boolean): 'on' | 'off' {
+	return condition ? 'on' : 'off';
 }

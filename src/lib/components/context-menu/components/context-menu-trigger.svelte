@@ -1,41 +1,35 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { ContextMenuTriggerProps } from "../types.js";
-	import { ContextMenuTriggerState } from "$lib/components/menu/menu.svelte.js";
-	import { useId } from "$lib/internal/use-id.js";
-	import { FloatingLayer } from "$lib/components/utilities/floating-layer/index.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { ContextMenuTriggerProps } from '../types.js';
+	import { ContextMenuTriggerState } from '$lib/components/menu/menu.svelte.js';
+	import { useId } from '$lib/internal/use-id.js';
+	import { FloatingLayer } from '$lib/components/utilities/floating-layer/index.js';
 
-	let {
-		id = useId(),
-		ref = $bindable(null),
-		child,
-		children,
-		disabled = false,
-		...restProps
-	}: ContextMenuTriggerProps = $props();
+	let { id = useId(), ref = $bindable(null), child, children, disabled = false, ...restProps }: ContextMenuTriggerProps = $props();
 
 	const triggerState = ContextMenuTriggerState.create({
 		id: boxWith(() => id),
 		disabled: boxWith(() => disabled),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "context-menu-trigger",
+				'data-slot': 'context-menu-trigger',
 			},
 			restProps,
 			triggerState.props,
-			{ style: { pointerEvents: "auto" } },
+			{ style: { pointerEvents: 'auto' } },
 			{
 				style: restProps.style,
 				tabindex: restProps.tabindex,
-			}
-		)
+			},
+		),
 	);
 </script>
 

@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { MenuTriggerProps } from "../types.js";
-	import { DropdownMenuTriggerState } from "../menu.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import FloatingLayerAnchor from "$lib/components/utilities/floating-layer/components/floating-layer-anchor.svelte";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { MenuTriggerProps } from '../types.js';
+	import { DropdownMenuTriggerState } from '../menu.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import FloatingLayerAnchor from '$lib/components/utilities/floating-layer/components/floating-layer-anchor.svelte';
 
 	const uid = $props.id();
 
@@ -13,7 +14,7 @@
 		child,
 		children,
 		disabled = false,
-		type = "button",
+		type = 'button',
 		...restProps
 	}: MenuTriggerProps = $props();
 
@@ -22,19 +23,19 @@
 		disabled: boxWith(() => disabled ?? false),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "dropdown-menu-trigger",
+				'data-slot': 'dropdown-menu-trigger',
 			},
 			restProps,
 			triggerState.props,
-			{ type }
-		)
+			{ type },
+		),
 	);
 </script>
 

@@ -27,7 +27,6 @@
 		"prepack": "bun run registry:build && bunx --bun svelte-kit sync && bunx --bun svelte-package && bunx publint",
 		"package:watch": "bun run registry:build && bunx svelte-kit sync && bunx svelte-package -w -p",
 		"check": "bun run registry:build && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:toolbelt-imports": "rg 'from .@polumeyv/tools' src --glob '!src/lib/internal/toolbelt.ts'; test $? -eq 1",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test": "bun test",
 		"test:components": "bun run registry:build && svelte-kit sync && bunx vitest run --config vitest.config.ts"
@@ -35,7 +34,7 @@
 	"files": [
 		"dist",
 		"src/lib",
-		"!src/lib/registry/examples",
+		"!src/lib/registry/*.svelte",
 		"!src/lib/**/*.test.*",
 		"!src/lib/**/*.spec.*"
 	],
@@ -257,10 +256,6 @@
 			"types": "./dist/components/sonner/index.d.ts",
 			"svelte": "./dist/components/sonner/index.js"
 		},
-		"./components/spinner": {
-			"types": "./dist/components/spinner/index.d.ts",
-			"svelte": "./dist/components/spinner/index.js"
-		},
 		"./components/switch": {
 			"types": "./dist/components/switch/index.d.ts",
 			"svelte": "./dist/components/switch/index.js"
@@ -317,11 +312,9 @@
 		"d3-scale": "^4.0.2",
 		"esm-env": "^1.2.2",
 		"layerchart": "2.0.0-next.64",
-		"mode-watcher": "^1.1.0",
 		"overrule": "^0.4.6",
 		"paneforge": "^1.0.2",
 		"style-to-object": "^1.0.14",
-		"@polumeyv/tools": "workspace:*",
 		"tabbable": "^6.4.0"
 	},
 	"devDependencies": {

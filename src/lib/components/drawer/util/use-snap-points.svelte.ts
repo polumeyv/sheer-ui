@@ -1,9 +1,9 @@
-import type { ReadableBoxedValues, WritableBoxedValues } from '$lib/internal/toolbelt.js';
+import type { ReadableBoxedValues, WritableBoxedValues } from '$lib/internal/tools/index.js';
 import type { DrawerDirection, Getters } from './types.js';
 import { isVertical, set } from './helpers.js';
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './internal/constants.js';
-import { watch } from '$lib/internal/toolbelt.js';
-import { windowSize } from '$lib/internal/window-state.svelte.js';
+import { untrack } from 'svelte';
+import { innerWidth, innerHeight } from 'svelte/reactivity/window';
 
 export function useSnapPoints({
 	snapPoints,
@@ -49,7 +49,9 @@ export function useSnapPoints({
 
 	const snapPointsOffset = $derived.by(() => {
 		open.current;
-		const windowDimensions = windowSize.current;
+		const winWidth = innerWidth.current;
+		const winHeight = innerHeight.current;
+		const windowDimensions = winWidth !== undefined && winHeight !== undefined ? { innerWidth: winWidth, innerHeight: winHeight } : undefined;
 		const containerSize = container.current
 			? {
 					width: container.current.getBoundingClientRect().width,
@@ -123,19 +125,23 @@ export function useSnapPoints({
 		activeSnapPoint.current = snapPoints.current?.[Math.max(newSnapPointIndex, 0)];
 	}
 
-	watch([() => activeSnapPoint.current, () => open.current], () => {
-		// we only want to snap to the next point if we are closing via a
-		// means other than release, otherwise a race condition can occur
-		// where the drawer snaps to the previous point and then closes,
-		// rather than continuing to close from the current point
-		const releasing = isReleasing();
-		if (!activeSnapPoint.current || releasing) return;
+	$effect(() => {
+		const _activeSnapPoint = activeSnapPoint.current;
+		const _open = open.current;
+		untrack(() => {
+			// we only want to snap to the next point if we are closing via a
+			// means other than release, otherwise a race condition can occur
+			// where the drawer snaps to the previous point and then closes,
+			// rather than continuing to close from the current point
+			const releasing = isReleasing();
+			if (!activeSnapPoint.current || releasing) return;
 
-		const newIndex = snapPoints.current?.findIndex((snapPoint) => snapPoint === activeSnapPoint.current) ?? -1;
-		if (snapPointsOffset && newIndex !== -1 && typeof snapPointsOffset[newIndex] === 'number') {
-			if (snapPointsOffset[newIndex] === activeSnapPoint.current) return;
-			snapToPoint(snapPointsOffset[newIndex]);
-		}
+			const newIndex = snapPoints.current?.findIndex((snapPoint) => snapPoint === activeSnapPoint.current) ?? -1;
+			if (snapPointsOffset && newIndex !== -1 && typeof snapPointsOffset[newIndex] === 'number') {
+				if (snapPointsOffset[newIndex] === activeSnapPoint.current) return;
+				snapToPoint(snapPointsOffset[newIndex]);
+			}
+		});
 	});
 
 	function onRelease({
@@ -183,8 +189,7 @@ export function useSnapPoints({
 			return Math.abs(curr - currentPosition) < Math.abs(prev - currentPosition) ? curr : prev;
 		});
 
-		const dimensions = windowSize.current;
-		const dim = isVertical(dir) ? dimensions?.innerHeight ?? 0 : dimensions?.innerWidth ?? 0;
+		const dim = isVertical(dir) ? (innerHeight.current ?? 0) : (innerWidth.current ?? 0);
 
 		if (velocity > VELOCITY_THRESHOLD && Math.abs(draggedDistance) < dim * 0.4) {
 			const dragDirection = hasDraggedUp ? 1 : -1; // 1 = up, -1 = down
@@ -206,7 +211,7 @@ export function useSnapPoints({
 		}
 		snapToPoint(closestSnapPoint);
 	}
-	
+
 	const onDrag = ({ draggedDistance }: { draggedDistance: number }) => {
 		if (activeSnapPointOffset === null) return;
 		const dir = direction.current;

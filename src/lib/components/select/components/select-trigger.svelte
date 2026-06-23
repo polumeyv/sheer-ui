@@ -1,26 +1,20 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import { SelectTriggerState } from "../select.svelte.js";
-	import type { SelectTriggerProps } from "../types.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import { FloatingLayer } from "../../utilities/floating-layer/index.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import { SelectTriggerState } from '../select.svelte.js';
+	import type { SelectTriggerProps } from '../types.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { FloatingLayer } from '../../utilities/floating-layer/index.js';
 
 	const uid = $props.id();
 
-	let {
-		id = createId(uid),
-		ref = $bindable(null),
-		child,
-		children,
-		type = "button",
-		...restProps
-	}: SelectTriggerProps = $props();
+	let { id = createId(uid), ref = $bindable(null), child, children, type = 'button', ...restProps }: SelectTriggerProps = $props();
 
 	const triggerState = SelectTriggerState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 

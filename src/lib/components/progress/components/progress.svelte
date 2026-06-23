@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { ProgressRootProps } from "../types.js";
-	import { ProgressRootState } from "../progress.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { ProgressRootProps } from '../types.js';
+	import { ProgressRootState } from '../progress.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -24,19 +25,19 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "progress",
-				class: "bg-primary/20 relative h-2 w-full overflow-hidden rounded-full",
+				'data-slot': 'progress',
+				class: 'bg-primary/20 relative h-2 w-full overflow-hidden rounded-full',
 			},
 			restProps,
-			rootState.props
-		)
+			rootState.props,
+		),
 	);
 </script>
 
@@ -47,8 +48,8 @@
 		<div
 			data-slot="progress-indicator"
 			class="bg-primary h-full w-full flex-1 transition-all"
-			style="transform: translateX(-{100 - (100 * (value ?? 0)) / (max ?? 1)}%)"
-		></div>
+			style="transform: translateX(-{100 - (100 * (value ?? 0)) / (max ?? 1)}%)">
+		</div>
 		{@render children?.()}
 	</div>
 {/if}

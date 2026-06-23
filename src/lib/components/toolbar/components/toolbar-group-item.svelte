@@ -1,13 +1,10 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { ToolbarGroupItemProps } from "../types.js";
-	import { ToolbarGroupItemState } from "../toolbar.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import {
-		toggleVariants,
-		type ToggleSize,
-		type ToggleVariant,
-	} from "$lib/components/toggle/variants.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { ToolbarGroupItemProps } from '../types.js';
+	import { ToolbarGroupItemState } from '../toolbar.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import { toggleVariants, type ToggleSize, type ToggleVariant } from '$lib/components/toggle/variants.js';
 
 	const uid = $props.id();
 
@@ -16,11 +13,11 @@
 		children,
 		value,
 		disabled = false,
-		type = "button",
+		type = 'button',
 		id = createId(uid),
 		ref = $bindable(null),
-		variant = "default",
-		size = "default",
+		variant = 'default',
+		size = 'default',
 		...restProps
 	}: ToolbarGroupItemProps & {
 		variant?: ToggleVariant;
@@ -33,20 +30,20 @@
 		disabled: boxWith(() => disabled ?? false),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "toolbar-group-item",
+				'data-slot': 'toolbar-group-item',
 				class: toggleVariants({ variant, size }),
 			},
 			restProps,
 			groupItemState.props,
-			{ type }
-		)
+			{ type },
+		),
 	);
 </script>
 

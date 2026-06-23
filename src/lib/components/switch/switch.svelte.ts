@@ -1,5 +1,5 @@
-import { createContext } from "svelte";
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
+import { createContext } from 'svelte';
+import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
 import {
 	getAriaChecked,
 	boolToStr,
@@ -7,24 +7,20 @@ import {
 	boolToTrueOrUndef,
 	createBitsAttrs,
 	boolToEmptyStrOrUndef,
-} from "$lib/internal/attrs.js";
-import { kbd } from "$lib/internal/kbd.js";
-import type {
-	BitsKeyboardEvent,
-	BitsPointerEvent,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
+} from '$lib/internal/attrs.js';
+import { kbd } from '$lib/internal/kbd.js';
+import type { BitsKeyboardEvent, BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 
 const switchAttrs = createBitsAttrs({
-	component: "switch",
-	parts: ["root", "thumb"],
+	component: 'switch',
+	parts: ['root', 'thumb'],
 });
 
 const [getSwitchRoot, setSwitchRoot] = createContext<SwitchRootState>();
 
 interface SwitchRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 			required: boolean;
@@ -65,9 +61,9 @@ export class SwitchRootState {
 	}
 
 	readonly sharedProps = $derived.by(() => ({
-		"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-		"data-state": getDataChecked(this.opts.checked.current),
-		"data-required": boolToEmptyStrOrUndef(this.opts.required.current),
+		'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
+		'data-state': getDataChecked(this.opts.checked.current),
+		'data-required': boolToEmptyStrOrUndef(this.opts.required.current),
 	}));
 
 	readonly snippetProps = $derived.by(() => ({
@@ -79,16 +75,16 @@ export class SwitchRootState {
 			({
 				...this.sharedProps,
 				id: this.opts.id.current,
-				role: "switch",
+				role: 'switch',
 				disabled: boolToTrueOrUndef(this.opts.disabled.current),
-				"aria-checked": getAriaChecked(this.opts.checked.current, false),
-				"aria-required": boolToStr(this.opts.required.current),
-				[switchAttrs.root]: "",
+				'aria-checked': getAriaChecked(this.opts.checked.current, false),
+				'aria-required': boolToStr(this.opts.required.current),
+				[switchAttrs.root]: '',
 				//
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -106,13 +102,13 @@ export class SwitchInputState {
 	readonly props = $derived.by(
 		() =>
 			({
-				type: "checkbox",
+				type: 'checkbox',
 				name: this.root.opts.name.current,
 				value: this.root.opts.value.current,
 				checked: this.root.opts.checked.current,
 				disabled: this.root.opts.disabled.current,
 				required: this.root.opts.required.current,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -141,8 +137,8 @@ export class SwitchThumbState {
 			({
 				...this.root.sharedProps,
 				id: this.opts.id.current,
-				[switchAttrs.thumb]: "",
+				[switchAttrs.thumb]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }

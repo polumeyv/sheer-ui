@@ -1,42 +1,36 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { CommandListProps } from "../types.js";
-	import { CommandListState } from "../command.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { CommandListProps } from '../types.js';
+	import { CommandListState } from '../command.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
-	let {
-		id = createId(uid),
-		ref = $bindable(null),
-		child,
-		children,
-		"aria-label": ariaLabel,
-		...restProps
-	}: CommandListProps = $props();
+	let { id = createId(uid), ref = $bindable(null), child, children, 'aria-label': ariaLabel, ...restProps }: CommandListProps = $props();
 
 	const listState = CommandListState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
-		ariaLabel: boxWith(() => ariaLabel ?? "Suggestions..."),
+		ariaLabel: boxWith(() => ariaLabel ?? 'Suggestions...'),
 	});
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "command-list",
-				class: "max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto",
+				'data-slot': 'command-list',
+				class: 'max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto',
 			},
 			restProps,
-			listState.props
-		)
+			listState.props,
+		),
 	);
 </script>
 
-{#key listState.root._commandState.search === ""}
+{#key listState.root._commandState.search === ''}
 	{#if child}
 		{@render child({ props: mergedProps })}
 	{:else}

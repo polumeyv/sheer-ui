@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { mergeProps, boxWith } from '$lib/internal/toolbelt.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
 	import { AccordionContentState } from '../accordion.svelte.js';
 	import type { AccordionContentProps } from '../types.js';
 	import { createId } from '$lib/internal/create-id.js';

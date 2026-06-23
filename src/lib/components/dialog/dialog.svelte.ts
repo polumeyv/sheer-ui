@@ -1,33 +1,20 @@
-import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
-import { watch } from "$lib/internal/toolbelt.js";
-import { createContext, onDestroy } from "svelte";
-import {
-	createBitsAttrs,
-	boolToStr,
-	getDataOpenClosed,
-	boolToEmptyStrOrUndef,
-	getDataTransitionAttrs,
-} from "$lib/internal/attrs.js";
-import type {
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	OnChangeFn,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import { kbd } from "$lib/internal/kbd.js";
-import { PresenceManager } from "$lib/internal/presence-manager.svelte.js";
+import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { createContext, onDestroy, untrack } from 'svelte';
+import { createBitsAttrs, boolToStr, getDataOpenClosed, boolToEmptyStrOrUndef, getDataTransitionAttrs } from '$lib/internal/attrs.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { kbd } from '$lib/internal/kbd.js';
+import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 
-type DialogVariant = "alert-dialog" | "dialog";
+type DialogVariant = 'alert-dialog' | 'dialog';
 
 const dialogAttrs = createBitsAttrs({
-	component: "dialog",
-	parts: ["content", "trigger", "overlay", "title", "description", "close", "cancel", "action"],
+	component: 'dialog',
+	parts: ['content', 'trigger', 'overlay', 'title', 'description', 'close', 'cancel', 'action'],
 });
 
 const [getDialogRoot, setDialogRoot] = createContext<DialogRootState>();
 
-const missingContextErrorUrl = "https://svelte.dev/e/missing_context";
+const missingContextErrorUrl = 'https://svelte.dev/e/missing_context';
 
 function getDialogRootOr<TFallback>(fallback: TFallback): DialogRootState | TFallback {
 	try {
@@ -39,7 +26,8 @@ function getDialogRootOr<TFallback>(fallback: TFallback): DialogRootState | TFal
 }
 
 interface DialogRootStateOpts
-	extends WritableBoxedValues<{
+	extends
+		WritableBoxedValues<{
 			open: boolean;
 		}>,
 		ReadableBoxedValues<{
@@ -93,18 +81,22 @@ export class DialogRootState {
 			enabled: true,
 		});
 
-		watch(
-			() => this.opts.open.current,
-			(isOpen) => {
+		let started = false;
+		$effect(() => {
+			const isOpen = this.opts.open.current;
+			if (!started) {
+				started = true;
+				return;
+			}
+			untrack(() => {
 				if (!this.parent) return;
 				if (isOpen) {
 					this.parent.incrementNested();
 				} else {
 					this.parent.decrementNested();
 				}
-			},
-			{ lazy: true }
-		);
+			});
+		});
 
 		onDestroy(() => {
 			if (this.opts.open.current) {
@@ -141,8 +133,8 @@ export class DialogRootState {
 	readonly sharedProps = $derived.by(
 		() =>
 			({
-				"data-state": getDataOpenClosed(this.opts.open.current),
-			}) as const
+				'data-state': getDataOpenClosed(this.opts.open.current),
+			}) as const,
 	);
 }
 
@@ -186,22 +178,20 @@ export class DialogTriggerState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"aria-haspopup": "dialog",
-				"aria-expanded": boolToStr(this.root.opts.open.current),
-				"aria-controls": this.root.contentId,
-				[this.root.getBitsAttr("trigger")]: "",
+				'aria-haspopup': 'dialog',
+				'aria-expanded': boolToStr(this.root.opts.open.current),
+				'aria-controls': this.root.contentId,
+				[this.root.getBitsAttr('trigger')]: '',
 				onkeydown: this.onkeydown,
 				onclick: this.onclick,
 				disabled: this.opts.disabled.current ? true : undefined,
 				...this.root.sharedProps,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
-interface DialogCloseStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{ variant: "action" | "cancel" | "close"; disabled: boolean }> {}
+interface DialogCloseStateOpts extends WithRefOpts, ReadableBoxedValues<{ variant: 'action' | 'cancel' | 'close'; disabled: boolean }> {}
 
 export class DialogCloseState {
 	static create(opts: DialogCloseStateOpts) {
@@ -238,14 +228,14 @@ export class DialogCloseState {
 		() =>
 			({
 				id: this.opts.id.current,
-				[this.root.getBitsAttr(this.opts.variant.current)]: "",
+				[this.root.getBitsAttr(this.opts.variant.current)]: '',
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				disabled: this.opts.disabled.current ? true : undefined,
 				tabindex: 0,
 				...this.root.sharedProps,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -269,16 +259,14 @@ export class DialogActionState {
 		() =>
 			({
 				id: this.opts.id.current,
-				[this.root.getBitsAttr("action")]: "",
+				[this.root.getBitsAttr('action')]: '',
 				...this.root.sharedProps,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
-interface DialogTitleStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{ level: 1 | 2 | 3 | 4 | 5 | 6 }> {}
+interface DialogTitleStateOpts extends WithRefOpts, ReadableBoxedValues<{ level: 1 | 2 | 3 | 4 | 5 | 6 }> {}
 
 export class DialogTitleState {
 	static create(opts: DialogTitleStateOpts) {
@@ -300,12 +288,12 @@ export class DialogTitleState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "heading",
-				"aria-level": this.opts.level.current,
-				[this.root.getBitsAttr("title")]: "",
+				role: 'heading',
+				'aria-level': this.opts.level.current,
+				[this.root.getBitsAttr('title')]: '',
 				...this.root.sharedProps,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -333,10 +321,10 @@ export class DialogDescriptionState {
 		() =>
 			({
 				id: this.opts.id.current,
-				[this.root.getBitsAttr("description")]: "",
+				[this.root.getBitsAttr('description')]: '',
 				...this.root.sharedProps,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -366,28 +354,28 @@ export class DialogContentState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: this.root.opts.variant.current === "alert-dialog" ? "alertdialog" : "dialog",
-				"aria-modal": "true",
-				"aria-describedby": this.root.descriptionId,
-				"aria-labelledby": this.root.titleId,
-				[this.root.getBitsAttr("content")]: "",
+				role: this.root.opts.variant.current === 'alert-dialog' ? 'alertdialog' : 'dialog',
+				'aria-modal': 'true',
+				'aria-describedby': this.root.descriptionId,
+				'aria-labelledby': this.root.titleId,
+				[this.root.getBitsAttr('content')]: '',
 				style: {
-					pointerEvents: "auto",
-					outline: this.root.opts.variant.current === "alert-dialog" ? "none" : undefined,
-					"--bits-dialog-depth": this.root.depth,
-					"--bits-dialog-nested-count": this.root.nestedOpenCount,
+					pointerEvents: 'auto',
+					outline: this.root.opts.variant.current === 'alert-dialog' ? 'none' : undefined,
+					'--bits-dialog-depth': this.root.depth,
+					'--bits-dialog-nested-count': this.root.nestedOpenCount,
 					// CSS containment isolates style/layout calculations from the rest of the page,
 					// improving performance when there's a large DOM behind the dialog.
 					// Paint is omitted so tooltips/selects can render outside dialog bounds.
-					contain: "layout style",
+					contain: 'layout style',
 				},
-				tabindex: this.root.opts.variant.current === "alert-dialog" ? -1 : undefined,
-				"data-nested-open": boolToEmptyStrOrUndef(this.root.nestedOpenCount > 0),
-				"data-nested": boolToEmptyStrOrUndef(this.root.parent !== null),
+				tabindex: this.root.opts.variant.current === 'alert-dialog' ? -1 : undefined,
+				'data-nested-open': boolToEmptyStrOrUndef(this.root.nestedOpenCount > 0),
+				'data-nested': boolToEmptyStrOrUndef(this.root.parent !== null),
 				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
 				...this.root.sharedProps,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 
 	get shouldRender() {
@@ -417,18 +405,18 @@ export class DialogOverlayState {
 		() =>
 			({
 				id: this.opts.id.current,
-				[this.root.getBitsAttr("overlay")]: "",
+				[this.root.getBitsAttr('overlay')]: '',
 				style: {
-					pointerEvents: "auto",
-					"--bits-dialog-depth": this.root.depth,
-					"--bits-dialog-nested-count": this.root.nestedOpenCount,
+					pointerEvents: 'auto',
+					'--bits-dialog-depth': this.root.depth,
+					'--bits-dialog-nested-count': this.root.nestedOpenCount,
 				},
-				"data-nested-open": boolToEmptyStrOrUndef(this.root.nestedOpenCount > 0),
-				"data-nested": boolToEmptyStrOrUndef(this.root.parent !== null),
+				'data-nested-open': boolToEmptyStrOrUndef(this.root.nestedOpenCount > 0),
+				'data-nested': boolToEmptyStrOrUndef(this.root.parent !== null),
 				...getDataTransitionAttrs(this.root.overlayPresence.transitionStatus),
 				...this.root.sharedProps,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 
 	get shouldRender() {
@@ -436,9 +424,7 @@ export class DialogOverlayState {
 	}
 }
 
-interface AlertDialogCancelStateOpts
-	extends WithRefOpts,
-		ReadableBoxedValues<{ disabled: boolean }> {}
+interface AlertDialogCancelStateOpts extends WithRefOpts, ReadableBoxedValues<{ disabled: boolean }> {}
 
 export class AlertDialogCancelState {
 	static create(opts: AlertDialogCancelStateOpts) {
@@ -475,13 +461,13 @@ export class AlertDialogCancelState {
 		() =>
 			({
 				id: this.opts.id.current,
-				[this.root.getBitsAttr("cancel")]: "",
+				[this.root.getBitsAttr('cancel')]: '',
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				tabindex: 0,
 				disabled: this.opts.disabled.current,
 				...this.root.sharedProps,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }

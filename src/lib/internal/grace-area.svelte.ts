@@ -1,15 +1,9 @@
-import {
-	type Getter,
-	type WritableBox,
-	executeCallbacks,
-	getDocument,
-	getWindow,
-} from "$lib/internal/toolbelt.js";
-import { on } from "svelte/events";
-import { watch } from "$lib/internal/toolbelt.js";
-import { boxAutoReset } from "./box-auto-reset.svelte.js";
-import { isElement, isHTMLElement } from "./is.js";
-import type { Side } from "$lib/components/utilities/floating-layer/use-floating-layer.svelte.js";
+import { type Getter, type WritableBox, executeCallbacks, getDocument, getWindow } from '$lib/internal/tools/index.js';
+import { on } from 'svelte/events';
+import { untrack } from 'svelte';
+import { boxAutoReset } from './box-auto-reset.svelte.js';
+import { isElement, isHTMLElement } from './is.js';
+import type { Side } from '$lib/components/utilities/floating-layer/use-floating-layer.svelte.js';
 
 interface GraceAreaOptions {
 	enabled: Getter<boolean>;
@@ -38,9 +32,11 @@ export class GraceArea {
 			getWindow: () => getWindow(this.#opts.triggerNode()),
 		});
 
-		watch(
-			[opts.triggerNode, opts.contentNode, opts.enabled],
-			([triggerNode, contentNode, enabled]) => {
+		$effect(() => {
+			const triggerNode = opts.triggerNode();
+			const contentNode = opts.contentNode();
+			const enabled = opts.enabled();
+			return untrack(() => {
 				if (!triggerNode || !contentNode || !enabled) return;
 				const handleTriggerLeave = (e: PointerEvent) => {
 					this.#createGraceArea(e, contentNode!);
@@ -50,28 +46,20 @@ export class GraceArea {
 					this.#createGraceArea(e, triggerNode!);
 				};
 
-				return executeCallbacks(
-					on(triggerNode, "pointerleave", handleTriggerLeave),
-					on(contentNode, "pointerleave", handleContentLeave)
-				);
-			}
-		);
+				return executeCallbacks(on(triggerNode, 'pointerleave', handleTriggerLeave), on(contentNode, 'pointerleave', handleContentLeave));
+			});
+		});
 
-		watch(
-			() => this.#pointerGraceArea,
-			() => {
+		$effect(() => {
+			this.#pointerGraceArea;
+			return untrack(() => {
 				const handleTrackPointerGrace = (e: PointerEvent) => {
 					if (!this.#pointerGraceArea) return;
 					const target = e.target;
 					if (!isElement(target)) return;
 					const pointerPosition = { x: e.clientX, y: e.clientY };
-					const hasEnteredTarget =
-						opts.triggerNode()?.contains(target) ||
-						opts.contentNode()?.contains(target);
-					const isPointerOutsideGraceArea = !isPointInPolygon(
-						pointerPosition,
-						this.#pointerGraceArea
-					);
+					const hasEnteredTarget = opts.triggerNode()?.contains(target) || opts.contentNode()?.contains(target);
+					const isPointerOutsideGraceArea = !isPointInPolygon(pointerPosition, this.#pointerGraceArea);
 
 					if (hasEnteredTarget) {
 						this.#removeGraceArea();
@@ -83,9 +71,9 @@ export class GraceArea {
 				const doc = getDocument(opts.triggerNode() ?? opts.contentNode());
 				if (!doc) return;
 
-				return on(doc, "pointermove", handleTrackPointerGrace);
-			}
-		);
+				return on(doc, 'pointermove', handleTrackPointerGrace);
+			});
+		});
 	}
 
 	#removeGraceArea() {
@@ -117,15 +105,15 @@ function getExitSideFromRect(point: Point, rect: DOMRect): Side {
 
 	switch (Math.min(top, bottom, right, left)) {
 		case left:
-			return "left";
+			return 'left';
 		case right:
-			return "right";
+			return 'right';
 		case top:
-			return "top";
+			return 'top';
 		case bottom:
-			return "bottom";
+			return 'bottom';
 		default:
-			throw new Error("unreachable");
+			throw new Error('unreachable');
 	}
 }
 
@@ -134,25 +122,25 @@ function getPaddedExitPoints(exitPoint: Point, exitSide: Side, padding = 5) {
 	// a minor jitter triggering a pointer exit
 	const tipPadding = padding * 1.5;
 	switch (exitSide) {
-		case "top":
+		case 'top':
 			return [
 				{ x: exitPoint.x - padding, y: exitPoint.y + padding },
 				{ x: exitPoint.x, y: exitPoint.y - tipPadding },
 				{ x: exitPoint.x + padding, y: exitPoint.y + padding },
 			];
-		case "bottom":
+		case 'bottom':
 			return [
 				{ x: exitPoint.x - padding, y: exitPoint.y - padding },
 				{ x: exitPoint.x, y: exitPoint.y + tipPadding },
 				{ x: exitPoint.x + padding, y: exitPoint.y - padding },
 			];
-		case "left":
+		case 'left':
 			return [
 				{ x: exitPoint.x + padding, y: exitPoint.y - padding },
 				{ x: exitPoint.x - tipPadding, y: exitPoint.y },
 				{ x: exitPoint.x + padding, y: exitPoint.y + padding },
 			];
-		case "right":
+		case 'right':
 			return [
 				{ x: exitPoint.x - padding, y: exitPoint.y - padding },
 				{ x: exitPoint.x + tipPadding, y: exitPoint.y },
@@ -234,12 +222,7 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
 	}
 	lowerHull.pop();
 
-	if (
-		upperHull.length === 1 &&
-		lowerHull.length === 1 &&
-		upperHull[0]!.x === lowerHull[0]!.x &&
-		upperHull[0]!.y === lowerHull[0]!.y
-	)
+	if (upperHull.length === 1 && lowerHull.length === 1 && upperHull[0]!.x === lowerHull[0]!.x && upperHull[0]!.y === lowerHull[0]!.y)
 		return upperHull;
 	else return upperHull.concat(lowerHull);
 }

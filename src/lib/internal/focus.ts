@@ -1,5 +1,5 @@
-import { getDocument, getWindow } from "$lib/internal/toolbelt.js";
-import { isBrowser, isElementHidden, isSelectableInput } from "./is.js";
+import { getDocument, getWindow } from '$lib/internal/tools/index.js';
+import { isBrowser, isElementHidden, isSelectableInput } from './is.js';
 
 export type FocusableTarget = HTMLElement | { focus: () => void };
 
@@ -9,13 +9,13 @@ export type FocusableTarget = HTMLElement | { focus: () => void };
  */
 export function handleCalendarInitialFocus(calendar: HTMLElement) {
 	if (!isBrowser) return;
-	const selectedDay = calendar.querySelector<HTMLElement>("[data-selected]");
+	const selectedDay = calendar.querySelector<HTMLElement>('[data-selected]');
 	if (selectedDay) return focusWithoutScroll(selectedDay);
 
-	const today = calendar.querySelector<HTMLElement>("[data-today]");
+	const today = calendar.querySelector<HTMLElement>('[data-today]');
 	if (today) return focusWithoutScroll(today);
 
-	const firstDay = calendar.querySelector<HTMLElement>("[data-calendar-date]");
+	const firstDay = calendar.querySelector<HTMLElement>('[data-calendar-date]');
 	if (firstDay) return focusWithoutScroll(firstDay);
 }
 
@@ -53,11 +53,7 @@ export function focus(element?: FocusableTarget | null, { select = false } = {})
  * Attempts to focus the first element in a list of candidates.
  * Stops when focus is successful.
  */
-export function focusFirst(
-	candidates: HTMLElement[],
-	{ select = false } = {},
-	getActiveElement: () => HTMLElement | null
-) {
+export function focusFirst(candidates: HTMLElement[], { select = false } = {}, getActiveElement: () => HTMLElement | null) {
 	const previouslyFocusedElement = getActiveElement();
 	for (const candidate of candidates) {
 		focus(candidate, { select });
@@ -92,7 +88,7 @@ export function getTabbableCandidates(container: HTMLElement) {
 	const walker = doc.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
 		// oxlint-disable-next-line no-explicit-any
 		acceptNode: (node: any) => {
-			const isHiddenInput = node.tagName === "INPUT" && node.type === "hidden";
+			const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
 			if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
 			// `.tabIndex` is not the same as the `tabindex` attribute. It works on the
 			// runtime's understanding of tabbability, so this automatically accounts

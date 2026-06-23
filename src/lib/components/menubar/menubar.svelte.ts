@@ -1,26 +1,25 @@
-import { type ReadableBox, boxWith, attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
-import { watch } from "$lib/internal/toolbelt.js";
-import type { InteractOutsideBehaviorType } from "../utilities/dismissible-layer/types.js";
-import type { Direction } from "$lib/shared/index.js";
-import {
-	createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed, } from "$lib/internal/attrs.js";
-import { kbd } from "$lib/internal/kbd.js";
-import { wrapArray } from "$lib/internal/arrays.js";
-import type { OnChangeFn, RefAttachment, WithRefOpts } from "$lib/internal/types.js";
-import { createContext, onMount, tick } from "svelte";
-import type { FocusEventHandler, KeyboardEventHandler, PointerEventHandler } from "svelte/elements";
-import { getFloatingContentCSSVars } from "../../internal/floating-svelte/floating-utils.svelte.js";
-import { RovingFocusGroup } from "$lib/internal/roving-focus-group.js";
+import { type ReadableBox, boxWith, attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import type { InteractOutsideBehaviorType } from '../utilities/dismissible-layer/types.js';
+import type { Direction } from '$lib/shared/index.js';
+import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '$lib/internal/attrs.js';
+import { kbd } from '$lib/internal/kbd.js';
+import { wrapArray } from '$lib/internal/arrays.js';
+import type { OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { createContext, onMount, tick, untrack } from 'svelte';
+import type { FocusEventHandler, KeyboardEventHandler, PointerEventHandler } from 'svelte/elements';
+import { getFloatingContentCSSVars } from '../../internal/floating-svelte/floating-utils.svelte.js';
+import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
 
 const menubarAttrs = createBitsAttrs({
-	component: "menubar",
-	parts: ["root", "trigger", "content"],
+	component: 'menubar',
+	parts: ['root', 'trigger', 'content'],
 });
 
 const [getMenubarRoot, setMenubarRoot] = createContext<MenubarRootState>();
 const [getMenubarMenu, setMenubarMenu] = createContext<MenubarMenuState>();
 interface MenubarRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			dir: Direction;
 			loop: boolean;
@@ -49,7 +48,7 @@ export class MenubarRootState {
 			rootNode: this.opts.ref,
 			candidateAttr: menubarAttrs.trigger,
 			loop: this.opts.loop,
-			orientation: boxWith(() => "horizontal"),
+			orientation: boxWith(() => 'horizontal'),
 		});
 	}
 
@@ -103,9 +102,7 @@ export class MenubarRootState {
 	getTriggers = () => {
 		const node = this.opts.ref.current;
 		if (!node) return [];
-		return Array.from(
-			node.querySelectorAll<HTMLButtonElement>(menubarAttrs.selector("trigger"))
-		);
+		return Array.from(node.querySelectorAll<HTMLButtonElement>(menubarAttrs.selector('trigger')));
 	};
 
 	onMenuOpen = (id: string, triggerId: string) => {
@@ -114,29 +111,28 @@ export class MenubarRootState {
 	};
 
 	onMenuClose = () => {
-		this.updateValue("");
+		this.updateValue('');
 	};
 
 	onMenuToggle = (id: string) => {
-		this.updateValue(this.opts.value.current ? "" : id);
+		this.updateValue(this.opts.value.current ? '' : id);
 	};
 
 	readonly props = $derived.by(
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "menubar",
-				[menubarAttrs.root]: "",
+				role: 'menubar',
+				[menubarAttrs.root]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
-interface MenubarMenuStateOpts
-	extends ReadableBoxedValues<{
-		value: string;
-		onOpenChange: OnChangeFn<boolean>;
-	}> {}
+interface MenubarMenuStateOpts extends ReadableBoxedValues<{
+	value: string;
+	onOpenChange: OnChangeFn<boolean>;
+}> {}
 
 export class MenubarMenuState {
 	static create(opts: MenubarMenuStateOpts) {
@@ -156,14 +152,14 @@ export class MenubarMenuState {
 		this.opts = opts;
 		this.root = root;
 
-		watch(
-			() => this.open,
-			() => {
+		$effect(() => {
+			this.open;
+			untrack(() => {
 				if (!this.open) {
 					this.wasOpenedByKeyboard = false;
 				}
-			}
-		);
+			});
+		});
 
 		onMount(() => {
 			return this.root.registerMenu(this.opts.value.current, opts.onOpenChange);
@@ -179,12 +175,13 @@ export class MenubarMenuState {
 	}
 
 	openMenu() {
-		this.root.onMenuOpen(this.opts.value.current, this.triggerNode?.id ?? "");
+		this.root.onMenuOpen(this.opts.value.current, this.triggerNode?.id ?? '');
 	}
 }
 
 interface MenubarTriggerStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 		}> {}
@@ -268,31 +265,32 @@ export class MenubarTriggerState {
 	readonly props = $derived.by(
 		() =>
 			({
-				type: "button",
-				role: "menuitem",
+				type: 'button',
+				role: 'menuitem',
 				id: this.opts.id.current,
-				"aria-haspopup": "menu",
-				"aria-expanded": boolToStr(this.menu.open),
-				"aria-controls": this.menu.open ? this.menu.contentId : undefined,
-				"data-highlighted": this.isFocused ? "" : undefined,
-				"data-state": getDataOpenClosed(this.menu.open),
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-				"data-menu-value": this.menu.opts.value.current,
+				'aria-haspopup': 'menu',
+				'aria-expanded': boolToStr(this.menu.open),
+				'aria-controls': this.menu.open ? this.menu.contentId : undefined,
+				'data-highlighted': this.isFocused ? '' : undefined,
+				'data-state': getDataOpenClosed(this.menu.open),
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
+				'data-menu-value': this.menu.opts.value.current,
 				disabled: this.opts.disabled.current ? true : undefined,
 				tabindex: this.#tabIndex,
-				[menubarAttrs.trigger]: "",
+				[menubarAttrs.trigger]: '',
 				onpointerdown: this.onpointerdown,
 				onpointerenter: this.onpointerenter,
 				onkeydown: this.onkeydown,
 				onfocus: this.onfocus,
 				onblur: this.onblur,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface MenubarContentStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			interactOutsideBehavior: InteractOutsideBehaviorType;
 			onOpenAutoFocus: (e: Event) => void;
@@ -325,9 +323,7 @@ export class MenubarContentState {
 
 	onFocusOutside = (e: FocusEvent) => {
 		const target = e.target as HTMLElement;
-		const isMenubarTrigger = this.root
-			.getTriggers()
-			.some((trigger) => trigger.contains(target));
+		const isMenubarTrigger = this.root.getTriggers().some((trigger) => trigger.contains(target));
 		if (isMenubarTrigger) e.preventDefault();
 		this.opts.onFocusOutside.current(e);
 	};
@@ -346,10 +342,10 @@ export class MenubarContentState {
 		if (e.key !== kbd.ARROW_LEFT && e.key !== kbd.ARROW_RIGHT) return;
 
 		const target = e.target as HTMLElement;
-		const targetIsSubTrigger = target.hasAttribute("data-menu-sub-trigger");
-		const isKeydownInsideSubMenu = target.closest("[data-menu-content]") !== e.currentTarget;
+		const targetIsSubTrigger = target.hasAttribute('data-menu-sub-trigger');
+		const isKeydownInsideSubMenu = target.closest('[data-menu-content]') !== e.currentTarget;
 
-		const prevMenuKey = this.root.opts.dir.current === "rtl" ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT;
+		const prevMenuKey = this.root.opts.dir.current === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT;
 		const isPrevKey = prevMenuKey === e.key;
 		const isNextKey = !isPrevKey;
 
@@ -360,8 +356,8 @@ export class MenubarContentState {
 
 		const items = this.root.getTriggers().filter((trigger) => !trigger.disabled);
 		let candidates = items.map((item) => ({
-			value: item.getAttribute("data-menu-value")!,
-			triggerId: item.id ?? "",
+			value: item.getAttribute('data-menu-value')!,
+			triggerId: item.id ?? '',
 		}));
 		if (isPrevKey) candidates.reverse();
 		const candidateValues = candidates.map(({ value }) => value);
@@ -373,9 +369,7 @@ export class MenubarContentState {
 		const currentIndex = candidateValues.indexOf(openMenuValue);
 		if (currentIndex === -1) return;
 
-		candidates = this.root.opts.loop.current
-			? wrapArray(candidates, currentIndex + 1)
-			: candidates.slice(currentIndex + 1);
+		candidates = this.root.opts.loop.current ? wrapArray(candidates, currentIndex + 1) : candidates.slice(currentIndex + 1);
 		const [nextValue] = candidates;
 		if (nextValue) {
 			this.menu.root.onMenuOpen(nextValue.value, nextValue.triggerId);
@@ -387,13 +381,13 @@ export class MenubarContentState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"aria-labelledby": this.menu.triggerId,
-				style: getFloatingContentCSSVars("menubar"),
+				'aria-labelledby': this.menu.triggerId,
+				style: getFloatingContentCSSVars('menubar'),
 				onkeydown: this.onkeydown,
-				"data-menu-content": "",
-				[menubarAttrs.content]: "",
+				'data-menu-content': '',
+				[menubarAttrs.content]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 
 	popperProps = {

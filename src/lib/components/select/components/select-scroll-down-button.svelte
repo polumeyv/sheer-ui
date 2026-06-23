@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { SelectScrollDownButtonProps } from "../types.js";
-	import { SelectScrollDownButtonState } from "../select.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import { Mounted } from "../../utilities/index.js";
+	import { boxWith, mountedAttachment } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { SelectScrollDownButtonProps } from '../types.js';
+	import { SelectScrollDownButtonState } from '../select.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -20,20 +20,21 @@
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		delay: boxWith(() => delay),
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, scrollButtonState.props));
+
+	const mounted = mountedAttachment<HTMLElement>((m) => (scrollButtonState.scrollButtonState.mounted = m));
 </script>
 
 {#if scrollButtonState.canScrollDown}
-	<Mounted bind:mounted={scrollButtonState.scrollButtonState.mounted} />
 	{#if child}
-		{@render child({ props: restProps })}
+		{@render child({ props: mergeProps(restProps, mounted) })}
 	{:else}
-		<div {...mergedProps}>
+		<div {...mergeProps(mergedProps, mounted)}>
 			{@render children?.()}
 		</div>
 	{/if}

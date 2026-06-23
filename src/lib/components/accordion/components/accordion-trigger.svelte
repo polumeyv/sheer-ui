@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { AccordionTriggerProps } from "../types.js";
-	import { AccordionTriggerState } from "../accordion.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import AccordionHeader from "./accordion-header.svelte";
-	import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { AccordionTriggerProps } from '../types.js';
+	import { AccordionTriggerState } from '../accordion.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import AccordionHeader from './accordion-header.svelte';
+	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
 	const uid = $props.id();
 
@@ -24,20 +25,20 @@
 		tabindex: boxWith(() => tabindex ?? 0),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "accordion-trigger",
+				'data-slot': 'accordion-trigger',
 				class:
-					"focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180",
+					'focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180',
 			},
 			restProps,
-			triggerState.props
-		)
+			triggerState.props,
+		),
 	);
 </script>
 

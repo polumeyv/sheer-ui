@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { boxWith } from "$lib/internal/toolbelt.js";
-	import type { TextSelectionLayerImplProps } from "./types.js";
-	import { TextSelectionLayerState } from "./use-text-selection-layer.svelte.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import type { TextSelectionLayerImplProps } from './types.js';
+	import { TextSelectionLayerState } from './use-text-selection-layer.svelte.js';
 
 	let {
 		preventOverflowTextSelection = true,

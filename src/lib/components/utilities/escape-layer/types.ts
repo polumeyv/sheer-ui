@@ -1,11 +1,7 @@
-import type { Snippet } from "svelte";
-import type { Box } from "$lib/internal/toolbelt.js";
+import type { Snippet } from 'svelte';
+import type { Box } from '$lib/internal/tools/index.js';
 
-export type EscapeBehaviorType =
-	| "close"
-	| "defer-otherwise-close"
-	| "defer-otherwise-ignore"
-	| "ignore";
+export type EscapeBehaviorType = 'close' | 'defer-otherwise-close' | 'defer-otherwise-ignore' | 'ignore';
 
 export type EscapeLayerProps = {
 	/**

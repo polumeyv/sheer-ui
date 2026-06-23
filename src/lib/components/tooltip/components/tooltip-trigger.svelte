@@ -3,10 +3,11 @@
 </script>
 
 <script lang="ts" generics="T = never">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { TooltipTriggerProps } from "../types.js";
-	import { TooltipTriggerState } from "../tooltip.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { TooltipTriggerProps } from '../types.js';
+	import { TooltipTriggerState } from '../tooltip.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -17,7 +18,7 @@
 		disabled = false,
 		payload,
 		tether,
-		type = "button",
+		type = 'button',
 		tabindex = 0,
 		ref = $bindable(null),
 		...restProps
@@ -31,13 +32,11 @@
 		tether: boxWith(() => tether),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 	});
 
-	const mergedProps = $derived(
-		mergeProps({ "data-slot": "tooltip-trigger" }, restProps, triggerState.props, { type })
-	);
+	const mergedProps = $derived(mergeProps({ 'data-slot': 'tooltip-trigger' }, restProps, triggerState.props, { type }));
 </script>
 
 {#if child}

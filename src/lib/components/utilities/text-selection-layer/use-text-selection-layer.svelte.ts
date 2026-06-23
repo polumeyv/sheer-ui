@@ -1,26 +1,16 @@
-import {
-	DOMContext,
-	type ReadableBox,
-	type ReadableBoxedValues,
-	composeHandlers,
-	contains,
-	executeCallbacks,
-} from "$lib/internal/toolbelt.js";
-import { watch } from "$lib/internal/toolbelt.js";
-import { on } from "svelte/events";
-import type { PointerHandler, TextSelectionLayerImplProps } from "./types.js";
-import { isHTMLElement } from "$lib/internal/is.js";
+import { DOMContext, type ReadableBox, type ReadableBoxedValues, composeHandlers, contains, executeCallbacks } from '$lib/internal/tools/index.js';
+import { untrack } from 'svelte';
+import { on } from 'svelte/events';
+import type { PointerHandler, TextSelectionLayerImplProps } from './types.js';
+import { isHTMLElement } from '$lib/internal/is.js';
 
 const noopPointer: PointerHandler = () => {};
 
-interface TextSelectionLayerStateOpts
-	extends ReadableBoxedValues<
-		Required<
-			Omit<TextSelectionLayerImplProps, "children" | "preventOverflowTextSelection" | "ref">
-		> & {
-			ref: HTMLElement | null;
-		}
-	> {}
+interface TextSelectionLayerStateOpts extends ReadableBoxedValues<
+	Required<Omit<TextSelectionLayerImplProps, 'children' | 'preventOverflowTextSelection' | 'ref'>> & {
+		ref: HTMLElement | null;
+	}
+> {}
 
 globalThis.bitsTextSelectionLayers ??= new Map<TextSelectionLayerState, ReadableBox<boolean>>();
 
@@ -41,14 +31,13 @@ export class TextSelectionLayerState {
 
 		let unsubEvents = () => {};
 
-		watch(
-			() =>
-				[
-					this.opts.enabled.current,
-					this.opts.onPointerDown.current,
-					this.opts.onPointerUp.current,
-				] as const,
-			([enabled, onPointerDown, onPointerUp]) => {
+		$effect(() => {
+			const [enabled, onPointerDown, onPointerUp] = [
+				this.opts.enabled.current,
+				this.opts.onPointerDown.current,
+				this.opts.onPointerUp.current,
+			] as const;
+			return untrack(() => {
 				this.#enabledSnapshot = enabled;
 				this.#onPointerDownSnapshot = onPointerDown;
 				this.#onPointerUpSnapshot = onPointerUp;
@@ -64,18 +53,14 @@ export class TextSelectionLayerState {
 					this.#resetSelectionLock();
 					globalThis.bitsTextSelectionLayers.delete(this);
 				};
-			}
-		);
+			});
+		});
 	}
 
 	#addEventListeners() {
 		return executeCallbacks(
-			on(this.domContext.getDocument(), "pointerdown", this.#pointerdown),
-			on(
-				this.domContext.getDocument(),
-				"pointerup",
-				composeHandlers(this.#resetSelectionLock, this.#pointerupUserHandler)
-			)
+			on(this.domContext.getDocument(), 'pointerdown', this.#pointerdown),
+			on(this.domContext.getDocument(), 'pointerup', composeHandlers(this.#resetSelectionLock, this.#pointerupUserHandler)),
 		);
 	}
 
@@ -95,10 +80,7 @@ export class TextSelectionLayerState {
 		if (!isHighestLayer(this) || !contains(node, target)) return;
 		this.#onPointerDownSnapshot(e);
 		if (e.defaultPrevented) return;
-		this.#unsubSelectionLock = preventTextSelectionOverflow(
-			node,
-			this.domContext.getDocument().body
-		);
+		this.#unsubSelectionLock = preventTextSelectionOverflow(node, this.domContext.getDocument().body);
 	};
 
 	#resetSelectionLock = () => {
@@ -112,8 +94,8 @@ const getUserSelect = (node: HTMLElement) => node.style.userSelect || node.style
 function preventTextSelectionOverflow(node: HTMLElement, body: HTMLElement) {
 	const originalBodyUserSelect = getUserSelect(body);
 	const originalNodeUserSelect = getUserSelect(node);
-	setUserSelect(body, "none");
-	setUserSelect(node, "text");
+	setUserSelect(body, 'none');
+	setUserSelect(node, 'text');
 	return () => {
 		setUserSelect(body, originalBodyUserSelect);
 		setUserSelect(node, originalNodeUserSelect);

@@ -1,15 +1,16 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { MenubarContentStaticProps } from "../types.js";
-	import { MenubarContentState } from "../menubar.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
-	import MenuContentStatic from "$lib/components/menu/components/menu-content-static.svelte";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { MenubarContentStaticProps } from '../types.js';
+	import { MenubarContentState } from '../menubar.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
+	import MenuContentStatic from '$lib/components/menu/components/menu-content-static.svelte';
 
 	const uid = $props.id();
 
 	let {
 		ref = $bindable(null),
-		interactOutsideBehavior = "close",
+		interactOutsideBehavior = 'close',
 		id = createId(uid),
 		onInteractOutside = () => {},
 		onCloseAutoFocus = () => {},
@@ -23,7 +24,7 @@
 		interactOutsideBehavior: boxWith(() => interactOutsideBehavior),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		onInteractOutside: boxWith(() => onInteractOutside),
 		onFocusOutside: boxWith(() => onFocusOutside),

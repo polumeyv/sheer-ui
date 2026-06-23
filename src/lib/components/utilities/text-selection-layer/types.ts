@@ -1,5 +1,5 @@
-import type { Snippet } from "svelte";
-import type { ReadableBox } from "$lib/internal/toolbelt.js";
+import type { Snippet } from 'svelte';
+import type { ReadableBox } from '$lib/internal/tools/index.js';
 
 export type PointerHandler = (e: PointerEvent) => void;
 

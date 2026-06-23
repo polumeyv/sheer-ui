@@ -2,7 +2,7 @@
 	import { AlertDialog } from "$lib/components/alert-dialog";
 	import * as Field from "$lib/components/field";
 	import { Root as Input } from "$lib/components/input";
-	import { Spinner } from "$lib/components/spinner";
+	import Loader2Icon from '@lucide/svelte/icons/loader-2';
 	import { alertModal } from './alert-modal.svelte';
 
 	const variantClasses: Record<string, string> = {
@@ -54,7 +54,7 @@
 							alertModal.handleConfirm();
 						}}
 					>
-						{#if alertModal.loading}<Spinner />{/if}
+						{#if alertModal.loading}<Loader2Icon class="size-4 animate-spin" />{/if}
 						{alertModal.actionLabel}
 					</AlertDialog.Action>
 				</div>

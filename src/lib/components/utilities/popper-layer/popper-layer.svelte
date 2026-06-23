@@ -1,6 +1,6 @@
- <script lang="ts">
-	import type { PopperLayerImplProps } from "./types.js";
-	import PopperLayerInner from "./popper-layer-inner.svelte";
+<script lang="ts">
+	import type { PopperLayerImplProps } from './types.js';
+	import PopperLayerInner from './popper-layer-inner.svelte';
 
 	let {
 		popper,
@@ -32,7 +32,7 @@
 		onCloseAutoFocus,
 		onOpenAutoFocus,
 		onFocusOutside,
-		interactOutsideBehavior = "close",
+		interactOutsideBehavior = 'close',
 		loop,
 		trapFocus = true,
 		isValidEvent = () => false,
@@ -40,11 +40,12 @@
 		isStatic = false,
 		ref,
 		shouldRender,
+		forceMount = false,
 		...restProps
 	}: PopperLayerImplProps = $props();
 </script>
 
-{#if shouldRender}
+{#if forceMount || shouldRender}
 	<PopperLayerInner
 		{popper}
 		{onEscapeKeydown}
@@ -81,8 +82,7 @@
 		{trapFocus}
 		{isValidEvent}
 		{onFocusOutside}
-		forceMount={false}
+		{forceMount}
 		{ref}
-		{...restProps}
-	/>
+		{...restProps} />
 {/if}

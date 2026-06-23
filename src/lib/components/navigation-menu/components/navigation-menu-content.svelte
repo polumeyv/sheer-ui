@@ -1,63 +1,64 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import { NavigationMenuContentState } from "../navigation-menu.svelte.js";
-	import NavigationMenuContentImpl from "./navigation-menu-content-impl.svelte";
-	import { createId } from "$lib/internal/create-id.js";
-	import { getDataTransitionAttrs } from "$lib/internal/attrs.js";
-	import type { NavigationMenuContentProps } from "$lib/types.js";
-	import Portal from "$lib/components/utilities/portal/portal.svelte";
-	import PresenceLayer from "$lib/components/utilities/presence-layer/presence-layer.svelte";
-	import Mounted from "$lib/components/utilities/mounted.svelte";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+
+	import { NavigationMenuContentState } from '../navigation-menu.svelte.js';
+	import NavigationMenuContentImpl from './navigation-menu-content-impl.svelte';
+
+	import Portal from '../../utilities/portal/portal.svelte';
+	import PresenceLayer from '../../utilities/presence-layer/presence-layer.svelte';
+
+	import { createId } from '$lib/internal/create-id.js';
+	import { getDataTransitionAttrs } from '$lib/internal/attrs.js';
+	import { cn } from '$lib/utils.js';
+
+	import type { NavigationMenuContentProps } from '$lib/types.js';
 
 	const uid = $props.id();
 
 	let {
 		ref = $bindable(null),
 		id = createId(uid),
+		class: className,
 		children,
 		child,
 		forceMount = false,
 		...restProps
-	}: NavigationMenuContentProps = $props();
+	}: NavigationMenuContentProps & {
+		class?: string;
+	} = $props();
 
 	const contentState = NavigationMenuContentState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(value) => (ref = value),
 		),
 	});
 
+	const contentClass = $derived(
+		cn(
+			'top-0 left-0 w-full p-2 pr-2.5 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[viewport=false]/navigation-menu:top-full group-data-[viewport=false]/navigation-menu:mt-1.5 group-data-[viewport=false]/navigation-menu:overflow-hidden group-data-[viewport=false]/navigation-menu:rounded-md group-data-[viewport=false]/navigation-menu:bg-popover group-data-[viewport=false]/navigation-menu:text-popover-foreground group-data-[viewport=false]/navigation-menu:shadow group-data-[viewport=false]/navigation-menu:ring-1 group-data-[viewport=false]/navigation-menu:ring-foreground/10 group-data-[viewport=false]/navigation-menu:duration-300 data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 data-[motion^=from-]:animate-in data-[motion^=from-]:fade-in data-[motion^=to-]:animate-out data-[motion^=to-]:fade-out **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none md:absolute md:w-auto group-data-[viewport=false]/navigation-menu:data-open:animate-in group-data-[viewport=false]/navigation-menu:data-open:fade-in-0 group-data-[viewport=false]/navigation-menu:data-open:zoom-in-95 group-data-[viewport=false]/navigation-menu:data-closed:animate-out group-data-[viewport=false]/navigation-menu:data-closed:fade-out-0 group-data-[viewport=false]/navigation-menu:data-closed:zoom-out-95',
+			className,
+		),
+	);
+
 	const mergedProps = $derived(
 		mergeProps(
-			{
-				"data-slot": "navigation-menu-content",
-				class: [
-					"transition-[opacity,scale,translate] data-[motion^=from-]:starting:opacity-0 data-[motion^=to-]:opacity-0 data-[motion=from-end]:starting:translate-x-52 data-[motion=from-start]:starting:-translate-x-52 data-[motion=to-end]:translate-x-52 data-[motion=to-start]:-translate-x-52 inset-s-0 top-0 w-full p-2 pe-2.5 md:absolute md:w-auto",
-					"group-data-[viewport=false]/navigation-menu:bg-popover group-data-[viewport=false]/navigation-menu:text-popover-foreground group-data-[viewport=false]/navigation-menu:starting:opacity-0 group-data-[viewport=false]/navigation-menu:starting:scale-95 group-data-[viewport=false]/navigation-menu:data-[state=closed]:opacity-0 group-data-[viewport=false]/navigation-menu:data-[state=closed]:scale-95 group-data-[viewport=false]/navigation-menu:top-full group-data-[viewport=false]/navigation-menu:mt-1.5 group-data-[viewport=false]/navigation-menu:overflow-hidden group-data-[viewport=false]/navigation-menu:rounded-md group-data-[viewport=false]/navigation-menu:border group-data-[viewport=false]/navigation-menu:shadow group-data-[viewport=false]/navigation-menu:duration-200 **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none",
-				],
-			},
 			restProps,
-			contentState.props
-		)
+			{
+				'data-slot': 'navigation-menu-content',
+				class: contentClass,
+			},
+			contentState.props,
+		),
 	);
 </script>
 
-<Portal
-	to={contentState.context.viewportRef.current || undefined}
-	disabled={!contentState.context.viewportRef.current}
->
-	<PresenceLayer
-		open={forceMount || contentState.open || contentState.isLastActiveValue}
-		ref={contentState.opts.ref}
-	>
+<Portal to={contentState.context.viewportRef.current || undefined} disabled={!contentState.context.viewportRef.current}>
+	<PresenceLayer open={forceMount || contentState.open || contentState.isLastActiveValue} ref={contentState.opts.ref}>
 		{#snippet presence({ transitionStatus })}
-			<NavigationMenuContentImpl
-				{...mergeProps(mergedProps, getDataTransitionAttrs(transitionStatus))}
-				{children}
-				{child}
-			/>
-			<Mounted bind:mounted={contentState.mounted} />
+			<NavigationMenuContentImpl {...mergeProps(mergedProps, getDataTransitionAttrs(transitionStatus))} {children} {child} />
 		{/snippet}
 	</PresenceLayer>
 </Portal>

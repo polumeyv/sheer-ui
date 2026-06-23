@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { untrack } from "svelte";
-	import { boxWith, mergeProps, type WritableBox } from "$lib/internal/toolbelt.js";
-	import type { SliderRootProps } from "../types.js";
-	import { SliderRootState } from "../slider.svelte.js";
-	import SliderRange from "./slider-range.svelte";
-	import SliderThumb from "./slider-thumb.svelte";
-	import { createId } from "$lib/internal/create-id.js";
-	import { watch } from "$lib/internal/toolbelt.js";
-	import { cn } from "$lib/utils.js";
+	import { untrack } from 'svelte';
+	import { boxWith, type WritableBox } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { SliderRootProps } from '../types.js';
+	import { SliderRootState } from '../slider.svelte.js';
+	import SliderRange from './slider-range.svelte';
+	import SliderThumb from './slider-thumb.svelte';
+	import { createId } from '$lib/internal/create-id.js';
+	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -24,10 +24,10 @@
 		min: minProp,
 		max: maxProp,
 		step = 1,
-		dir = "ltr",
+		dir = 'ltr',
 		autoSort = true,
-		orientation = "horizontal",
-		thumbPositioning = "contain",
+		orientation = 'horizontal',
+		thumbPositioning = 'contain',
 		trackPadding,
 		class: className,
 		...restProps
@@ -50,16 +50,17 @@
 
 	function repairUndefinedMultipleControlledValue() {
 		if (value !== undefined) return;
-		if (valueType !== "multiple") return;
+		if (valueType !== 'multiple') return;
 		value = [];
 	}
 
 	// SSR/initial setup: multiple Slider owns an array shape, even when empty.
 	repairUndefinedMultipleControlledValue();
 
-	watch.pre(
-		() => value,
-		() => {
+	$effect.pre(() => {
+		value;
+
+		untrack(() => {
 			/**
 			 * Parent spread-prop resets can make the bindable value undefined again.
 			 * Repairing multiple mode here prevents internal range math from reading
@@ -67,14 +68,14 @@
 			 * current min/step grid so existing onValueChange behavior is preserved.
 			 */
 			repairUndefinedMultipleControlledValue();
-		}
-	);
+		});
+	});
 
 	const rootState = SliderRootState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		value: boxWith(
 			() => value,
@@ -82,7 +83,7 @@
 				value = v;
 				// @ts-expect-error - we know
 				onValueChange(v);
-			}
+			},
 		) as WritableBox<number> | WritableBox<number[]>,
 		// @ts-expect-error - we know
 		onValueCommit: boxWith(() => onValueCommit),
@@ -101,15 +102,15 @@
 	const mergedProps = $derived(
 		mergeProps(
 			{
-				"data-slot": "slider",
+				'data-slot': 'slider',
 				class: cn(
-					"relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
-					className
+					'relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
+					className,
 				),
 			},
 			restProps,
-			rootState.props
-		)
+			rootState.props,
+		),
 	);
 </script>
 
@@ -124,8 +125,7 @@
 			<span
 				data-orientation={orientation}
 				data-slot="slider-track"
-				class="bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5"
-			>
+				class="bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5">
 				<SliderRange />
 			</span>
 			{#each thumbs as thumb (thumb)}

@@ -1,32 +1,20 @@
-import { createContext } from "svelte";
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
-import type { HTMLButtonAttributes } from "svelte/elements";
-import { watch } from "$lib/internal/toolbelt.js";
-import type {
-	BitsFocusEvent,
-	BitsKeyboardEvent,
-	BitsMouseEvent,
-	OnChangeFn,
-	RefAttachment,
-	WithRefOpts,
-} from "$lib/internal/types.js";
-import {
-	boolToStr,
-	createBitsAttrs,
-	getAriaChecked,
-	boolToEmptyStrOrUndef,
-} from "$lib/internal/attrs.js";
-import { kbd } from "$lib/internal/kbd.js";
-import { arraysAreEqual } from "$lib/internal/arrays.js";
-import { isHTMLElement } from "$lib/internal/is.js";
+import { createContext, untrack } from 'svelte';
+import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import type { HTMLButtonAttributes } from 'svelte/elements';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { boolToStr, createBitsAttrs, getAriaChecked, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
+import { kbd } from '$lib/internal/kbd.js';
+import { arraysAreEqual } from '$lib/internal/arrays.js';
+import { isHTMLElement } from '$lib/internal/is.js';
 
 const checkboxAttrs = createBitsAttrs({
-	component: "checkbox",
-	parts: ["root", "group", "group-label", "input"],
+	component: 'checkbox',
+	parts: ['root', 'group', 'group-label', 'input'],
 });
 
 interface CheckboxGroupStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			name: string | undefined;
 			disabled: boolean;
@@ -40,7 +28,7 @@ interface CheckboxGroupStateOpts
 
 export const [getCheckboxGroup, setCheckboxGroup] = createContext<CheckboxGroupState>();
 
-const missingContextErrorUrl = "https://svelte.dev/e/missing_context";
+const missingContextErrorUrl = 'https://svelte.dev/e/missing_context';
 
 export function getCheckboxGroupOr<TFallback>(fallback: TFallback): CheckboxGroupState | TFallback {
 	try {
@@ -90,12 +78,12 @@ export class CheckboxGroupState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "group",
-				"aria-labelledby": this.labelId,
-				"data-disabled": boolToEmptyStrOrUndef(this.opts.disabled.current),
-				[checkboxAttrs.group]: "",
+				role: 'group',
+				'aria-labelledby': this.labelId,
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
+				[checkboxAttrs.group]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -121,24 +109,25 @@ export class CheckboxGroupLabelState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-disabled": boolToEmptyStrOrUndef(this.group.opts.disabled.current),
-				[checkboxAttrs["group-label"]]: "",
+				'data-disabled': boolToEmptyStrOrUndef(this.group.opts.disabled.current),
+				[checkboxAttrs['group-label']]: '',
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 const [getCheckboxRoot, setCheckboxRoot] = createContext<CheckboxRootState>();
 
 interface CheckboxRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
 			required: boolean;
 			readonly: boolean;
 			name: string | undefined;
 			value: string | undefined;
-			type: HTMLButtonAttributes["type"];
+			type: HTMLButtonAttributes['type'];
 		}>,
 		WritableBoxedValues<{
 			checked: boolean;
@@ -181,37 +170,38 @@ export class CheckboxRootState {
 		 * Group -> item sync: external bind:value updates must drive each item's
 		 * bind:checked state so parent bindings and hidden input state stay aligned.
 		 */
-		watch.pre(
-			[() => $state.snapshot(this.group?.opts.value.current), () => this.opts.value.current],
-			([groupValue, value]) => {
+		$effect.pre(() => {
+			const groupValue = $state.snapshot(this.group?.opts.value.current);
+			const value = this.opts.value.current;
+			untrack(() => {
 				if (!groupValue || !value) return;
 				this.opts.checked.current = groupValue.includes(value);
-			}
-		);
+			});
+		});
 
 		/**
 		 * Item -> group sync: item toggles write back into the controlled group value.
 		 * addValue/removeValue are idempotent, which prevents value-array churn loops.
 		 */
-		watch.pre(
-			() => this.opts.checked.current,
-			(checked) => {
+		$effect.pre(() => {
+			const checked = this.opts.checked.current;
+			untrack(() => {
 				if (!this.group) return;
 				if (checked) {
 					this.group?.addValue(this.opts.value.current);
 				} else {
 					this.group?.removeValue(this.opts.value.current);
 				}
-			}
-		);
+			});
+		});
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
 		if (this.trueDisabled || this.trueReadonly) return;
 		if (e.key === kbd.ENTER) {
 			e.preventDefault();
-			if (this.opts.type.current === "submit") {
-				const form = e.currentTarget.closest("form");
+			if (this.opts.type.current === 'submit') {
+				const form = e.currentTarget.closest('form');
 				form?.requestSubmit();
 			}
 			return;
@@ -233,7 +223,7 @@ export class CheckboxRootState {
 
 	onclick(e: BitsMouseEvent) {
 		if (this.trueDisabled || this.trueReadonly) return;
-		if (this.opts.type.current === "submit") {
+		if (this.opts.type.current === 'submit') {
 			this.#toggle();
 			return;
 		}
@@ -250,27 +240,21 @@ export class CheckboxRootState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "checkbox",
+				role: 'checkbox',
 				type: this.opts.type.current,
 				disabled: this.trueDisabled,
-				"aria-checked": getAriaChecked(
-					this.opts.checked.current,
-					this.opts.indeterminate.current
-				),
-				"aria-required": boolToStr(this.trueRequired),
-				"aria-readonly": boolToStr(this.trueReadonly),
-				"data-disabled": boolToEmptyStrOrUndef(this.trueDisabled),
-				"data-readonly": boolToEmptyStrOrUndef(this.trueReadonly),
-				"data-state": getCheckboxDataState(
-					this.opts.checked.current,
-					this.opts.indeterminate.current
-				),
-				[checkboxAttrs.root]: "",
+				'aria-checked': getAriaChecked(this.opts.checked.current, this.opts.indeterminate.current),
+				'aria-required': boolToStr(this.trueRequired),
+				'aria-readonly': boolToStr(this.trueReadonly),
+				'data-disabled': boolToEmptyStrOrUndef(this.trueDisabled),
+				'data-readonly': boolToEmptyStrOrUndef(this.trueReadonly),
+				'data-state': getCheckboxDataState(this.opts.checked.current, this.opts.indeterminate.current),
+				[checkboxAttrs.root]: '',
 				//
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -282,10 +266,7 @@ export class CheckboxInputState {
 	readonly root: CheckboxRootState;
 	readonly trueChecked = $derived.by(() => {
 		if (!this.root.group) return this.root.opts.checked.current;
-		if (
-			this.root.opts.value.current !== undefined &&
-			this.root.group.opts.value.current.includes(this.root.opts.value.current)
-		) {
+		if (this.root.opts.value.current !== undefined && this.root.group.opts.value.current.includes(this.root.opts.value.current)) {
 			return true;
 		}
 		return false;
@@ -305,7 +286,7 @@ export class CheckboxInputState {
 	readonly props = $derived.by(
 		() =>
 			({
-				type: "checkbox",
+				type: 'checkbox',
 				checked: this.root.opts.checked.current === true,
 				disabled: this.root.trueDisabled,
 				required: this.root.trueRequired,
@@ -313,11 +294,11 @@ export class CheckboxInputState {
 				value: this.root.opts.value.current,
 				readonly: this.root.trueReadonly,
 				onfocus: this.onfocus,
-			}) as const
+			}) as const,
 	);
 }
 
 function getCheckboxDataState(checked: boolean, indeterminate: boolean) {
-	if (indeterminate) return "indeterminate";
-	return checked ? "checked" : "unchecked";
+	if (indeterminate) return 'indeterminate';
+	return checked ? 'checked' : 'unchecked';
 }

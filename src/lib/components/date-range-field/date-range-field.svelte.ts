@@ -1,32 +1,27 @@
-import type { DateValue } from "@internationalized/date";
-import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from "$lib/internal/toolbelt.js";
-import { watch } from "$lib/internal/toolbelt.js";
-import { createContext, onMount } from "svelte";
-import { DateFieldInputState, DateFieldRootState } from "../date-field/date-field.svelte.js";
-import { useId } from "$lib/internal/use-id.js";
-import type {
-	DateOnInvalid,
-	DateRange,
-	DateRangeValidator,
-	SegmentPart,
-} from "$lib/shared/index.js";
-import type { RefAttachment, WithRefOpts } from "$lib/internal/types.js";
-import { createBitsAttrs, boolToEmptyStrOrUndef } from "$lib/internal/attrs.js";
-import type { Granularity } from "$lib/shared/date/types.js";
-import { type Formatter, createFormatter } from "$lib/internal/date-time/formatter.js";
-import { removeDescriptionElement } from "$lib/internal/date-time/field/helpers.js";
-import { isBefore } from "$lib/internal/date-time/utils.js";
-import { getFirstSegment } from "$lib/internal/date-time/field/segments.js";
+import type { DateValue } from '@internationalized/date';
+import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { createContext, onMount, untrack } from 'svelte';
+import { DateFieldInputState, DateFieldRootState } from '../date-field/date-field.svelte.js';
+import { useId } from '$lib/internal/use-id.js';
+import type { DateOnInvalid, DateRange, DateRangeValidator, SegmentPart } from '$lib/shared/index.js';
+import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
+import type { Granularity } from '$lib/shared/date/types.js';
+import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
+import { removeDescriptionElement } from '$lib/internal/date-time/field/helpers.js';
+import { isBefore } from '$lib/internal/date-time/utils.js';
+import { getFirstSegment } from '$lib/internal/date-time/field/segments.js';
 
 export const dateRangeFieldAttrs = createBitsAttrs({
-	component: "date-range-field",
-	parts: ["root", "label"],
+	component: 'date-range-field',
+	parts: ['root', 'label'],
 });
 
 export const [getDateRangeFieldRoot, setDateRangeFieldRoot] = createContext<DateRangeFieldRootState>();
 
 interface DateRangeFieldRootStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		WritableBoxedValues<{
 			value: DateRange;
 			placeholder: DateValue;
@@ -71,9 +66,9 @@ export class DateRangeFieldRootState {
 	constructor(opts: DateRangeFieldRootStateOpts) {
 		this.opts = opts;
 		this.formatter = createFormatter({
-			initialLocale: this.opts.locale.current,
-			monthFormat: boxWith(() => "long"),
-			yearFormat: boxWith(() => "numeric"),
+			locale: this.opts.locale,
+			monthFormat: boxWith(() => 'long'),
+			yearFormat: boxWith(() => 'numeric'),
 		});
 		this.domContext = new DOMContext(this.opts.ref);
 		this.attachment = attachRef(this.opts.ref, (v) => (this.fieldNode = v));
@@ -82,18 +77,13 @@ export class DateRangeFieldRootState {
 			removeDescriptionElement(this.descriptionId, this.domContext.getDocument());
 		});
 
-		$effect(() => {
-			if (this.formatter.getLocale() === this.opts.locale.current) return;
-			this.formatter.setLocale(this.opts.locale.current);
-		});
-
 		/**
 		 * External bind:value updates replace the range object. startValue/endValue
 		 * are internal field cursor state, so they must be repaired from value.
 		 */
-		watch(
-			() => this.opts.value.current,
-			(value) => {
+		$effect(() => {
+			const value = this.opts.value.current;
+			untrack(() => {
 				if (value.start && value.end) {
 					this.opts.startValue.current = value.start;
 					this.opts.endValue.current = value.end;
@@ -104,35 +94,32 @@ export class DateRangeFieldRootState {
 					this.opts.startValue.current = undefined;
 					this.opts.endValue.current = undefined;
 				}
-			}
-		);
+			});
+		});
 
 		/**
 		 * The selected start date controls the placeholder used by both field inputs,
 		 * and parents using bind:placeholder should observe that state-machine update.
 		 */
-		watch(
-			() => this.opts.value.current,
-			(value) => {
+		$effect(() => {
+			const value = this.opts.value.current;
+			untrack(() => {
 				const startValue = value.start;
 				if (startValue && this.opts.placeholder.current !== startValue) {
 					this.opts.placeholder.current = startValue;
 				}
-			}
-		);
+			});
+		});
 
 		/**
 		 * Internal start/end field completion composes the public bind:value range object.
 		 * Parent bind:value only observes a completed range from segment entry.
 		 */
-		watch(
-			[() => this.opts.startValue.current, () => this.opts.endValue.current],
-			([startValue, endValue]) => {
-				if (
-					this.opts.value.current &&
-					this.opts.value.current.start === startValue &&
-					this.opts.value.current.end === endValue
-				) {
+		$effect(() => {
+			const startValue = this.opts.startValue.current;
+			const endValue = this.opts.endValue.current;
+			untrack(() => {
+				if (this.opts.value.current && this.opts.value.current.start === startValue && this.opts.value.current.end === endValue) {
 					return;
 				}
 
@@ -146,16 +133,12 @@ export class DateRangeFieldRootState {
 							end: endValue,
 						};
 					});
-				} else if (
-					this.opts.value.current &&
-					this.opts.value.current.start &&
-					this.opts.value.current.end
-				) {
+				} else if (this.opts.value.current && this.opts.value.current.start && this.opts.value.current.end) {
 					this.opts.value.current.start = undefined;
 					this.opts.value.current.end = undefined;
 				}
-			}
-		);
+			});
+		});
 	}
 
 	readonly validationStatus = $derived.by(() => {
@@ -170,7 +153,7 @@ export class DateRangeFieldRootState {
 
 		if (msg) {
 			return {
-				reason: "custom",
+				reason: 'custom',
 				message: msg,
 			} as const;
 		}
@@ -178,18 +161,15 @@ export class DateRangeFieldRootState {
 		const minValue = this.opts.minValue.current;
 		if (minValue && value.start && isBefore(value.start, minValue)) {
 			return {
-				reason: "min",
+				reason: 'min',
 			} as const;
 		}
 
 		const maxValue = this.opts.maxValue.current;
 
-		if (
-			(maxValue && value.end && isBefore(maxValue, value.end)) ||
-			(maxValue && value.start && isBefore(maxValue, value.start))
-		) {
+		if ((maxValue && value.end && isBefore(maxValue, value.end)) || (maxValue && value.start && isBefore(maxValue, value.start))) {
 			return {
-				reason: "max",
+				reason: 'max',
 			} as const;
 		}
 
@@ -211,11 +191,11 @@ export class DateRangeFieldRootState {
 		() =>
 			({
 				id: this.opts.id.current,
-				role: "group",
-				[dateRangeFieldAttrs.root]: "",
-				"data-invalid": boolToEmptyStrOrUndef(this.isInvalid),
+				role: 'group',
+				[dateRangeFieldAttrs.root]: '',
+				'data-invalid': boolToEmptyStrOrUndef(this.isInvalid),
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
@@ -247,17 +227,18 @@ export class DateRangeFieldLabelState {
 		() =>
 			({
 				id: this.opts.id.current,
-				"data-invalid": boolToEmptyStrOrUndef(this.root.isInvalid),
-				"data-disabled": boolToEmptyStrOrUndef(this.root.opts.disabled.current),
-				[dateRangeFieldAttrs.label]: "",
+				'data-invalid': boolToEmptyStrOrUndef(this.root.isInvalid),
+				'data-disabled': boolToEmptyStrOrUndef(this.root.opts.disabled.current),
+				[dateRangeFieldAttrs.label]: '',
 				onclick: this.#onclick,
 				...this.attachment,
-			}) as const
+			}) as const,
 	);
 }
 
 interface DateRangeFieldInputStateOpts
-	extends WithRefOpts,
+	extends
+		WithRefOpts,
 		WritableBoxedValues<{
 			value: DateValue | undefined;
 		}>,
@@ -266,11 +247,11 @@ interface DateRangeFieldInputStateOpts
 		}> {}
 
 export class DateRangeFieldInputState {
-	static create(opts: Omit<DateRangeFieldInputStateOpts, "value">, type: "start" | "end") {
+	static create(opts: Omit<DateRangeFieldInputStateOpts, 'value'>, type: 'start' | 'end') {
 		const root = getDateRangeFieldRoot();
 		const fieldState = DateFieldRootState.create(
 			{
-				value: type === "start" ? root.opts.startValue : root.opts.endValue,
+				value: type === 'start' ? root.opts.startValue : root.opts.endValue,
 				disabled: root.opts.disabled,
 				readonly: root.opts.readonly,
 				readonlySegments: root.opts.readonlySegments,
@@ -287,7 +268,7 @@ export class DateRangeFieldInputState {
 				errorMessageId: root.opts.errorMessageId,
 				isInvalidProp: boxWith(() => root.isInvalid),
 			},
-			root
+			root,
 		);
 		return new DateFieldInputState({ name: opts.name, id: opts.id, ref: opts.ref }, fieldState);
 	}

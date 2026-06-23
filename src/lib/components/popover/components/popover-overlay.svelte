@@ -1,37 +1,63 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import { PopoverOverlayState } from "../popover.svelte.js";
-	import type { PopoverOverlayProps } from "../types.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import type { PopoverTriggerProps } from '../types.js';
+	import { PopoverTriggerState } from '../popover.svelte.js';
+
+	import FloatingLayerAnchor from '../../utilities/floating-layer/components/floating-layer-anchor.svelte';
+
+	import { createId } from '$lib/internal/create-id.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
 	let {
-		id = createId(uid),
-		forceMount = false,
-		child,
 		children,
+		child,
+		id = createId(uid),
 		ref = $bindable(null),
+		class: className,
+		type = 'button',
+		disabled = false,
+		openOnHover = false,
+		openDelay = 700,
+		closeDelay = 300,
 		...restProps
-	}: PopoverOverlayProps = $props();
+	}: PopoverTriggerProps & {
+		class?: string;
+	} = $props();
 
-	const overlayState = PopoverOverlayState.create({
+	const triggerState = PopoverTriggerState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(value) => (ref = value),
 		),
+		disabled: boxWith(() => Boolean(disabled)),
+		openOnHover: boxWith(() => openOnHover),
+		openDelay: boxWith(() => openDelay),
+		closeDelay: boxWith(() => closeDelay),
 	});
 
-	const mergedProps = $derived(mergeProps(restProps, overlayState.props));
+	const mergedProps = $derived(
+		mergeProps(
+			restProps,
+			{
+				'data-slot': 'popover-trigger',
+				class: cn('', className),
+			},
+			triggerState.props,
+			{ type },
+		),
+	);
 </script>
 
-{#if overlayState.shouldRender || forceMount}
+<FloatingLayerAnchor {id} ref={triggerState.opts.ref}>
 	{#if child}
-		{@render child({ props: mergeProps(mergedProps), ...overlayState.snippetProps })}
+		{@render child({ props: mergedProps })}
 	{:else}
-		<div {...mergeProps(mergedProps)}>
-			{@render children?.(overlayState.snippetProps)}
-		</div>
+		<button {...mergedProps}>
+			{@render children?.()}
+		</button>
 	{/if}
-{/if}
+</FloatingLayerAnchor>

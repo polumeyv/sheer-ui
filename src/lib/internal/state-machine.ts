@@ -1,4 +1,4 @@
-import { simpleBox, type WritableBox } from "$lib/internal/toolbelt.js";
+import { simpleBox, type WritableBox } from '$lib/internal/tools/index.js';
 
 interface Machine<S> {
 	[k: string]: { [k: string]: S };
@@ -8,9 +8,7 @@ type MachineEvent<T> = keyof UnionToIntersection<T[keyof T]>;
 
 // 🤯 https://fettblog.eu/typescript-union-to-intersection/
 // oxlint-disable-next-line no-explicit-any
-type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any
-	? R
-	: never;
+type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never;
 
 export class StateMachine<M> {
 	readonly state: WritableBox<MachineState<M>>;

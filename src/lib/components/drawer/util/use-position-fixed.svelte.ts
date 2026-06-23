@@ -1,7 +1,7 @@
-import type { Box, Getter } from "$lib/internal/toolbelt.js";
-import { isSafari } from "./internal/browser.js";
-import { watch } from "$lib/internal/toolbelt.js";
-import { windowScroll } from "$lib/internal/window-state.svelte.js";
+import type { Box, Getter } from '$lib/internal/tools/index.js';
+import { isSafari } from './internal/browser.js';
+import { untrack } from 'svelte';
+import { scrollY } from 'svelte/reactivity/window';
 
 let previousBodyPosition: Record<string, string> | null = null;
 
@@ -29,7 +29,7 @@ export function usePositionFixed({
 } & {
 	hasBeenOpened: Getter<boolean>;
 }) {
-	let activeUrl = $state(typeof window !== "undefined" ? window.location.href : "");
+	let activeUrl = $state(typeof window !== 'undefined' ? window.location.href : '');
 
 	function setPositionFixed() {
 		// All browsers on iOS will return true here.
@@ -42,19 +42,19 @@ export function usePositionFixed({
 				top: document.body.style.top,
 				left: document.body.style.left,
 				height: document.body.style.height,
-				right: "unset",
+				right: 'unset',
 			};
 
 			// Update the dom inside an animation frame
 			const { scrollX, innerHeight } = window;
-			const scrollPos = windowScroll.current.scrollY;
+			const scrollPos = scrollY.current ?? 0;
 
-			document.body.style.setProperty("position", "fixed", "important");
+			document.body.style.setProperty('position', 'fixed', 'important');
 			Object.assign(document.body.style, {
 				top: `${-scrollPos}px`,
 				left: `${-scrollX}px`,
-				right: "0px",
-				height: "auto",
+				right: '0px',
+				height: 'auto',
 			});
 
 			window.setTimeout(
@@ -67,7 +67,7 @@ export function usePositionFixed({
 							document.body.style.top = `${-(scrollPos + bottomBarHeight)}px`;
 						}
 					}),
-				300
+				300,
 			);
 		}
 	}
@@ -97,32 +97,34 @@ export function usePositionFixed({
 		}
 	}
 
-	watch([() => modal.current, () => activeUrl], () => {
-		if (!modal.current) return;
-		return () => {
-			if (typeof document === "undefined") return;
-			// Another drawer is opened, safe to ignore the execution
-			const hasDrawerOpened = !!document.querySelector("[data-vaul-drawer]");
-			if (hasDrawerOpened) return;
+	$effect(() => {
+		const _modal = modal.current;
+		const _activeUrl = activeUrl;
+		return untrack(() => {
+			if (!modal.current) return;
+			return () => {
+				if (typeof document === 'undefined') return;
+				// Another drawer is opened, safe to ignore the execution
+				const hasDrawerOpened = !!document.querySelector('[data-vaul-drawer]');
+				if (hasDrawerOpened) return;
 
-			restorePositionSetting();
-		};
+				restorePositionSetting();
+			};
+		});
 	});
 
-	watch(
-		[
-			() => open.current,
-			() => hasBeenOpened(),
-			() => activeUrl,
-			() => modal.current,
-			() => nested.current,
-		],
-		() => {
+	$effect(() => {
+		const _open = open.current;
+		const _hasBeenOpened = hasBeenOpened();
+		const _activeUrl = activeUrl;
+		const _modal = modal.current;
+		const _nested = nested.current;
+		untrack(() => {
 			if (nested.current || !hasBeenOpened()) return;
 			// This is needed to force Safari toolbar to show **before** the drawer starts animating to prevent a gnarly shift from happening
 			if (open.current) {
 				// avoid for standalone mode (PWA)
-				const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+				const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 				!isStandalone && setPositionFixed();
 
 				if (!modal.current) {
@@ -133,8 +135,8 @@ export function usePositionFixed({
 			} else {
 				restorePositionSetting();
 			}
-		}
-	);
+		});
+	});
 
 	return { restorePositionSetting };
 }

@@ -1,12 +1,3 @@
-export function getFirstNonCommentChild(element: HTMLElement | null) {
-	if (!element) return null;
-	for (const child of element.childNodes) {
-		if (child.nodeType !== Node.COMMENT_NODE) {
-			return child;
-		}
-	}
-	return null;
-}
 
 /**
  * Determines if the click event truly occurred outside the content node.
@@ -17,7 +8,5 @@ export function isClickTrulyOutside(event: PointerEvent, contentNode: HTMLElemen
 	const { clientX, clientY } = event;
 	const rect = contentNode.getBoundingClientRect();
 
-	return (
-		clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom
-	);
+	return clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom;
 }

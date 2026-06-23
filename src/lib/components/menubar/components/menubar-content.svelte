@@ -1,20 +1,21 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { MenubarContentProps } from "../types.js";
-	import { MenubarContentState } from "../menubar.svelte.js";
-	import MenuContent from "$lib/components/menu/components/menu-content.svelte";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { MenubarContentProps } from '../types.js';
+	import { MenubarContentState } from '../menubar.svelte.js';
+	import MenuContent from '$lib/components/menu/components/menu-content.svelte';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
 	let {
 		ref = $bindable(null),
-		interactOutsideBehavior = "close",
+		interactOutsideBehavior = 'close',
 		id = createId(uid),
 		sideOffset = 8,
 		alignOffset = -4,
-		align = "start",
-		side = "bottom",
+		align = 'start',
+		side = 'bottom',
 		onInteractOutside = () => {},
 		onFocusOutside = () => {},
 		onCloseAutoFocus = () => {},
@@ -27,7 +28,7 @@
 		interactOutsideBehavior: boxWith(() => interactOutsideBehavior),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		onInteractOutside: boxWith(() => onInteractOutside),
 		onFocusOutside: boxWith(() => onFocusOutside),
@@ -38,12 +39,4 @@
 	const mergedProps = $derived(mergeProps(restProps, contentState.props));
 </script>
 
-<MenuContent
-	bind:ref
-	{...mergedProps}
-	{...contentState.popperProps}
-	{sideOffset}
-	{alignOffset}
-	{align}
-	{side}
-	preventScroll={false} />
+<MenuContent bind:ref {...mergedProps} {...contentState.popperProps} {sideOffset} {alignOffset} {align} {side} preventScroll={false} />

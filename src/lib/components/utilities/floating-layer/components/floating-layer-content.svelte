@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import { FloatingContentState } from "../use-floating-layer.svelte.js";
-	import type { ContentImplProps } from "./index.js";
-	import { useId } from "$lib/internal/use-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import { FloatingContentState } from '../use-floating-layer.svelte.js';
+	import type { ContentImplProps } from './index.js';
+	import { useId } from '$lib/internal/use-id.js';
 
 	let {
 		content,
-		side = "bottom",
+		side = 'bottom',
 		sideOffset = 0,
-		align = "center",
+		align = 'center',
 		alignOffset = 0,
 		id,
 		arrowPadding = 0,
@@ -17,10 +18,10 @@
 		collisionPadding = 0,
 		hideWhenDetached = false,
 		onPlaced = () => {},
-		sticky = "partial",
-		updatePositionStrategy = "optimized",
-		strategy = "fixed",
-		dir = "ltr",
+		sticky = 'partial',
+		updatePositionStrategy = 'optimized',
+		strategy = 'fixed',
+		dir = 'ltr',
 		style = {},
 		wrapperId = useId(),
 		customAnchor = null,
@@ -50,15 +51,15 @@
 			wrapperId: boxWith(() => wrapperId),
 			customAnchor: boxWith(() => customAnchor),
 		},
-		tooltip
+		tooltip,
 	);
 
 	const mergedProps = $derived(
 		mergeProps(contentState.wrapperProps, {
 			style: {
-				pointerEvents: "auto",
+				pointerEvents: 'auto',
 			},
-		})
+		}),
 	);
 </script>
 

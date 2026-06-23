@@ -1,5 +1,5 @@
-import { boxWith, type Getter, type ReadableBox } from "$lib/internal/toolbelt.js";
-import { type BitsConfigState, getBitsConfig } from "./bits-config.js";
+import { boxWith, type Getter, type ReadableBox } from '$lib/internal/tools/index.js';
+import { type BitsConfigState, getBitsConfig } from './bits-config.js';
 
 /**
  * Creates a generic prop resolver that follows a standard priority chain:
@@ -7,10 +7,7 @@ import { type BitsConfigState, getBitsConfig } from "./bits-config.js";
  * 2. The config default value (if no getter prop value is defined)
  * 3. The fallback value (if no config value found)
  */
-function createPropResolver<T>(
-	configOption: (config: BitsConfigState["opts"]) => { current: T | undefined },
-	fallback: T
-) {
+function createPropResolver<T>(configOption: (config: BitsConfigState['opts']) => { current: T | undefined }, fallback: T) {
 	return (getProp: Getter<T | undefined>): ReadableBox<T> => {
 		const config = getBitsConfig();
 		return boxWith(() => {
@@ -31,11 +28,11 @@ function createPropResolver<T>(
  *
  * Default value: `"en"`
  */
-export const resolveLocaleProp = createPropResolver((config) => config.defaultLocale, "en");
+export const resolveLocaleProp = createPropResolver((config) => config.defaultLocale, 'en');
 
 /**
  * Resolves a portal's `to` value using the prop, the config default, or a fallback.
  *
  * Default value: `"body"`
  */
-export const resolvePortalToProp = createPropResolver((config) => config.defaultPortalTo, "body");
+export const resolvePortalToProp = createPropResolver((config) => config.defaultPortalTo, 'body');

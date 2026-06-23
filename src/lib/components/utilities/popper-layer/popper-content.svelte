@@ -9,6 +9,7 @@
 		onPlaced,
 		...restProps
 	}: FloatingLayerContentImplProps & { isStatic: boolean } = $props();
+	
 </script>
 
 {#if isStatic}

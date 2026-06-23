@@ -1,10 +1,11 @@
 /**
  * The single source of truth for the demo app: every component the library
  * exposes, in alphabetical order. The sidebar nav and the `[slug]` route both
- * read from here. Each entry's `slug` matches a folder under `$lib/registry/examples/`.
+ * read from here. Each entry's `slug` prefixes its demo files in `$lib/registry/`
+ * (e.g. `button-demo.svelte`, `button-with-icon.svelte`).
  */
 export type ComponentMeta = {
-	/** URL segment + `$lib/registry/examples/<slug>` folder name + `$lib/components/<slug>` import path */
+	/** URL segment + `$lib/registry/<slug>-*.svelte` demo prefix + `$lib/components/<slug>` import path */
 	slug: string;
 	/** Display name */
 	name: string;
@@ -71,7 +72,6 @@ export const components: ComponentMeta[] = [
 	{ slug: 'skeleton', name: 'Skeleton', description: 'Show a placeholder while content is loading.' },
 	{ slug: 'slider', name: 'Slider', description: 'An input where the user selects a value from within a given range.' },
 	{ slug: 'sonner', name: 'Sonner', description: 'An opinionated toast component.' },
-	{ slug: 'spinner', name: 'Spinner', description: 'An indicator that shows a loading state.' },
 	{ slug: 'switch', name: 'Switch', description: 'A control that allows the user to toggle between checked and not checked.' },
 	{ slug: 'switch-native', name: 'Switch (Native)', description: 'A native checkbox-based switch control.' },
 	{ slug: 'table', name: 'Table', description: 'A responsive table component.' },

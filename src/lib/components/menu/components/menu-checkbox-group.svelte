@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { boxWith, mergeProps } from "$lib/internal/toolbelt.js";
-	import type { MenuCheckboxGroupProps } from "../types.js";
-	import { MenuCheckboxGroupState } from "../menu.svelte.js";
-	import { createId } from "$lib/internal/create-id.js";
+	import { boxWith } from '$lib/internal/tools/index.js';
+	import { mergeProps } from '$lib/merge-props.js';
+	import type { MenuCheckboxGroupProps } from '../types.js';
+	import { MenuCheckboxGroupState } from '../menu.svelte.js';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -22,12 +23,12 @@
 			(v) => {
 				value = $state.snapshot(v);
 				onValueChange(v);
-			}
+			},
 		),
 		onValueChange: boxWith(() => onValueChange),
 		ref: boxWith(
 			() => ref,
-			(v) => (ref = v)
+			(v) => (ref = v),
 		),
 		id: boxWith(() => id),
 	});

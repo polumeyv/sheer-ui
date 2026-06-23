@@ -1,10 +1,7 @@
-import type { Getter } from "$lib/internal/toolbelt.js";
-import { createAttachmentKey, type Attachment } from "svelte/attachments";
+import type { Getter } from '$lib/internal/tools/index.js';
+import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 
-export function resizeAttachment<T extends Element = HTMLElement>(
-	onResize: ResizeObserverCallback,
-	options?: ResizeObserverOptions
-) {
+export function resizeAttachment<T extends Element = HTMLElement>(onResize: ResizeObserverCallback, options?: ResizeObserverOptions) {
 	return {
 		[createAttachmentKey()]: ((node: T) => {
 			let rAF = 0;

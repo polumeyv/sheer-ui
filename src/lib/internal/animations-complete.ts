@@ -1,11 +1,10 @@
-import { onDestroy, tick } from "svelte";
-import { type ReadableBoxedValues } from "$lib/internal/toolbelt.js";
+import { onDestroy, tick } from 'svelte';
+import { type ReadableBoxedValues } from '$lib/internal/tools/index.js';
 
-interface AnimationsCompleteOpts
-	extends ReadableBoxedValues<{
-		ref: HTMLElement | null;
-		deferToTick: boolean;
-	}> {}
+interface AnimationsCompleteOpts extends ReadableBoxedValues<{
+	ref: HTMLElement | null;
+	deferToTick: boolean;
+}> {}
 
 export class AnimationsComplete {
 	#opts: AnimationsCompleteOpts;
@@ -34,7 +33,7 @@ export class AnimationsComplete {
 		const node = this.#opts.ref.current;
 		if (!node) return;
 
-		if (typeof node.getAnimations !== "function") {
+		if (typeof node.getAnimations !== 'function') {
 			this.#executeCallback(fn);
 			return;
 		}
@@ -62,9 +61,7 @@ export class AnimationsComplete {
 				.catch(() => {
 					if (runId !== this.#runId) return;
 					const currentAnimations = node.getAnimations();
-					const hasRunningAnimations = currentAnimations.some(
-						(animation) => animation.pending || animation.playState !== "finished"
-					);
+					const hasRunningAnimations = currentAnimations.some((animation) => animation.pending || animation.playState !== 'finished');
 
 					if (hasRunningAnimations) {
 						waitForAnimations();
@@ -89,7 +86,7 @@ export class AnimationsComplete {
 
 		this.#currentFrame = window.requestAnimationFrame(() => {
 			this.#currentFrame = null;
-			const startingStyleAttr = "data-starting-style";
+			const startingStyleAttr = 'data-starting-style';
 
 			if (!node.hasAttribute(startingStyleAttr)) {
 				requestWaitForAnimations();
