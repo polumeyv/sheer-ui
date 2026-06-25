@@ -6,7 +6,6 @@ export type ClassValue = Parameters<typeof join>[number];
  * Plain class join — conflict resolution is an authoring-time invariant, not a
  * runtime feature. Base/variant/caller classes must never set the same property
  * for the same modifier prefix (use a trailing `!` for deliberate overrides).
- * variants.test.ts guards the library; the runtime conflict warning is disabled.
  * Ships zero tailwind-merge bytes in production.
  */
 export const cn = join;
