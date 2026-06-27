@@ -320,7 +320,7 @@
 	"devDependencies": {
 		"@fontsource-variable/inter": "^5.2.8",
 		"@sveltejs/adapter-auto": "^7.0.1",
-		"@polumeyv/lib": "workspace:*",
+		"@polumeyv/utilities": "workspace:*",
 		"@internationalized/date": "^3.12.0",
 		"effect": "catalog:infra",
 		"@sveltejs/kit": "^2.65.1",

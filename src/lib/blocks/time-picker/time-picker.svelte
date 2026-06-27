@@ -3,20 +3,19 @@
 	import { cn } from '$lib/utils.js';
 	import { buttonVariants } from '$lib/components/button';
 	import * as NativeSelect from '$lib/components/native-select';
-	import type { TimeString } from '@polumeyv/lib/schemas';
 	import { compareTime, generateTimeSlots, isTimeInRange, type TimeSlot, b_HOURS, EXTENDED_HOURS } from './time-slots';
 
 	type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';
 
 	interface Props {
-		value?: TimeString;
+		value?: string;
 		placeholder?: string;
 		disabled?: boolean;
 		class?: string;
 		triggerClass?: string;
 		align?: 'start' | 'center' | 'end';
 		side?: 'top' | 'right' | 'bottom' | 'left';
-		onValueChange?: (value: TimeString | undefined) => void;
+		onValueChange?: (value: string | undefined) => void;
 		// Time slot configuration
 		preset?: TimeSlotPreset;
 		slots?: TimeSlot[];
@@ -85,8 +84,7 @@
 	});
 
 	function handleValueChange(newValue: string | undefined) {
-		// Select erases the slot's brand to string; every selectable value is a TimeSlot.value, so it is sound.
-		value = newValue as TimeString | undefined;
+		value = newValue;
 		onValueChange?.(value);
 	}
 </script>

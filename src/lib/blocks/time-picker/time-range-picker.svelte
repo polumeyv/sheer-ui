@@ -4,14 +4,12 @@
 	import { buttonVariants } from '$lib/components/button';
 	import * as NativeSelect from '$lib/components/native-select';
 	import { Popover } from '$lib/components/popover';
-	import { formatTimeDisplay } from '@polumeyv/lib/public';
-	import type { TimeString } from '@polumeyv/lib/schemas';
+	import { formatTimeDisplay, formatDuration } from '@polumeyv/utilities';
 	import {
 		generateTimeSlots,
 		isTimeInRange,
 		compareTime,
 		getTimeDuration,
-		formatDuration,
 		type TimeSlot,
 		type TimeRange,
 		b_HOURS,
@@ -20,7 +18,7 @@
 
 	// The internal TimeRange keeps plain strings ('' = unset end); every set value comes from a TimeSlot,
 	// so casting at the guarded display seam is sound.
-	const fmt = (t: string) => formatTimeDisplay(t as TimeString);
+	const fmt = (t: string) => formatTimeDisplay(t);
 
 	type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';
 
