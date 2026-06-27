@@ -104,7 +104,7 @@
 	{@render child({ checked, indeterminate, props: mergedProps })}
 {:else}
 	<div {...mergedProps}>
-		<span class="pointer-events-none absolute inset-s-2 flex size-3.5 items-center justify-center">
+		<span class="pointer-events-none absolute inset-s-2 grid size-3.5 place-items-center">
 			{#if indeterminate}
 				<MinusIcon class="size-4" />
 			{:else}

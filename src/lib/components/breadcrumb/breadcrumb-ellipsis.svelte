@@ -15,7 +15,7 @@ let {
 	data-slot="breadcrumb-ellipsis"
 	role="presentation"
 	aria-hidden="true"
-	class={cn("flex size-9 items-center justify-center", className)}
+	class={cn("grid size-9 place-items-center", className)}
 	{...restProps}
 >
 	<EllipsisIcon class="size-4" />

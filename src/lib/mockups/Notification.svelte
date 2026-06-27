@@ -18,7 +18,7 @@
 	<div class="flex items-start gap-3">
 		<!-- Icon area -->
 		{#if icon}
-			<div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+			<div class="grid size-9 shrink-0 place-items-center rounded-lg bg-muted">
 				{@render icon()}
 			</div>
 		{/if}

@@ -34,7 +34,7 @@
 					{/each}
 				</NativeSelect.Root>
 			</div>
-			<div class="flex w-25 items-center justify-center text-sm font-medium">
+			<div class="grid w-25 place-items-center text-sm font-medium">
 				Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
 			</div>
 			{#snippet navBtn(onclick: () => void, disabled: boolean, label: string, Icon: typeof ChevronLeftIcon, lgOnly = false)}

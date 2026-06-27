@@ -8,7 +8,7 @@
 		<Pagination.PrevButton />
 		{#each pages as page (page.key)}
 			{#if page.type === 'ellipsis'}
-				<span class="flex size-9 items-center justify-center">
+				<span class="grid size-9 place-items-center">
 					<MoreHorizontalIcon class="size-4" />
 					<span class="sr-only">More pages</span>
 				</span>

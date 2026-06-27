@@ -66,7 +66,7 @@
 				contentClass,
 			)}
 			{sideOffset}>
-			<Select.ScrollUpButton class="flex w-full items-center justify-center">
+			<Select.ScrollUpButton class="grid w-full place-items-center">
 				<ChevronsUp class="size-3" />
 			</Select.ScrollUpButton>
 			<Select.Viewport class="p-1">
@@ -90,7 +90,7 @@
 					</Select.Item>
 				{/each}
 			</Select.Viewport>
-			<Select.ScrollDownButton class="flex w-full items-center justify-center">
+			<Select.ScrollDownButton class="grid w-full place-items-center">
 				<ChevronsDown class="size-3" />
 			</Select.ScrollDownButton>
 		</Select.Content>

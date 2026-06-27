@@ -38,7 +38,7 @@
 	aria-controls={id}
 	aria-label={open ? 'Close menu' : 'Open menu'}
 	class={cn(
-		'group md:hidden inline-flex size-10 items-center justify-center relative z-50 bg-transparent border-0 cursor-pointer text-current',
+		'group md:hidden inline-grid size-10 place-items-center relative z-50 bg-transparent border-0 cursor-pointer text-current',
 		className
 	)}
 >

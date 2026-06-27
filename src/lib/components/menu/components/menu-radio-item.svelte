@@ -55,7 +55,7 @@
 	{@render child({ props: mergedProps, checked: radioItemState.isChecked })}
 {:else}
 	<div {...mergedProps}>
-		<span class="pointer-events-none absolute inset-s-2 flex size-3.5 items-center justify-center">
+		<span class="pointer-events-none absolute inset-s-2 grid size-3.5 place-items-center">
 			{#if radioItemState.isChecked}
 				<CircleIcon class="size-2 fill-current" />
 			{/if}

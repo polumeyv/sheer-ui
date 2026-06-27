@@ -8,7 +8,7 @@
 		{#each Array.from({ length: 5 }, (_, i) => i + 1) as n (n)}
 			<Carousel.Item>
 				<Card.Root>
-					<Card.Content class="flex aspect-square items-center justify-center p-6">
+					<Card.Content class="grid aspect-square place-items-center p-6">
 						<span class="text-4xl font-semibold">{n}</span>
 					</Card.Content>
 				</Card.Root>
