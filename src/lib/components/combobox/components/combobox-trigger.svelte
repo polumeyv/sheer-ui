@@ -20,7 +20,7 @@
 		mergeProps(
 			{
 				'data-slot': 'combobox-trigger',
-				class: 'text-muted-foreground absolute inset-e-0 top-0 flex h-10 w-10 items-center justify-center disabled:opacity-50',
+				class: 'text-muted-foreground absolute inset-e-0 top-0 grid h-10 w-10 place-items-center disabled:opacity-50',
 			},
 			restProps,
 			triggerState.props,

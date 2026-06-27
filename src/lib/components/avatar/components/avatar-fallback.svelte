@@ -21,7 +21,7 @@
 		mergeProps(
 			{
 				'data-slot': 'avatar-fallback',
-				class: 'bg-muted flex size-full items-center justify-center rounded-full',
+				class: 'bg-muted grid size-full place-items-center rounded-full',
 			},
 			restProps,
 			fallbackState.props,

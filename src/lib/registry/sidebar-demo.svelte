@@ -46,7 +46,7 @@
 				<Sidebar.Trigger />
 				<span class="text-sm font-medium">Dashboard</span>
 			</header>
-			<div class="flex flex-1 items-center justify-center p-4 text-sm text-muted-foreground">
+			<div class="grid flex-1 place-items-center p-4 text-sm text-muted-foreground">
 				Content area
 			</div>
 		</Sidebar.Inset>

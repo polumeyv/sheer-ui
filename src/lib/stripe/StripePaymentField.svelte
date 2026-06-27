@@ -53,7 +53,7 @@
 
 <div class="relative min-h-100">
 	{#if loading}
-		<div class="absolute inset-0 flex items-center justify-center">
+		<div class="absolute inset-0 grid place-items-center">
 			<Loader2Icon class="size-20 animate-spin text-muted" />
 		</div>
 	{/if}

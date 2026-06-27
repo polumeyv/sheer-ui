@@ -28,7 +28,7 @@
 	popovertarget={id}
 	aria-expanded={open}
 	aria-label={open ? 'Close menu' : 'Open menu'}
-	class={cn('hamburger md:hidden inline-flex size-10 items-center justify-center', className)}>
+	class={cn('hamburger md:hidden inline-grid size-10 place-items-center', className)}>
 	<span class="bar bar-top"></span>
 	<span class="bar bar-mid"></span>
 	<span class="bar bar-bot"></span>

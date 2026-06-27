@@ -72,11 +72,11 @@
 	{...restProps}>
 	{#snippet children({ months, weekdays })}
 		<Calendar.Header class="flex items-center justify-between">
-			<Calendar.PrevButton class="rounded bg-background-alt p-2 hover:bg-muted inline-flex items-center justify-center">
+			<Calendar.PrevButton class="rounded bg-background-alt p-2 hover:bg-muted inline-grid place-items-center">
 				<ChevronLeftIcon class="size-5" />
 			</Calendar.PrevButton>
 			<Calendar.Heading class="text-md font-medium" />
-			<Calendar.NextButton class="rounded bg-background-alt p-2 hover:bg-muted inline-flex items-center justify-center">
+			<Calendar.NextButton class="rounded bg-background-alt p-2 hover:bg-muted inline-grid place-items-center">
 				<ChevronRightIcon class="size-5" />
 			</Calendar.NextButton>
 		</Calendar.Header>
@@ -99,7 +99,7 @@
 									{#each weekDates as date, i (i)}
 										<Calendar.Cell {date} month={month.value} class="p-0! relative size-10 text-center text-sm">
 											<Calendar.Day
-												class="group relative inline-flex size-10 items-center justify-center whitespace-nowrap rounded p-0 text-sm font-normal text-foreground not-data-selected:hover:bg-muted data-unavailable:text-muted-foreground data-unavailable:line-through data-unavailable:pointer-events-none data-disabled:text-muted-foreground/50 data-disabled:pointer-events-none data-outside-month:text-muted-foreground/50 data-outside-month:pointer-events-none data-selected:bg-foreground data-selected:text-background data-selected:font-medium">
+												class="group relative inline-grid size-10 place-items-center whitespace-nowrap rounded p-0 text-sm font-normal text-foreground not-data-selected:hover:bg-muted data-unavailable:text-muted-foreground data-unavailable:line-through data-unavailable:pointer-events-none data-disabled:text-muted-foreground/50 data-disabled:pointer-events-none data-outside-month:text-muted-foreground/50 data-outside-month:pointer-events-none data-selected:bg-foreground data-selected:text-background data-selected:font-medium">
 												<div
 													class="bg-foreground group-data-selected:bg-background group-data-today:block absolute top-1.25 hidden size-1 rounded-full">
 												</div>

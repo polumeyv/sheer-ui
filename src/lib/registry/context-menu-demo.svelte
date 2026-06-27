@@ -4,7 +4,7 @@
 
 <ContextMenu.Root>
 	<ContextMenu.Trigger
-		class='flex h-40 w-72 items-center justify-center rounded-md border border-dashed text-sm'>
+		class='grid h-40 w-72 place-items-center rounded-md border border-dashed text-sm'>
 		Right click here
 	</ContextMenu.Trigger>
 	<ContextMenu.Content class='w-52'>

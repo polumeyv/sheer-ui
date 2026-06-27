@@ -78,7 +78,7 @@
 							}}>
 							<div
 								class={[
-									'me-2 flex size-4 items-center justify-center rounded-md border border-primary',
+									'me-2 grid size-4 place-items-center rounded-md border border-primary',
 									isSelected ? 'bg-primary text-primary-foreground' : 'opacity-50 [&_svg]:invisible',
 								]}>
 								<CheckIcon class="size-4" />
@@ -90,7 +90,7 @@
 
 							<span>{option.label}</span>
 							{#if facets?.get(option.value)}
-								<span class="ms-auto flex size-4 items-center justify-center font-mono text-xs">
+								<span class="ms-auto grid size-4 place-items-center font-mono text-xs">
 									{facets.get(option.value)}
 								</span>
 							{/if}

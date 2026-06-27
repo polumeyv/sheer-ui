@@ -68,7 +68,7 @@
 	{@render child({ props: mergedProps, ...itemState.snippetProps })}
 {:else}
 	<div {...mergedProps}>
-		<span class="absolute inset-e-2 flex size-3.5 items-center justify-center">
+		<span class="absolute inset-e-2 grid size-3.5 place-items-center">
 			{#if itemState.snippetProps.selected}
 				<CheckIcon class="cn-select-item-indicator-icon" />
 			{/if}

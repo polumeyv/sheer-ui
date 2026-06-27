@@ -16,11 +16,11 @@
 <RangeCalendar.Root bind:value weekdayFormat="short" class="w-fit rounded-md border p-3">
 	{#snippet children({ months, weekdays })}
 		<RangeCalendar.Header class="flex items-center justify-between">
-			<RangeCalendar.PrevButton class="hover:bg-muted inline-flex size-7 items-center justify-center rounded-md">
+			<RangeCalendar.PrevButton class="hover:bg-muted inline-grid size-7 place-items-center rounded-md">
 				<ChevronLeftIcon class="size-4" />
 			</RangeCalendar.PrevButton>
 			<RangeCalendar.Heading class="text-sm font-medium" />
-			<RangeCalendar.NextButton class="hover:bg-muted inline-flex size-7 items-center justify-center rounded-md">
+			<RangeCalendar.NextButton class="hover:bg-muted inline-grid size-7 place-items-center rounded-md">
 				<ChevronRightIcon class="size-4" />
 			</RangeCalendar.NextButton>
 		</RangeCalendar.Header>
@@ -45,7 +45,7 @@
 										month={month.value}
 										class="relative size-9 p-0! text-center text-sm data-[highlighted]:bg-accent data-[selection-end]:rounded-r-md data-[selection-start]:rounded-l-md">
 										<RangeCalendar.Day
-											class="hover:border-foreground data-disabled:text-foreground/30 data-selected:bg-primary data-selected:text-primary-foreground data-unavailable:text-muted-foreground inline-flex size-9 items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-transparent p-0 text-sm font-normal text-foreground data-disabled:pointer-events-none data-outside-month:pointer-events-none data-selected:font-medium data-unavailable:line-through" />
+											class="hover:border-foreground data-disabled:text-foreground/30 data-selected:bg-primary data-selected:text-primary-foreground data-unavailable:text-muted-foreground inline-grid size-9 place-items-center whitespace-nowrap rounded-md border border-transparent bg-transparent p-0 text-sm font-normal text-foreground data-disabled:pointer-events-none data-outside-month:pointer-events-none data-selected:font-medium data-unavailable:line-through" />
 									</RangeCalendar.Cell>
 								{/each}
 							</RangeCalendar.GridRow>

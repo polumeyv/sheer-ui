@@ -37,7 +37,7 @@
 	{@render child({ props: mergedProps, ...itemState.snippetProps })}
 {:else}
 	<button {...mergedProps}>
-		<div data-slot="radio-group-indicator" class="relative flex items-center justify-center">
+		<div data-slot="radio-group-indicator" class="relative grid place-items-center">
 			{#if itemState.snippetProps.checked}
 				<CircleIcon class="fill-primary absolute inset-s-1/2 top-1/2 size-2 -translate-x-1/2 -translate-y-1/2" />
 			{/if}
