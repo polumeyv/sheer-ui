@@ -1,11 +1,10 @@
 import { createContext, untrack } from 'svelte';
 import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
 import type { HTMLButtonAttributes } from 'svelte/elements';
-import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { boolToStr, createBitsAttrs, getAriaChecked, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { arraysAreEqual } from '$lib/internal/arrays.js';
-import { isHTMLElement } from '$lib/internal/is.js';
 
 const checkboxAttrs = createBitsAttrs({
 	component: 'checkbox',
@@ -16,7 +15,6 @@ interface CheckboxGroupStateOpts
 	extends
 		WithRefOpts,
 		ReadableBoxedValues<{
-			name: string | undefined;
 			disabled: boolean;
 			required: boolean;
 			readonly: boolean;
@@ -116,7 +114,7 @@ export class CheckboxGroupLabelState {
 	);
 }
 
-const [getCheckboxRoot, setCheckboxRoot] = createContext<CheckboxRootState>();
+const [, setCheckboxRoot] = createContext<CheckboxRootState>();
 
 interface CheckboxRootStateOpts
 	extends
@@ -125,7 +123,6 @@ interface CheckboxRootStateOpts
 			disabled: boolean;
 			required: boolean;
 			readonly: boolean;
-			name: string | undefined;
 			value: string | undefined;
 			type: HTMLButtonAttributes['type'];
 		}>,
@@ -141,10 +138,6 @@ export class CheckboxRootState {
 
 	readonly opts: CheckboxRootStateOpts;
 	readonly group: CheckboxGroupState | null;
-	readonly trueName = $derived.by(() => {
-		if (this.group && this.group.opts.name.current) return this.group.opts.name.current;
-		return this.opts.name.current;
-	});
 	readonly trueRequired = $derived.by(() => {
 		if (this.group && this.group.opts.required.current) return true;
 		return this.opts.required.current;
@@ -254,46 +247,6 @@ export class CheckboxRootState {
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				...this.attachment,
-			}) as const,
-	);
-}
-
-export class CheckboxInputState {
-	static create() {
-		return new CheckboxInputState(getCheckboxRoot());
-	}
-
-	readonly root: CheckboxRootState;
-	readonly trueChecked = $derived.by(() => {
-		if (!this.root.group) return this.root.opts.checked.current;
-		if (this.root.opts.value.current !== undefined && this.root.group.opts.value.current.includes(this.root.opts.value.current)) {
-			return true;
-		}
-		return false;
-	});
-	readonly shouldRender = $derived.by(() => Boolean(this.root.trueName));
-
-	constructor(root: CheckboxRootState) {
-		this.root = root;
-		this.onfocus = this.onfocus.bind(this);
-	}
-
-	onfocus(_: BitsFocusEvent) {
-		if (!isHTMLElement(this.root.opts.ref.current)) return;
-		this.root.opts.ref.current.focus();
-	}
-
-	readonly props = $derived.by(
-		() =>
-			({
-				type: 'checkbox',
-				checked: this.root.opts.checked.current === true,
-				disabled: this.root.trueDisabled,
-				required: this.root.trueRequired,
-				name: this.root.trueName,
-				value: this.root.opts.value.current,
-				readonly: this.root.trueReadonly,
-				onfocus: this.onfocus,
 			}) as const,
 	);
 }

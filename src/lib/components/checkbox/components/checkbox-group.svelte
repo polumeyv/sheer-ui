@@ -13,7 +13,6 @@
 		id = createId(uid),
 		value = $bindable([]),
 		onValueChange = () => {},
-		name,
 		required,
 		disabled,
 		children,
@@ -31,7 +30,6 @@
 		disabled: boxWith(() => Boolean(disabled)),
 		required: boxWith(() => Boolean(required)),
 		readonly: boxWith(() => Boolean(readonly)),
-		name: boxWith(() => name),
 		value: boxWith(
 			() => $state.snapshot(value),
 			(v) => {

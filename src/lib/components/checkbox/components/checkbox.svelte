@@ -3,7 +3,6 @@
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { CheckboxRootProps } from '../types.js';
 	import { getCheckboxGroupOr, CheckboxRootState } from '../checkbox.svelte.js';
-	import CheckboxInput from './checkbox-input.svelte';
 	import { createId } from '$lib/internal/create-id.js';
 	import { untrack } from 'svelte';
 	import CheckIcon from '@lucide/svelte/icons/check';
@@ -18,7 +17,6 @@
 		children,
 		disabled = false,
 		required = false,
-		name = undefined,
 		value = 'on',
 		id = createId(uid),
 		indeterminate = $bindable(false),
@@ -41,13 +39,7 @@
 
 	$effect.pre(() => {
 		value;
-		untrack(() => {
-			/**
-			 * Dynamic item values are supported: when a checkbox changes which group
-			 * value it represents, checked must be repaired from the current group value.
-			 */
-			syncCheckedFromGroupValue();
-		});
+		untrack(() => syncCheckedFromGroupValue());
 	});
 
 	const rootState = CheckboxRootState.create(
@@ -61,7 +53,6 @@
 			),
 			disabled: boxWith(() => disabled ?? false),
 			required: boxWith(() => required),
-			name: boxWith(() => name),
 			value: boxWith(() => value),
 			id: boxWith(() => id),
 			ref: boxWith(
@@ -110,5 +101,3 @@
 		</div>
 	</button>
 {/if}
-
-<CheckboxInput />
