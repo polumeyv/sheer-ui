@@ -14,32 +14,32 @@
 	const components: { title: string; href: string; description: string }[] = [
 		{
 			title: 'Alert Dialog',
-			href: '/docs/components/alert-dialog',
+			href: '#',
 			description: 'A modal dialog that interrupts the user with important content and expects a response.',
 		},
 		{
 			title: 'Hover Card',
-			href: '/docs/components/hover-card',
+			href: '#',
 			description: 'For sighted users to preview content available behind a link.',
 		},
 		{
 			title: 'Progress',
-			href: '/docs/components/progress',
+			href: '#',
 			description: 'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
 		},
 		{
 			title: 'Scroll-area',
-			href: '/docs/components/scroll-area',
+			href: '#',
 			description: 'Visually or semantically separates content.',
 		},
 		{
 			title: 'Tabs',
-			href: '/docs/components/tabs',
+			href: '#',
 			description: 'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
 		},
 		{
 			title: 'Tooltip',
-			href: '/docs/components/tooltip',
+			href: '#',
 			description:
 				'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
 		},
@@ -91,17 +91,17 @@
 						</NavigationMenu.Link>
 					</li>
 					{@render ListItem({
-						href: '/docs',
+						href: '#',
 						title: 'Introduction',
 						content: 'Re-usable components built using Bits UI and Tailwind CSS.',
 					})}
 					{@render ListItem({
-						href: '/docs/installation',
+						href: '#',
 						title: 'Installation',
 						content: 'How to install dependencies and structure your app.',
 					})}
 					{@render ListItem({
-						href: '/docs/components/typography',
+						href: '#',
 						title: 'Typography',
 						content: 'Styles for headings, paragraphs, lists...etc',
 					})}
@@ -126,7 +126,7 @@
 		<NavigationMenu.Item>
 			<NavigationMenu.Link>
 				{#snippet child()}
-					<a href="/docs" class={navigationMenuTriggerStyle()}>Docs</a>
+					<a href="#" class={navigationMenuTriggerStyle()}>Docs</a>
 				{/snippet}
 			</NavigationMenu.Link>
 		</NavigationMenu.Item>
@@ -135,15 +135,15 @@
 			<NavigationMenu.Content>
 				<ul class="grid w-[300px] gap-4 p-2">
 					<li>
-						<NavigationMenu.Link href="##">
+						<NavigationMenu.Link href="#">
 							<div class="font-medium">Components</div>
 							<div class="text-muted-foreground">Browse all components in the library.</div>
 						</NavigationMenu.Link>
-						<NavigationMenu.Link href="##">
+						<NavigationMenu.Link href="#">
 							<div class="font-medium">Documentation</div>
 							<div class="text-muted-foreground">Learn how to use the library.</div>
 						</NavigationMenu.Link>
-						<NavigationMenu.Link href="##">
+						<NavigationMenu.Link href="#">
 							<div class="font-medium">Blog</div>
 							<div class="text-muted-foreground">Read our latest blog posts.</div>
 						</NavigationMenu.Link>
@@ -156,9 +156,9 @@
 			<NavigationMenu.Content>
 				<ul class="grid w-[200px] gap-4 p-2">
 					<li>
-						<NavigationMenu.Link href="##">Components</NavigationMenu.Link>
-						<NavigationMenu.Link href="##">Documentation</NavigationMenu.Link>
-						<NavigationMenu.Link href="##">Blocks</NavigationMenu.Link>
+						<NavigationMenu.Link href="#">Components</NavigationMenu.Link>
+						<NavigationMenu.Link href="#">Documentation</NavigationMenu.Link>
+						<NavigationMenu.Link href="#">Blocks</NavigationMenu.Link>
 					</li>
 				</ul>
 			</NavigationMenu.Content>
@@ -169,17 +169,17 @@
 			<NavigationMenu.Content>
 				<ul class="grid w-[200px] gap-4 p-2">
 					<li>
-						<NavigationMenu.Link href="##" class="flex-row items-center gap-2">
+						<NavigationMenu.Link href="#" class="flex-row items-center gap-2">
 							<CircleHelpIcon />
 							Backlog
 						</NavigationMenu.Link>
 
-						<NavigationMenu.Link href="##" class="flex-row items-center gap-2">
+						<NavigationMenu.Link href="#" class="flex-row items-center gap-2">
 							<CircleIcon />
 							To Do
 						</NavigationMenu.Link>
 
-						<NavigationMenu.Link href="##" class="flex-row items-center gap-2">
+						<NavigationMenu.Link href="#" class="flex-row items-center gap-2">
 							<CircleCheckIcon />
 							Done
 						</NavigationMenu.Link>
