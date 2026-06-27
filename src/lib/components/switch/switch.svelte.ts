@@ -24,8 +24,6 @@ interface SwitchRootStateOpts
 		ReadableBoxedValues<{
 			disabled: boolean;
 			required: boolean;
-			name: string | undefined;
-			value: string;
 		}>,
 		WritableBoxedValues<{
 			checked: boolean;
@@ -84,30 +82,6 @@ export class SwitchRootState {
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				...this.attachment,
-			}) as const,
-	);
-}
-
-export class SwitchInputState {
-	static create() {
-		return new SwitchInputState(getSwitchRoot());
-	}
-	readonly root: SwitchRootState;
-	readonly shouldRender = $derived.by(() => this.root.opts.name.current !== undefined);
-
-	constructor(root: SwitchRootState) {
-		this.root = root;
-	}
-
-	readonly props = $derived.by(
-		() =>
-			({
-				type: 'checkbox',
-				name: this.root.opts.name.current,
-				value: this.root.opts.value.current,
-				checked: this.root.opts.checked.current,
-				disabled: this.root.opts.disabled.current,
-				required: this.root.opts.required.current,
 			}) as const,
 	);
 }
