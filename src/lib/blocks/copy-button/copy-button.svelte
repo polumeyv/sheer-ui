@@ -29,7 +29,7 @@
 		{#snippet child({ props })}
 			<Button {...props} data-slot="copy-button" size="icon" {variant}>
 				<span class="sr-only" data-llm-ignore>Copy</span>
-				{#if clipboard.copied}
+				{#if clipboard.status}
 					<CheckIcon />
 				{:else}
 					<Clipboard />
@@ -38,6 +38,6 @@
 		{/snippet}
 	</Tooltip.Trigger>
 	<Tooltip.Content>
-		{clipboard.copied ? 'Copied' : 'Copy to Clipboard'}
+		{clipboard.status ? 'Copied' : 'Copy to Clipboard'}
 	</Tooltip.Content>
 </Tooltip.Root>
