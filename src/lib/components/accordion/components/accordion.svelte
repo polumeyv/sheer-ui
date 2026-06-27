@@ -34,17 +34,13 @@
 		value = getDefaultValue();
 	}
 
-	function getValue() {
-		return value ?? getDefaultValue();
-	}
-
 	// SSR
 	handleDefaultValue();
 
 	const rootState = AccordionRootState.create({
 		type: valueType,
 		value: boxWith(
-			() => getValue(),
+			() => value ?? getDefaultValue(),
 			(v) => {
 				value = v;
 				// oxlint-disable-next-line no-explicit-any
