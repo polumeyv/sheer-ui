@@ -3,9 +3,8 @@
 	// ready-to-use version is the time picker block (an outline button that opens a
 	// scrollable list of time slots), so this demo uses the block.
 	import { TimePicker } from '$lib/blocks/time-picker/index.js';
-	import type { TimeString } from '@polumeyv/lib/schemas';
 
-	let value = $state<TimeString>();
+	let value = $state<string>();
 </script>
 
 <TimePicker bind:value preset="business" />

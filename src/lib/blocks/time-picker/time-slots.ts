@@ -1,18 +1,17 @@
 /**
  * Time-slot helpers for the time-picker components — comparison, duration, and slot generation over
  * ISO 8601 "HH:MM" wall-clock strings. UI-internal; the minute math and `formatTimeDisplay` (the wire/display
- * formatter) live in `@polumeyv/lib/public` since apps work with the same wire format directly.
+ * formatter) live in `@polumeyv/utilities`, the zero-dependency pure-TS layer this package builds on.
  */
-import { timeToMinutes, minutesToTime, formatTimeDisplay } from '@polumeyv/lib/public';
-import type { TimeString } from '@polumeyv/lib/schemas';
+import { timeToMinutes, minutesToTime, formatTimeDisplay } from '@polumeyv/utilities';
 
-export type TimeSlot = { value: TimeString; label: string };
+export type TimeSlot = { value: string; label: string };
 export type TimeRange = { start: string; end: string };
 
 /** Non-throwing parse of an ISO 8601 "HH:MM" wall-clock string → minutes since midnight, or null if malformed.
  *  The regex IS the brand's validation, so the cast is sound — this is the lenient seam for free-form props. */
 function toMin(time: string): number | null {
-	return /^\d{2}:\d{2}(:\d{2})?$/.test(time) ? timeToMinutes(time as TimeString) : null;
+	return /^\d{2}:\d{2}(:\d{2})?$/.test(time) ? timeToMinutes(time) : null;
 }
 
 /** Sign of (time1 − time2): negative if earlier, 0 if equal or either is malformed, positive if later. */
@@ -33,13 +32,6 @@ export function getTimeDuration(startTime: string, endTime: string): number {
 	const end = toMin(endTime);
 	if (start === null || end === null) return 0;
 	return end - start;
-}
-
-export function formatDuration(minutes: number): string {
-	if (minutes < 60) return `${minutes}m`;
-	const h = Math.floor(minutes / 60);
-	const m = minutes % 60;
-	return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
 export function generateTimeSlots(startHour: number, endHour: number, interval: number): TimeSlot[] {

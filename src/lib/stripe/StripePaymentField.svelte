@@ -1,11 +1,10 @@
-<script lang="ts">
+<script lang="ts" generics="PM">
 	import type { Stripe, StripeElements } from '@stripe/stripe-js';
 	import { Button } from '$lib/components/button';
 	import { toastError } from '$lib/components/sonner';
 	import Loader2Icon from '@lucide/svelte/icons/loader-2';
 	import { loadStripe } from '@stripe/stripe-js';
 	import { untrack } from 'svelte';
-	import type { PaymentMethod } from '@polumeyv/lib/schemas';
 
 	let {
 		stripeKey,
@@ -21,8 +20,8 @@
 	}: {
 		stripeKey: string;
 		createSetupIntent: () => Promise<{ clientSecret: string; customerSessionClientSecret: string }>;
-		setPayment: (paymentMethodId: string) => Promise<typeof PaymentMethod.Type>;
-		onsuccess: (pm: typeof PaymentMethod.Type) => void;
+		setPayment: (paymentMethodId: string) => Promise<PM>;
+		onsuccess: (pm: PM) => void;
 		oncancel?: () => void;
 		returnUrl: string;
 		label?: string;
