@@ -1,10 +1,15 @@
-import { DOMContext, type ReadableBox, type ReadableBoxedValues, composeHandlers, contains, executeCallbacks } from '$lib/internal/tools/index.js';
+import {
+	DOMContext,
+	type ReadableBox,
+	type ReadableBoxedValues,
+	composeHandlers,
+	contains,
+	executeCallbacks,
+} from '$lib/internal/tools/index.js';
 import { untrack } from 'svelte';
 import { on } from 'svelte/events';
 import type { PointerHandler, TextSelectionLayerImplProps } from './types.js';
 import { isHTMLElement } from '$lib/internal/is.js';
-
-const noopPointer: PointerHandler = () => {};
 
 interface TextSelectionLayerStateOpts extends ReadableBoxedValues<
 	Required<Omit<TextSelectionLayerImplProps, 'children' | 'preventOverflowTextSelection' | 'ref'>> & {
@@ -22,8 +27,8 @@ export class TextSelectionLayerState {
 	readonly domContext: DOMContext;
 	#unsubSelectionLock = () => {};
 	#enabledSnapshot = false;
-	#onPointerDownSnapshot: PointerHandler = noopPointer;
-	#onPointerUpSnapshot: PointerHandler = noopPointer;
+	#onPointerDownSnapshot: PointerHandler = () => {};
+	#onPointerUpSnapshot: PointerHandler = () => {};
 
 	constructor(opts: TextSelectionLayerStateOpts) {
 		this.opts = opts;

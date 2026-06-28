@@ -1,7 +1,7 @@
 import { type LimitType } from './Limit'
 import { type DirectionType } from './ScrollTo'
 import { type NumberStoreType } from './NumberStore'
-import { arrayLast, mathAbs, mathSign } from './utils'
+import { arrayLast } from './utils'
 
 export type TargetType = {
   distance: number
@@ -24,14 +24,14 @@ export function ScrollTarget(
   const { pastAnyBound, removeOffset, clamp } = limit
 
   function minDistance(distances: number[]): number {
-    return distances.sort((a, b) => mathAbs(a) - mathAbs(b))[0]
+    return distances.sort((a, b) => Math.abs(a) - Math.abs(b))[0]
   }
 
   function getClosestSnap(target: number): TargetType {
     const distance = loop ? removeOffset(target) : clamp(target)
     const { index } = scrollSnaps.reduce(
       (result, snap, snapIndex) => {
-        const displacementAbs = mathAbs(shortcut(snap - distance, 0))
+        const displacementAbs = Math.abs(shortcut(snap - distance, 0))
         if (displacementAbs >= result.smallestDisplacement) return result
         return { smallestDisplacement: displacementAbs, index: snapIndex }
       },
@@ -47,7 +47,7 @@ export function ScrollTarget(
     const targets = [target, target + contentSize, target - contentSize]
     if (!direction) return minDistance(targets)
 
-    const validTargets = targets.filter((t) => mathSign(t) === direction)
+    const validTargets = targets.filter((t) => Math.sign(t) === direction)
     if (validTargets.length) return minDistance(validTargets)
     return arrayLast(targets) - contentSize
   }

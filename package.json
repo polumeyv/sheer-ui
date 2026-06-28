@@ -128,6 +128,10 @@
 			"types": "./dist/components/checkbox/index.d.ts",
 			"svelte": "./dist/components/checkbox/index.js"
 		},
+		"./components/checkbox-native": {
+			"types": "./dist/components/checkbox-native/index.d.ts",
+			"svelte": "./dist/components/checkbox-native/index.js"
+		},
 		"./components/collapsible": {
 			"types": "./dist/components/collapsible/index.d.ts",
 			"svelte": "./dist/components/collapsible/index.js"

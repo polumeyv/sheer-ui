@@ -15,7 +15,7 @@ import type {
 } from './types.js';
 import { ALL_SEGMENT_PARTS, DATE_SEGMENT_PARTS, EDITABLE_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';
 import { getSegments } from './segments.js';
-import { isBrowser, isNull, isNumberString } from '$lib/internal/is.js';
+import { isBrowser, isNumberString } from '$lib/internal/is.js';
 import { useId } from '$lib/internal/use-id.js';
 import { kbd } from '$lib/internal/kbd.js';
 import type { Granularity, HourCycle, TimeSegmentValueObj } from '$lib/internal/date-time/types.js';
@@ -62,7 +62,7 @@ function createContentObj(props: CreateContentObjProps) {
 		if (!isSegmentPart(part)) return obj;
 		if ('hour' in segmentValues && part === 'dayPeriod') {
 			const value = segmentValues[part];
-			if (!isNull(value)) {
+			if (value !== null) {
 				obj[part] = value;
 			} else {
 				obj[part] = getPlaceholder(part, 'AM', locale);
@@ -82,7 +82,7 @@ function createContentObj(props: CreateContentObjProps) {
 
 			if (value === '0' && part !== 'year') {
 				return '0';
-			} else if (!isNull(value) && !isNull(intValue)) {
+			} else if (value !== null && intValue !== null) {
 				const formatted = formatter.part(dateRef.set({ [part]: value }), part, {
 					hourCycle: props.hourCycle === 24 ? 'h23' : undefined,
 				});
@@ -145,7 +145,7 @@ function createContentObj(props: CreateContentObjProps) {
 				const leadingZero = typeof value === 'string' && value?.startsWith('0');
 				if (value === '0') {
 					return '0';
-				} else if (!isNull(value)) {
+				} else if (value !== null) {
 					const formatted = formatter.part(dateRef.set({ [part]: value }), part);
 					if (part === 'year') {
 						return `${value}`;
@@ -184,7 +184,7 @@ function createContentArr(props: CreateContentArrProps) {
 			};
 		})
 		.filter((segment): segment is { part: SegmentPart; value: string } => {
-			if (isNull(segment.part) || isNull(segment.value)) return false;
+			if (segment.part === null || segment.value === null) return false;
 			if (segment.part === 'timeZoneName' && (!isZonedDateTime(dateRef) || hideTimeZone)) {
 				return false;
 			}
@@ -297,11 +297,11 @@ export function getValueFromSegments(props: GetValueFromSegments) {
 	for (const part of usedSegments) {
 		if ('hour' in segmentObj) {
 			const value = segmentObj[part];
-			if (isNull(value)) continue;
+			if (value === null) continue;
 			date = date.set({ [part]: segmentObj[part] });
 		} else if (isDateSegmentPart(part)) {
 			const value = segmentObj[part];
-			if (isNull(value)) continue;
+			if (value === null) continue;
 			date = date.set({ [part]: segmentObj[part] });
 		}
 	}

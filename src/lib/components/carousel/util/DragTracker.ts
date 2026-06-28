@@ -1,5 +1,5 @@
 import { type AxisOptionType, type AxisType } from './Axis';
-import { isMouseEvent, mathAbs, type WindowType } from './utils';
+import { isMouseEvent, type WindowType } from './utils';
 
 type PointerCoordType = keyof Touch | keyof MouseEvent;
 export type PointerEventType = TouchEvent | MouseEvent;
@@ -54,7 +54,7 @@ export function DragTracker(axis: AxisType): DragTrackerType {
 		const diffTime = readTime(evt) - readTime(startEvent);
 		const expired = readTime(evt) - readTime(lastEvent) > logInterval;
 		const force = diffDrag / diffTime;
-		const isFlick = diffTime && !expired && mathAbs(force) > 0.1;
+		const isFlick = diffTime && !expired && Math.abs(force) > 0.1;
 
 		return isFlick ? force : 0;
 	}

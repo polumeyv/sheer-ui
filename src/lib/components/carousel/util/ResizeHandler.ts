@@ -1,7 +1,7 @@
 import { type AxisType } from './Axis';
 import { type EventHandlerType } from './EventHandler';
 import { type NodeHandlerType } from './NodeHandler';
-import { mathAbs, type WindowType } from './utils';
+import { type WindowType } from './utils';
 
 type ReInitApi = {
 	reInit: () => void;
@@ -62,7 +62,7 @@ export function ResizeHandler<API extends ReInitApi>(
 			const lastSize = isContainer ? containerSize : slideSizes[slideIndex];
 
 			const newSize = readSize(isContainer ? container : slides[slideIndex]);
-			const diffSize = mathAbs(newSize - lastSize);
+			const diffSize = Math.abs(newSize - lastSize);
 
 			if (diffSize >= 0.5) {
 				event.api.reInit();

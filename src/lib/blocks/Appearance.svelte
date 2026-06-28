@@ -86,7 +86,7 @@
 
 <Item.Group>
 	<Item.Root variant="outline">
-		<div class="flex w-fit items-center gap-2 text-sm leading-snug font-medium">Appearance</div>
+		<Item.Title>Appearance</Item.Title>
 		<Separator class="my-0" />
 		<Field.Field>
 			<Field.Label for="theme-mode">Theme</Field.Label>

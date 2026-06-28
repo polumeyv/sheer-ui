@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { AlertDialog } from "$lib/components/alert-dialog";
-	import * as Field from "$lib/components/field";
-	import { Root as Input } from "$lib/components/input";
+	import { AlertDialog } from '$lib/components/alert-dialog';
+	import * as Field from '$lib/components/field';
+	import { Root as Input } from '$lib/components/input';
 	import Loader2Icon from '@lucide/svelte/icons/loader-2';
 	import { alertModal } from './alert-modal.svelte';
 
@@ -17,8 +17,9 @@
 
 <AlertDialog.Root
 	open={alertModal.open}
-	onOpenChange={(open) => { if (!open) alertModal.close(); }}
->
+	onOpenChange={(open) => {
+		if (!open) alertModal.close();
+	}}>
 	<AlertDialog.Portal>
 		<AlertDialog.Overlay class="transition-opacity starting:opacity-0 data-[state=closed]:opacity-0 fixed inset-0 z-50 bg-black/50" />
 		<AlertDialog.Content>
@@ -52,8 +53,7 @@
 						onclick={(e: MouseEvent) => {
 							e.preventDefault();
 							alertModal.handleConfirm();
-						}}
-					>
+						}}>
 						{#if alertModal.loading}<Loader2Icon class="size-4 animate-spin" />{/if}
 						{alertModal.actionLabel}
 					</AlertDialog.Action>

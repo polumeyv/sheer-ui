@@ -5,7 +5,7 @@ import { isElement, isFocusVisible } from '$lib/internal/is.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef, getDataTransitionAttrs } from '$lib/internal/attrs.js';
 import type { OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import type { FocusEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
-import { timeoutFn } from '$lib/internal/timeout-fn.js';
+import { createEffectTimeout } from '$lib/internal/timeout-fn.js';
 import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
 import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 
@@ -147,12 +147,12 @@ export class TooltipProviderState {
 	readonly opts: TooltipProviderStateOpts;
 	isOpenDelayed = $state<boolean>(true);
 	isPointerInTransit = simpleBox(false);
-	readonly #timerFn: ReturnType<typeof timeoutFn<() => void>>;
+	readonly #timerFn: ReturnType<typeof createEffectTimeout<() => void>>;
 	#openTooltip = $state<TooltipRootState | null>(null);
 
 	constructor(opts: TooltipProviderStateOpts) {
 		this.opts = opts;
-		this.#timerFn = timeoutFn(
+		this.#timerFn = createEffectTimeout(
 			() => {
 				this.isOpenDelayed = true;
 			},
@@ -252,7 +252,7 @@ export class TooltipRootState {
 	contentNode = $state<HTMLElement | null>(null);
 	contentPresence: PresenceManager;
 	#wasOpenDelayed = $state(false);
-	readonly #timerFn: ReturnType<typeof timeoutFn<() => void>>;
+	readonly #timerFn: ReturnType<typeof createEffectTimeout<() => void>>;
 	readonly stateAttr = $derived.by(() => {
 		if (!this.opts.open.current) return 'closed';
 		return this.#wasOpenDelayed ? 'delayed-open' : 'instant-open';
@@ -263,7 +263,7 @@ export class TooltipRootState {
 		this.provider = provider;
 		this.tether = opts.tether.current?.state ?? null;
 		this.registry = this.tether?.registry ?? new TooltipTriggerRegistryState();
-		this.#timerFn = timeoutFn(
+		this.#timerFn = createEffectTimeout(
 			() => {
 				this.#wasOpenDelayed = true;
 				this.opts.open.current = true;

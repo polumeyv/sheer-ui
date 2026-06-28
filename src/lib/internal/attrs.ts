@@ -1,44 +1,37 @@
-export function boolToStr(condition: boolean): "true" | "false" {
-	return condition ? "true" : "false";
+export function boolToStr(condition: boolean): 'true' | 'false' {
+	return condition ? 'true' : 'false';
 }
 
-export function boolToStrTrueOrUndef(condition: boolean): "true" | undefined {
-	return condition ? "true" : undefined;
+export function boolToStrTrueOrUndef(condition: boolean): 'true' | undefined {
+	return condition ? 'true' : undefined;
 }
 
-export function boolToEmptyStrOrUndef(condition: boolean): "" | undefined {
-	return condition ? "" : undefined;
+export function boolToEmptyStrOrUndef(condition: boolean): '' | undefined {
+	return condition ? '' : undefined;
 }
 
 export function boolToTrueOrUndef(condition: boolean): true | undefined {
 	return condition ? true : undefined;
 }
 
-export function getDataOpenClosed(condition: boolean): "open" | "closed" {
-	return condition ? "open" : "closed";
+export function getDataOpenClosed(condition: boolean): 'open' | 'closed' {
+	return condition ? 'open' : 'closed';
 }
 
-export function getDataChecked(condition: boolean): "checked" | "unchecked" {
-	return condition ? "checked" : "unchecked";
-}
-
-export type TransitionState = "starting" | "ending" | "idle" | undefined;
+export type TransitionState = 'starting' | 'ending' | 'idle' | undefined;
 
 export function getDataTransitionAttrs(state: TransitionState): {
-	"data-starting-style"?: "";
-	"data-ending-style"?: "";
+	'data-starting-style'?: '';
+	'data-ending-style'?: '';
 } {
-	if (state === "starting") return { "data-starting-style": "" };
-	if (state === "ending") return { "data-ending-style": "" };
+	if (state === 'starting') return { 'data-starting-style': '' };
+	if (state === 'ending') return { 'data-ending-style': '' };
 	return {};
 }
 
-export function getAriaChecked(
-	checked: boolean,
-	indeterminate: boolean
-): "true" | "false" | "mixed" {
-	if (indeterminate) return "mixed";
-	return checked ? "true" : "false";
+export function getAriaChecked(checked: boolean, indeterminate: boolean): 'true' | 'false' | 'mixed' {
+	if (indeterminate) return 'mixed';
+	return checked ? 'true' : 'false';
 }
 
 export type BitsAttrsConfig<T extends readonly string[]> = {
@@ -66,9 +59,7 @@ export class BitsAttrs<T extends readonly string[]> {
 		this.getAttr = this.getAttr.bind(this);
 		this.selector = this.selector.bind(this);
 
-		this.attrs = Object.fromEntries(
-			config.parts.map((part) => [part, this.getAttr(part)])
-		) as Record<T[number], string>;
+		this.attrs = Object.fromEntries(config.parts.map((part) => [part, this.getAttr(part)])) as Record<T[number], string>;
 	}
 
 	getAttr(part: T[number], variantOverride?: string): string {
@@ -82,7 +73,7 @@ export class BitsAttrs<T extends readonly string[]> {
 }
 
 export function createBitsAttrs<const T extends readonly string[]>(
-	config: Omit<BitsAttrsConfig<T>, "parts"> & { parts: T }
+	config: Omit<BitsAttrsConfig<T>, 'parts'> & { parts: T },
 ): CreateBitsAttrsReturn<T> {
 	const bitsAttrs = new BitsAttrs(config);
 

@@ -1,5 +1,4 @@
 import { Limit } from './Limit';
-import { mathAbs } from './utils';
 
 export type CounterType = {
 	get: () => number;
@@ -14,7 +13,7 @@ export function Counter(max: number, start: number, loop: boolean): CounterType 
 	let counter = normalize(start);
 
 	function normalize(input: number): number {
-		return !loop ? clamp(input) : mathAbs((loopEnd + input) % loopEnd);
+		return !loop ? clamp(input) : Math.abs((loopEnd + input) % loopEnd);
 	}
 
 	function get(): number {

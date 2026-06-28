@@ -34,18 +34,9 @@ export type CheckboxRootPropsWithoutHTML = WithChild<
 		readonly?: boolean | null | undefined;
 
 		/**
-		 * The name of the checkbox used in form submission.
-		 * If not provided, the hidden input will not be rendered.
-		 *
-		 * @default undefined
-		 */
-		// oxlint-disable-next-line no-explicit-any
-		name?: any;
-
-		/**
-		 * The value of the checkbox used in form submission and to identify
-		 * the checkbox when in a `Checkbox.Group`. If not provided while in a
-		 * `Checkbox.Group`, the checkbox will use a random identifier.
+		 * The value used to identify the checkbox when in a `Checkbox.Group`. If
+		 * not provided while in a `Checkbox.Group`, the checkbox uses a random
+		 * identifier.
 		 *
 		 * @default undefined
 		 */
@@ -109,16 +100,6 @@ export type CheckboxGroupPropsWithoutHTML = WithChild<{
 	 * @default false
 	 */
 	required?: boolean;
-
-	/**
-	 * The name of the checkbox used in form submission.
-	 * If not provided, the hidden input will not be rendered.
-	 * This will be used as the name for all checkboxes in the group.
-	 *
-	 * @default undefined
-	 */
-	// oxlint-disable-next-line no-explicit-any
-	name?: any;
 
 	/**
 	 * The value of the checkbox group, indicating which

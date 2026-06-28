@@ -18,27 +18,12 @@ export type SwitchRootPropsWithoutHTML = WithChild<
 		disabled?: boolean | null | undefined;
 
 		/**
-		 * Whether the switch is required (for form validation).
+		 * Whether the switch is marked required (sets `aria-required`). This headless
+		 * switch does not participate in forms — use the native switch for form validation.
 		 *
 		 * @defaultValue false
 		 */
 		required?: boolean;
-
-		/**
-		 * The name of the switch used in form submission.
-		 * If not provided, the hidden input will not be rendered.
-		 *
-		 * @defaultValue undefined
-		 */
-		name?: string;
-
-		/**
-		 * The value of the switch used in form submission.
-		 *
-		 * @defaultValue undefined
-		 */
-		// oxlint-disable-next-line no-explicit-any
-		value?: any;
 
 		/**
 		 * The checked state of the switch.

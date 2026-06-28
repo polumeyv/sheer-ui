@@ -22,11 +22,8 @@
 		...restProps
 	}: AccordionRootProps = $props();
 
-	// Mode is construction-static: AccordionRootState chooses a single/multiple class once.
-	const valueType = untrack(() => type);
-
 	function getDefaultValue(): string | string[] {
-		return valueType === 'single' ? '' : [];
+		return type === 'single' ? '' : [];
 	}
 
 	function handleDefaultValue() {
@@ -38,7 +35,7 @@
 	handleDefaultValue();
 
 	const rootState = AccordionRootState.create({
-		type: valueType,
+		type,
 		value: boxWith(
 			() => value ?? getDefaultValue(),
 			(v) => {

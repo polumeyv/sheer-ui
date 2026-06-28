@@ -3,7 +3,6 @@
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { SwitchRootProps } from '../types.js';
 	import { SwitchRootState } from '../switch.svelte.js';
-	import SwitchInput from './switch-input.svelte';
 	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
@@ -16,8 +15,6 @@
 		disabled = false,
 		required = false,
 		checked = $bindable(false),
-		value = 'on',
-		name = undefined,
 		type = 'button',
 		onCheckedChange = () => {},
 		...restProps
@@ -33,8 +30,6 @@
 		),
 		disabled: boxWith(() => disabled ?? false),
 		required: boxWith(() => required),
-		value: boxWith(() => value),
-		name: boxWith(() => name),
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
@@ -63,5 +58,3 @@
 		{@render children?.(rootState.snippetProps)}
 	</button>
 {/if}
-
-<SwitchInput />
