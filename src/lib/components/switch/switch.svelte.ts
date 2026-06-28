@@ -1,13 +1,6 @@
 import { createContext } from 'svelte';
 import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
-import {
-	getAriaChecked,
-	boolToStr,
-	getDataChecked,
-	boolToTrueOrUndef,
-	createBitsAttrs,
-	boolToEmptyStrOrUndef,
-} from '$lib/internal/attrs.js';
+import { getAriaChecked, boolToStr, boolToTrueOrUndef, createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
 import type { BitsKeyboardEvent, BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 
@@ -60,7 +53,7 @@ export class SwitchRootState {
 
 	readonly sharedProps = $derived.by(() => ({
 		'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
-		'data-state': getDataChecked(this.opts.checked.current),
+		'data-state': this.opts.checked.current ? 'checked' : 'unchecked',
 		'data-required': boolToEmptyStrOrUndef(this.opts.required.current),
 	}));
 

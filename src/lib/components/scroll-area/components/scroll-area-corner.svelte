@@ -1,27 +1,18 @@
 <script lang="ts">
-	import type { ScrollAreaCornerProps } from "../types.js";
-	import { getScrollAreaRoot } from "../scroll-area.svelte.js";
-	import ScrollAreaCornerImpl from "./scroll-area-corner-impl.svelte";
-	import { createId } from "$lib/internal/create-id.js";
+	import type { ScrollAreaCornerProps } from '../types.js';
+	import { getScrollAreaRoot } from '../scroll-area.svelte.js';
+	import ScrollAreaCornerImpl from './scroll-area-corner-impl.svelte';
+	import { createId } from '$lib/internal/create-id.js';
 
 	const uid = $props.id();
 
-	let {
-		ref = $bindable(null),
-		id = createId(uid),
-		...restProps
-	}: ScrollAreaCornerProps = $props();
+	let { ref = $bindable(null), id = createId(uid), ...restProps }: ScrollAreaCornerProps = $props();
 
 	const scrollAreaState = getScrollAreaRoot();
 
-	const hasBothScrollbarsVisible = $derived(
-		Boolean(scrollAreaState.scrollbarXNode && scrollAreaState.scrollbarYNode)
-	);
-	const hasCorner = $derived(
-		scrollAreaState.opts.type.current !== "scroll" && hasBothScrollbarsVisible
-	);
+	const hasBothScrollbarsVisible = $derived(Boolean(scrollAreaState.scrollbarXNode && scrollAreaState.scrollbarYNode));
 </script>
 
-{#if hasCorner}
+{#if scrollAreaState.opts.type.current !== 'scroll' && hasBothScrollbarsVisible}
 	<ScrollAreaCornerImpl {...restProps} {id} bind:ref />
 {/if}

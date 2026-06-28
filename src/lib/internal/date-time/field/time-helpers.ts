@@ -1,4 +1,4 @@
-import { isBrowser, isNull } from '$lib/internal/is.js';
+import { isBrowser } from '$lib/internal/is.js';
 import type {
 	EditableTimeSegmentPart,
 	HourCycle,
@@ -7,7 +7,7 @@ import type {
 	TimeSegmentStateMap,
 	TimeSegmentValueObj,
 	TimeValue,
-} from '$lib/shared/date/types.js';
+} from '$lib/internal/date-time/types.js';
 import { CalendarDateTime, Time, ZonedDateTime } from '@internationalized/date';
 import type { TimeFormatter } from '../formatter.js';
 import { ALL_TIME_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';
@@ -43,7 +43,7 @@ function createTimeContentObj(props: CreateTimeContentObjProps) {
 		if (!isEditableTimeSegmentPart(part)) return obj;
 		if (part === 'dayPeriod') {
 			const value = segmentValues[part];
-			if (!isNull(value)) {
+			if (value !== null) {
 				obj[part] = value;
 			} else {
 				obj[part] = getPlaceholder(part, 'AM', locale);
@@ -60,7 +60,7 @@ function createTimeContentObj(props: CreateTimeContentObjProps) {
 		const leadingZero = typeof value === 'string' && value?.startsWith('0');
 		const intValue = value !== null ? Number.parseInt(value) : null;
 
-		if (!isNull(value) && !isNull(intValue)) {
+		if (value !== null && intValue !== null) {
 			const formatted = formatter.part(timeRef.set({ [part]: value }), part, {
 				hourCycle: props.hourCycle === 24 ? 'h23' : undefined,
 			});
@@ -137,7 +137,7 @@ function createTimeContentArr(props: CreateTimeContentArrProps) {
 			};
 		})
 		.filter((segment): segment is { part: TimeSegmentPart; value: string } => {
-			if (isNull(segment.part) || isNull(segment.value)) return false;
+			if (segment.part === null || segment.value === null) return false;
 			if (segment.part === 'timeZoneName' && (!isZonedDateTime(timeRef) || hideTimeZone)) {
 				return false;
 			}
@@ -235,7 +235,7 @@ export function getTimeValueFromSegments<T extends TimeValue = Time>(props: GetT
 
 	for (const part of usedSegments) {
 		const value = props.segmentObj[part];
-		if (isNull(value)) continue;
+		if (value === null) continue;
 		// @ts-expect-error shhh
 		props.timeRef = props.timeRef.set({ [part]: props.segmentObj[part] });
 	}

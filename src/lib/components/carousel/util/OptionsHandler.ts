@@ -1,6 +1,6 @@
 import { type NodeHandlerType } from './NodeHandler'
 import { type LooseOptionsType, type CreateOptionsType } from './Options'
-import { objectKeys, objectsMergeDeep, type WindowType } from './utils'
+import { objectsMergeDeep, type WindowType } from './utils'
 
 type OptionsType = Partial<CreateOptionsType<LooseOptionsType>>
 
@@ -32,7 +32,7 @@ export function OptionsHandler(): OptionsHandlerType {
     if (!windowInstance) return options
 
     const optionsAtMedia = options.breakpoints || {}
-    const matchedMediaOptions = objectKeys(optionsAtMedia)
+    const matchedMediaOptions = Object.keys(optionsAtMedia)
       .filter((media) => windowInstance.matchMedia(media).matches)
       .map((media) => optionsAtMedia[media])
       .reduce(
@@ -47,7 +47,7 @@ export function OptionsHandler(): OptionsHandlerType {
     if (!windowInstance) return []
 
     return optionsList
-      .map((options) => objectKeys(options.breakpoints || {}))
+      .map((options) => Object.keys(options.breakpoints || {}))
       .reduce((mediaQueries, mediaQuery) => mediaQueries.concat(mediaQuery), [])
       .map(windowInstance.matchMedia)
   }

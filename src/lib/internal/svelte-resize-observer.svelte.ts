@@ -1,10 +1,13 @@
 import type { Getter } from '$lib/internal/tools/index.js';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 
+type MaybeElement = Element | null | undefined | false;
+
 export function resizeAttachment<T extends Element = HTMLElement>(onResize: ResizeObserverCallback, options?: ResizeObserverOptions) {
 	return {
 		[createAttachmentKey()]: ((node: T) => {
 			let rAF = 0;
+
 			const resizeObserver = new ResizeObserver((entries, observer) => {
 				window.cancelAnimationFrame(rAF);
 				rAF = window.requestAnimationFrame(() => onResize(entries, observer));
@@ -14,36 +17,52 @@ export function resizeAttachment<T extends Element = HTMLElement>(onResize: Resi
 
 			return () => {
 				window.cancelAnimationFrame(rAF);
-				resizeObserver.unobserve(node);
 				resizeObserver.disconnect();
 			};
 		}) satisfies Attachment<T>,
 	};
 }
 
-export class SvelteResizeObserver {
-	#node: Getter<HTMLElement | null>;
-	#onResize: () => void;
-	constructor(node: Getter<HTMLElement | null>, onResize: () => void) {
-		this.#node = node;
-		this.#onResize = onResize;
-		this.handler = this.handler.bind(this);
-		$effect(this.handler);
-	}
+export function observeResize(getNode: Getter<MaybeElement>, onResize: () => void, options?: ResizeObserverOptions) {
+	$effect(() => {
+		const node = getNode();
+		if (!node) return;
 
-	handler() {
 		let rAF = 0;
-		const _node = this.#node();
-		if (!_node) return;
+
 		const resizeObserver = new ResizeObserver(() => {
-			cancelAnimationFrame(rAF);
-			rAF = window.requestAnimationFrame(this.#onResize);
+			window.cancelAnimationFrame(rAF);
+			rAF = window.requestAnimationFrame(onResize);
 		});
 
-		resizeObserver.observe(_node);
+		resizeObserver.observe(node, options);
+
 		return () => {
 			window.cancelAnimationFrame(rAF);
-			resizeObserver.unobserve(_node);
+			resizeObserver.disconnect();
 		};
-	}
+	});
+}
+
+export function observeResizeMany(getNodes: () => Iterable<MaybeElement>, onResize: () => void, options?: ResizeObserverOptions) {
+	$effect(() => {
+		const nodes = [...getNodes()].filter(Boolean) as Element[];
+		if (nodes.length === 0) return;
+
+		let rAF = 0;
+
+		const resizeObserver = new ResizeObserver(() => {
+			window.cancelAnimationFrame(rAF);
+			rAF = window.requestAnimationFrame(onResize);
+		});
+
+		for (const node of nodes) {
+			resizeObserver.observe(node, options);
+		}
+
+		return () => {
+			window.cancelAnimationFrame(rAF);
+			resizeObserver.disconnect();
+		};
+	});
 }

@@ -15,13 +15,13 @@ import type {
 	TimeValidator,
 	TimeOnInvalid,
 	EditableTimeSegmentPart,
-} from '$lib/shared/date/types.js';
+} from '$lib/internal/date-time/types.js';
 import { type TimeFormatter, createTimeFormatter } from '$lib/internal/date-time/formatter.js';
 import { type Announcer, getAnnouncer } from '$lib/internal/date-time/announcer.js';
 import { EDITABLE_TIME_SEGMENT_PARTS } from '$lib/internal/date-time/field/parts.js';
 import { toDate } from '$lib/internal/date-time/utils.js';
 
-import type { TimeValue } from '$lib/shared/date/types.js';
+import type { TimeValue } from '$lib/internal/date-time/types.js';
 import {
 	areAllTimeSegmentsFilled,
 	convertTimeValueToTime,

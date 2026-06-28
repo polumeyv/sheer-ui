@@ -10,11 +10,11 @@ import { createContext, untrack } from 'svelte';
 import { simpleBox, executeCallbacks, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
 import type { ScrollAreaType } from './types.js';
 import type { BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { type Direction, type Orientation, mergeProps, useId } from '$lib/shared/index.js';
+import { type Direction, type Orientation, mergeProps, useId } from '$lib/internal/index.js';
 import { on } from 'svelte/events';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { StateMachine } from '$lib/internal/state-machine.js';
-import { SvelteResizeObserver } from '$lib/internal/svelte-resize-observer.svelte.js';
+import { observeResize, observeResizeMany } from '$lib/internal/svelte-resize-observer.svelte.js';
 
 const scrollAreaAttrs = createBitsAttrs({
 	component: 'scroll-area',
@@ -331,8 +331,7 @@ export class ScrollAreaScrollbarAutoState {
 			this.isVisible = this.scrollbar.isHorizontal ? isOverflowX : isOverflowY;
 		}, 10);
 
-		new SvelteResizeObserver(() => this.root.viewportNode, handleResize);
-		new SvelteResizeObserver(() => this.root.contentNode, handleResize);
+		observeResizeMany(() => [this.root.viewportNode, this.root.contentNode], handleResize);
 	}
 
 	readonly props = $derived.by(
@@ -706,8 +705,7 @@ export class ScrollAreaScrollbarSharedState {
 		// 	this.handleThumbPositionChange();
 		// });
 
-		new SvelteResizeObserver(() => this.scrollbar.opts.ref.current, this.handleResize);
-		new SvelteResizeObserver(() => this.root.contentNode, this.handleResize);
+		observeResizeMany(() => [this.scrollbar.opts.ref.current, this.root.viewportNode, this.root.contentNode], this.handleResize);
 
 		this.onpointerdown = this.onpointerdown.bind(this);
 		this.onpointermove = this.onpointermove.bind(this);
@@ -868,28 +866,22 @@ export class ScrollAreaCornerImplState {
 	#height = $state(0);
 	readonly hasSize = $derived(Boolean(this.#width && this.#height));
 
+	#measureCorner = () => {
+		const height = this.root.scrollbarXNode?.offsetHeight || 0;
+		const width = this.root.scrollbarYNode?.offsetWidth || 0;
+
+		this.root.cornerHeight = height;
+		this.root.cornerWidth = width;
+		this.#height = height;
+		this.#width = width;
+	};
+
 	constructor(opts: ScrollAreaCornerImplStateOpts, root: ScrollAreaRootState) {
 		this.opts = opts;
 		this.root = root;
 		this.attachment = attachRef(this.opts.ref);
 
-		new SvelteResizeObserver(
-			() => this.root.scrollbarXNode,
-			() => {
-				const height = this.root.scrollbarXNode?.offsetHeight || 0;
-				this.root.cornerHeight = height;
-				this.#height = height;
-			},
-		);
-
-		new SvelteResizeObserver(
-			() => this.root.scrollbarYNode,
-			() => {
-				const width = this.root.scrollbarYNode?.offsetWidth || 0;
-				this.root.cornerWidth = width;
-				this.#width = width;
-			},
-		);
+		observeResizeMany(() => [this.root.scrollbarXNode, this.root.scrollbarYNode], this.#measureCorner);
 	}
 
 	readonly props = $derived.by(() => ({
@@ -919,8 +911,7 @@ function getThumbRatio(viewportSize: number, contentSize: number) {
 function getThumbSize(sizes: Sizes) {
 	const ratio = getThumbRatio(sizes.viewport, sizes.content);
 	const scrollbarPadding = sizes.scrollbar.paddingStart + sizes.scrollbar.paddingEnd;
-	const thumbSize = (sizes.scrollbar.size - scrollbarPadding) * ratio;
-	return Math.max(thumbSize, 18);
+	return Math.max((sizes.scrollbar.size - scrollbarPadding) * ratio, 18);
 }
 
 type GetScrollPositionFromPointerProps = {
@@ -932,11 +923,9 @@ type GetScrollPositionFromPointerProps = {
 
 function getScrollPositionFromPointer({ pointerPos, pointerOffset, sizes, dir = 'ltr' }: GetScrollPositionFromPointerProps) {
 	const thumbSizePx = getThumbSize(sizes);
-	const thumbCenter = thumbSizePx / 2;
-	const offset = pointerOffset || thumbCenter;
-	const thumbOffsetFromEnd = thumbSizePx - offset;
+	const offset = pointerOffset || thumbSizePx / 2;
 	const minPointerPos = sizes.scrollbar.paddingStart + offset;
-	const maxPointerPos = sizes.scrollbar.size - sizes.scrollbar.paddingEnd - thumbOffsetFromEnd;
+	const maxPointerPos = sizes.scrollbar.size - sizes.scrollbar.paddingEnd - thumbSizePx - offset;
 	const maxScrollPos = sizes.content - sizes.viewport;
 	const scrollRange = dir === 'ltr' ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
 	const interpolate = linearScale([minPointerPos, maxPointerPos], scrollRange as [number, number]);

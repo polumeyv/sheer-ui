@@ -4,9 +4,9 @@ import type { DismissibleLayerProps } from '$lib/components/utilities/dismissibl
 import type { EscapeLayerProps } from '$lib/components/utilities/escape-layer/types.js';
 import type { Snippet } from 'svelte';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '$lib/internal/types.js';
-import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/shared/attributes.js';
+import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/internal/attributes.js';
 import type { PortalProps } from '$lib/components/utilities/portal/types.js';
-import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/shared/types.js';
+import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/internal/types.js';
 import type { TooltipTether as TooltipTetherImpl } from './tooltip.svelte.js';
 
 export type TooltipTether<Payload = never> = TooltipTetherImpl<Payload>;

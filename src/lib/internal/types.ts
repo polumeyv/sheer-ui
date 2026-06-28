@@ -2,7 +2,7 @@
 import type { Snippet } from 'svelte';
 
 import type { Box, ReadableBoxedValues, WritableBoxedValues, RefAttachment as InternalRefAttachment } from '$lib/internal/tools/index.js';
-import type { StyleProperties } from '$lib/shared/index.js';
+import type { StyleProperties } from '$lib/internal/tools/types.js';
 
 export type OnChangeFn<T> = (value: T) => void;
 
@@ -90,3 +90,19 @@ export type BitsFocusEvent<T extends HTMLElement = HTMLElement> = BitsEvent<Focu
 export type BitsInputEvent<T extends HTMLElement = HTMLElement> = BitsEvent<InputEvent, T>;
 
 export type RefAttachment<T extends HTMLElement = HTMLElement> = InternalRefAttachment<T>;
+
+export type FloatingContentSnippetProps = {
+	/**
+	 * Whether the content is open or closed. Used alongside the `forceMount` prop to
+	 * conditionally render the content using Svelte transitions.
+	 */
+	open: boolean;
+
+	/**
+	 * Attributes to spread onto a wrapper element around the content.
+	 * Do not style the wrapper element, its styles are computed by Floating UI.
+	 */
+	wrapperProps: Record<string, unknown>;
+};
+
+export type StaticContentSnippetProps = Omit<FloatingContentSnippetProps, 'wrapperProps'>;

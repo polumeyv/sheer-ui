@@ -18,7 +18,7 @@ import {
 import { useDebounce } from '$lib/internal/tools/index.js';
 import { createContext, tick, untrack, type Snippet } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
-import { type Direction, type Orientation, useId } from '$lib/shared/index.js';
+import { type Direction, type Orientation, useId } from '$lib/internal/index.js';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '$lib/internal/attrs.js';
 import { getTabbableCandidates } from '$lib/internal/focus.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment } from '$lib/internal/types.js';
@@ -29,7 +29,7 @@ import { boxAutoReset } from '$lib/internal/box-auto-reset.svelte.js';
 import { isElement } from '$lib/internal/is.js';
 import type { FocusEventHandler, KeyboardEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
 import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
-import { SvelteResizeObserver } from '$lib/internal/svelte-resize-observer.svelte.js';
+import { observeResize, observeResizeMany } from '$lib/internal/svelte-resize-observer.svelte.js';
 
 const navigationMenuAttrs = createBitsAttrs({
 	component: 'navigation-menu',
@@ -697,8 +697,7 @@ export class NavigationMenuIndicatorImplState {
 		this.listContext = context.list;
 		this.attachment = attachRef(this.opts.ref);
 
-		new SvelteResizeObserver(() => this.activeTrigger, this.handlePositionChange);
-		new SvelteResizeObserver(() => this.context.indicatorTrackRef.current, this.handlePositionChange);
+		observeResizeMany(() => [this.activeTrigger, this.context.indicatorTrackRef.current], this.handlePositionChange);
 	}
 
 	handlePositionChange = () => {
@@ -1023,17 +1022,7 @@ export class NavigationMenuViewportState {
 		 * For example, if content animates in from `scale(0.5)` the dimensions would be anything
 		 * from `0.5` to `1` of the intended size.
 		 */
-		new SvelteResizeObserver(
-			() => this.contentNode,
-			() => {
-				if (this.contentNode) {
-					this.size = {
-						width: this.contentNode.offsetWidth,
-						height: this.contentNode.offsetHeight,
-					};
-				}
-			},
-		);
+		observeResize(() => this.contentNode, this.#measureContent);
 
 		// reset size when viewport closes to prevent residual size animations
 		$effect(() => {
@@ -1045,6 +1034,16 @@ export class NavigationMenuViewportState {
 			});
 		});
 	}
+
+	#measureContent = () => {
+		const node = this.contentNode;
+		if (!node) return;
+
+		this.size = {
+			width: node.offsetWidth,
+			height: node.offsetHeight,
+		};
+	};
 
 	readonly props = $derived.by(
 		() =>

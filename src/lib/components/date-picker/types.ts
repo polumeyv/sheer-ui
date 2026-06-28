@@ -1,14 +1,14 @@
 import type { DateValue } from "@internationalized/date";
 import type { OnChangeFn, WithChild, WithChildren, Without } from "$lib/internal/types.js";
-import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes.js";
+import type { BitsPrimitiveDivAttributes } from "$lib/internal/attributes.js";
 import type { CalendarRootSnippetProps } from "$lib/types.js";
 import type {
 	DateMatcher,
 	DateOnInvalid,
 	DateValidator,
 	EditableSegmentPart,
-} from "$lib/shared/index.js";
-import type { Granularity, WeekStartsOn } from "$lib/shared/date/types.js";
+} from "$lib/internal/index.js";
+import type { Granularity, WeekStartsOn } from "$lib/internal/date-time/types.js";
 import type { PortalProps } from "$lib/components/utilities/portal/index.js";
 
 export type DatePickerRootPropsWithoutHTML = WithChildren<{

@@ -57,8 +57,7 @@
 	);
 
 	function repairUndefinedControlledPlaceholder() {
-		if (placeholder !== undefined) return;
-		placeholder = defaultPlaceholder;
+		if (placeholder === undefined) placeholder = defaultPlaceholder;
 	}
 
 	// SSR/initial setup: RangeCalendar needs a writable placeholder for view navigation.
@@ -70,8 +69,7 @@
 	});
 
 	function repairUndefinedControlledValue() {
-		if (value !== undefined) return;
-		value = { start: undefined, end: undefined };
+		if (value === undefined) value = { start: undefined, end: undefined };
 	}
 
 	// SSR/initial setup: range state owns a DateRange object, even when empty.

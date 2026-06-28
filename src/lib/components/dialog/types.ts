@@ -14,7 +14,7 @@ import type {
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/internal/attributes.js";
 import type { PortalProps } from "$lib/components/utilities/portal/index.js";
 
 export type DialogRootPropsWithoutHTML = WithChildren<{

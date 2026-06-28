@@ -1,5 +1,5 @@
-import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes.js";
-import type { Direction, Orientation, WithChild, Without } from "$lib/shared/index.js";
+import type { BitsPrimitiveDivAttributes } from "$lib/internal/attributes.js";
+import type { Direction, Orientation, WithChild, Without } from "$lib/internal/index.js";
 
 export type ScrollAreaType = "hover" | "scroll" | "auto" | "always";
 

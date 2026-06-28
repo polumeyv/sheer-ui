@@ -3,7 +3,7 @@ import type { Orientation } from "$lib/index.js";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/internal/attributes.js";
 
 export type RadioGroupRootPropsWithoutHTML = WithChild<{
 	/**

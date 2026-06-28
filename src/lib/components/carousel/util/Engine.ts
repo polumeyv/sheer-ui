@@ -29,7 +29,7 @@ import { SlidesInView, type SlidesInViewType } from './SlidesInView';
 import { SlideSizes } from './SlideSizes';
 import { SlidesToScroll, type SlidesToScrollType } from './SlidesToScroll';
 import { Translate, type TranslateType } from './Translate';
-import { arrayKeys, arrayLast, arrayLastIndex } from './utils';
+import { arrayLast, arrayLastIndex } from './utils';
 import { NumberStore, type NumberStoreType } from './NumberStore';
 
 export type ReInitApi = {
@@ -137,7 +137,7 @@ export function Engine<API extends ReInitApi>(
 
 	const indexCurrent = Counter(arrayLastIndex(scrollSnaps), startSnap, loop);
 	const indexPrevious = indexCurrent.clone();
-	const slideIndexes = arrayKeys(slides);
+	const slideIndexes = Object.keys(slides).map(Number);
 
 	const scrollAnimator = ScrollAnimator<API>();
 	const animation = Animations(

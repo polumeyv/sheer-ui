@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from "$lib/utils.js";
+	import { cn } from '$lib/utils.js';
 	type Tab = { id: string; label: string; href: string };
 	let {
 		tabs,
@@ -12,7 +12,7 @@
 	} = $props();
 </script>
 
-<div class={cn("relative", className)} role="tablist" aria-orientation="horizontal">
+<div class={cn('relative', className)} role="tablist" aria-orientation="horizontal">
 	<div class="flex gap-4">
 		{#each tabs as tab (tab.id)}
 			<a

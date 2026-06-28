@@ -1,5 +1,3 @@
-import { isString } from './utils';
-
 export type AlignmentOptionType = 'start' | 'center' | 'end' | ((viewSize: number, snapSize: number, index: number) => number);
 
 export type AlignmentType = {
@@ -22,7 +20,7 @@ export function Alignment(align: AlignmentOptionType, viewSize: number): Alignme
 	}
 
 	function measure(input: number, index: number): number {
-		if (isString(align)) return predefined[align](input);
+		if (typeof align === 'string') return predefined[align](input);
 		return align(viewSize, input, index);
 	}
 

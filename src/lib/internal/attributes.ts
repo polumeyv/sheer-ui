@@ -11,7 +11,7 @@ import type {
 	HTMLTdAttributes,
 	HTMLThAttributes,
 	SVGAttributes,
-} from "svelte/elements";
+} from 'svelte/elements';
 
 export type BitsDivAttributes = HTMLAttributes<HTMLDivElement>;
 export type BitsSpanAttributes = HTMLAttributes<HTMLSpanElement>;
@@ -29,7 +29,7 @@ export type BitsSelectAttributes = HTMLSelectAttributes;
  * children to allow for custom children snippet props. We extend `style` to allow
  * for either a `StyleProperties` object or a string of CSS properties.
  */
-type BitsPrimitive<T> = Omit<T, "style" | "id" | "children"> & { id?: string };
+type BitsPrimitive<T> = Omit<T, 'style' | 'id' | 'children'> & { id?: string };
 
 export type BitsPrimitiveButtonAttributes = BitsPrimitive<HTMLButtonAttributes>;
 export type BitsPrimitiveDivAttributes = BitsPrimitive<BitsDivAttributes>;

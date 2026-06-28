@@ -1,6 +1,6 @@
 import { type ReadableBox, boxWith, attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
 import type { InteractOutsideBehaviorType } from '../utilities/dismissible-layer/types.js';
-import type { Direction } from '$lib/shared/index.js';
+import type { Direction } from '$lib/internal/index.js';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { wrapArray } from '$lib/internal/arrays.js';

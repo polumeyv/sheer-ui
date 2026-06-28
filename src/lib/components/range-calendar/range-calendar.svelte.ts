@@ -1,7 +1,7 @@
 import { type DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
 import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
 import { getCalendarRoot, setCalendarRoot } from '../calendar/calendar.svelte.js';
-import type { DateRange, Month } from '$lib/shared/index.js';
+import type { DateRange, Month } from '$lib/internal/index.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { useId } from '$lib/internal/use-id.js';
 import { boolToStr, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
@@ -25,7 +25,7 @@ import {
 	useMonthViewPlaceholderSync,
 } from '$lib/internal/date-time/calendar-helpers.svelte.js';
 import { areAllDaysBetweenValid, getDateValueType, isAfter, isBefore, isBetweenInclusive, toDate } from '$lib/internal/date-time/utils.js';
-import type { WeekStartsOn } from '$lib/shared/date/types.js';
+import type { WeekStartsOn } from '$lib/internal/date-time/types.js';
 import { createContext, onMount, untrack } from 'svelte';
 
 const [getRangeCalendarCell, setRangeCalendarCell] = createContext<RangeCalendarCellState>();

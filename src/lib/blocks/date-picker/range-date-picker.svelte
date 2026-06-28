@@ -3,7 +3,7 @@
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import type { DateValue } from '@internationalized/date';
-	import type { DateRange } from '$lib/shared/index.js';
+	import type { DateRange } from '$lib/internal/index.js';
 	import { cn } from '$lib/utils.js';
 	import { buttonVariants } from '$lib/components/button';
 	import { RangeCalendar } from '$lib/components/range-calendar';
@@ -97,7 +97,7 @@
 												<RangeCalendar.Cell
 													{date}
 													month={month.value}
-													class="relative size-9 p-0! text-center text-sm data-[highlighted]:bg-accent data-[selection-end]:rounded-r-md data-[selection-start]:rounded-l-md">
+													class="relative size-9 p-0! text-center text-sm data-highlighted:bg-accent data-selection-end:rounded-r-md data-selection-start:rounded-l-md">
 													<RangeCalendar.Day
 														class="inline-grid size-9 place-items-center whitespace-nowrap rounded-md border border-transparent bg-transparent p-0 text-sm font-normal text-foreground hover:border-foreground data-disabled:pointer-events-none data-disabled:text-foreground/30 data-outside-month:pointer-events-none data-selected:bg-primary data-selected:font-medium data-selected:text-primary-foreground data-unavailable:text-muted-foreground data-unavailable:line-through" />
 												</RangeCalendar.Cell>

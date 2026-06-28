@@ -17,7 +17,7 @@ import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
 import { chunk, isValidIndex } from '$lib/internal/arrays.js';
 import { isBrowser, isHTMLElement } from '$lib/internal/is.js';
 import { kbd } from '$lib/internal/kbd.js';
-import type { DateMatcher, Month } from '$lib/shared/index.js';
+import type { DateMatcher, Month } from '$lib/internal/index.js';
 
 /**
  * Checks if a given node is a calendar cell element.

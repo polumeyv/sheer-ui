@@ -126,61 +126,49 @@ export class SafePolygon {
 
 			const doc = getDocument(triggerNode);
 
-			const handlePointerMove = (e: PointerEvent) => {
-				this.#onPointerMove([e.clientX, e.clientY], triggerNode, contentNode);
-			};
-
-			const handleTriggerLeave = (e: PointerEvent) => {
-				// when leaving trigger toward content, record exit point
-				const target = e.relatedTarget;
-				// if going directly to content, no need for polygon tracking
-				if (isElement(target) && contentNode.contains(target)) {
-					return;
-				}
-				// if moving to an ignored target (e.g. a sibling trigger), don't close —
-				// the sibling's enter handler will take over
-				const ignoredTargets = this.#opts.ignoredTargets?.() ?? [];
-				if (isElement(target) && ignoredTargets.some((n) => n === target || n.contains(target))) {
-					return;
-				}
-				this.#transitTargets = isElement(target) && ignoredTargets.length > 0 ? ignoredTargets.filter((n) => target.contains(n)) : [];
-				// for unrelated elements, defer close decisions to pointer geometry checks.
-				// this allows the cursor to pass through intermediate elements on the way
-				// to content without immediately closing.
-				this.#exitPoint = [e.clientX, e.clientY];
-				this.#exitTarget = 'content';
-				this.#scheduleLeaveFallback();
-			};
-
-			const handleTriggerEnter = () => {
-				// reached trigger, clear tracking
-				this.#clearTracking();
-			};
-
-			const handleContentEnter = () => {
-				// reached content, clear tracking
-				this.#clearTracking();
-			};
-
-			const handleContentLeave = (e: PointerEvent) => {
-				// when leaving content, check if going directly back to trigger
-				const target = e.relatedTarget;
-				if (isElement(target) && triggerNode.contains(target)) {
-					// going directly to trigger, no polygon tracking needed
-					return;
-				}
-				// set up polygon tracking toward trigger — pointermove decides whether to close
-				this.#exitPoint = [e.clientX, e.clientY];
-				this.#exitTarget = 'trigger';
-				this.#scheduleLeaveFallback();
-			};
-
 			return [
-				on(doc, 'pointermove', handlePointerMove),
-				on(triggerNode, 'pointerleave', handleTriggerLeave),
-				on(triggerNode, 'pointerenter', handleTriggerEnter),
-				on(contentNode, 'pointerenter', handleContentEnter),
-				on(contentNode, 'pointerleave', handleContentLeave),
+				on(doc, 'pointermove', (e) => this.#onPointerMove([e.clientX, e.clientY], triggerNode, contentNode)),
+				on(triggerNode, 'pointerleave', (e) => {
+					// when leaving trigger toward content, record exit point
+					const target = e.relatedTarget;
+					// if going directly to content, no need for polygon tracking
+					if (isElement(target) && contentNode.contains(target)) {
+						return;
+					}
+					// if moving to an ignored target (e.g. a sibling trigger), don't close —
+					// the sibling's enter handler will take over
+					const ignoredTargets = this.#opts.ignoredTargets?.() ?? [];
+					if (isElement(target) && ignoredTargets.some((n) => n === target || n.contains(target))) {
+						return;
+					}
+					this.#transitTargets = isElement(target) && ignoredTargets.length > 0 ? ignoredTargets.filter((n) => target.contains(n)) : [];
+					// for unrelated elements, defer close decisions to pointer geometry checks.
+					// this allows the cursor to pass through intermediate elements on the way
+					// to content without immediately closing.
+					this.#exitPoint = [e.clientX, e.clientY];
+					this.#exitTarget = 'content';
+					this.#scheduleLeaveFallback();
+				}),
+				on(triggerNode, 'pointerenter', () => {
+					// reached trigger, clear tracking
+					this.#clearTracking();
+				}),
+				on(contentNode, 'pointerenter', () =>
+					// reached content, clear tracking
+					this.#clearTracking(),
+				),
+				on(contentNode, 'pointerleave', (e) => {
+					// when leaving content, check if going directly back to trigger
+					const target = e.relatedTarget;
+					if (isElement(target) && triggerNode.contains(target)) {
+						// going directly to trigger, no polygon tracking needed
+						return;
+					}
+					// set up polygon tracking toward trigger — pointermove decides whether to close
+					this.#exitPoint = [e.clientX, e.clientY];
+					this.#exitTarget = 'trigger';
+					this.#scheduleLeaveFallback();
+				}),
 			].reduce(
 				(acc, cleanup) => () => {
 					acc();
