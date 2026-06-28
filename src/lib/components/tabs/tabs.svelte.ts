@@ -5,7 +5,7 @@ import type { TabsActivationMode } from './types.js';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import type { Orientation } from '$lib/shared/index.js';
+import type { Orientation } from '$lib/internal/index.js';
 import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
 
 const tabsAttrs = createBitsAttrs({

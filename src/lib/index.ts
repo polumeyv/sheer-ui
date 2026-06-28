@@ -1,3 +1,3 @@
-export * from "./shared/index.js";
-export type * from "./shared/index.js";
+export * from "./internal/index.js";
+export type * from "./internal/index.js";
 export * from "./types.js";

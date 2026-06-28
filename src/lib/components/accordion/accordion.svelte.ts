@@ -3,7 +3,7 @@ import { createContext, tick, untrack } from 'svelte';
 import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed, getDataTransitionAttrs } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
-import type { Orientation } from '$lib/shared/index.js';
+import type { Orientation } from '$lib/internal/index.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
 import { on } from 'svelte/events';

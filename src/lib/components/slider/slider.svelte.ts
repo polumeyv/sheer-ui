@@ -29,7 +29,7 @@ import { isElementOrSVGElement } from '$lib/internal/is.js';
 import { isValidIndex } from '$lib/internal/arrays.js';
 import { resizeAttachment } from '$lib/internal/svelte-resize-observer.svelte.js';
 import type { BitsKeyboardEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import type { Direction, Orientation, SliderThumbPositioning } from '$lib/shared/index.js';
+import type { Direction, Orientation, SliderThumbPositioning } from '$lib/internal/index.js';
 import { linearScale } from '$lib/internal/math.js';
 import type { SliderLabelPosition } from './types.js';
 

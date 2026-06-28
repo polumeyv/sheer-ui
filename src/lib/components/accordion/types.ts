@@ -7,8 +7,8 @@ import type {
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
-import type { Orientation } from "$lib/shared/index.js";
+} from "$lib/internal/attributes.js";
+import type { Orientation } from "$lib/internal/index.js";
 
 export type BaseAccordionRootPropsWithoutHTML = {
 	/**

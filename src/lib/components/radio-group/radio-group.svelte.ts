@@ -2,7 +2,7 @@ import { createContext, untrack } from 'svelte';
 import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { createBitsAttrs, getAriaChecked, boolToEmptyStrOrUndef, boolToStr } from '$lib/internal/attrs.js';
-import type { Orientation } from '$lib/shared/index.js';
+import type { Orientation } from '$lib/internal/index.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
 

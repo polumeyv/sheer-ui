@@ -3,7 +3,7 @@ import type {
 	BitsPrimitiveDivAttributes,
 	BitsPrimitiveImgAttributes,
 	BitsPrimitiveSpanAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/internal/attributes.js";
 
 export type AvatarImageLoadingStatus = "loading" | "loaded" | "error";
 

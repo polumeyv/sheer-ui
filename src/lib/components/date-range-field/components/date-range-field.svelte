@@ -6,7 +6,7 @@
 	import { DateRangeFieldRootState } from '../date-range-field.svelte.js';
 	import type { DateRangeFieldRootProps } from '../types.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import type { DateRange } from '$lib/shared/index.js';
+	import type { DateRange } from '$lib/internal/index.js';
 	import { getDefaultDate } from '$lib/internal/date-time/utils.js';
 	import { resolveLocaleProp } from '$lib/components/utilities/config/prop-resolvers.js';
 

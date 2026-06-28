@@ -18,7 +18,7 @@ import { getSegments } from './segments.js';
 import { isBrowser, isNull, isNumberString } from '$lib/internal/is.js';
 import { useId } from '$lib/internal/use-id.js';
 import { kbd } from '$lib/internal/kbd.js';
-import type { Granularity, HourCycle, TimeSegmentValueObj } from '$lib/shared/date/types.js';
+import type { Granularity, HourCycle, TimeSegmentValueObj } from '$lib/internal/date-time/types.js';
 
 export function initializeSegmentValues(): TimeSegmentValueObj;
 export function initializeSegmentValues(granularity: Granularity): SegmentValueObj;

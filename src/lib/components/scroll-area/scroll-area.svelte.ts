@@ -10,7 +10,7 @@ import { createContext, untrack } from 'svelte';
 import { simpleBox, executeCallbacks, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
 import type { ScrollAreaType } from './types.js';
 import type { BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { type Direction, type Orientation, mergeProps, useId } from '$lib/shared/index.js';
+import { type Direction, type Orientation, mergeProps, useId } from '$lib/internal/index.js';
 import { on } from 'svelte/events';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { StateMachine } from '$lib/internal/state-machine.js';

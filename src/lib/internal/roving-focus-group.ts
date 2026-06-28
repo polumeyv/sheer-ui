@@ -2,7 +2,7 @@ import { type Box, type ReadableBox, box } from '$lib/internal/tools/index.js';
 import { getElemDirection } from './locale.js';
 import { getDirectionalKeys } from './get-directional-keys.js';
 import { kbd } from './kbd.js';
-import type { Orientation } from '$lib/shared/index.js';
+import type { Orientation } from '$lib/internal/index.js';
 import { BROWSER } from 'esm-env';
 import { isHTMLElement } from './is.js';
 

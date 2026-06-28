@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-	import type { WithoutChildren } from "$lib/shared/index.js";
+	import type { WithoutChildren } from "$lib/internal/index.js";
 	import { getCarouselContext } from './carouselState.svelte';
 	import { cn } from "$lib/utils.js";
 	import { Button, type Props } from '../button';

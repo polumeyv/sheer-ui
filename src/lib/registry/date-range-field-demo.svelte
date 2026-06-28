@@ -3,7 +3,7 @@
 	// rendering its segments via the `segments` snippet. Styling is the same shadcn
 	// field/segment convention as the single date field.
 	import * as DateRangeField from '$lib/components/date-range-field/index.js';
-	import type { DateRange } from '$lib/shared/index.js';
+	import type { DateRange } from '$lib/internal/index.js';
 
 	let value = $state<DateRange>();
 </script>

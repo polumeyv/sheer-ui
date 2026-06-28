@@ -10,4 +10,4 @@ export {
 	DatePickerWithPresets as WithPresets,
 	RangeDatePicker as Range,
 };
-export type { DateRange } from '$lib/shared/index.js';
+export type { DateRange } from '$lib/internal/index.js';

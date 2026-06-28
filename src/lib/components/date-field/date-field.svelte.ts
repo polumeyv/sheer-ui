@@ -29,7 +29,7 @@ import type {
 	SegmentValueObj,
 	TimeSegmentObj,
 	EditableTimeSegmentPart,
-} from '$lib/shared/date/types.js';
+} from '$lib/internal/date-time/types.js';
 import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
 import { type Announcer, getAnnouncer } from '$lib/internal/date-time/announcer.js';
 import {

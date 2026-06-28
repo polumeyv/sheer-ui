@@ -18,7 +18,7 @@ import {
 import { useDebounce } from '$lib/internal/tools/index.js';
 import { createContext, tick, untrack, type Snippet } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
-import { type Direction, type Orientation, useId } from '$lib/shared/index.js';
+import { type Direction, type Orientation, useId } from '$lib/internal/index.js';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '$lib/internal/attrs.js';
 import { getTabbableCandidates } from '$lib/internal/focus.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment } from '$lib/internal/types.js';

@@ -1,4 +1,4 @@
-import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes.js";
+import type { BitsPrimitiveDivAttributes } from "$lib/internal/attributes.js";
 import type {
 	DialogContentPropsWithoutHTML,
 	DialogOverlayPropsWithoutHTML,
