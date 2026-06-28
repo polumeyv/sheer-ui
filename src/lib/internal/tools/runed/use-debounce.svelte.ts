@@ -1,5 +1,5 @@
 import type { MaybeGetter } from '../types.js';
-import { get } from '../utils/is.js';
+import { get } from '@polumeyv/utilities';
 
 type UseDebounceReturn<Args extends unknown[], Return> = ((this: unknown, ...args: Args) => Promise<Return>) & {
 	cancel: () => void;

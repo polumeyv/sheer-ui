@@ -1,4 +1,4 @@
-import { isObject } from './is.js';
+import { isObject } from '@polumeyv/utilities';
 
 const ELEMENT_NODE: typeof Node.ELEMENT_NODE = 1;
 const DOCUMENT_NODE: typeof Node.DOCUMENT_NODE = 9;
