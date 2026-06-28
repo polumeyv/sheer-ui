@@ -1,5 +1,5 @@
 import type { Expand, Getter, MaybeBoxOrGetter } from '../types.js';
-import { isFunction, isObject } from '../utils/is.js';
+import { isFunction, isObject } from '@polumeyv/utilities';
 
 export const BoxSymbol = Symbol('box');
 export const isWritableSymbol = Symbol('is-writable');
