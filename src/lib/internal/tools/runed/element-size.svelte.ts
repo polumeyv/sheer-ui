@@ -1,5 +1,5 @@
 import { defaultWindow, type ConfigurableWindow, type MaybeElementGetter } from '../types.js';
-import { get } from '../utils/is.js';
+import { get } from '@polumeyv/utilities';
 import { createSubscriber } from 'svelte/reactivity';
 
 export type ElementSizeOptions = ConfigurableWindow & {
