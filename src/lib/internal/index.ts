@@ -1,6 +1,4 @@
 // oxlint-disable no-explicit-any
-import type * as CSS from 'csstype';
-
 export { REGEXP_ONLY_DIGITS, REGEXP_ONLY_CHARS, REGEXP_ONLY_DIGITS_AND_CHARS } from '$lib/components/pin-input/pin-input.svelte.js';
 
 export type Selected<Value> = {
@@ -8,15 +6,8 @@ export type Selected<Value> = {
 	label?: string;
 };
 
-export type SegmentPart = 'month' | 'day' | 'year' | 'hour' | 'minute' | 'second' | 'dayPeriod' | 'timeZoneName' | 'literal';
-
 export type FocusTarget = string | HTMLElement | SVGElement | null;
 export type FocusProp = FocusTarget | ((defaultEl?: HTMLElement | null) => FocusTarget);
-
-export type StyleProperties = CSS.Properties & {
-	// Allow any CSS Custom Properties
-	[str: `--${string}`]: any;
-};
 
 export type Orientation = 'horizontal' | 'vertical';
 export type Direction = 'ltr' | 'rtl';
@@ -29,12 +20,13 @@ export type Direction = 'ltr' | 'rtl';
  */
 export type SliderThumbPositioning = 'exact' | 'contain';
 
-export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;
-export type WithoutChildren<T> = T extends { children?: any } ? Omit<T, 'children'> : T;
-export type WithoutChild<T> = T extends { child?: any } ? Omit<T, 'child'> : T;
-export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: U | null };
-export type { EditableSegmentPart, EditableTimeSegmentPart } from './date/types.js';
+export type { StyleProperties } from './tools/types.js';
+export type { WithoutChild, WithoutChildren, WithoutChildrenOrChild, WithElementRef } from '$lib/utils.js';
+export type { WithChild, Without, WithChildren, FloatingContentSnippetProps, StaticContentSnippetProps } from './types.js';
 export type {
+	SegmentPart,
+	EditableSegmentPart,
+	EditableTimeSegmentPart,
 	Month,
 	DateMatcher,
 	DateOnInvalid,
@@ -47,9 +39,8 @@ export type {
 	TimeValidator,
 	TimeRangeValidator,
 	TimeOnInvalid,
-} from './date/types.js';
-export type { WithChild, Without, WithChildren } from '$lib/internal/types.js';
+} from './date-time/types.js';
+
 export { mergeProps } from '$lib/merge-props.js';
-export { useId } from '$lib/internal/use-id.js';
+export { useId } from './use-id.js';
 export * from './attributes.js';
-export * from './types.js';

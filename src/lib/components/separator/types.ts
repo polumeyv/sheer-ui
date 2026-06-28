@@ -1,6 +1,6 @@
 import type { WithChild, Without } from "$lib/internal/types.js";
-import type { Orientation } from "$lib/shared/index.js";
-import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes.js";
+import type { Orientation } from "$lib/internal/index.js";
+import type { BitsPrimitiveDivAttributes } from "$lib/internal/attributes.js";
 
 export type SeparatorRootPropsWithoutHTML = WithChild<{
 	/**

@@ -34,7 +34,7 @@ import {
 	boolToEmptyStrOrUndef,
 	getDataTransitionAttrs,
 } from '$lib/internal/attrs.js';
-import type { Direction } from '$lib/shared/index.js';
+import type { Direction } from '$lib/internal/index.js';
 import { IsUsingKeyboard } from '$lib/components/utilities/is-using-keyboard/is-using-keyboard.svelte.js';
 import { getTabbableFrom } from '$lib/internal/tabbable.js';
 import { isTabbable } from 'tabbable';

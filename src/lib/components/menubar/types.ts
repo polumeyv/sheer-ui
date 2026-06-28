@@ -4,8 +4,8 @@ import type { OnChangeFn, WithChild, WithChildren, Without } from "$lib/internal
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/shared/attributes.js";
-import type { Direction } from "$lib/shared/index.js";
+} from "$lib/internal/attributes.js";
+import type { Direction } from "$lib/internal/index.js";
 
 export type MenubarRootPropsWithoutHTML = WithChild<{
 	/**

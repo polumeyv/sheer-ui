@@ -6,7 +6,7 @@ import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { getElemDirection } from '$lib/internal/locale.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { getDirectionalKeys } from '$lib/internal/get-directional-keys.js';
-import { type Orientation, useId } from '$lib/shared/index.js';
+import { type Orientation, useId } from '$lib/internal/index.js';
 
 const paginationAttrs = createBitsAttrs({
 	component: 'pagination',

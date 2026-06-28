@@ -2,9 +2,9 @@ import type { Expand } from '$lib/internal/tools/index.js';
 import type { PortalProps } from '../utilities/portal/types.js';
 import type { PopperLayerProps, PopperLayerStaticProps } from '../utilities/popper-layer/types.js';
 import type { ArrowProps, ArrowPropsWithoutHTML } from '../utilities/arrow/types.js';
-import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes, BitsPrimitiveSpanAttributes } from '$lib/shared/attributes.js';
+import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes, BitsPrimitiveSpanAttributes } from '$lib/internal/attributes.js';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '$lib/internal/types.js';
-import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/shared/types.js';
+import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/internal/types.js';
 import type { HTMLInputAttributes } from 'svelte/elements';
 
 export type SelectBaseRootPropsWithoutHTML = WithChildren<{

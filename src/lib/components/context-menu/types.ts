@@ -1,6 +1,6 @@
 import type { MenuContentProps, MenuContentPropsWithoutHTML } from "../menu/types.js";
 import type { WithChild, Without } from "$lib/internal/types.js";
-import type { BitsPrimitiveDivAttributes } from "$lib/shared/attributes.js";
+import type { BitsPrimitiveDivAttributes } from "$lib/internal/attributes.js";
 
 export type ContextMenuContentPropsWithoutHTML = MenuContentPropsWithoutHTML;
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { VisuallyHiddenProps } from './types.js';
-	import type { StyleProperties } from '$lib/shared/index.js';
+	import type { StyleProperties } from '$lib/internal/index.js';
 
 	let { children, child, ...restProps }: VisuallyHiddenProps = $props();
 

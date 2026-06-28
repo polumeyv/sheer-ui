@@ -8,8 +8,8 @@ import type {
 	BitsPrimitiveElementAttributes,
 	BitsPrimitiveLiAttributes,
 	BitsPrimitiveUListAttributes,
-} from '$lib/shared/attributes.js';
-import type { Direction, Orientation } from '$lib/shared/index.js';
+} from '$lib/internal/attributes.js';
+import type { Direction, Orientation } from '$lib/internal/index.js';
 
 export type NavigationMenuRootPropsWithoutHTML = WithChild<{
 	/**

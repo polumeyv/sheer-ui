@@ -3,7 +3,7 @@
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import type { DateValue } from '@internationalized/date';
-	import type { DateRange } from '$lib/shared/index.js';
+	import type { DateRange } from '$lib/internal/index.js';
 	import { cn } from '$lib/utils.js';
 	import { buttonVariants } from '$lib/components/button';
 	import { RangeCalendar } from '$lib/components/range-calendar';

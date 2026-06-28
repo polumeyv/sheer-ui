@@ -3,7 +3,7 @@ import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
 import type {
 	BitsPrimitiveDivAttributes,
 	BitsPrimitiveInputAttributes,
-} from "$lib/shared/attributes.js";
+} from "$lib/internal/attributes.js";
 
 export type PinInputRootSnippetProps = {
 	cells: PinInputCell[];

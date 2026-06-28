@@ -3,10 +3,10 @@ import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type Writable
 import { createContext, onMount, untrack } from 'svelte';
 import { DateFieldInputState, DateFieldRootState } from '../date-field/date-field.svelte.js';
 import { useId } from '$lib/internal/use-id.js';
-import type { DateOnInvalid, DateRange, DateRangeValidator, SegmentPart } from '$lib/shared/index.js';
+import type { DateOnInvalid, DateRange, DateRangeValidator, SegmentPart } from '$lib/internal/index.js';
 import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
-import type { Granularity } from '$lib/shared/date/types.js';
+import type { Granularity } from '$lib/internal/date-time/types.js';
 import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
 import { removeDescriptionElement } from '$lib/internal/date-time/field/helpers.js';
 import { isBefore } from '$lib/internal/date-time/utils.js';

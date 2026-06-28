@@ -1,8 +1,8 @@
 import type { ArrowProps, ArrowPropsWithoutHTML } from '$lib/components/utilities/arrow/types.js';
 import type { PopperLayerProps, PopperLayerStaticProps } from '$lib/components/utilities/popper-layer/types.js';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '$lib/internal/types.js';
-import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/shared/attributes.js';
-import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/shared/types.js';
+import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/internal/attributes.js';
+import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/internal/types.js';
 import type { PortalProps } from '$lib/types.js';
 import type { PresenceLayerProps } from '$lib/components/utilities/presence-layer/types.js';
 

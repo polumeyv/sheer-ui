@@ -11,8 +11,8 @@ import type {
 	BitsPrimitiveThAttributes,
 	BitsPrimitiveTheadAttributes,
 	BitsPrimitiveTrAttributes,
-} from '$lib/shared/attributes.js';
-import type { DateMatcher, Month, WeekStartsOn } from '$lib/shared/date/types.js';
+} from '$lib/internal/attributes.js';
+import type { DateMatcher, Month, WeekStartsOn } from '$lib/internal/date-time/types.js';
 
 export type CalendarRootSnippetProps = {
 	months: Month<DateValue>[];

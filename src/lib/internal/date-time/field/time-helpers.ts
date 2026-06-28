@@ -7,7 +7,7 @@ import type {
 	TimeSegmentStateMap,
 	TimeSegmentValueObj,
 	TimeValue,
-} from '$lib/shared/date/types.js';
+} from '$lib/internal/date-time/types.js';
 import { CalendarDateTime, Time, ZonedDateTime } from '@internationalized/date';
 import type { TimeFormatter } from '../formatter.js';
 import { ALL_TIME_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';

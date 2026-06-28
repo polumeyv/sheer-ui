@@ -1,4 +1,4 @@
-import type { BitsPrimitiveInputAttributes } from '$lib/shared/attributes.js';
+import type { BitsPrimitiveInputAttributes } from '$lib/internal/attributes.js';
 import type {
 	SelectBaseRootPropsWithoutHTML,
 	SelectMultipleRootPropsWithoutHTML,
