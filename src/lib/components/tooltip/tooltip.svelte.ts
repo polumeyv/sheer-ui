@@ -5,7 +5,7 @@ import { isElement, isFocusVisible } from '$lib/internal/is.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef, getDataTransitionAttrs } from '$lib/internal/attrs.js';
 import type { OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import type { FocusEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
-import { createEffectTimeout } from '$lib/internal/timeout-fn.js';
+import { createEffectTimeout } from '$lib/internal/timeout-fn.svelte.js';
 import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
 import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 
