@@ -3,7 +3,7 @@
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { ComboboxInputProps } from '../types.js';
 	import { useId } from '$lib/internal/use-id.js';
-	import { FloatingLayer } from '$lib/components/utilities/floating-layer/index.js';
+	import { floatingAnchor } from '$lib/components/utilities/floating-layer/index.js';
 	import { SelectInputState } from '$lib/components/select/select.svelte.js';
 
 	let { id = useId(), ref = $bindable(null), child, defaultValue, clearOnDeselect = false, ...restProps }: ComboboxInputProps = $props();
@@ -33,12 +33,12 @@
 			{ value: inputState.root.opts.inputValue.current },
 		),
 	);
+
+	const anchor = floatingAnchor();
 </script>
 
-<FloatingLayer.Anchor {id} ref={inputState.opts.ref}>
-	{#if child}
-		{@render child({ props: mergedProps })}
-	{:else}
-		<input {...mergedProps} />
-	{/if}
-</FloatingLayer.Anchor>
+{#if child}
+	{@render child({ props: mergeProps(mergedProps, anchor) })}
+{:else}
+	<input {...mergeProps(mergedProps, anchor)} />
+{/if}

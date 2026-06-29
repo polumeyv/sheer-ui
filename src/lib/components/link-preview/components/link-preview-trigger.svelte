@@ -4,7 +4,7 @@
 	import type { LinkPreviewTriggerProps } from '../types.js';
 	import { LinkPreviewTriggerState } from '../link-preview.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { FloatingLayer } from '$lib/components/utilities/floating-layer/index.js';
+	import { floatingAnchor } from '$lib/components/utilities/floating-layer/index.js';
 
 	const uid = $props.id();
 
@@ -19,14 +19,14 @@
 	});
 
 	const mergedProps = $derived(mergeProps({ 'data-slot': 'hover-card-trigger' }, restProps, triggerState.props));
+
+	const anchor = floatingAnchor();
 </script>
 
-<FloatingLayer.Anchor {id} ref={triggerState.opts.ref}>
-	{#if child}
-		{@render child({ props: mergedProps })}
-	{:else}
-		<a {...mergedProps}>
-			{@render children?.()}
-		</a>
-	{/if}
-</FloatingLayer.Anchor>
+{#if child}
+	{@render child({ props: mergeProps(mergedProps, anchor) })}
+{:else}
+	<a {...mergeProps(mergedProps, anchor)}>
+		{@render children?.()}
+	</a>
+{/if}

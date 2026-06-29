@@ -8,6 +8,7 @@ import {
 	styleToString,
 	type ReadableBoxedValues,
 	type ReadableBox,
+	type RefAttachment,
 	type Box,
 	simpleBox,
 	boxFrom,
@@ -46,7 +47,7 @@ export class FloatingRootState {
 		return tooltip ? setFloatingTooltipRoot(new FloatingRootState()) : setFloatingRoot(new FloatingRootState());
 	}
 	#customAnchorSource = $state<ReadableBox<CustomAnchorNode>>(simpleBox(null));
-	#triggerSource = $state<ReadableBox<AnchorNode>>(simpleBox(null));
+	triggerSource = $state<ReadableBox<AnchorNode>>(simpleBox(null));
 	anchorNode: ReadableBox<AnchorNode> = boxWith(() => {
 		const customAnchor = this.#customAnchorSource.current;
 
@@ -58,19 +59,15 @@ export class FloatingRootState {
 			return customAnchor;
 		}
 
-		return this.#triggerSource.current;
+		return this.triggerSource.current;
 	});
 
 	get triggerNode() {
-		return this.#triggerSource;
+		return this.triggerSource;
 	}
 
 	setCustomAnchorSource(source: ReadableBox<CustomAnchorNode>) {
 		this.#customAnchorSource = source;
-	}
-
-	setTriggerSource(source: ReadableBox<AnchorNode>) {
-		this.#triggerSource = source;
 	}
 }
 
@@ -332,29 +329,33 @@ export class FloatingArrowState {
 	);
 }
 
-interface FloatingAnchorStateOpts extends ReadableBoxedValues<{
-	id: string;
-	virtualEl?: Measurable | null;
-	ref: Measurable | HTMLElement | null;
-}> {}
+/**
+ * Registers an explicit reference source as the floating root's anchor. Used for the cursor-anchored
+ * context menu, where there is no element to attach to — the source is a virtual `Measurable` box
+ * tracking the pointer. Reads the floating-root context, so call it during component init.
+ */
+export function setFloatingAnchor(source: ReadableBox<AnchorNode>, tooltip = false) {
+	const root = tooltip ? getFloatingTooltipRoot() : getFloatingRoot();
+	root.triggerSource = source;
+}
 
-export class FloatingAnchorState {
-	static create(opts: FloatingAnchorStateOpts, tooltip = false) {
-		return tooltip ? new FloatingAnchorState(opts, getFloatingTooltipRoot()) : new FloatingAnchorState(opts, getFloatingRoot());
-	}
-	readonly opts: FloatingAnchorStateOpts;
-	readonly root: FloatingRootState;
-
-	constructor(opts: FloatingAnchorStateOpts, root: FloatingRootState) {
-		this.opts = opts;
-		this.root = root;
-
-		if (opts.virtualEl && opts.virtualEl.current) {
-			root.setTriggerSource(boxFrom(opts.virtualEl.current));
-		} else {
-			root.setTriggerSource(opts.ref);
-		}
-	}
+/**
+ * Registers the element it is attached to as the floating root's trigger/reference source, replacing
+ * the renderless `<FloatingLayer.Anchor>` wrapper for the common real-element case. Spread it onto the
+ * trigger element (e.g. merge into the trigger props). Reads the floating-root context, so it must be
+ * called during component init. The cursor/virtual-element case (context menu) keeps the imperative
+ * `root.triggerSource = box` path, since an attachment only ever receives a real node.
+ */
+export function floatingAnchor(tooltip = false): RefAttachment {
+	const root = tooltip ? getFloatingTooltipRoot() : getFloatingRoot();
+	return {
+		[createAttachmentKey()]: (node) => {
+			root.triggerSource = boxFrom(node);
+			return () => {
+				root.triggerSource = simpleBox(null);
+			};
+		},
+	};
 }
 
 //

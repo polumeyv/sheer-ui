@@ -10,7 +10,7 @@ import {
 	boolToTrueOrUndef,
 	getDataTransitionAttrs,
 } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
+import { kbd, FIRST_LAST_KEYS } from '$lib/internal/kbd.js';
 import type {
 	BitsEvent,
 	BitsFocusEvent,
@@ -33,11 +33,6 @@ import type { SelectValueSnippetProps } from './types.js';
 
 // prettier-ignore
 export const INTERACTION_KEYS: string[] = [kbd.ARROW_LEFT, kbd.ESCAPE, kbd.ARROW_RIGHT, kbd.SHIFT, kbd.CAPS_LOCK, kbd.CONTROL, kbd.ALT, kbd.META, kbd.ENTER, kbd.F1, kbd.F2, kbd.F3, kbd.F4, kbd.F5, kbd.F6, kbd.F7, kbd.F8, kbd.F9, kbd.F10, kbd.F11, kbd.F12];
-
-export const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
-export const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
-export const FIRST_LAST_KEYS: string[] = [...FIRST_KEYS, ...LAST_KEYS];
-export const SELECTION_KEYS = [kbd.ENTER, kbd.SPACE];
 
 export const CONTENT_MARGIN = 10;
 

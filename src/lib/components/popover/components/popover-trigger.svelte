@@ -4,7 +4,7 @@
 	import type { PopoverTriggerProps } from '../types.js';
 	import { PopoverTriggerState } from '../popover.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import FloatingLayerAnchor from '$lib/components/utilities/floating-layer/components/floating-layer-anchor.svelte';
+	import { floatingAnchor } from '$lib/components/utilities/floating-layer/index.js';
 
 	const uid = $props.id();
 
@@ -34,14 +34,14 @@
 	});
 
 	const mergedProps = $derived(mergeProps({ 'data-slot': 'popover-trigger' }, restProps, triggerState.props, { type }));
+
+	const anchor = floatingAnchor();
 </script>
 
-<FloatingLayerAnchor {id} ref={triggerState.opts.ref}>
-	{#if child}
-		{@render child({ props: mergedProps })}
-	{:else}
-		<button {...mergedProps}>
-			{@render children?.()}
-		</button>
-	{/if}
-</FloatingLayerAnchor>
+{#if child}
+	{@render child({ props: mergeProps(mergedProps, anchor) })}
+{:else}
+	<button {...mergeProps(mergedProps, anchor)}>
+		{@render children?.()}
+	</button>
+{/if}

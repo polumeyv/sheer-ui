@@ -4,7 +4,7 @@
 	import type { ContextMenuTriggerProps } from '../types.js';
 	import { ContextMenuTriggerState } from '$lib/components/menu/menu.svelte.js';
 	import { useId } from '$lib/internal/use-id.js';
-	import { FloatingLayer } from '$lib/components/utilities/floating-layer/index.js';
+	import { setFloatingAnchor } from '$lib/components/utilities/floating-layer/index.js';
 
 	let { id = useId(), ref = $bindable(null), child, children, disabled = false, ...restProps }: ContextMenuTriggerProps = $props();
 
@@ -31,14 +31,14 @@
 			},
 		),
 	);
+
+	setFloatingAnchor(triggerState.virtualElement);
 </script>
 
-<FloatingLayer.Anchor {id} virtualEl={triggerState.virtualElement} ref={triggerState.opts.ref}>
-	{#if child}
-		{@render child({ props: mergedProps })}
-	{:else}
-		<div {...mergedProps}>
-			{@render children?.()}
-		</div>
-	{/if}
-</FloatingLayer.Anchor>
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<div {...mergedProps}>
+		{@render children?.()}
+	</div>
+{/if}
