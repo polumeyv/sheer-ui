@@ -11,7 +11,7 @@ import type {
 	RefAttachment,
 	WithRefOpts,
 } from '$lib/internal/types.js';
-import { isElement, isTouch } from '$lib/internal/is.js';
+import { isElement, isTouch } from '@polumeyv/utilities/dom';
 import type { Measurable } from '$lib/internal/floating-svelte/types.js';
 import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';

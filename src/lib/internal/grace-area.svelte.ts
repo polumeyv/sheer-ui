@@ -2,7 +2,7 @@ import { type Getter, type WritableBox, executeCallbacks, getDocument, getWindow
 import { on } from 'svelte/events';
 import { untrack } from 'svelte';
 import { boxAutoReset } from './box-auto-reset.svelte.js';
-import { isElement, isHTMLElement } from './is.js';
+import { isElement, isHTMLElement } from '@polumeyv/utilities/dom';
 import type { Side } from '$lib/components/utilities/floating-layer/use-floating-layer.svelte.js';
 
 interface GraceAreaOptions {

@@ -1,4 +1,4 @@
-import { isBrowser } from '$lib/internal/is.js';
+import { isBrowser } from '@polumeyv/utilities/dom';
 import type { ExternalToast, HeightT, PromiseData, PromiseT, AnyComponent, ToastT, ToastTypes } from './types.js';
 import { untrack } from 'svelte';
 

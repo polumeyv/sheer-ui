@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // This code comes from https://github.com/adobe/react-spectrum/blob/main/packages/%40react-aria/overlays/src/usePreventScroll.ts
 
-import { isBrowser, isIOS } from '$lib/internal/is.js';
+import { isBrowser, isIOS } from '@polumeyv/utilities/dom';
 import { on } from 'svelte/events';
 
 const KEYBOARD_BUFFER = 24;

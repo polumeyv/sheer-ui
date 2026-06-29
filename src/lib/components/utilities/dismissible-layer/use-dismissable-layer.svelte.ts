@@ -3,10 +3,15 @@ import { on } from 'svelte/events';
 import { onMount, tick } from 'svelte';
 import type { DismissibleLayerImplProps, InteractOutsideBehaviorType } from './types.js';
 import { type EventCallback } from '$lib/internal/events.js';
-import { getOwnerDocument, isOrContainsTarget } from '$lib/internal/elements.js';
-import { isElementOrSVGElement } from '$lib/internal/is.js';
-import { isClickTrulyOutside } from '$lib/internal/dom.js';
+import { isElementOrSVGElement } from '@polumeyv/utilities/dom';
 import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '$lib/components/menu/menu.svelte.js';
+
+const isPointerOutsideElementRect = (event: PointerEvent, node: HTMLElement): boolean => {
+	const { clientX, clientY } = event;
+	const { left, right, top, bottom } = node.getBoundingClientRect();
+
+	return clientX < left || clientX > right || clientY < top || clientY > bottom;
+};
 
 globalThis.bitsDismissableLayers ??= new Map<DismissibleLayerState, ReadableBox<InteractOutsideBehaviorType>>();
 
@@ -14,7 +19,6 @@ interface DismissibleLayerStateOpts extends ReadableBoxedValues<Required<Omit<Di
 	ref: WritableBox<HTMLElement | null>;
 }
 
-// oxlint-disable-next-line no-explicit-any
 export function debounce<T extends (...args: any[]) => any>(fn: T, wait = 500) {
 	let timeout: ReturnType<typeof setTimeout> | undefined;
 
@@ -40,7 +44,6 @@ export class DismissibleLayerState {
 	};
 	#isResponsibleLayer = false;
 	#isFocusInsideDOMTree = false;
-	#documentObj = undefined as unknown as Document;
 	#onFocusOutside: DismissibleLayerStateOpts['onFocusOutside'];
 	#unsubClickListener = () => {};
 
@@ -50,10 +53,6 @@ export class DismissibleLayerState {
 		this.#behaviorType = opts.interactOutsideBehavior;
 		this.#interactOutsideProp = opts.onInteractOutside;
 		this.#onFocusOutside = opts.onFocusOutside;
-
-		$effect(() => {
-			this.#documentObj = getOwnerDocument(this.opts.ref.current);
-		});
 
 		let unsubEvents = () => {};
 
@@ -100,27 +99,12 @@ export class DismissibleLayerState {
 	};
 
 	#addEventListeners() {
+		const doc = this.opts.ref.current?.ownerDocument ?? document;
+
 		return executeCallbacks(
-			/**
-			 * CAPTURE INTERACTION START
-			 * mark interaction-start event as intercepted.
-			 * mark responsible layer during interaction start
-			 * to avoid checking if is responsible layer during interaction end
-			 * when a new floating element may have been opened.
-			 */
-			on(this.#documentObj, 'pointerdown', executeCallbacks(this.#markInterceptedEvent, this.#markResponsibleLayer), { capture: true }),
-
-			/**
-			 * BUBBLE INTERACTION START
-			 * Mark interaction-start event as non-intercepted. Debounce `onInteractOutsideStart`
-			 * to avoid prematurely checking if other events were intercepted.
-			 */
-			on(this.#documentObj, 'pointerdown', executeCallbacks(this.#markNonInterceptedEvent, this.#handleInteractOutside)),
-
-			/**
-			 * HANDLE FOCUS OUTSIDE
-			 */
-			on(this.#documentObj, 'focusin', this.#handleFocus),
+			on(doc, 'pointerdown', executeCallbacks(this.#markInterceptedEvent, this.#markResponsibleLayer), { capture: true }),
+			on(doc, 'pointerdown', executeCallbacks(this.#markNonInterceptedEvent, this.#handleInteractOutside)),
+			on(doc, 'focusin', this.#handleFocus),
 		);
 	}
 
@@ -157,7 +141,9 @@ export class DismissibleLayerState {
 		if (e.pointerType === 'touch') {
 			this.#unsubClickListener();
 
-			this.#unsubClickListener = on(this.#documentObj, 'click', this.#handleDismiss, {
+			const doc = this.opts.ref.current?.ownerDocument ?? document;
+
+			this.#unsubClickListener = on(doc, 'click', this.#handleDismiss, {
 				once: true,
 			});
 		} else {
@@ -177,10 +163,8 @@ export class DismissibleLayerState {
 		if (!this.opts.ref.current) return;
 		this.#isResponsibleLayer = isResponsibleLayer(this.opts.ref.current);
 	};
-
 	#isTargetWithinLayer = (target: HTMLElement) => {
-		if (!this.opts.ref.current) return false;
-		return isOrContainsTarget(this.opts.ref.current, target);
+		return this.opts.ref.current?.contains(target) ?? false;
 	};
 
 	#resetState = debounce(() => {
@@ -242,8 +226,7 @@ function isValidEvent(e: PointerEvent, node: HTMLElement): boolean {
 	}
 	if (targetIsContextMenuTrigger && nodeIsContextMenu) return false;
 
-	const ownerDocument = getOwnerDocument(target);
-	const isValid = ownerDocument.documentElement.contains(target) && !isOrContainsTarget(node, target) && isClickTrulyOutside(e, node);
+	const isValid = target.ownerDocument.documentElement.contains(target) && !node.contains(target) && isPointerOutsideElementRect(e, node);
 	return isValid;
 }
 

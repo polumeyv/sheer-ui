@@ -1,4 +1,4 @@
-import { isBrowser } from '$lib/internal/is.js';
+import { isBrowser } from '@polumeyv/utilities/dom';
 import type {
 	EditableTimeSegmentPart,
 	HourCycle,

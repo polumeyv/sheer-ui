@@ -1,45 +1,44 @@
 import { isObject } from '@polumeyv/utilities';
 
-const ELEMENT_NODE: typeof Node.ELEMENT_NODE = 1;
-const DOCUMENT_NODE: typeof Node.DOCUMENT_NODE = 9;
-const DOCUMENT_FRAGMENT_NODE: typeof Node.DOCUMENT_FRAGMENT_NODE = 11;
+const ELEMENT_NODE = 1;
+const DOCUMENT_NODE = 9;
+const DOCUMENT_FRAGMENT_NODE = 11;
 
-function isHTMLElement(node: unknown): node is HTMLElement {
-	return isObject(node) && node.nodeType === ELEMENT_NODE && typeof node.nodeName === 'string';
-}
+const hasNodeType = (node: unknown): node is { nodeType: number } => isObject(node) && typeof node.nodeType === 'number';
 
-function isDocument(node: unknown): node is Document {
-	return isObject(node) && node.nodeType === DOCUMENT_NODE;
-}
+const isNode = (node: unknown): node is Node => hasNodeType(node);
 
-function isWindow(node: unknown): node is Window {
-	return isObject(node) && node.constructor?.name === 'VisualViewport';
-}
+const isElement = (node: unknown): node is Element => hasNodeType(node) && node.nodeType === ELEMENT_NODE;
 
-function isNode(node: unknown): node is Node {
-	return isObject(node) && node.nodeType !== undefined;
-}
+const isDocument = (node: unknown): node is Document => hasNodeType(node) && node.nodeType === DOCUMENT_NODE;
 
-function isShadowRoot(node: unknown): node is ShadowRoot {
-	return isNode(node) && node.nodeType === DOCUMENT_FRAGMENT_NODE && 'host' in node;
-}
+const isShadowRoot = (node: unknown): node is ShadowRoot => hasNodeType(node) && node.nodeType === DOCUMENT_FRAGMENT_NODE && 'host' in node;
 
-type Target = HTMLElement | EventTarget | null | undefined;
+const isWindow = (node: unknown): node is Window => isObject(node) && node === node.window;
+
+type Target = Node | EventTarget | null | undefined;
 
 export function contains(parent: Target, child: Target) {
 	if (!parent || !child) return false;
-	if (!isHTMLElement(parent) || !isHTMLElement(child)) return false;
-	const rootNode = child.getRootNode?.();
+	if (!isNode(parent) || !isNode(child)) return false;
+
 	if (parent === child) return true;
 	if (parent.contains(child)) return true;
-	if (rootNode && isShadowRoot(rootNode)) {
-		let next = child;
-		while (next) {
-			if (parent === next) return true;
-			// @ts-expect-error - host is not typed
-			next = next.parentNode || next.host;
+
+	let current: Node | null = child;
+
+	while (current) {
+		if (current === parent) return true;
+
+		const root = current.getRootNode?.();
+
+		if (isShadowRoot(root) && current === root) {
+			current = root.host;
+		} else {
+			current = current.parentNode;
 		}
 	}
+
 	return false;
 }
 
@@ -52,16 +51,18 @@ export function getDocument(node: Element | Window | Node | Document | null | un
 export function getWindow(node: Node | ShadowRoot | Document | null | undefined) {
 	if (isShadowRoot(node)) return getWindow(node.host);
 	if (isDocument(node)) return node.defaultView ?? window;
-	if (isHTMLElement(node)) return node.ownerDocument?.defaultView ?? window;
+	if (isNode(node)) return node.ownerDocument?.defaultView ?? window;
 	return window;
 }
 
 export function getActiveElement(rootNode: Document | ShadowRoot): HTMLElement | null {
 	let activeElement = rootNode.activeElement as HTMLElement | null;
+
 	while (activeElement?.shadowRoot) {
-		const el = activeElement.shadowRoot.activeElement as HTMLElement | null;
-		if (el === activeElement) break;
-		else activeElement = el;
+		const next = activeElement.shadowRoot.activeElement as HTMLElement | null;
+		if (!next || next === activeElement) break;
+		activeElement = next;
 	}
+
 	return activeElement;
 }

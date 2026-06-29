@@ -1,6 +1,6 @@
 import { type Getter, getDocument } from '$lib/internal/tools/index.js';
 import { on } from 'svelte/events';
-import { isElement } from './is.js';
+import { isElement } from '@polumeyv/utilities/dom';
 import type { Side } from '$lib/components/utilities/floating-layer/use-floating-layer.svelte.js';
 
 type Point = [number, number];

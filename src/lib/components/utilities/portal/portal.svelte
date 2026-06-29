@@ -3,7 +3,7 @@
 	import { DEV } from 'esm-env';
 	import PortalConsumer from './portal-consumer.svelte';
 	import type { PortalProps } from './types.js';
-	import { isBrowser } from '$lib/internal/is.js';
+	import { isBrowser } from '@polumeyv/utilities/dom';
 	import { resolvePortalToProp } from '../config/prop-resolvers.js';
 
 	let { to: toProp, children, disabled }: PortalProps = $props();

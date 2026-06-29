@@ -25,7 +25,7 @@ import {
 } from './helpers.js';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
-import { isElementOrSVGElement } from '$lib/internal/is.js';
+import { isElementOrSVGElement } from '@polumeyv/utilities/dom';
 import { isValidIndex } from '$lib/internal/arrays.js';
 import { resizeAttachment } from '$lib/internal/svelte-resize-observer.svelte.js';
 import type { BitsKeyboardEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';

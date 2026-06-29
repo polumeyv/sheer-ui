@@ -2,7 +2,7 @@ import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValu
 import { on } from 'svelte/events';
 import { createContext, onDestroy, untrack } from 'svelte';
 import { createBitsAttrs, boolToStr, getDataOpenClosed, getDataTransitionAttrs } from '$lib/internal/attrs.js';
-import { isElement, isFocusVisible, isTouch } from '$lib/internal/is.js';
+import { isElement, isFocusVisible, isTouch } from '@polumeyv/utilities/dom';
 import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { getTabbableCandidates } from '$lib/internal/focus.js';
 import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';

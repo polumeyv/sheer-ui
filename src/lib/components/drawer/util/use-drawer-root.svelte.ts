@@ -12,7 +12,7 @@ import {
 	WINDOW_TOP_OFFSET,
 } from './internal/constants.js';
 import { isMobileFirefox } from './internal/browser.js';
-import { isIOS } from '$lib/internal/is.js';
+import { isIOS } from '@polumeyv/utilities/dom';
 import { on } from 'svelte/events';
 import { tick, untrack } from 'svelte';
 import { dampenValue, getTranslate, isVertical, reset, set } from './helpers.js';
