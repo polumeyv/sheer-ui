@@ -220,6 +220,10 @@
 			"types": "./dist/components/radio-group/index.d.ts",
 			"svelte": "./dist/components/radio-group/index.js"
 		},
+		"./components/radio-group-native": {
+			"types": "./dist/components/radio-group-native/index.d.ts",
+			"svelte": "./dist/components/radio-group-native/index.js"
+		},
 		"./components/resizable": {
 			"types": "./dist/components/resizable/index.d.ts",
 			"svelte": "./dist/components/resizable/index.js"
