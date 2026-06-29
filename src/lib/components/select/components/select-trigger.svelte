@@ -4,7 +4,7 @@
 	import { SelectTriggerState } from '../select.svelte.js';
 	import type { SelectTriggerProps } from '../types.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { FloatingLayer } from '../../utilities/floating-layer/index.js';
+	import { floatingAnchor } from '../../utilities/floating-layer/index.js';
 
 	const uid = $props.id();
 
@@ -19,14 +19,14 @@
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, triggerState.props, { type }));
+
+	const anchor = floatingAnchor();
 </script>
 
-<FloatingLayer.Anchor {id} ref={triggerState.opts.ref}>
-	{#if child}
-		{@render child({ props: mergedProps })}
-	{:else}
-		<button {...mergedProps}>
-			{@render children?.()}
-		</button>
-	{/if}
-</FloatingLayer.Anchor>
+{#if child}
+	{@render child({ props: mergeProps(mergedProps, anchor) })}
+{:else}
+	<button {...mergeProps(mergedProps, anchor)}>
+		{@render children?.()}
+	</button>
+{/if}

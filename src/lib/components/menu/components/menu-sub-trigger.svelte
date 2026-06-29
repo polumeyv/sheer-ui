@@ -3,7 +3,7 @@
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { MenuSubTriggerProps } from '../types.js';
 	import { MenuSubTriggerState } from '../menu.svelte.js';
-	import FloatingLayerAnchor from '$lib/components/utilities/floating-layer/components/floating-layer-anchor.svelte';
+	import { floatingAnchor } from '$lib/components/utilities/floating-layer/index.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
@@ -46,15 +46,15 @@
 			subTriggerState.props,
 		),
 	);
+
+	const anchor = floatingAnchor();
 </script>
 
-<FloatingLayerAnchor {id} ref={subTriggerState.opts.ref}>
-	{#if child}
-		{@render child({ props: mergedProps })}
-	{:else}
-		<div {...mergedProps}>
-			{@render children?.()}
-			<ChevronRightIcon class="ms-auto size-4" />
-		</div>
-	{/if}
-</FloatingLayerAnchor>
+{#if child}
+	{@render child({ props: mergeProps(mergedProps, anchor) })}
+{:else}
+	<div {...mergeProps(mergedProps, anchor)}>
+		{@render children?.()}
+		<ChevronRightIcon class="ms-auto size-4" />
+	</div>
+{/if}
