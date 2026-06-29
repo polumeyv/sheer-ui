@@ -151,7 +151,7 @@ export type TooltipContentPropsWithoutHTML = WithChildNoChildrenSnippetProps<
 export type TooltipContentProps = TooltipContentPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, TooltipContentPropsWithoutHTML>;
 
 export type TooltipContentStaticPropsWithoutHTML = WithChildNoChildrenSnippetProps<
-	Pick<FloatingLayerContentProps, 'dir'> &
+	Pick<FloatingLayerContentProps, 'dir' | 'side' | 'align'> &
 		Omit<DismissibleLayerProps, 'onInteractOutsideStart'> &
 		EscapeLayerProps & {
 			/**
