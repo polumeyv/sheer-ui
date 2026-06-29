@@ -4,7 +4,7 @@ import { getDirectionalKeys } from './get-directional-keys.js';
 import { kbd } from './kbd.js';
 import type { Orientation } from '$lib/internal/index.js';
 import { BROWSER } from 'esm-env';
-import { isHTMLElement } from './is.js';
+import { isHTMLElement } from '@polumeyv/utilities/dom';
 
 type RovingFocusGroupOptions = (
 	| {

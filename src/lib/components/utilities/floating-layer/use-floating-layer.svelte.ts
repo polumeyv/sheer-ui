@@ -14,7 +14,7 @@ import {
 	boxWith,
 } from '$lib/internal/tools/index.js';
 import type { Arrayable, WithRefOpts } from '$lib/internal/types.js';
-import { isNotNull } from '$lib/internal/is.js';
+import { isNotNull } from '@polumeyv/utilities/dom';
 import { useId } from '$lib/internal/use-id.js';
 import { useFloating } from '$lib/internal/floating-svelte/use-floating.svelte.js';
 import type { Measurable, UseFloatingReturn } from '$lib/internal/floating-svelte/types.js';

@@ -1,13 +1,12 @@
-import { attachRef, DOMContext, type WritableBoxedValues, type ReadableBoxedValues, simpleBox, boxWith } from '$lib/internal/tools/index.js';
+import { attachRef, DOMContext, type WritableBoxedValues, type ReadableBoxedValues, simpleBox } from '$lib/internal/tools/index.js';
 import { on } from 'svelte/events';
 import { createContext, onMount, untrack } from 'svelte';
-import { isElement, isFocusVisible } from '$lib/internal/is.js';
-import { createBitsAttrs, boolToEmptyStrOrUndef, getDataTransitionAttrs } from '$lib/internal/attrs.js';
+import { isElement, isFocusVisible } from '@polumeyv/utilities/dom';
+import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
 import type { OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import type { FocusEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
 import { createEffectTimeout } from '$lib/internal/timeout-fn.svelte.js';
 import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
-import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 
 export const tooltipAttrs = createBitsAttrs({
 	component: 'tooltip',
@@ -250,7 +249,6 @@ export class TooltipRootState {
 	readonly registry: TooltipTriggerRegistryState;
 	readonly tether: TooltipTetherState | null;
 	contentNode = $state<HTMLElement | null>(null);
-	contentPresence: PresenceManager;
 	#wasOpenDelayed = $state(false);
 	readonly #timerFn: ReturnType<typeof createEffectTimeout<() => void>>;
 	readonly stateAttr = $derived.by(() => {
@@ -281,14 +279,6 @@ export class TooltipRootState {
 				};
 			});
 		}
-
-		this.contentPresence = new PresenceManager({
-			open: this.opts.open,
-			ref: boxWith(() => this.contentNode),
-			onComplete: () => {
-				this.opts.onOpenChangeComplete.current(this.opts.open.current);
-			},
-		});
 
 		let openStarted = false;
 		$effect(() => {
@@ -788,8 +778,9 @@ export class TooltipContentState {
 		e.preventDefault();
 	};
 
+	// Always mounted now — the native popover toggles `display` itself (display … allow-discrete).
 	get shouldRender() {
-		return this.root.contentPresence.shouldRender;
+		return true;
 	}
 
 	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open.current }));
@@ -800,7 +791,6 @@ export class TooltipContentState {
 				id: this.opts.id.current,
 				'data-state': this.root.stateAttr,
 				'data-disabled': boolToEmptyStrOrUndef(this.root.disabled),
-				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
 				style: {
 					outline: 'none',
 				},

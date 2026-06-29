@@ -15,7 +15,7 @@ import {
 import type { Formatter } from './formatter.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
 import { chunk, isValidIndex } from '$lib/internal/arrays.js';
-import { isBrowser, isHTMLElement } from '$lib/internal/is.js';
+import { isBrowser, isHTMLElement } from '@polumeyv/utilities/dom';
 import { kbd } from '$lib/internal/kbd.js';
 import type { DateMatcher, Month } from '$lib/internal/index.js';
 

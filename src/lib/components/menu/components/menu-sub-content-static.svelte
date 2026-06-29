@@ -7,7 +7,7 @@
 	import { SUB_CLOSE_KEYS } from '../utils.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import PopperLayer from '$lib/components/utilities/popper-layer/popper-layer.svelte';
-	import { isHTMLElement } from '$lib/internal/is.js';
+	import { isHTMLElement } from '@polumeyv/utilities/dom';
 	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
 
 	const uid = $props.id();
@@ -76,7 +76,7 @@
 		if (e.defaultPrevented) return;
 		tick().then(() => {
 			e.preventDefault();
-			if (subContentState.parentMenu.root.isUsingKeyboard) {
+			if (subContentState.parentMenu.root.inputModality.isKeyboard) {
 				const subContentEl = subContentState.parentMenu.contentNode;
 				subContentEl?.focus();
 			}

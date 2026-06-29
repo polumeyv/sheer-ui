@@ -1,5 +1,5 @@
 import { isAnySegmentPart } from "./helpers.js";
-import { isHTMLElement } from "$lib/internal/is.js";
+import { isHTMLElement } from "@polumeyv/utilities/dom";
 import { kbd } from "$lib/internal/kbd.js";
 
 /**

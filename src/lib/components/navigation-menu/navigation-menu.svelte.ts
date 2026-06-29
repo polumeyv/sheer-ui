@@ -26,7 +26,7 @@ import { kbd } from '$lib/internal/kbd.js';
 import { CustomEventDispatcher } from '$lib/internal/events.js';
 import { useArrowNavigation } from '$lib/internal/use-arrow-navigation.js';
 import { boxAutoReset } from '$lib/internal/box-auto-reset.svelte.js';
-import { isElement } from '$lib/internal/is.js';
+import { isElement } from '@polumeyv/utilities/dom';
 import type { FocusEventHandler, KeyboardEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
 import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
 import { observeResize, observeResizeMany } from '$lib/internal/svelte-resize-observer.svelte.js';

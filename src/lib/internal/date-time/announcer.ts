@@ -1,5 +1,5 @@
 import { srOnlyStylesString } from '$lib/internal/tools/index.js';
-import { isBrowser, isHTMLElement } from '$lib/internal/is.js';
+import { isBrowser, isHTMLElement } from '@polumeyv/utilities/dom';
 
 /**
  * Creates or gets an announcer element which is used to announce messages to screen readers.

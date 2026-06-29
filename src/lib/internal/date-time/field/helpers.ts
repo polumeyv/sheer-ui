@@ -15,7 +15,7 @@ import type {
 } from './types.js';
 import { ALL_SEGMENT_PARTS, DATE_SEGMENT_PARTS, EDITABLE_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';
 import { getSegments } from './segments.js';
-import { isBrowser, isNumberString } from '$lib/internal/is.js';
+import { isBrowser, isNumberString } from '@polumeyv/utilities/dom';
 import { useId } from '$lib/internal/use-id.js';
 import { kbd } from '$lib/internal/kbd.js';
 import type { Granularity, HourCycle, TimeSegmentValueObj } from '$lib/internal/date-time/types.js';

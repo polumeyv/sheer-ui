@@ -9,7 +9,7 @@ import {
 import { untrack } from 'svelte';
 import { on } from 'svelte/events';
 import type { PointerHandler, TextSelectionLayerImplProps } from './types.js';
-import { isHTMLElement } from '$lib/internal/is.js';
+import { isHTMLElement } from '@polumeyv/utilities/dom';
 
 interface TextSelectionLayerStateOpts extends ReadableBoxedValues<
 	Required<Omit<TextSelectionLayerImplProps, 'children' | 'preventOverflowTextSelection' | 'ref'>> & {

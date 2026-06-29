@@ -1,7 +1,7 @@
 import { SvelteMap } from 'svelte/reactivity';
 import { type Getter, type ReadableBox, boxWith } from '$lib/internal/tools/index.js';
 import type { Fn } from './types.js';
-import { isIOS } from './is.js';
+import { isIOS } from '@polumeyv/utilities/dom';
 import { useId } from './use-id.js';
 import { SharedState } from './shared-state.svelte.js';
 import { BROWSER } from 'esm-env';
