@@ -21,12 +21,13 @@ import type {
 	WithRefOpts,
 	RefAttachment,
 } from '$lib/internal/types.js';
-import { isIOS } from '$lib/internal/is.js';
+import { isIOS } from '@polumeyv/utilities/dom';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
 import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
 import { DataTypeahead } from '$lib/internal/data-typeahead.svelte.js';
 import { DOMTypeahead } from '$lib/internal/dom-typeahead.svelte.js';
 import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
+import { createInputModality } from '$lib/components/utilities/input-modality/input-modality.svelte.js';
 import { DEV } from 'esm-env';
 import type { SelectValueSnippetProps } from './types.js';
 
@@ -107,7 +108,7 @@ abstract class SelectBaseRootState {
 		return this.highlightedNode.getAttribute('data-label');
 	});
 	contentIsPositioned = $state(false);
-	isUsingKeyboard = false;
+	readonly inputModality = createInputModality();
 	isCombobox = false;
 	domContext = new DOMContext(() => null);
 
@@ -132,7 +133,7 @@ abstract class SelectBaseRootState {
 
 	setHighlightedNode(node: HTMLElement | null, initial = false) {
 		this.highlightedNode = node;
-		if (node && (this.isUsingKeyboard || initial)) {
+		if (node && (this.inputModality.isKeyboard || initial)) {
 			this.scrollHighlightedNodeIntoView(node);
 		}
 	}
@@ -511,7 +512,7 @@ export class SelectInputState {
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
-		this.root.isUsingKeyboard = true;
+		this.root.inputModality.keyboard();
 		if (e.key === kbd.ESCAPE) return;
 
 		// prevent arrow up/down from moving the position of the cursor in the input
@@ -768,7 +769,7 @@ export class SelectTriggerState {
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
-		this.root.isUsingKeyboard = true;
+		this.root.inputModality.keyboard();
 		if (e.key === kbd.ARROW_UP || e.key === kbd.ARROW_DOWN) e.preventDefault();
 
 		if (!this.root.opts.open.current) {
@@ -987,7 +988,7 @@ export class SelectContentState {
 	}
 
 	onpointermove(_: BitsPointerEvent) {
-		this.root.isUsingKeyboard = false;
+		this.root.inputModality.pointer();
 	}
 
 	readonly #styles = $derived.by(() => {

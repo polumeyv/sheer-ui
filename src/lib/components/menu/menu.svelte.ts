@@ -24,7 +24,7 @@ import type {
 	RefAttachment,
 	WithRefOpts,
 } from '$lib/internal/types.js';
-import { isElement, isElementOrSVGElement, isHTMLElement } from '$lib/internal/is.js';
+import { isElement, isElementOrSVGElement, isHTMLElement } from '@polumeyv/utilities/dom';
 import { kbd } from '$lib/internal/kbd.js';
 import {
 	createBitsAttrs,
@@ -35,7 +35,7 @@ import {
 	getDataTransitionAttrs,
 } from '$lib/internal/attrs.js';
 import type { Direction } from '$lib/internal/index.js';
-import { IsUsingKeyboard } from '$lib/components/utilities/is-using-keyboard/is-using-keyboard.svelte.js';
+import { useGlobalInputModality } from '$lib/components/utilities/input-modality/input-modality.svelte.js';
 import { getTabbableFrom } from '$lib/internal/tabbable.js';
 import { isTabbable } from 'tabbable';
 import type { KeyboardEventHandler, PointerEventHandler, MouseEventHandler } from 'svelte/elements';
@@ -756,7 +756,7 @@ export class MenuRootState {
 	}
 
 	readonly opts: MenuRootStateOpts;
-	readonly isUsingKeyboard = new IsUsingKeyboard();
+	readonly inputModality = useGlobalInputModality();
 	ignoreCloseAutoFocus = $state(false);
 	isPointerInTransit = $state(false);
 
@@ -912,7 +912,7 @@ export class MenuContentState {
 				if (!contentNode) return;
 				const handler = () => {
 					tick().then(() => {
-						if (!this.parentMenu.root.isUsingKeyboard.current) return;
+						if (!this.parentMenu.root.inputModality.isKeyboard) return;
 						this.rovingFocusGroup.focusFirstCandidate();
 					});
 				};
@@ -1058,7 +1058,7 @@ export class MenuContentState {
 	}
 
 	onfocus(_: BitsFocusEvent) {
-		if (!this.parentMenu.root.isUsingKeyboard.current) return;
+		if (!this.parentMenu.root.inputModality.isKeyboard) return;
 		tick().then(() => this.rovingFocusGroup.focusFirstCandidate());
 	}
 
@@ -1068,7 +1068,7 @@ export class MenuContentState {
 
 	onItemLeave(e: BitsPointerEvent) {
 		if (e.currentTarget.hasAttribute(this.parentMenu.root.getBitsAttr('sub-trigger'))) return;
-		if (this.#isPointerMovingToSubmenu() || this.parentMenu.root.isUsingKeyboard.current) return;
+		if (this.#isPointerMovingToSubmenu() || this.parentMenu.root.inputModality.isKeyboard) return;
 		const contentNode = this.parentMenu.contentNode;
 		contentNode?.focus({ preventScroll: true });
 		this.rovingFocusGroup.setCurrentTabStopId('');
@@ -1245,7 +1245,7 @@ export class MenuItemState {
 		const selectEvent = new CustomEvent('menuitemselect', { bubbles: true, cancelable: true });
 		this.opts.onSelect.current(selectEvent);
 		if (selectEvent.defaultPrevented) {
-			this.item.content.parentMenu.root.isUsingKeyboard.current = false;
+			this.item.content.parentMenu.root.inputModality.reset();
 			return;
 		}
 		if (this.opts.closeOnSelect.current) {
