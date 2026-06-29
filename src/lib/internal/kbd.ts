@@ -42,3 +42,12 @@ export const kbd = {
 	h: 'h',
 	l: 'l',
 } as const;
+
+/**
+ * Keyboard key-sets shared across menu, select, and roving-focus navigation.
+ * Membership is tested with `.includes()`, so element order is irrelevant.
+ */
+export const FIRST_KEYS: string[] = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
+export const LAST_KEYS: string[] = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
+export const FIRST_LAST_KEYS: string[] = [...FIRST_KEYS, ...LAST_KEYS];
+export const SELECTION_KEYS: string[] = [kbd.ENTER, kbd.SPACE];

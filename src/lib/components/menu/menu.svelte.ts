@@ -11,7 +11,7 @@ import {
 } from '$lib/internal/tools/index.js';
 import { mergeProps } from '$lib/merge-props.js';
 import { createContext, onDestroy, tick, untrack } from 'svelte';
-import { FIRST_LAST_KEYS, LAST_KEYS, SELECTION_KEYS, SUB_OPEN_KEYS, getCheckedState, isMouseEvent } from './utils.js';
+import { SUB_OPEN_KEYS, getCheckedState, isMouseEvent } from './utils.js';
 import { focusFirst } from '$lib/internal/focus.js';
 import { CustomEventDispatcher } from '$lib/internal/events.js';
 import type {
@@ -25,7 +25,7 @@ import type {
 	WithRefOpts,
 } from '$lib/internal/types.js';
 import { isElement, isElementOrSVGElement, isHTMLElement } from '@polumeyv/utilities/dom';
-import { kbd } from '$lib/internal/kbd.js';
+import { kbd, FIRST_LAST_KEYS, LAST_KEYS, SELECTION_KEYS } from '$lib/internal/kbd.js';
 import {
 	createBitsAttrs,
 	getAriaChecked,
