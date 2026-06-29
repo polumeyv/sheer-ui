@@ -273,6 +273,12 @@ export class FloatingContentState {
 			if (!this.floating.isPositioned) return;
 			this.opts.onPlaced?.current();
 		});
+
+		// Feed the rendered wrapper element into useFloating. Without this the floating element
+		// stays null, computePosition never runs, and the content is stuck off-screen.
+		$effect(() => {
+			this.floating.floating.current = this.wrapperRef.current;
+		});
 	}
 
 	#measureArrow(arrowNode: HTMLElement) {
