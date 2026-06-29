@@ -1,3 +1,3 @@
-export { default as EscapeLayer } from "./escape-layer.svelte";
+export { escapeKeydownAttachment } from './use-escape-layer.svelte.js';
 
-export type { EscapeLayerProps } from "./types.js";
+export type { EscapeLayerProps } from './types.js';

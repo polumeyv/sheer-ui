@@ -1,13 +1,17 @@
 import {
 	DOMContext,
+	boxWith,
+	type Getter,
 	type ReadableBox,
 	type ReadableBoxedValues,
+	type RefAttachment,
 	composeHandlers,
 	contains,
 	executeCallbacks,
 } from '$lib/internal/tools/index.js';
 import { untrack } from 'svelte';
 import { on } from 'svelte/events';
+import { createAttachmentKey } from 'svelte/attachments';
 import type { PointerHandler, TextSelectionLayerImplProps } from './types.js';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
 
@@ -91,6 +95,31 @@ export class TextSelectionLayerState {
 	#resetSelectionLock = () => {
 		this.#unsubSelectionLock();
 		this.#unsubSelectionLock = () => {};
+	};
+}
+
+/**
+ * The text-selection-overflow lock as a spreadable Svelte attachment, replacing the renderless
+ * `<TextSelectionLayer>` wrapper. Merge it onto the element that should participate in the global
+ * `bitsTextSelectionLayers` stack. The element owns the lifecycle (register + document pointer
+ * listeners on mount, deregister on removal). The stack and the highest-layer rule are unchanged.
+ */
+export function textSelectionAttachment(opts: {
+	id: Getter<string>;
+	onPointerDown: Getter<PointerHandler>;
+	onPointerUp: Getter<PointerHandler>;
+	enabled: Getter<boolean>;
+}): RefAttachment<HTMLElement> {
+	return {
+		[createAttachmentKey()]: (node) => {
+			TextSelectionLayerState.create({
+				id: boxWith(opts.id),
+				onPointerDown: boxWith(opts.onPointerDown),
+				onPointerUp: boxWith(opts.onPointerUp),
+				enabled: boxWith(opts.enabled),
+				ref: boxWith(() => node),
+			});
+		},
 	};
 }
 

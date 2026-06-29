@@ -5,8 +5,8 @@
 	import type { NavigationMenuContentProps } from '../types.js';
 	import { setNavigationMenuItem, NavigationMenuItemState, NavigationMenuContentImplState } from '../navigation-menu.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import DismissibleLayer from '../../utilities/dismissible-layer/dismissible-layer.svelte';
-	import EscapeLayer from '../../utilities/escape-layer/escape-layer.svelte';
+	import { interactOutsideAttachment } from '../../utilities/dismissible-layer/use-dismissable-layer.svelte.js';
+	import { escapeKeydownAttachment } from '../../utilities/escape-layer/use-escape-layer.svelte.js';
 
 	const uid = $props.id();
 
@@ -48,41 +48,39 @@
 	}
 
 	const mergedProps = $derived(mergeProps(restProps, contentImplState.props));
+
+	const escapeAttachment = escapeKeydownAttachment({
+		escapeKeydownBehavior: () => escapeKeydownBehavior,
+		onEscapeKeydown: () => (e) => {
+			onEscapeKeydown(e);
+			if (e.defaultPrevented) return;
+			contentImplState.onEscapeKeydown(e);
+		},
+		enabled: () => true,
+	});
+
+	const dismissible = interactOutsideAttachment({
+		id: () => id,
+		interactOutsideBehavior: () => interactOutsideBehavior,
+		onInteractOutside: () => (e) => {
+			onInteractOutside(e);
+			if (e.defaultPrevented) return;
+			contentImplState.onInteractOutside(e);
+		},
+		onFocusOutside: () => (e) => {
+			onFocusOutside(e);
+			if (e.defaultPrevented) return;
+			contentImplState.onFocusOutside(e);
+		},
+		enabled: () => true,
+		isValidEvent: () => () => false,
+	});
 </script>
 
-<DismissibleLayer
-	{id}
-	ref={contentImplState.opts.ref}
-	enabled={true}
-	onInteractOutside={(e) => {
-		onInteractOutside(e);
-		if (e.defaultPrevented) return;
-		contentImplState.onInteractOutside(e);
-	}}
-	onFocusOutside={(e) => {
-		onFocusOutside(e);
-		if (e.defaultPrevented) return;
-		contentImplState.onFocusOutside(e);
-	}}
-	{interactOutsideBehavior}>
-	{#snippet children({ props: dismissibleProps })}
-		<EscapeLayer
-			enabled={true}
-			ref={contentImplState.opts.ref}
-			onEscapeKeydown={(e) => {
-				onEscapeKeydown(e);
-				if (e.defaultPrevented) return;
-				contentImplState.onEscapeKeydown(e);
-			}}
-			{escapeKeydownBehavior}>
-			{@const finalProps = mergeProps(mergedProps, dismissibleProps)}
-			{#if childProp}
-				{@render childProp({ props: finalProps })}
-			{:else}
-				<div {...finalProps}>
-					{@render childrenProp?.()}
-				</div>
-			{/if}
-		</EscapeLayer>
-	{/snippet}
-</DismissibleLayer>
+{#if childProp}
+	{@render childProp({ props: mergeProps(mergedProps, dismissible.props, dismissible.attachment, escapeAttachment) })}
+{:else}
+	<div {...mergeProps(mergedProps, dismissible.props, dismissible.attachment, escapeAttachment)}>
+		{@render childrenProp?.()}
+	</div>
+{/if}

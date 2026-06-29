@@ -1,16 +1,24 @@
-import { type ReadableBox, type WritableBox, executeCallbacks, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
+import {
+	box,
+	boxWith,
+	attachRef,
+	type Getter,
+	type ReadableBox,
+	type RefAttachment,
+	type WritableBox,
+	executeCallbacks,
+	type ReadableBoxedValues,
+} from '$lib/internal/tools/index.js';
 import { on } from 'svelte/events';
 import { onMount, tick } from 'svelte';
-import type { DismissibleLayerImplProps, InteractOutsideBehaviorType } from './types.js';
+import type { DismissibleLayerImplProps, InteractOutsideBehaviorType, InteractOutsideEventHandler } from './types.js';
 import { type EventCallback } from '$lib/internal/events.js';
 import { isElementOrSVGElement } from '@polumeyv/utilities/dom';
 import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '$lib/components/menu/menu.svelte.js';
 
-const isPointerOutsideElementRect = (event: PointerEvent, node: HTMLElement): boolean => {
-	const { clientX, clientY } = event;
+const isPointerOutsideElementRect = ({ clientX: x, clientY: y }: PointerEvent, node: HTMLElement) => {
 	const { left, right, top, bottom } = node.getBoundingClientRect();
-
-	return clientX < left || clientX > right || clientY < top || clientY > bottom;
+	return x < left || x > right || y < top || y > bottom;
 };
 
 globalThis.bitsDismissableLayers ??= new Map<DismissibleLayerState, ReadableBox<InteractOutsideBehaviorType>>();
@@ -191,6 +199,38 @@ export class DismissibleLayerState {
 		onfocuscapture: this.#onfocuscapture,
 		onblurcapture: this.#onblurcapture,
 	};
+}
+
+/**
+ * The dismissible (interact-outside) behavior, without the renderless `<DismissibleLayer>` wrapper.
+ * Returns the focus-capture props (`onfocuscapture`/`onblurcapture`) and a node-lifecycle attachment
+ * separately, because the wrapper's two consumers differ: most overlays merge BOTH onto the content
+ * element, but dialog/sheet/alert-dialog historically merged only the activation (their default-slot
+ * usage dropped the capture props) — so callers keep that choice by merging `props` or not.
+ *
+ * Must be called during component init (the state uses `onMount`). The global `bitsDismissableLayers`
+ * stack, the responsibility algorithm, and the listeners are unchanged; the attachment just owns the
+ * node (registers on mount, deregisters on removal).
+ */
+export function interactOutsideAttachment(opts: {
+	id: Getter<string>;
+	interactOutsideBehavior: Getter<InteractOutsideBehaviorType>;
+	onInteractOutside: Getter<InteractOutsideEventHandler>;
+	onFocusOutside: Getter<(event: FocusEvent) => void>;
+	enabled: Getter<boolean>;
+	isValidEvent: Getter<(e: PointerEvent, node: HTMLElement) => boolean>;
+}): { props: { onfocuscapture: () => void; onblurcapture: () => void }; attachment: RefAttachment<HTMLElement> } {
+	const ref = box<HTMLElement | null>(null);
+	const state = DismissibleLayerState.create({
+		id: boxWith(opts.id),
+		interactOutsideBehavior: boxWith(opts.interactOutsideBehavior),
+		onInteractOutside: boxWith(opts.onInteractOutside),
+		enabled: boxWith(opts.enabled),
+		onFocusOutside: boxWith(opts.onFocusOutside),
+		isValidEvent: boxWith(opts.isValidEvent),
+		ref,
+	});
+	return { props: state.props, attachment: attachRef(ref) };
 }
 
 export function getTopMostDismissableLayer(
