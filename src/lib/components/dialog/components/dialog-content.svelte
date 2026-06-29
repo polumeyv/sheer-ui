@@ -3,10 +3,10 @@
 	import { mergeProps } from '$lib/merge-props.js';
 	import { DialogContentState } from '../dialog.svelte.js';
 	import type { DialogContentProps } from '../types.js';
-	import DismissibleLayer from '../../utilities/dismissible-layer/dismissible-layer.svelte';
-	import EscapeLayer from '../../utilities/escape-layer/escape-layer.svelte';
-	import FocusScope from '../../utilities/focus-scope/focus-scope.svelte';
-	import TextSelectionLayer from '../../utilities/text-selection-layer/text-selection-layer.svelte';
+	import { interactOutsideAttachment } from '../../utilities/dismissible-layer/use-dismissable-layer.svelte.js';
+	import { escapeKeydownAttachment } from '../../utilities/escape-layer/use-escape-layer.svelte.js';
+	import { FocusScope } from '../../utilities/focus-scope/focus-scope.svelte.js';
+	import { textSelectionAttachment } from '../../utilities/text-selection-layer/use-text-selection-layer.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import ScrollLock from '../../utilities/scroll-lock/scroll-lock.svelte';
 	const uid = $props.id();
@@ -36,53 +36,62 @@
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, contentState.props));
+
+	const escapeAttachment = escapeKeydownAttachment({
+		escapeKeydownBehavior: () => restProps.escapeKeydownBehavior ?? 'close',
+		onEscapeKeydown: () => (e) => {
+			onEscapeKeydown(e);
+			if (e.defaultPrevented) return;
+			contentState.root.handleClose();
+		},
+		enabled: () => contentState.root.opts.open.current,
+	});
+
+	// Dialog content historically dropped the dismissible focus-capture props (its default-slot
+	// usage never threaded them), so only `dismissible.attachment` is merged below.
+	const dismissible = interactOutsideAttachment({
+		id: () => id,
+		interactOutsideBehavior: () => restProps.interactOutsideBehavior ?? 'close',
+		onInteractOutside: () => (e) => {
+			onInteractOutside(e);
+			if (e.defaultPrevented) return;
+			contentState.root.handleClose();
+		},
+		onFocusOutside: () => restProps.onFocusOutside ?? (() => {}),
+		enabled: () => contentState.root.opts.open.current,
+		isValidEvent: () => () => false,
+	});
+
+	const textSelection = textSelectionAttachment({
+		id: () => id,
+		onPointerDown: () => () => {},
+		onPointerUp: () => () => {},
+		enabled: () => contentState.root.opts.open.current && (restProps.preventOverflowTextSelection ?? true),
+	});
+
+	const focusScope = FocusScope.use({
+		enabled: boxWith(() => contentState.root.opts.open.current),
+		trap: boxWith(() => trapFocus),
+		loop: true,
+		onCloseAutoFocus: boxWith(() => onCloseAutoFocus),
+		onOpenAutoFocus: boxWith(() => onOpenAutoFocus),
+		ref: contentState.opts.ref,
+	});
 </script>
 
 {#if contentState.shouldRender || forceMount}
-	<FocusScope
-		ref={contentState.opts.ref}
-		loop
-		{trapFocus}
-		enabled={contentState.root.opts.open.current}
-		{onOpenAutoFocus}
-		{onCloseAutoFocus}>
-		{#snippet focusScope({ props: focusScopeProps })}
-			<EscapeLayer
-				{...mergedProps}
-				enabled={contentState.root.opts.open.current}
-				ref={contentState.opts.ref}
-				onEscapeKeydown={(e) => {
-					onEscapeKeydown(e);
-					if (e.defaultPrevented) return;
-					contentState.root.handleClose();
-				}}>
-				<DismissibleLayer
-					{...mergedProps}
-					ref={contentState.opts.ref}
-					enabled={contentState.root.opts.open.current}
-					onInteractOutside={(e) => {
-						onInteractOutside(e);
-						if (e.defaultPrevented) return;
-						contentState.root.handleClose();
-					}}>
-					<TextSelectionLayer {...mergedProps} ref={contentState.opts.ref} enabled={contentState.root.opts.open.current}>
-						{#if child}
-							{#if contentState.root.opts.open.current}
-								<ScrollLock {preventScroll} {restoreScrollDelay} />
-							{/if}
-							{@render child({
-								props: mergeProps(mergedProps, focusScopeProps),
-								...contentState.snippetProps,
-							})}
-						{:else}
-							<ScrollLock {preventScroll} />
-							<div {...mergeProps(mergedProps, focusScopeProps)}>
-								{@render children?.()}
-							</div>
-						{/if}
-					</TextSelectionLayer>
-				</DismissibleLayer>
-			</EscapeLayer>
-		{/snippet}
-	</FocusScope>
+	{#if child}
+		{#if contentState.root.opts.open.current}
+			<ScrollLock {preventScroll} {restoreScrollDelay} />
+		{/if}
+		{@render child({
+			props: mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection),
+			...contentState.snippetProps,
+		})}
+	{:else}
+		<ScrollLock {preventScroll} />
+		<div {...mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection)}>
+			{@render children?.()}
+		</div>
+	{/if}
 {/if}

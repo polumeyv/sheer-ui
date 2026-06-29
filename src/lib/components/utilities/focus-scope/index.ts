@@ -1,3 +1,3 @@
-export { default as FocusScope } from "./focus-scope.svelte";
+export { FocusScope } from './focus-scope.svelte.js';
 
-export type { FocusScopeProps } from "./types.js";
+export type { FocusScopeProps } from './types.js';

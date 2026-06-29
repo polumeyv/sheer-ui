@@ -3,10 +3,11 @@
 	import ScrollLock from '../scroll-lock/scroll-lock.svelte';
 	import type { PopperLayerImplProps } from './types.js';
 	import PopperContent from './popper-content.svelte';
-	import EscapeLayer from '$lib/components/utilities/escape-layer/escape-layer.svelte';
-	import DismissibleLayer from '$lib/components/utilities/dismissible-layer/dismissible-layer.svelte';
-	import TextSelectionLayer from '$lib/components/utilities/text-selection-layer/text-selection-layer.svelte';
-	import FocusScope from '$lib/components/utilities/focus-scope/focus-scope.svelte';
+	import { escapeKeydownAttachment } from '$lib/components/utilities/escape-layer/use-escape-layer.svelte.js';
+	import { interactOutsideAttachment } from '$lib/components/utilities/dismissible-layer/use-dismissable-layer.svelte.js';
+	import { textSelectionAttachment } from '$lib/components/utilities/text-selection-layer/use-text-selection-layer.svelte.js';
+	import { FocusScope } from '$lib/components/utilities/focus-scope/focus-scope.svelte.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
 
 	let {
 		popper,
@@ -55,6 +56,37 @@
 
 	const resolvedPreventScroll = $derived(preventScroll ?? true);
 	const effectiveStrategy = $derived(strategy ?? (resolvedPreventScroll ? 'fixed' : 'absolute'));
+
+	const escapeAttachment = escapeKeydownAttachment({
+		escapeKeydownBehavior: () => escapeKeydownBehavior ?? 'close',
+		onEscapeKeydown: () => onEscapeKeydown ?? (() => {}),
+		enabled: () => enabled,
+	});
+
+	const dismissible = interactOutsideAttachment({
+		id: () => id,
+		interactOutsideBehavior: () => interactOutsideBehavior,
+		onInteractOutside: () => onInteractOutside ?? (() => {}),
+		onFocusOutside: () => onFocusOutside ?? (() => {}),
+		enabled: () => enabled,
+		isValidEvent: () => isValidEvent,
+	});
+
+	const textSelection = textSelectionAttachment({
+		id: () => id,
+		onPointerDown: () => onPointerDown ?? (() => {}),
+		onPointerUp: () => onPointerUp ?? (() => {}),
+		enabled: () => enabled && (preventOverflowTextSelection ?? true),
+	});
+
+	const focusScope = FocusScope.use({
+		enabled: boxWith(() => enabled),
+		trap: boxWith(() => trapFocus),
+		loop: loop ?? false,
+		onCloseAutoFocus: boxWith(() => onCloseAutoFocus ?? (() => {})),
+		onOpenAutoFocus: boxWith(() => onOpenAutoFocus ?? (() => {})),
+		ref,
+	});
 </script>
 
 <PopperContent
@@ -85,25 +117,22 @@
 		{:else if !restProps.forceMount}
 			<ScrollLock preventScroll={resolvedPreventScroll} />
 		{/if}
-		<FocusScope {onOpenAutoFocus} {onCloseAutoFocus} {loop} {enabled} {trapFocus} forceMount={restProps.forceMount} {ref}>
-			{#snippet focusScope({ props: focusScopeProps })}
-				<EscapeLayer {onEscapeKeydown} {escapeKeydownBehavior} {enabled} {ref}>
-					<DismissibleLayer {id} {onInteractOutside} {onFocusOutside} {interactOutsideBehavior} {isValidEvent} {enabled} {ref}>
-						{#snippet children({ props: dismissibleProps })}
-							<TextSelectionLayer {id} {preventOverflowTextSelection} {onPointerDown} {onPointerUp} {enabled} {ref}>
-								{@render popper?.({
-									props: mergeProps(restProps, floatingProps, dismissibleProps, focusScopeProps, {
-										style: {
-											pointerEvents: contentPointerEvents,
-										},
-									}),
-									wrapperProps,
-								})}
-							</TextSelectionLayer>
-						{/snippet}
-					</DismissibleLayer>
-				</EscapeLayer>
-			{/snippet}
-		</FocusScope>
+		{@render popper?.({
+			props: mergeProps(
+				restProps,
+				floatingProps,
+				dismissible.props,
+				dismissible.attachment,
+				focusScope.props,
+				escapeAttachment,
+				textSelection,
+				{
+					style: {
+						pointerEvents: contentPointerEvents,
+					},
+				},
+			),
+			wrapperProps,
+		})}
 	{/snippet}
 </PopperContent>

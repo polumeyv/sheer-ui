@@ -1,3 +1,3 @@
-export { default as DismissibleLayer } from "./dismissible-layer.svelte";
+export { interactOutsideAttachment } from './use-dismissable-layer.svelte.js';
 
-export type { DismissibleLayerProps } from "./types.js";
+export type { DismissibleLayerProps } from './types.js';
