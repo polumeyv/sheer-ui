@@ -1,4 +1,7 @@
 <script lang="ts">
+	// Checkbox (button): controlled / headless. A <button role=checkbox> for table
+	// select-all, JS-owned state, and Checkbox.Group. It does NOT submit in a form;
+	// use `CheckboxNative` (name/value) for form fields.
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { CheckboxRootProps } from '../types.js';
