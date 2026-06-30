@@ -1,4 +1,4 @@
-import { onDestroy, untrack } from 'svelte';
+import { untrack } from 'svelte';
 import { type ReadableBoxedValues } from '$lib/internal/tools/index.js';
 import { AnimationsComplete } from './animations-complete.js';
 import type { TransitionState } from './attrs.js';
@@ -42,7 +42,7 @@ export class PresenceManager {
 				ref: this.#opts.ref,
 				deferToTick: this.#opts.open,
 			});
-		onDestroy(() => this.#clearTransitionFrame());
+		$effect(() => () => this.#clearTransitionFrame());
 
 		$effect(() => {
 			const isOpen = this.#opts.open.current;

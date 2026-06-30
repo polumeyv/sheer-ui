@@ -1,4 +1,4 @@
-import { isBrowser } from '@polumeyv/utilities/dom';
+import { BROWSER } from '@polumeyv/utilities/env';
 import type { ExternalToast, HeightT, PromiseData, PromiseT, AnyComponent, ToastT, ToastTypes } from './types.js';
 import { untrack } from 'svelte';
 
@@ -33,7 +33,7 @@ class ToastState {
 	}
 
 	addToast = (data: ToastT): void => {
-		if (!isBrowser) return;
+		if (!BROWSER) return;
 		this.toasts.unshift(data);
 	};
 
@@ -197,23 +197,18 @@ const basicToast = <T extends AnyComponent>(message: string | T, data?: External
 		message,
 		...data,
 	});
+const createTypedToast =
+	(type: ToastTypes) =>
+	<T extends AnyComponent>(message: string | T, data?: ExternalToast<T>) =>
+		toastState.create({ ...data, type, message });
+
 export const toast = Object.assign(basicToast, {
-	success: <T extends AnyComponent>(message: string | T, data?: ExternalToast<T>) =>
-		toastState.create({ ...data, type: 'success', message }),
-
-	info: <T extends AnyComponent>(message: string | T, data?: ExternalToast<T>) => toastState.create({ ...data, type: 'info', message }),
-
-	warning: <T extends AnyComponent>(message: string | T, data?: ExternalToast<T>) =>
-		toastState.create({ ...data, type: 'warning', message }),
-
-	error: <T extends AnyComponent>(message: string | T, data?: ExternalToast<T>) => toastState.create({ ...data, type: 'error', message }),
-
-	loading: <T extends AnyComponent>(message: string | T, data?: ExternalToast<T>) =>
-		toastState.create({ ...data, type: 'loading', message }),
-
-	message: <T extends AnyComponent>(message: string | T, data?: ExternalToast<T>) =>
-		toastState.create({ ...data, type: 'default', message }),
-
+	success: createTypedToast('success'),
+	info: createTypedToast('info'),
+	warning: createTypedToast('warning'),
+	error: createTypedToast('error'),
+	loading: createTypedToast('loading'),
+	message: createTypedToast('default'),
 	custom: toastState.custom,
 	promise: toastState.promise,
 	dismiss: toastState.dismiss,

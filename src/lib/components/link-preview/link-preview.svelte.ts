@@ -1,12 +1,11 @@
-import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, boxWith } from '$lib/internal/tools/index.js';
+import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
 import { on } from 'svelte/events';
 import { createContext, onDestroy, untrack } from 'svelte';
-import { createBitsAttrs, boolToStr, getDataOpenClosed, getDataTransitionAttrs } from '$lib/internal/attrs.js';
-import { isElement, isFocusVisible, isTouch } from '@polumeyv/utilities/dom';
+import { createBitsAttrs, boolToStr, getDataOpenClosed } from '$lib/internal/attrs.js';
+import { isElement } from '@polumeyv/utilities/dom';
 import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { getTabbableCandidates } from '$lib/internal/focus.js';
 import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
-import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 
 const linkPreviewAttrs = createBitsAttrs({
 	component: 'link-preview',
@@ -40,21 +39,12 @@ export class LinkPreviewRootState {
 	timeout: number | null = null;
 	contentNode = $state<HTMLElement | null>(null);
 	contentMounted = $state(false);
-	contentPresence: PresenceManager;
 	triggerNode = $state<HTMLElement | null>(null);
 	isOpening = false;
 	domContext: DOMContext = new DOMContext(() => null);
 
 	constructor(opts: LinkPreviewRootStateOpts) {
 		this.opts = opts;
-
-		this.contentPresence = new PresenceManager({
-			ref: boxWith(() => this.contentNode),
-			open: this.opts.open,
-			onComplete: () => {
-				this.opts.onOpenChangeComplete.current(this.opts.open.current);
-			},
-		});
 
 		$effect(() => {
 			const isOpen = this.opts.open.current;
@@ -158,19 +148,19 @@ export class LinkPreviewTriggerState {
 	}
 
 	onpointerenter(e: BitsPointerEvent) {
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 		this.root.handleOpen();
 	}
 
 	onpointerleave(e: BitsPointerEvent) {
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 		if (!this.root.contentMounted || !this.root.opts.open.current) {
 			this.root.immediateClose();
 		}
 	}
 
 	onfocus(e: BitsFocusEvent) {
-		if (!isFocusVisible(e.currentTarget)) return;
+		if (!e.currentTarget.matches(':focus-visible')) return;
 		this.root.handleOpen();
 	}
 
@@ -249,7 +239,7 @@ export class LinkPreviewContentState {
 	}
 
 	onpointerenter(e: BitsPointerEvent) {
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 		this.root.handleOpen();
 	}
 
@@ -269,16 +259,9 @@ export class LinkPreviewContentState {
 		this.root.handleClose();
 	};
 
-	onOpenAutoFocus = (e: Event) => {
-		e.preventDefault();
-	};
-
-	onCloseAutoFocus = (e: Event) => {
-		e.preventDefault();
-	};
-
+	// Always mounted now — the native popover toggles `display` itself (display … allow-discrete).
 	get shouldRender() {
-		return this.root.contentPresence.shouldRender;
+		return true;
 	}
 
 	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open.current }));
@@ -289,7 +272,6 @@ export class LinkPreviewContentState {
 				id: this.opts.id.current,
 				tabindex: -1,
 				'data-state': getDataOpenClosed(this.root.opts.open.current),
-				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
 				[linkPreviewAttrs.content]: '',
 				onpointerdown: this.onpointerdown,
 				onpointerenter: this.onpointerenter,
@@ -297,11 +279,4 @@ export class LinkPreviewContentState {
 				...this.attachment,
 			}) as const,
 	);
-
-	readonly popperProps = {
-		onInteractOutside: this.onInteractOutside,
-		onEscapeKeydown: this.onEscapeKeydown,
-		onOpenAutoFocus: this.onOpenAutoFocus,
-		onCloseAutoFocus: this.onCloseAutoFocus,
-	};
 }

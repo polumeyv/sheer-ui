@@ -31,5 +31,4 @@ export type * from '$lib/components/toggle/types.js';
 export type * from '$lib/components/toggle-group/types.js';
 export type * from '$lib/components/toolbar/types.js';
 export type * from '$lib/components/tooltip/types.js';
-export type * from '$lib/components/utilities/config/types.js';
-export type { PortalProps } from '$lib/components/utilities/portal/types.js';
+export type { PortalProps } from '$lib/components/utilities/portal';

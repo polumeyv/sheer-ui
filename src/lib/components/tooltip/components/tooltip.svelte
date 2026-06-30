@@ -6,7 +6,6 @@
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import type { TooltipRootProps } from '../types.js';
 	import { TooltipRootState } from '../tooltip.svelte.js';
-	import FloatingLayer from '$lib/components/utilities/floating-layer/components/floating-layer.svelte';
 
 	let {
 		open = $bindable(false),
@@ -46,10 +45,8 @@
 	});
 </script>
 
-<FloatingLayer tooltip>
-	{@render children?.({
-		open: rootState.opts.open.current,
-		triggerId: rootState.activeTriggerId,
-		payload: rootState.activePayload as [T] extends [never] ? null : T | null,
-	})}
-</FloatingLayer>
+{@render children?.({
+	open: rootState.opts.open.current,
+	triggerId: rootState.activeTriggerId,
+	payload: rootState.activePayload as [T] extends [never] ? null : T | null,
+})}

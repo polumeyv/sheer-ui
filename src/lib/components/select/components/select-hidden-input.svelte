@@ -2,7 +2,6 @@
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { SelectHiddenInputState } from '../select.svelte.js';
 	import type { HTMLInputAttributes } from 'svelte/elements';
-	import HiddenInput from '../../utilities/hidden-input.svelte';
 
 	let { value = $bindable(), autocomplete }: { value?: string } & Omit<HTMLInputAttributes, 'value'> = $props();
 
@@ -12,5 +11,5 @@
 </script>
 
 {#if hiddenInputState.shouldRender}
-	<HiddenInput {...hiddenInputState.props} bind:value {autocomplete} />
+	<input {...hiddenInputState.props} bind:value {autocomplete} class="sr-only" aria-hidden="true" tabindex={-1} />
 {/if}

@@ -2,7 +2,6 @@
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import type { LinkPreviewRootProps } from '../types.js';
 	import { LinkPreviewRootState } from '../link-preview.svelte.js';
-	import { FloatingLayer } from '$lib/components/utilities/floating-layer/index.js';
 
 	let {
 		disabled = false,
@@ -29,6 +28,4 @@
 	});
 </script>
 
-<FloatingLayer.Root>
-	{@render children?.()}
-</FloatingLayer.Root>
+{@render children?.()}

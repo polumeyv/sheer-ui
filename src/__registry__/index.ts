@@ -10,10 +10,6 @@ export const Index = {
 		type: "registry:example",
 		files: ["../lib/registry/alert-demo.svelte"],
 	},
-	"alert-dialog-demo": {
-		type: "registry:example",
-		files: ["../lib/registry/alert-dialog-demo.svelte"],
-	},
 	"avatar-demo": {
 		type: "registry:example",
 		files: ["../lib/registry/avatar-demo.svelte"],
@@ -161,6 +157,10 @@ export const Index = {
 	"meter-demo": {
 		type: "registry:example",
 		files: ["../lib/registry/meter-demo.svelte"],
+	},
+	"native-dialog-demo": {
+		type: "registry:example",
+		files: ["../lib/registry/native-dialog-demo.svelte"],
 	},
 	"native-select-demo": {
 		type: "registry:example",

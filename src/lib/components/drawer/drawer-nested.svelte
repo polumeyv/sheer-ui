@@ -2,7 +2,7 @@
 import DrawerRoot from './drawer.svelte';
 import type { RootProps } from './util/components/drawer/index.js';
 import { getDrawer } from './util/context.js';
-import { noop } from './util/internal/noop.js';
+import { noop } from '@polumeyv/utilities';
 
 let {
 	shouldScaleBackground = true,

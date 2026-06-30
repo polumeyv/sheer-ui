@@ -1,189 +1,89 @@
-import { isAnySegmentPart } from "./helpers.js";
-import { isHTMLElement } from "@polumeyv/utilities/dom";
-import { kbd } from "$lib/internal/kbd.js";
+import { isAnySegmentPart } from './helpers.js';
+import { isHTMLElement } from '@polumeyv/utilities/dom';
+import { kbd } from '$lib/internal/kbd.js';
+
+const navigate = (e: KeyboardEvent, neighbors: { prev: HTMLElement | null; next: HTMLElement | null }) => {
+	if (e.key === kbd.ARROW_LEFT) neighbors.prev?.focus();
+	else if (e.key === kbd.ARROW_RIGHT) neighbors.next?.focus();
+};
 
 /**
- * Handles segment navigation based on the provided keyboard event and field ID.
- *
- * @param e - The keyboard event
- * @param fieldNode - The ID of the field we're navigating within
+ * Retrieves the next segment relative to the provided node, or null at the end.
  */
-export function handleSegmentNavigation(e: KeyboardEvent, fieldNode: HTMLElement | null) {
-	const currentTarget = e.currentTarget;
-	if (!isHTMLElement(currentTarget)) return;
-
-	const { prev, next } = getPrevNextSegments(currentTarget, fieldNode);
-
-	if (e.key === kbd.ARROW_LEFT) {
-		if (!prev) return;
-		prev.focus();
-	} else if (e.key === kbd.ARROW_RIGHT) {
-		if (!next) return;
-		next.focus();
-	}
-}
-
-export function handleTimeSegmentNavigation(e: KeyboardEvent, fieldNode: HTMLElement | null) {
-	const currentTarget = e.currentTarget;
-	if (!isHTMLElement(currentTarget)) return;
-
-	const { prev, next } = getPrevNextTimeSegments(currentTarget, fieldNode);
-
-	if (e.key === kbd.ARROW_LEFT) {
-		if (!prev) return;
-		prev.focus();
-	} else if (e.key === kbd.ARROW_RIGHT) {
-		if (!next) return;
-		next.focus();
-	}
-}
-
-/**
- * Retrieves the next segment in the list of segments relative to the provided node.
- *
- * @param node - The node we're starting from
- * @param segments - The list of candidate segments to navigate through
- */
-export function getNextSegment(node: HTMLElement, segments: HTMLElement[]) {
+export const getNextSegment = (node: HTMLElement, segments: HTMLElement[]) => {
 	const index = segments.indexOf(node);
 	if (index === segments.length - 1 || index === -1) return null;
-	const nextIndex = index + 1;
-	const nextSegment = segments[nextIndex];
-	return nextSegment;
-}
+	return segments[index + 1];
+};
 
 /**
- * Retrieves the previous segment in the list of segments relative to the provided node.
- *
- * @param node - The node we're starting from
- * @param segments - The list of candidate segments to navigate through
+ * Retrieves the previous segment relative to the provided node, or null at the start.
  */
-export function getPrevSegment(node: HTMLElement, segments: HTMLElement[]) {
+export const getPrevSegment = (node: HTMLElement, segments: HTMLElement[]) => {
 	const index = segments.indexOf(node);
 	if (index === 0 || index === -1) return null;
-	const prevIndex = index - 1;
-	const prevSegment = segments[prevIndex];
-	return prevSegment;
-}
+	return segments[index - 1];
+};
 
 /**
- * Retrieves an object containing the next and previous segments relative to the current node.
- *
- * @param startingNode - The node we're starting from
- * @param fieldNode - The ID of the field we're navigating within
+ * Retrieves all the interactive segments within the field.
  */
-export function getPrevNextSegments(startingNode: HTMLElement, fieldNode: HTMLElement | null) {
-	const segments = getSegments(fieldNode);
-	if (!segments.length) {
-		return {
-			next: null,
-			prev: null,
-		};
-	}
-	return {
-		next: getNextSegment(startingNode, segments),
-		prev: getPrevSegment(startingNode, segments),
-	};
-}
-
-export function getPrevNextTimeSegments(startingNode: HTMLElement, fieldNode: HTMLElement | null) {
-	const segments = getTimeSegments(fieldNode);
-	if (!segments.length) {
-		return {
-			next: null,
-			prev: null,
-		};
-	}
-	return {
-		next: getNextSegment(startingNode, segments),
-		prev: getPrevSegment(startingNode, segments),
-	};
-}
-
-/**
- * Shifts the focus to the next segment in the list of segments
- * within the field identified by the provided ID.
- */
-export function moveToNextSegment(e: KeyboardEvent, fieldNode: HTMLElement | null) {
-	const node = e.currentTarget;
-	if (!isHTMLElement(node)) return;
-	const { next } = getPrevNextSegments(node, fieldNode);
-	if (!next) return;
-	next.focus();
-}
-
-export function moveToNextTimeSegment(e: KeyboardEvent, fieldNode: HTMLElement | null) {
-	const node = e.currentTarget;
-	if (!isHTMLElement(node)) return;
-	const { next } = getPrevNextTimeSegments(node, fieldNode);
-	if (!next) return;
-	next.focus();
-}
-
-export function moveToPrevTimeSegment(e: KeyboardEvent, fieldNode: HTMLElement | null) {
-	const node = e.currentTarget;
-	if (!isHTMLElement(node)) return;
-	const { prev } = getPrevNextTimeSegments(node, fieldNode);
-	if (!prev) return;
-	prev.focus();
-}
-
-/**
- * Shifts the focus to the previous segment in the list of segments
- * within the field identified by the provided ID. If this is the first
- * segment, focus will not be shifted.
- */
-export function moveToPrevSegment(e: KeyboardEvent, fieldNode: HTMLElement | null) {
-	const node = e.currentTarget;
-	if (!isHTMLElement(node)) return;
-	const { prev } = getPrevNextSegments(node, fieldNode);
-	if (!prev) return;
-	prev.focus();
-}
-
-export function isSegmentNavigationKey(key: string) {
-	if (key === kbd.ARROW_RIGHT || key === kbd.ARROW_LEFT) return true;
-	return false;
-}
-
-/**
- * Retrieves all the interactive segments within the field identified by the provided ID.
- */
-export function getSegments(fieldNode: HTMLElement | null) {
+export const getSegments = (fieldNode: HTMLElement | null) => {
 	if (!fieldNode) return [];
-	const segments = Array.from(fieldNode.querySelectorAll("[data-segment]")).filter(
-		(el): el is HTMLElement => {
-			if (!isHTMLElement(el)) return false;
-			const segment = el.dataset.segment;
-			if (segment === "trigger") return true;
-			if (!isAnySegmentPart(segment) || segment === "literal") return false;
-			return true;
-		}
-	);
-	return segments;
-}
+	return Array.from(fieldNode.querySelectorAll<HTMLElement>('[data-segment]')).filter((el) => {
+		const segment = el.dataset.segment;
+		return segment === 'trigger' || (isAnySegmentPart(segment) && segment !== 'literal');
+	});
+};
 
-export function getTimeSegments(fieldNode: HTMLElement | null) {
+export const getTimeSegments = (fieldNode: HTMLElement | null) => {
 	if (!fieldNode) return [];
-	const segments = Array.from(fieldNode.querySelectorAll("[data-segment]")).filter(
-		(el): el is HTMLElement => {
-			if (!isHTMLElement(el)) return false;
-			const segment = el.dataset.segment;
-			if (segment === "trigger") return true;
-			if (segment === "literal") return false;
-			return true;
-		}
-	);
-	return segments;
-}
-
-export function getFirstTimeSegment(fieldNode: HTMLElement | null) {
-	return getTimeSegments(fieldNode)[0];
-}
+	return Array.from(fieldNode.querySelectorAll<HTMLElement>('[data-segment]')).filter((el) => el.dataset.segment !== 'literal');
+};
 
 /**
- * Get the first interactive segment within the field identified by the provided ID.
+ * Get the first interactive segment within the field.
  */
-export function getFirstSegment(fieldNode: HTMLElement | null) {
-	return getSegments(fieldNode)[0];
-}
+export const getFirstSegment = (fieldNode: HTMLElement | null) => getSegments(fieldNode)[0];
+
+export const getFirstTimeSegment = (fieldNode: HTMLElement | null) => getTimeSegments(fieldNode)[0];
+
+const prevNext = (startingNode: HTMLElement, segments: HTMLElement[]) => ({
+	next: getNextSegment(startingNode, segments),
+	prev: getPrevSegment(startingNode, segments),
+});
+
+/**
+ * Retrieves the next and previous segments relative to the current node.
+ */
+export const getPrevNextSegments = (startingNode: HTMLElement, fieldNode: HTMLElement | null) =>
+	prevNext(startingNode, getSegments(fieldNode));
+
+export const getPrevNextTimeSegments = (startingNode: HTMLElement, fieldNode: HTMLElement | null) =>
+	prevNext(startingNode, getTimeSegments(fieldNode));
+
+/**
+ * Handles segment navigation based on the provided keyboard event and field.
+ */
+export const handleSegmentNavigation = (e: KeyboardEvent, fieldNode: HTMLElement | null) => {
+	const node = e.currentTarget;
+	if (!isHTMLElement(node)) return;
+	navigate(e, getPrevNextSegments(node, fieldNode));
+};
+
+export const handleTimeSegmentNavigation = (e: KeyboardEvent, fieldNode: HTMLElement | null) => {
+	const node = e.currentTarget;
+	if (!isHTMLElement(node)) return;
+	navigate(e, getPrevNextTimeSegments(node, fieldNode));
+};
+
+const moveFocus = (e: KeyboardEvent, fieldNode: HTMLElement | null, getNeighbors: typeof getPrevNextSegments, dir: 'prev' | 'next') => {
+	const node = e.currentTarget;
+	if (!isHTMLElement(node)) return;
+	getNeighbors(node, fieldNode)[dir]?.focus();
+};
+
+export const moveToPrevSegment = (e: KeyboardEvent, fieldNode: HTMLElement | null) => moveFocus(e, fieldNode, getPrevNextSegments, 'prev');
+export const moveToNextSegment = (e: KeyboardEvent, fieldNode: HTMLElement | null) => moveFocus(e, fieldNode, getPrevNextSegments, 'next');
+
+export const isSegmentNavigationKey = (key: string) => key === kbd.ARROW_RIGHT || key === kbd.ARROW_LEFT;

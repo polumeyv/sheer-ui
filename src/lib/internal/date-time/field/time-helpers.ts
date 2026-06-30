@@ -1,4 +1,4 @@
-import { isBrowser } from '@polumeyv/utilities/dom';
+import { BROWSER } from '@polumeyv/utilities/env';
 import type {
 	EditableTimeSegmentPart,
 	HourCycle,
@@ -215,7 +215,7 @@ export function isAnyTimeSegmentPart(part: unknown): part is TimeSegmentPart {
  * been filled.
  */
 function getUsedTimeSegments(fieldNode: HTMLElement | null) {
-	if (!isBrowser || !fieldNode) return [];
+	if (!BROWSER || !fieldNode) return [];
 	const usedSegments = getTimeSegments(fieldNode)
 		.map((el) => el.dataset.segment)
 		.filter((part): part is EditableTimeSegmentPart => {
@@ -276,7 +276,7 @@ export function inferTimeGranularity(granularity: TimeGranularity | undefined): 
  * @param fieldNode - The id of the date field associated with the segment
  */
 export function isFirstTimeSegment(id: string, fieldNode: HTMLElement | null) {
-	if (!isBrowser) return false;
+	if (!BROWSER) return false;
 	const segments = getTimeSegments(fieldNode);
 	return segments.length ? segments[0]!.id === id : false;
 }
@@ -297,7 +297,7 @@ type SetTimeDescriptionProps = {
  * screen readers as the user interacts with the date field.
  */
 export function setTimeDescription(props: SetTimeDescriptionProps) {
-	if (!isBrowser) return;
+	if (!BROWSER) return;
 	const valueString = props.formatter.selectedTime(props.value);
 	const el = props.doc.getElementById(props.id);
 	if (!el) {
@@ -319,7 +319,7 @@ export function setTimeDescription(props: SetTimeDescriptionProps) {
  * date field is unmounted.
  */
 export function removeTimeDescriptionElement(id: string, doc: Document) {
-	if (!isBrowser) return;
+	if (!BROWSER) return;
 	const el = doc.getElementById(id);
 	if (!el) return;
 	doc.body.removeChild(el);

@@ -84,10 +84,6 @@
 			"types": "./dist/components/alert/index.d.ts",
 			"svelte": "./dist/components/alert/index.js"
 		},
-		"./components/alert-dialog": {
-			"types": "./dist/components/alert-dialog/index.d.ts",
-			"svelte": "./dist/components/alert-dialog/index.js"
-		},
 		"./components/avatar": {
 			"types": "./dist/components/avatar/index.d.ts",
 			"svelte": "./dist/components/avatar/index.js"
@@ -318,9 +314,8 @@
 		"@tanstack/table-core": "^8.21.3",
 		"css.escape": "1.5.1",
 		"d3-scale": "^4.0.2",
-		"esm-env": "^1.2.2",
 		"layerchart": "2.0.0-next.64",
-		"overrule": "^0.4.6",
+		"overrule": "^0.4.7",
 		"paneforge": "^1.0.2",
 		"style-to-object": "^1.0.14",
 		"tabbable": "^6.4.0"
@@ -329,13 +324,13 @@
 		"@fontsource-variable/inter": "^5.2.8",
 		"@sveltejs/adapter-auto": "^7.0.1",
 		"@polumeyv/utilities": "workspace:*",
-		"@internationalized/date": "^3.12.0",
+		"@internationalized/date": "^3.12.2",
 		"effect": "catalog:infra",
-		"@sveltejs/kit": "^2.65.1",
+		"@sveltejs/kit": "^2.68.0",
 		"@sveltejs/package": "^2.5.8",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
-		"@tailwindcss/vite": "^4.3.1",
-		"tailwindcss": "^4.3.1",
+		"@tailwindcss/vite": "^4.3.2",
+		"tailwindcss": "^4.3.2",
 		"@types/d3-chord": "^3.0.6",
 		"@types/d3-delaunay": "^6.0.4",
 		"@types/d3-force": "^3.0.10",
@@ -348,8 +343,8 @@
 		"jsdom": "^29.1.1",
 		"publint": "^0.3.18",
 		"svelte": "^5.56.3",
-		"svelte-check": "^4.6.0",
-		"vite": "^8.0.16",
+		"svelte-check": "^4.7.1",
+		"vite": "^8.1.0",
 		"vitest": "^4.1.9"
 	}
 }

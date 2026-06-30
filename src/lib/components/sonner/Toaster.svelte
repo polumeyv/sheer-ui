@@ -66,7 +66,7 @@
 </script>
 
 <script lang="ts">
-	import { mode } from '../theme-toggle/vendor/index.js';
+	import { getTheme } from '../theme-toggle/index.js';
 	import { onMount, untrack } from 'svelte';
 	import { toastState } from './toast-state.svelte.js';
 	import Toast from './Toast.svelte';
@@ -105,9 +105,10 @@
 		...restProps
 	}: ToasterProps = $props();
 
+	const themeState = getTheme();
 	const offsetObject = $derived(getOffsetObject(offset, mobileOffset));
 	const theme = $derived.by(
-		(): NonNullable<ToasterProps['theme']> => themeProp ?? (mode.current as NonNullable<ToasterProps['theme']> | undefined) ?? LIGHT,
+		(): NonNullable<ToasterProps['theme']> => themeProp ?? (themeState.current as NonNullable<ToasterProps['theme']> | undefined) ?? LIGHT,
 	);
 	const toasterStyle = $derived(
 		[

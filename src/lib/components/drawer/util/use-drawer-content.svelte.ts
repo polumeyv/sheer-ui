@@ -1,5 +1,5 @@
 import { type ComponentProps } from 'svelte';
-import { useRefById, type ReadableBoxedValues, type WithRefProps } from '$lib/internal/tools/index.js';
+import { attachRef, type ReadableBoxedValues, type WithRefProps } from '$lib/internal/tools/index.js';
 import * as DrawerPrimitive from '$lib/components/dialog/index.js';
 import { getDrawer } from './context.js';
 import type { DrawerDirection } from './types.js';
@@ -16,24 +16,14 @@ type DrawerPrimitiveContentProps = Pick<
 	| 'onpointerout'
 	| 'oncontextmenu'
 >;
-
 interface UseDrawerContentProps extends WithRefProps, ReadableBoxedValues<Required<DrawerPrimitiveContentProps>> {}
 
 export function useDrawerContent(opts: UseDrawerContentProps) {
 	const ctx = getDrawer();
-	let mounted = $state(false);
-	useRefById({
-		id: opts.id,
-		ref: opts.ref,
-		deps: () => [mounted, ctx.open.current],
-		onRefChange: (node) => {
-			if (!mounted) {
-				ctx.setDrawerNode(null);
-			} else {
-				ctx.setDrawerNode(node);
-			}
-		},
-	});
+
+	// The attachment forwards through DialogPrimitive.Content to the real element,
+	// pushing the node into context on mount and clearing it on unmount.
+	const attachment = attachRef(opts.ref, (node) => ctx.setDrawerNode(node));
 
 	let delayedSnapPoints = $state(false);
 	let pointerStart: { x: number; y: number } | null = null;
@@ -46,21 +36,17 @@ export function useDrawerContent(opts: UseDrawerContentProps) {
 	function isDeltaInDirection(delta: { x: number; y: number }, direction: DrawerDirection, threshold = 0) {
 		if (wasBeyondThePoint) return true;
 
-		const deltaY = Math.abs(delta.y);
 		const deltaX = Math.abs(delta.x);
+		const deltaY = Math.abs(delta.y);
 		const isDeltaX = deltaX > deltaY;
-		const dFactor = ['bottom', 'right'].includes(direction) ? 1 : -1;
+		const dFactor = direction === 'bottom' || direction === 'right' ? 1 : -1;
 
-		if (direction === 'left' || direction === 'right') {
-			const isReverseDirection = delta.x * dFactor < 0;
-			if (!isReverseDirection && deltaX >= 0 && deltaX <= threshold) {
-				return isDeltaX;
-			}
-		} else {
-			const isReverseDirection = delta.y * dFactor < 0;
-			if (!isReverseDirection && deltaY >= 0 && deltaY <= threshold) {
-				return !isDeltaX;
-			}
+		const isHorizontal = direction === 'left' || direction === 'right';
+		const primaryDelta = isHorizontal ? deltaX : deltaY;
+		const isReverseDirection = (isHorizontal ? delta.x : delta.y) * dFactor < 0;
+
+		if (!isReverseDirection && primaryDelta >= 0 && primaryDelta <= threshold) {
+			return isHorizontal ? isDeltaX : !isDeltaX;
 		}
 
 		wasBeyondThePoint = true;
@@ -68,8 +54,6 @@ export function useDrawerContent(opts: UseDrawerContentProps) {
 	}
 
 	$effect(() => {
-		hasSnapPoints;
-		ctx.open.current;
 		if (hasSnapPoints && ctx.open.current) {
 			window.requestAnimationFrame(() => {
 				delayedSnapPoints = true;
@@ -140,9 +124,7 @@ export function useDrawerContent(opts: UseDrawerContentProps) {
 
 	function onpointerup(e: PointerEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		opts.onpointerup.current?.(e);
-		pointerStart = null;
-		wasBeyondThePoint = false;
-		ctx.onRelease(e);
+		handleOnPointerUp(e);
 	}
 
 	function onpointerout(e: PointerEvent & { currentTarget: EventTarget & HTMLDivElement }) {
@@ -174,6 +156,7 @@ export function useDrawerContent(opts: UseDrawerContentProps) {
 		onpointerout,
 		oncontextmenu,
 		preventScroll: ctx.modal.current,
+		...attachment,
 	});
 
 	return {
@@ -181,8 +164,5 @@ export function useDrawerContent(opts: UseDrawerContentProps) {
 			return props;
 		},
 		ctx,
-		setMounted: (value: boolean) => {
-			mounted = value;
-		},
 	};
 }

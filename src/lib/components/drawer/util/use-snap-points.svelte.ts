@@ -1,6 +1,6 @@
 import type { ReadableBoxedValues, WritableBoxedValues } from '$lib/internal/tools/index.js';
 import type { DrawerDirection, Getters } from './types.js';
-import { isVertical, set } from './helpers.js';
+import { applyStyle, isVertical } from './helpers.js';
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './internal/constants.js';
 import { untrack } from 'svelte';
 import { innerWidth, innerHeight } from 'svelte/reactivity/window';
@@ -51,7 +51,8 @@ export function useSnapPoints({
 		open.current;
 		const winWidth = innerWidth.current;
 		const winHeight = innerHeight.current;
-		const windowDimensions = winWidth !== undefined && winHeight !== undefined ? { innerWidth: winWidth, innerHeight: winHeight } : undefined;
+		const windowDimensions =
+			winWidth !== undefined && winHeight !== undefined ? { innerWidth: winWidth, innerHeight: winHeight } : undefined;
 		const containerSize = container.current
 			? {
 					width: container.current.getBoundingClientRect().width,
@@ -99,7 +100,7 @@ export function useSnapPoints({
 		const newSnapPointIndex = snapPointsOffset?.findIndex((snapPointDim) => snapPointDim === dimension) ?? null;
 		onSnapPointChange(newSnapPointIndex);
 
-		set(drawerNode(), {
+		applyStyle(drawerNode(), {
 			transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
 			transform: isVertical(direction.current) ? `translate3d(0, ${dimension}px, 0)` : `translate3d(${dimension}px, 0, 0)`,
 		});
@@ -111,12 +112,12 @@ export function useSnapPoints({
 			newSnapPointIndex !== fadeFromIndex.current &&
 			newSnapPointIndex < fadeFromIndex.current
 		) {
-			set(overlayNode(), {
+			applyStyle(overlayNode(), {
 				transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
 				opacity: '0',
 			});
 		} else {
-			set(overlayNode(), {
+			applyStyle(overlayNode(), {
 				transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
 				opacity: '1',
 			});
@@ -164,7 +165,7 @@ export function useSnapPoints({
 		const hasDraggedUp = draggedDistance > 0;
 
 		if (isOverlaySnapPoint) {
-			set(overlayNode(), {
+			applyStyle(overlayNode(), {
 				transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
 			});
 		}
@@ -215,13 +216,13 @@ export function useSnapPoints({
 	const onDrag = ({ draggedDistance }: { draggedDistance: number }) => {
 		if (activeSnapPointOffset === null) return;
 		const dir = direction.current;
-		const bottomOrRight = isBottomOrRight(dir);
+		const bottomOrRight = dir === 'bottom' || dir === 'right';
 		const newValue = bottomOrRight ? activeSnapPointOffset - draggedDistance : activeSnapPointOffset + draggedDistance;
 		const lastSnapPoint = snapPointsOffset[snapPointsOffset.length - 1];
 		// Don't do anything if we exceed the last (biggest) snap point
 		if (bottomOrRight && newValue < lastSnapPoint) return;
 		if (!bottomOrRight && newValue > lastSnapPoint) return;
-		set(drawerNode(), {
+		applyStyle(drawerNode(), {
 			transform: isVertical(dir) ? `translate3d(0, ${newValue}px, 0)` : `translate3d(${newValue}px, 0, 0)`,
 		});
 	};
@@ -260,5 +261,3 @@ export function useSnapPoints({
 		onDrag,
 	};
 }
-
-export const isBottomOrRight = (direction: DrawerDirection) => direction === 'bottom' || direction === 'right';

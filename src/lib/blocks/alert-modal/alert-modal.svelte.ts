@@ -16,7 +16,7 @@ export interface AlertModalOptions {
 	content?: Snippet;
 }
 
-const VARIANT_DEFAULTS: Record<AlertModalVariant, string> = {
+export const VARIANT_DEFAULTS: Record<AlertModalVariant, string> = {
 	destructive: 'Remove',
 	warning: 'Continue',
 	default: 'OK',

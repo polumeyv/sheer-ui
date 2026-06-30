@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Popover from '$lib/components/popover/index.js';
+	import { Popover } from '$lib/components/popover/index.js';
 	import { Button } from '$lib/components/button/index.js';
 	import { Input } from '$lib/components/input/index.js';
 	import { Label } from '$lib/components/label/index.js';

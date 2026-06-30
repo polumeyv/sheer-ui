@@ -1,9 +1,6 @@
 <script lang="ts">
 	import type { PopoverRootProps } from '../types.js';
 	import { PopoverRootState } from '../popover.svelte.js';
-
-	import FloatingLayer from '../../utilities/floating-layer/components/floating-layer.svelte';
-
 	import { boxWith } from '$lib/internal/tools/index.js';
 
 	let {
@@ -11,7 +8,6 @@
 		onOpenChange = () => {},
 		onOpenChangeComplete = () => {},
 		children,
-		...restProps
 	}: PopoverRootProps = $props();
 
 	PopoverRootState.create({
@@ -26,6 +22,4 @@
 	});
 </script>
 
-<FloatingLayer {...restProps}>
-	{@render children?.()}
-</FloatingLayer>
+{@render children?.()}

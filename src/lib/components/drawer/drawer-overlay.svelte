@@ -1,12 +1,11 @@
 <script lang="ts">
 	import * as DialogPrimitive from '$lib/components/dialog/index.js';
-	import { type WithChildren, box } from '$lib/internal/tools/index.js';
+	import { type WithChildren, box, attachRef } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
 	import { useId } from '$lib/internal/use-id.js';
-	import { useDrawerOverlay } from './util/use-drawer-overlay.svelte.js';
+	import { getDrawer } from './util/context.js';
 	import type { OverlayProps } from './util/components/drawer/index.js';
-	import Mounted from './util/components/utils/mounted.svelte';
 
 	let {
 		id = useId(),
@@ -16,13 +15,20 @@
 		...restProps
 	}: WithChildren<WithoutChildrenOrChild<OverlayProps>> = $props();
 
-	const overlayState = useDrawerOverlay({
-		id: box.with(() => id),
-		ref: box.with(
+	const ctx = getDrawer();
+
+	// The element is rendered by DialogPrimitive.Overlay; the attachment forwards
+	// through to it, capturing the node straight into context on mount and clearing
+	// it on unmount — no id lookup or mounted flag needed.
+	const attachment = attachRef(
+		box.with(
 			() => ref,
 			(v) => (ref = v),
 		),
-	});
+		(node) => ctx.setOverlayNode(node),
+	);
+
+	const hasSnapPoints = $derived(ctx.snapPoints.current && ctx.snapPoints.current.length > 0);
 
 	const mergedProps = $derived(
 		mergeProps(
@@ -31,14 +37,21 @@
 				class: cn('fixed inset-0 z-50 bg-black/50 transition-opacity data-[state=closed]:opacity-0 starting:opacity-0', className),
 			},
 			restProps,
-			overlayState.props,
+			{
+				id,
+				onmouseup: ctx.onRelease,
+				'data-vaul-overlay': '',
+				'data-vaul-snap-points': ctx.open.current && hasSnapPoints ? 'true' : 'false',
+				'data-vaul-snap-points-overlay': ctx.open.current && ctx.shouldFade ? 'true' : 'false',
+				'data-vaul-animate': ctx.shouldAnimate ? 'true' : 'false',
+			},
+			attachment,
 		),
 	);
 </script>
 
-{#if overlayState.shouldRender}
+{#if ctx.modal.current}
 	<DialogPrimitive.Overlay {...mergedProps}>
-		<Mounted onMounted={overlayState.setMounted} />
 		{@render children?.()}
 	</DialogPrimitive.Overlay>
 {/if}

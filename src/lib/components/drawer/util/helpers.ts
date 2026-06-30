@@ -1,60 +1,53 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { DrawerDirection } from './types.js';
 
-interface Style {
-	[key: string]: string;
-}
+type StyleValue = string | number | null | undefined;
+type Style = Record<string, StyleValue>;
 
-const cache = new WeakMap();
+const toCssProperty = (key: string) =>
+	key.startsWith('--') ? key : key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`).replace(/^ms-/, '-ms-');
 
-export const isInView = (el: HTMLElement): boolean => {
-	const rect = el.getBoundingClientRect();
-	if (!window.visualViewport) return false;
-	return (
-		rect.top >= 0 &&
-		rect.left >= 0 &&
-		// Need + 40 for safari detection
-		rect.bottom <= window.visualViewport.height - 40 &&
-		rect.right <= window.visualViewport.width
-	);
+export const applyStyle = (element: Element | HTMLElement | null | undefined, style: Style) => {
+	if (!(element instanceof HTMLElement)) return;
+
+	for (const [key, value] of Object.entries(style)) {
+		if (value == null) continue;
+		element.style.setProperty(toCssProperty(key), String(value));
+	}
 };
 
-export const set = (el: Element | HTMLElement | null | undefined, styles: Style, ignoreCache = false) => {
-	if (!el || !(el instanceof HTMLElement)) return;
-	const originalStyles: Style = {};
-	Object.entries(styles).forEach(([key, value]: [string, string]) =>
-		key.startsWith('--')
-			? el.style.setProperty(key, value)
-			: ((originalStyles[key] = (el.style as any)[key]), ((el.style as any)[key] = value)),
-	);
-	if (ignoreCache) return;
-	cache.set(el, originalStyles);
-};
+export const assignStyle = (element: HTMLElement | null | undefined, style: Style) => {
+	if (!element) return () => {};
 
-export const reset = (el: Element | HTMLElement | null, prop?: string) => {
-	if (!el || !(el instanceof HTMLElement)) return;
-	const originalStyles = cache.get(el);
-	if (!originalStyles) return;
-	prop
-		? ((el.style as any)[prop] = originalStyles[prop])
-		: Object.entries(originalStyles).forEach(([key, value]) => ((el.style as any)[key] = value));
+	const prevStyle = element.style.cssText;
+
+	applyStyle(element, style);
+
+	return () => {
+		element.style.cssText = prevStyle;
+	};
 };
 
 export const isVertical = (direction: DrawerDirection) => direction === 'top' || direction === 'bottom';
 
-export const getTranslate = (element: HTMLElement, direction: DrawerDirection): number | null => {
-	if (!element) return null;
-	const transform = window.getComputedStyle(element).transform;
-	const mat3d = transform.match(/^matrix3d\((.+)\)$/);
-	if (mat3d) return parseFloat(mat3d[1].split(', ')[isVertical(direction) ? 13 : 12]);
-	const mat = transform.match(/^matrix\((.+)\)$/);
-	return mat ? parseFloat(mat[1].split(', ')[isVertical(direction) ? 5 : 4]) : null;
-};
-export const dampenValue = (v: number) => 8 * (Math.log(v + 1) - 2);
+export const isInView = (el: HTMLElement) => {
+	const rect = el.getBoundingClientRect();
+	const viewport = window.visualViewport;
 
-export const assignStyle = (element: HTMLElement | null | undefined, style: Partial<CSSStyleDeclaration>) => {
-	if (!element) return () => {};
-	const prevStyle = element.style.cssText;
-	Object.assign(element.style, style);
-	return () => (element.style.cssText = prevStyle);
+	const width = viewport?.width ?? window.innerWidth;
+	const height = viewport?.height ?? window.innerHeight;
+
+	return rect.top >= 0 && rect.left >= 0 && rect.bottom <= height - 40 && rect.right <= width;
 };
+
+export const getTranslate = (element: HTMLElement, direction: DrawerDirection) => {
+	const win = element.ownerDocument.defaultView ?? window;
+	const transform = win.getComputedStyle(element).transform;
+
+	if (transform === 'none') return 0;
+
+	const matrix = new win.DOMMatrixReadOnly(transform);
+
+	return isVertical(direction) ? matrix.m42 : matrix.m41;
+};
+
+export const dampenValue = (value: number) => 8 * (Math.log(value + 1) - 2);

@@ -1,7 +1,7 @@
 import { attachRef, DOMContext, type WritableBoxedValues, type ReadableBoxedValues, simpleBox } from '$lib/internal/tools/index.js';
 import { on } from 'svelte/events';
 import { createContext, onMount, untrack } from 'svelte';
-import { isElement, isFocusVisible } from '@polumeyv/utilities/dom';
+import { isElement } from '@polumeyv/utilities/dom';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
 import type { OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import type { FocusEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
@@ -664,7 +664,7 @@ export class TooltipTriggerState {
 			return;
 		}
 
-		if (root.ignoreNonKeyboardFocus && !isFocusVisible(e.currentTarget)) return;
+		if (root.ignoreNonKeyboardFocus && !e.currentTarget.matches(':focus-visible')) return;
 		root.setActiveTrigger(this.opts.id.current);
 		root.handleOpen();
 	};

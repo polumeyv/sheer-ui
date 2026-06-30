@@ -37,12 +37,6 @@ function getForm() {
 	return form;
 }
 
-function getHiddenInputs(name: string) {
-	return Array.from(
-		document.body.querySelectorAll<HTMLInputElement>(`input[aria-hidden="true"][name="${name}"]`)
-	);
-}
-
 function click(testId: string) {
 	getNode(testId).click();
 	flushSync();
@@ -53,8 +47,13 @@ function cleanup(component: ReturnType<typeof mount>) {
 	document.body.innerHTML = "";
 }
 
+// NOTE: this exercises the bits `Checkbox` (a styled <button role="checkbox">). As of commit
+// c1b6647 it carries NO native form payload — the headless hidden-input shim was dropped in favour
+// of the native checkbox variant. So these tests assert controlled checked-state + group-value
+// synchronization, and that the bits checkbox contributes nothing to FormData (use the native
+// variant for real form submission).
 describe("Checkbox group synchronization", () => {
-	test("standalone checkbox toggles checked state and form payload", () => {
+	test("standalone checkbox toggles checked state and submits no form payload", () => {
 		const { component } = renderFixture();
 
 		try {
@@ -64,8 +63,7 @@ describe("Checkbox group synchronization", () => {
 			click("standalone");
 
 			expect(readOutput("standalone-checked")).toBe("true");
-			expect(getHiddenInputs("standalone").map((input) => input.value)).toEqual(["yes"]);
-			expect(new FormData(getForm()).get("standalone")).toBe("yes");
+			expect(new FormData(getForm()).get("standalone")).toBeNull();
 
 			click("standalone");
 
@@ -76,7 +74,7 @@ describe("Checkbox group synchronization", () => {
 		}
 	});
 
-	test("group initial value checks matching items and renders group form payload", () => {
+	test("group initial value checks matching items", () => {
 		const { component } = renderFixture({
 			groupValue: ["alpha"],
 			dynamicValue: "alpha",
@@ -86,8 +84,7 @@ describe("Checkbox group synchronization", () => {
 			expect(readOutput("group-value")).toBe("[alpha]");
 			expect(readOutput("dynamic-checked")).toBe("true");
 			expect(readOutput("beta-checked")).toBe("false");
-			expect(getHiddenInputs("choices").map((input) => input.value)).toEqual(["alpha", "beta"]);
-			expect(new FormData(getForm()).getAll("choices")).toEqual(["alpha"]);
+			expect(new FormData(getForm()).getAll("choices")).toEqual([]);
 		} finally {
 			cleanup(component);
 		}
@@ -106,7 +103,6 @@ describe("Checkbox group synchronization", () => {
 			expect(readOutput("group-value")).toBe("[beta]");
 			expect(readOutput("dynamic-checked")).toBe("false");
 			expect(readOutput("beta-checked")).toBe("true");
-			expect(new FormData(getForm()).getAll("choices")).toEqual(["beta"]);
 		} finally {
 			cleanup(component);
 		}

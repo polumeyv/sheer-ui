@@ -8,7 +8,6 @@ import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
 import type { Granularity } from '$lib/internal/date-time/types.js';
 import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
-import { removeDescriptionElement } from '$lib/internal/date-time/field/helpers.js';
 import { isBefore } from '$lib/internal/date-time/utils.js';
 import { getFirstSegment } from '$lib/internal/date-time/field/segments.js';
 
@@ -74,7 +73,7 @@ export class DateRangeFieldRootState {
 		this.attachment = attachRef(this.opts.ref, (v) => (this.fieldNode = v));
 
 		onMount(() => () => {
-			removeDescriptionElement(this.descriptionId, this.domContext.getDocument());
+			this.domContext.getDocument().getElementById(this.descriptionId)?.remove();
 		});
 
 		/**

@@ -9,7 +9,6 @@ import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
 import type { TimeGranularity, TimeOnInvalid, TimeRange, TimeRangeValidator, TimeValue } from '$lib/internal/date-time/types.js';
 import { type TimeFormatter, createTimeFormatter } from '$lib/internal/date-time/formatter.js';
-import { removeDescriptionElement } from '$lib/internal/date-time/field/helpers.js';
 import { getFirstSegment } from '$lib/internal/date-time/field/segments.js';
 import { convertTimeValueToTime, isTimeBefore } from '$lib/internal/date-time/field/time-helpers.js';
 
@@ -89,7 +88,7 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 		this.domContext = new DOMContext(this.opts.ref);
 		this.attachment = attachRef(this.opts.ref, (v) => (this.fieldNode = v));
 		onMount(() => () => {
-			removeDescriptionElement(this.descriptionId, this.domContext.getDocument());
+			this.domContext.getDocument().getElementById(this.descriptionId)?.remove();
 		});
 
 		$effect(() => {

@@ -28,7 +28,7 @@ import { DataTypeahead } from '$lib/internal/data-typeahead.svelte.js';
 import { DOMTypeahead } from '$lib/internal/dom-typeahead.svelte.js';
 import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 import { createInputModality } from '$lib/components/utilities/input-modality/input-modality.svelte.js';
-import { DEV } from 'esm-env';
+import { DEV } from '@polumeyv/utilities/env';
 import type { SelectValueSnippetProps } from './types.js';
 
 // prettier-ignore

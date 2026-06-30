@@ -1,5 +1,12 @@
 import { onMount, untrack } from 'svelte';
-import { type WritableBox, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, simpleBox } from '$lib/internal/tools/index.js';
+import {
+	type WritableBox,
+	attachRef,
+	DOMContext,
+	type ReadableBoxedValues,
+	type WritableBoxedValues,
+	simpleBox,
+} from '$lib/internal/tools/index.js';
 import { usePasswordManagerBadge } from './usePasswordManager.svelte.js';
 import type { PinInputCell, PinInputRootProps as RootComponentProps } from './types.js';
 import type { BitsEvent, BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
@@ -165,8 +172,8 @@ export class PinInputRootState {
 		$effect(() => {
 			this.opts.value.current;
 			this.opts.inputRef.current;
-			untrack(() => {
-				syncTimeouts(() => {
+			return untrack(() => {
+				const timeoutIds = syncTimeouts(() => {
 					const input = this.opts.inputRef.current;
 					if (!input) return;
 					// forcefully remove :autofill state
@@ -182,6 +189,12 @@ export class PinInputRootState {
 						this.#prevInputMetadata.prev = [start, end, dir];
 					}
 				}, this.domContext);
+
+				return () => {
+					for (const timeoutId of timeoutIds) {
+						this.domContext.clearTimeout(timeoutId);
+					}
+				};
 			});
 		});
 
@@ -200,14 +213,10 @@ export class PinInputRootState {
 	}
 
 	onkeydown = (e: BitsKeyboardEvent) => {
-		const key = e.key;
-		if (KEYS_TO_IGNORE.includes(key)) return;
 		// if ctrl or cmd is pressed, they are likely to be shortcuts and should not be tested
 		// against the regex
-		if (e.ctrlKey || e.metaKey) return;
-		if (key && this.#regexPattern && !this.#regexPattern.test(key)) {
-			e.preventDefault();
-		}
+		if (KEYS_TO_IGNORE.includes(e.key) || e.ctrlKey || e.metaKey) return;
+		if (e.key && this.#regexPattern && !this.#regexPattern.test(e.key)) e.preventDefault();
 	};
 
 	readonly #rootStyles = $derived.by(() => ({
@@ -429,14 +438,6 @@ export class PinInputRootState {
 		this.#mirrorSelectionEnd = selEnd;
 	};
 
-	onmouseover = (_: BitsMouseEvent) => {
-		this.#isHoveringInput = true;
-	};
-
-	onmouseleave = (_: BitsMouseEvent) => {
-		this.#isHoveringInput = false;
-	};
-
 	onblur = (_: BitsFocusEvent) => {
 		if (this.#prevInputMetadata.willSyntheticBlur) {
 			this.#prevInputMetadata.willSyntheticBlur = false;
@@ -461,8 +462,8 @@ export class PinInputRootState {
 		onpaste: this.onpaste,
 		oninput: this.oninput,
 		onkeydown: this.onkeydown,
-		onmouseover: this.onmouseover,
-		onmouseleave: this.onmouseleave,
+		onmouseover: () => (this.#isHoveringInput = true),
+		onmouseleave: () => (this.#isHoveringInput = false),
 		onfocus: this.onfocus,
 		onblur: this.onblur,
 		...this.inputAttachment,
@@ -526,8 +527,7 @@ export class PinInputCellState {
 	);
 }
 
-// oxlint-disable-next-line no-explicit-any
-export function syncTimeouts(cb: (...args: any[]) => unknown, domContext: DOMContext): number[] {
+function syncTimeouts(cb: (...args: any[]) => unknown, domContext: DOMContext): number[] {
 	const t1 = domContext.setTimeout(cb, 0); // For faster machines
 	const t2 = domContext.setTimeout(cb, 1_0);
 	const t3 = domContext.setTimeout(cb, 5_0);

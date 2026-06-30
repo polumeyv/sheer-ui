@@ -1,9 +1,5 @@
-<script lang="ts" module>
-	import { inputVariants, inputVariantSlots, type InputVariant } from './variants';
-	export { inputVariants, type InputVariant };
-</script>
-
 <script lang="ts">
+	import { inputVariants, inputVariantSlots, type InputVariant } from './variants';
 	import type { HTMLInputAttributes, HTMLInputTypeAttribute } from 'svelte/elements';
 	import { cn, type WithElementRef } from '$lib/utils.js';
 

@@ -15,7 +15,7 @@ import { isMobileFirefox } from './internal/browser.js';
 import { isIOS } from '@polumeyv/utilities/dom';
 import { on } from 'svelte/events';
 import { tick, untrack } from 'svelte';
-import { dampenValue, getTranslate, isVertical, reset, set } from './helpers.js';
+import { assignStyle, applyStyle, dampenValue, getTranslate, isVertical } from './helpers.js';
 import { setDrawer } from './context.js';
 
 type UseDrawerRootProps = ReadableBoxedValues<{
@@ -230,11 +230,11 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		drawerNode.classList.add(DRAG_CLASS);
 		// If shouldDrag gave true once after pressing down on the drawer, we set isAllowedToDrag to true and it will remain true until we let go, there's no reason to disable dragging mid way, ever, and that's the solution to it
 		isAllowedToDrag = true;
-		set(drawerNode, {
+		assignStyle(drawerNode, {
 			transition: 'none',
 		});
 
-		set(overlayNode, {
+		assignStyle(overlayNode, {
 			transition: 'none',
 		});
 
@@ -247,7 +247,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 			const dampenedDraggedDistance = dampenValue(draggedDistance);
 
 			const translateValue = Math.min(dampenedDraggedDistance * -1, 0) * directionMultiplier;
-			set(drawerNode, {
+			assignStyle(drawerNode, {
 				transform: isVertical(opts.direction.current) ? `translate3d(0, ${translateValue}px, 0)` : `translate3d(${translateValue}px, 0, 0)`,
 			});
 			return;
@@ -261,14 +261,10 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		) {
 			opts.onDrag.current?.(event, percentageDragged);
 
-			set(
-				overlayNode,
-				{
-					opacity: `${opacityValue}`,
-					transition: 'none',
-				},
-				true,
-			);
+			applyStyle(overlayNode, {
+				opacity: `${opacityValue}`,
+				transition: 'none',
+			});
 		}
 
 		if (wrapper && overlayNode && opts.shouldScaleBackground.current) {
@@ -278,22 +274,18 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 
 			const translateValue = Math.max(0, 14 - percentageDragged * 14);
 
-			set(
-				wrapper,
-				{
-					borderRadius: `${borderRadiusValue}px`,
-					transform: isVertical(opts.direction.current)
-						? `scale(${scaleValue}) translate3d(0, ${translateValue}px, 0)`
-						: `scale(${scaleValue}) translate3d(${translateValue}px, 0, 0)`,
-					transition: 'none',
-				},
-				true,
-			);
+			applyStyle(wrapper, {
+				borderRadius: `${borderRadiusValue}px`,
+				transform: isVertical(opts.direction.current)
+					? `scale(${scaleValue}) translate3d(0, ${translateValue}px, 0)`
+					: `scale(${scaleValue}) translate3d(${translateValue}px, 0, 0)`,
+				transition: 'none',
+			});
 		}
 
 		if (!opts.snapPoints.current) {
 			const translateValue = absDraggedDistance * directionMultiplier;
-			set(drawerNode, {
+			applyStyle(drawerNode, {
 				transform: isVertical(opts.direction.current) ? `translate3d(0, ${translateValue}px, 0)` : `translate3d(${translateValue}px, 0, 0)`,
 			});
 		}
@@ -314,6 +306,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		}
 
 		opts.open.current = o;
+		handleOpenChange(o);
 	}
 
 	function onVisualViewportChange() {
@@ -401,8 +394,8 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		opts.onClose?.current();
 
 		if (!fromWithin) {
-			handleOpenChange(false);
 			opts.open.current = false;
+			handleOpenChange(false);
 		}
 
 		window.setTimeout(() => {
@@ -414,41 +407,37 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 
 	function resetDrawer() {
 		if (!drawerNode) return;
+
 		const wrapper = document.querySelector('[data-vaul-drawer-wrapper]');
 		const currentSwipeAmount = getTranslate(drawerNode, opts.direction.current);
 
-		set(drawerNode, {
+		applyStyle(drawerNode, {
 			transform: 'translate3d(0, 0, 0)',
 			transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
 		});
 
-		set(overlayNode, {
+		applyStyle(overlayNode, {
 			transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
 			opacity: '1',
 		});
 
-		// Don't reset background if swiped upwards
 		if (opts.shouldScaleBackground.current && currentSwipeAmount && currentSwipeAmount > 0 && opts.open.current) {
-			set(
-				wrapper,
-				{
-					borderRadius: `${BORDER_RADIUS}px`,
-					overflow: 'hidden',
-					...(isVertical(opts.direction.current)
-						? {
-								transform: `scale(${getScale()}) translate3d(0, calc(env(safe-area-inset-top) + 14px), 0)`,
-								transformOrigin: 'top',
-							}
-						: {
-								transform: `scale(${getScale()}) translate3d(calc(env(safe-area-inset-top) + 14px), 0, 0)`,
-								transformOrigin: 'left',
-							}),
-					transitionProperty: 'transform, border-radius',
-					transitionDuration: `${TRANSITIONS.DURATION}s`,
-					transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-				},
-				true,
-			);
+			applyStyle(wrapper, {
+				borderRadius: `${BORDER_RADIUS}px`,
+				overflow: 'hidden',
+				...(isVertical(opts.direction.current)
+					? {
+							transform: `scale(${getScale()}) translate3d(0, calc(env(safe-area-inset-top) + 14px), 0)`,
+							transformOrigin: 'top',
+						}
+					: {
+							transform: `scale(${getScale()}) translate3d(calc(env(safe-area-inset-top) + 14px), 0, 0)`,
+							transformOrigin: 'left',
+						}),
+				transitionProperty: 'transform, border-radius',
+				transitionDuration: `${TRANSITIONS.DURATION}s`,
+				transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
+			});
 		}
 	}
 
@@ -531,19 +520,15 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 
 	$effect(() => {
 		const _open = opts.open.current;
+
 		return untrack(() => {
-			// Trigger enter animation without using CSS animation
-			if (opts.open.current) {
-				set(document.documentElement, {
-					scrollBehavior: 'auto',
-				});
+			if (!opts.open.current) return;
 
-				openTime = new Date();
-			}
+			openTime = new Date();
 
-			return () => {
-				reset(document.documentElement, 'scrollBehavior');
-			};
+			return assignStyle(document.documentElement, {
+				scrollBehavior: 'auto',
+			});
 		});
 	});
 
@@ -556,7 +541,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 			window.clearTimeout(nestedOpenChangeTimer);
 		}
 
-		set(drawerNode, {
+		applyStyle(drawerNode, {
 			transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
 			transform: isVertical(opts.direction.current)
 				? `scale(${scale}) translate3d(0, ${initialTranslate}px, 0)`
@@ -566,7 +551,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		if (!o && drawerNode) {
 			nestedOpenChangeTimer = window.setTimeout(() => {
 				const translateValue = getTranslate(drawerNode as HTMLElement, opts.direction.current);
-				set(drawerNode, {
+				applyStyle(drawerNode, {
 					transition: 'none',
 					transform: isVertical(opts.direction.current)
 						? `translate3d(0, ${translateValue}px, 0)`
@@ -583,7 +568,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		const newScale = initialScale + percentageDragged * (1 - initialScale);
 		const newTranslate = -NESTED_DISPLACEMENT + percentageDragged * NESTED_DISPLACEMENT;
 
-		set(drawerNode, {
+		applyStyle(drawerNode, {
 			transform: isVertical(opts.direction.current)
 				? `scale(${newScale}) translate3d(0, ${newTranslate}px, 0)`
 				: `scale(${newScale}) translate3d(${newTranslate}px, 0, 0)`,
@@ -597,7 +582,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		const translate = o ? -NESTED_DISPLACEMENT : 0;
 
 		if (o) {
-			set(drawerNode, {
+			applyStyle(drawerNode, {
 				transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
 				transform: isVertical(opts.direction.current)
 					? `scale(${scale}) translate3d(0, ${translate}px, 0)`
@@ -612,19 +597,11 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		opts.onOpenChange.current?.(o);
 		if (o && !opts.nested.current) {
 			bodyStyles = document.body.style.cssText;
-		} else if (!o && !opts.nested.current) {
-			setTimeout(() => {
-				document.body.style.cssText = bodyStyles;
-			}, TRANSITIONS.DURATION * 1000);
 		}
 
 		if (!o && !opts.nested.current) {
 			restorePositionSetting();
 		}
-
-		setTimeout(() => {
-			opts.onAnimationEnd.current?.(o);
-		}, TRANSITIONS.DURATION * 1000);
 
 		if (o && !opts.modal.current) {
 			if (typeof window !== 'undefined') {
@@ -635,9 +612,17 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		}
 
 		if (!o) {
-			// This will be removed when the exit animation ends (`500ms`)
+			// Restored with the rest of body styles after the exit animation completes.
 			document.body.style.pointerEvents = 'auto';
 		}
+	}
+
+	function handleOpenChangeComplete(o: boolean) {
+		if (!o && !opts.nested.current) {
+			document.body.style.cssText = bodyStyles;
+		}
+
+		opts.onAnimationEnd.current?.(o);
 	}
 
 	$effect(() => {
@@ -692,5 +677,6 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		},
 		restorePositionSetting,
 		handleOpenChange,
+		handleOpenChangeComplete,
 	});
 }

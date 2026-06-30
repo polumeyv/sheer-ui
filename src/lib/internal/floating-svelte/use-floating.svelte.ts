@@ -119,15 +119,9 @@ export function useFloating(options: UseFloatingOptions): UseFloatingReturn {
 		whileElementsMountedCleanup = whileElementsMountedOption(reference.current, floating.current, update);
 	}
 
-	function reset() {
-		if (!openOption && floating.current === null) {
-			isPositioned = false;
-		}
-	}
+	const reset = () => void (!openOption && floating.current === null && (isPositioned = false));
 
-	function trackWhileMountedDeps() {
-		return [middlewareOption, placementOption, strategyOption, sideOffsetOption, alignOffsetOption, openOption] as const;
-	}
+	const trackWhileMountedDeps = () => [middlewareOption, placementOption, strategyOption, sideOffsetOption, alignOffsetOption, openOption] as const;
 
 	$effect(() => {
 		if (whileElementsMountedOption !== undefined) return;

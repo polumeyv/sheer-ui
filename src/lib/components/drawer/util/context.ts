@@ -2,7 +2,7 @@ import { createContext } from 'svelte';
 import type { DrawerDirection } from './types.js';
 import type { ReadableBoxedValues, WritableBoxedValues } from '$lib/internal/tools/index.js';
 
-interface DrawerContextValue
+export interface DrawerContextValue
 	extends
 		ReadableBoxedValues<{
 			dismissible: boolean;
@@ -36,6 +36,7 @@ interface DrawerContextValue
 	restorePositionSetting: () => void;
 	onDialogOpenChange: (open: boolean) => void;
 	handleOpenChange: (open: boolean) => void;
+	handleOpenChangeComplete: (open: boolean) => void;
 	readonly isDragging: boolean;
 	readonly snapPointsOffset: number[] | null;
 	readonly activeSnapPointIndex?: number | null;

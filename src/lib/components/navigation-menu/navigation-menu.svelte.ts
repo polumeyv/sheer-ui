@@ -1026,7 +1026,7 @@ export class NavigationMenuViewportState {
 
 		// reset size when viewport closes to prevent residual size animations
 		$effect(() => {
-			const _mounted = this.mounted;
+			this.mounted;
 			untrack(() => {
 				if (!this.mounted && this.size) {
 					this.size = null;

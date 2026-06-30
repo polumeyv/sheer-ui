@@ -1,30 +1,9 @@
 <script lang="ts">
-	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-	import type { WithoutChildren } from "$lib/internal/index.js";
-	import { getCarouselContext } from './carouselState.svelte';
-	import { cn } from "$lib/utils.js";
-	import { Button, type Props } from '../button';
+	import type { WithoutChildren } from '$lib/internal/index.js';
+	import type { Props } from '../button';
+	import CarouselArrow from './carousel-arrow.svelte';
 
-	let { ref = $bindable(null), class: className, variant = 'outline', size = 'icon', ...restProps }: WithoutChildren<Props> = $props();
-
-	const emblaCtx = getCarouselContext();
+	let { ref = $bindable(null), ...restProps }: WithoutChildren<Props> = $props();
 </script>
 
-<Button
-	data-slot="carousel-next"
-	{variant}
-	{size}
-	aria-disabled={!emblaCtx.canScrollNext}
-	disabled={!emblaCtx.canScrollNext}
-	class={cn(
-		'absolute size-8! rounded-full!',
-		emblaCtx.orientation === 'horizontal' ? '-inset-e-12 top-1/2 -translate-y-1/2' : 'inset-s-1/2 -bottom-12 -translate-x-1/2 rotate-90',
-		className,
-	)}
-	onclick={emblaCtx.scrollNext}
-	onkeydown={emblaCtx.handleKeyDown}
-	bind:ref
-	{...restProps}>
-	<ArrowRightIcon class="size-4" />
-	<span class="sr-only">Next slide</span>
-</Button>
+<CarouselArrow direction="next" bind:ref {...restProps} />

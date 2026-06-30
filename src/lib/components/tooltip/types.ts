@@ -5,8 +5,8 @@ import type { EscapeLayerProps } from '$lib/components/utilities/escape-layer/ty
 import type { Snippet } from 'svelte';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '$lib/internal/types.js';
 import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/internal/attributes.js';
-import type { PortalProps } from '$lib/components/utilities/portal/types.js';
-import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/internal/types.js';
+import type { PortalProps } from '$lib/components/utilities/portal/index.js';
+import type { FloatingContentSnippetProps } from '$lib/internal/types.js';
 import type { TooltipTether as TooltipTetherImpl } from './tooltip.svelte.js';
 
 export type TooltipTether<Payload = never> = TooltipTetherImpl<Payload>;
@@ -149,23 +149,6 @@ export type TooltipContentPropsWithoutHTML = WithChildNoChildrenSnippetProps<
 >;
 
 export type TooltipContentProps = TooltipContentPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, TooltipContentPropsWithoutHTML>;
-
-export type TooltipContentStaticPropsWithoutHTML = WithChildNoChildrenSnippetProps<
-	Pick<FloatingLayerContentProps, 'dir' | 'side' | 'align'> &
-		Omit<DismissibleLayerProps, 'onInteractOutsideStart'> &
-		EscapeLayerProps & {
-			/**
-			 * When `true`, the tooltip will be forced to mount in the DOM.
-			 *
-			 * Useful for more control over the transition behavior.
-			 */
-			forceMount?: boolean;
-		},
-	StaticContentSnippetProps
->;
-
-export type TooltipContentStaticProps = TooltipContentStaticPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, TooltipContentStaticPropsWithoutHTML>;
 
 export type TooltipArrowPropsWithoutHTML = ArrowPropsWithoutHTML;
 export type TooltipArrowProps = ArrowProps;

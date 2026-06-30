@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith } from "../../src/lib/internal/tools/index.js";
-	import FocusScope from "../../src/lib/components/utilities/focus-scope/focus-scope.svelte";
+	import { FocusScope } from "../../src/lib/components/utilities/focus-scope/focus-scope.svelte.js";
 
 	let {
 		enabled = $bindable(true),
@@ -24,23 +24,24 @@
 	export function hideScope() {
 		renderScope = false;
 	}
+
+	const focusScope = FocusScope.use({
+		enabled: boxWith(() => enabled),
+		trap: boxWith(() => trapFocus),
+		loop: true,
+		onOpenAutoFocus: boxWith(() => onOpenAutoFocus),
+		onCloseAutoFocus: boxWith(() => onCloseAutoFocus),
+		ref: boxWith(
+			() => scopeRef,
+			(v) => (scopeRef = v),
+		),
+	});
 </script>
 
 <button data-testid="before">Before</button>
 
 {#if renderScope}
-	<FocusScope
-		ref={boxWith(() => scopeRef)}
-		{enabled}
-		{trapFocus}
-		loop
-		{onOpenAutoFocus}
-		{onCloseAutoFocus}
-	>
-		{#snippet focusScope({ props })}
-			<div bind:this={scopeRef} data-testid="scope" {...props}>
-				<button data-testid="inside">Inside</button>
-			</div>
-		{/snippet}
-	</FocusScope>
+	<div bind:this={scopeRef} data-testid="scope" {...focusScope.props}>
+		<button data-testid="inside">Inside</button>
+	</div>
 {/if}
