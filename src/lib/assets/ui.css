@@ -101,6 +101,12 @@
 	initial-value: 0;
 }
 
+@supports (interpolate-size: allow-keywords) {
+	:root {
+		interpolate-size: allow-keywords;
+	}
+}
+
 @theme inline {
 	/* Predefined values */
 

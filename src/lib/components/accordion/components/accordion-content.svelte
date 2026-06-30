@@ -33,7 +33,8 @@
 		mergeProps(
 			{
 				'data-slot': 'accordion-content',
-				class: 'data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm',
+				class:
+					'data-[ending-style]:data-[state=closed]:animate-accordion-up data-[starting-style]:data-[state=open]:animate-accordion-down overflow-hidden text-sm',
 			},
 			restProps,
 			contentState.props,

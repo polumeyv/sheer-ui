@@ -1,5 +1,5 @@
 import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
-import { createContext, tick, untrack } from 'svelte';
+import { createContext } from 'svelte';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed, getDataTransitionAttrs } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
@@ -88,61 +88,14 @@ export class CollapsibleContentState {
 		return this.opts.forceMount.current || this.root.opts.open.current;
 	});
 
-	#originalStyles: { transitionDuration: string; animationName: string } | undefined;
-	#isMountAnimationPrevented = $state(false);
-	#width = $state(0);
-	#height = $state(0);
-
 	constructor(opts: CollapsibleContentStateOpts, root: CollapsibleRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.#isMountAnimationPrevented = root.opts.open.current;
 		this.root.contentState = this;
 		this.attachment = {
 			...attachRef(this.opts.ref, (v) => (this.root.contentNode = v)),
 			[createAttachmentKey()]: ((node) => this.#attachBeforeMatch(node)) satisfies Attachment<HTMLElement>,
 		};
-
-		$effect.pre(() => {
-			const rAF = requestAnimationFrame(() => {
-				this.#isMountAnimationPrevented = false;
-			});
-
-			return () => {
-				cancelAnimationFrame(rAF);
-			};
-		});
-
-		$effect(() => {
-			const node = this.opts.ref.current;
-			const _present = this.present;
-			untrack(() => {
-				if (!node) return;
-				tick().then(() => {
-					if (!this.opts.ref.current) return;
-					// get the dimensions of the element
-					this.#originalStyles = this.#originalStyles || {
-						transitionDuration: node.style.transitionDuration,
-						animationName: node.style.animationName,
-					};
-
-					// block any animations/transitions so the element renders at full dimensions
-					node.style.transitionDuration = '0s';
-					node.style.animationName = 'none';
-
-					const rect = node.getBoundingClientRect();
-					this.#height = rect.height;
-					this.#width = rect.width;
-
-					// unblock any animations/transitions that were originally set if not the initial render
-					if (!this.#isMountAnimationPrevented) {
-						const { animationName, transitionDuration } = this.#originalStyles;
-						node.style.transitionDuration = transitionDuration;
-						node.style.animationName = animationName;
-					}
-				});
-			});
-		});
 	}
 
 	get shouldRender() {
@@ -173,10 +126,6 @@ export class CollapsibleContentState {
 		() =>
 			({
 				id: this.opts.id.current,
-				style: {
-					'--bits-collapsible-content-height': this.#height ? `${this.#height}px` : undefined,
-					'--bits-collapsible-content-width': this.#width ? `${this.#width}px` : undefined,
-				},
 				hidden: this.opts.hiddenUntilFound.current && !this.root.opts.open.current ? 'until-found' : undefined,
 				'data-state': getDataOpenClosed(this.root.opts.open.current),
 				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
