@@ -19,9 +19,9 @@
 			<Sheet.Description>Jump to a section of the app.</Sheet.Description>
 		</Sheet.Header>
 		<nav class='grid gap-1 px-4 text-sm'>
-			<a href='##' class='hover:bg-accent rounded-md px-2 py-1.5'>Dashboard</a>
-			<a href='##' class='hover:bg-accent rounded-md px-2 py-1.5'>Projects</a>
-			<a href='##' class='hover:bg-accent rounded-md px-2 py-1.5'>Settings</a>
+			<a href='/components/sheet' class='hover:bg-accent rounded-md px-2 py-1.5'>Dashboard</a>
+			<a href='/components/sheet' class='hover:bg-accent rounded-md px-2 py-1.5'>Projects</a>
+			<a href='/components/sheet' class='hover:bg-accent rounded-md px-2 py-1.5'>Settings</a>
 		</nav>
 	</Sheet.Content>
 </Sheet.Root>
