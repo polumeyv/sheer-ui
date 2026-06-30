@@ -67,6 +67,12 @@ export type CheckboxRootPropsWithoutHTML = WithChild<
 		 * A callback function called when the indeterminate state changes.
 		 */
 		onIndeterminateChange?: OnChangeFn<boolean>;
+
+		/**
+		 * Not supported: this checkbox renders a `<button>` and never submits.
+		 * Use `CheckboxNative` (with `name`/`value`) for form fields.
+		 */
+		name?: never;
 	},
 	CheckboxRootSnippetProps
 >;

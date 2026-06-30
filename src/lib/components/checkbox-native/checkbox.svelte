@@ -1,4 +1,7 @@
 <script lang="ts" module>
+	// CheckboxNative: the form checkbox. A real <input type=checkbox> that submits
+	// (name/value) and supports bind:checked / bind:indeterminate. For controlled,
+	// headless, or grouped use (table select-all, Checkbox.Group) use `../checkbox`.
 	import { cn } from '$lib/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import CheckIcon from '@lucide/svelte/icons/check';
@@ -12,9 +15,11 @@
 		indeterminate?: boolean;
 		disabled?: boolean | null;
 		required?: boolean;
+		readonly?: boolean | null;
 		name?: string;
 		value?: string;
 		onCheckedChange?: (checked: boolean) => void;
+		onIndeterminateChange?: (indeterminate: boolean) => void;
 	};
 </script>
 
@@ -27,9 +32,11 @@
 		indeterminate = $bindable(false),
 		disabled = false,
 		required = false,
+		readonly = false,
 		name = undefined,
 		value = 'on',
 		onCheckedChange,
+		onIndeterminateChange,
 		...restProps
 	}: CheckboxProps = $props();
 
@@ -41,6 +48,7 @@
 
 	const shared = $derived({
 		'data-disabled': disabled ? '' : undefined,
+		'data-readonly': readonly ? '' : undefined,
 		'data-state': state,
 		'data-required': required ? '' : undefined,
 	});
@@ -67,14 +75,21 @@
 		{disabled}
 		{required}
 		aria-required={required ? 'true' : 'false'}
-		onchange={() => onCheckedChange?.(checked)}
+		aria-readonly={readonly ? 'true' : undefined}
+		onclick={(e) => {
+			if (readonly) e.preventDefault();
+		}}
+		onchange={() => {
+			onCheckedChange?.(checked);
+			onIndeterminateChange?.(indeterminate);
+		}}
 		class="peer absolute inset-0 z-10 size-full cursor-pointer opacity-0 disabled:cursor-not-allowed" />
 
 	<div data-slot="checkbox-indicator" class="pointer-events-none text-current transition-none">
-		{#if checked}
-			<CheckIcon class="size-3.5" />
-		{:else if indeterminate}
+		{#if indeterminate}
 			<MinusIcon class="size-3.5" />
+		{:else if checked}
+			<CheckIcon class="size-3.5" />
 		{/if}
 	</div>
 </span>
