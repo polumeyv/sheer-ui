@@ -1,5 +1,5 @@
 import { attachRef, boxWith, type Box, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
-import { createContext, tick, untrack } from 'svelte';
+import { createContext } from 'svelte';
 import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed, getDataTransitionAttrs } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
@@ -269,10 +269,6 @@ export class AccordionContentState {
 	readonly item: AccordionItemState;
 	readonly attachment: RefAttachment;
 
-	#originalStyles: { transitionDuration: string; animationName: string } | undefined = undefined;
-	#isMountAnimationPrevented = false;
-	#dimensions = $state({ width: 0, height: 0 });
-
 	readonly open = $derived.by(() => {
 		if (this.opts.hiddenUntilFound.current) return this.item.isActive;
 		return this.opts.forceMount.current || this.item.isActive;
@@ -281,25 +277,10 @@ export class AccordionContentState {
 	constructor(opts: AccordionContentStateOpts, item: AccordionItemState) {
 		this.opts = opts;
 		this.item = item;
-		this.#isMountAnimationPrevented = this.item.isActive;
 		this.attachment = {
 			...attachRef(this.opts.ref, (v) => (this.item.contentNode = v)),
 			[createAttachmentKey()]: ((node) => this.#attachBeforeMatch(node)) satisfies Attachment<HTMLElement>,
 		};
-		// Prevent mount animations on initial render
-		$effect(() => {
-			const rAF = requestAnimationFrame(() => {
-				this.#isMountAnimationPrevented = false;
-			});
-			return () => cancelAnimationFrame(rAF);
-		});
-
-		// Handle dimension updates
-		$effect(() => {
-			const open = this.open;
-			const node = this.opts.ref.current;
-			untrack(() => this.#updateDimensions([open, node]));
-		});
 	}
 
 	static create(props: AccordionContentStateOpts): AccordionContentState {
@@ -319,34 +300,6 @@ export class AccordionContentState {
 		});
 	}
 
-	#updateDimensions = ([_, node]: [boolean, HTMLElement | null]): void => {
-		if (!node) return;
-
-		tick().then(() => {
-			const element = this.opts.ref.current;
-			if (!element) return;
-
-			// store original styles on first run
-			this.#originalStyles ??= {
-				transitionDuration: element.style.transitionDuration,
-				animationName: element.style.animationName,
-			};
-
-			// temporarily disable animations for measurement
-			element.style.transitionDuration = '0s';
-			element.style.animationName = 'none';
-
-			const rect = element.getBoundingClientRect();
-			this.#dimensions = { width: rect.width, height: rect.height };
-
-			// restore animations if not initial mount
-			if (!this.#isMountAnimationPrevented && this.#originalStyles) {
-				element.style.transitionDuration = this.#originalStyles.transitionDuration;
-				element.style.animationName = this.#originalStyles.animationName;
-			}
-		});
-	};
-
 	get shouldRender() {
 		return this.item.contentPresence.shouldRender;
 	}
@@ -362,10 +315,6 @@ export class AccordionContentState {
 				'data-disabled': boolToEmptyStrOrUndef(this.item.isDisabled),
 				'data-orientation': this.item.root.opts.orientation.current,
 				[accordionAttrs.content]: '',
-				style: {
-					'--bits-accordion-content-height': `${this.#dimensions.height}px`,
-					'--bits-accordion-content-width': `${this.#dimensions.width}px`,
-				},
 				hidden: this.opts.hiddenUntilFound.current && !this.item.isActive ? 'until-found' : undefined,
 				...(this.opts.hiddenUntilFound.current && !this.shouldRender
 					? {}
