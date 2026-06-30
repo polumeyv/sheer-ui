@@ -1,9 +1,7 @@
 export { default as Root } from "./components/date-picker.svelte";
 export { default as Calendar } from "./components/date-picker-calendar.svelte";
 export { default as Content } from "./components/date-picker-content.svelte";
-export { default as ContentStatic } from "./components/date-picker-content-static.svelte";
 export { default as Trigger } from "./components/date-picker-trigger.svelte";
-export { default as Arrow } from "$lib/components/popover/components/popover-arrow.svelte";
 export { default as Close } from "$lib/components/popover/components/popover-close.svelte";
 export { default as Input } from "$lib/components/date-field/components/date-field-input.svelte";
 export { default as Label } from "$lib/components/date-field/components/date-field-label.svelte";
@@ -28,10 +26,8 @@ export type {
 	DatePickerLabelProps as LabelProps,
 	DatePickerInputProps as InputProps,
 	DatePickerSegmentProps as SegmentProps,
-	DatePickerArrowProps as ArrowProps,
 	DatePickerCloseProps as CloseProps,
 	DatePickerContentProps as ContentProps,
-	DatePickerContentStaticProps as ContentStaticProps,
 	DatePickerTriggerProps as TriggerProps,
 	DatePickerCalendarProps as CalendarProps,
 	DatePickerCellProps as CellProps,

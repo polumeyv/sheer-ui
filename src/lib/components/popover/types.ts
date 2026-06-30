@@ -1,10 +1,28 @@
-import type { ArrowProps, ArrowPropsWithoutHTML } from '$lib/components/utilities/arrow/types.js';
-import type { PopperLayerProps, PopperLayerStaticProps } from '$lib/components/utilities/popper-layer/types.js';
+import type { EscapeLayerProps } from '$lib/components/utilities/escape-layer/types.js';
+import type { DismissibleLayerProps } from '$lib/components/utilities/dismissible-layer/types.js';
+import type { FloatingLayerContentProps } from '$lib/components/utilities/floating-layer/types.js';
+import type { TextSelectionLayerProps } from '$lib/components/utilities/text-selection-layer/types.js';
+import type { PresenceLayerProps } from '$lib/components/utilities/presence-layer/types.js';
+import type { FocusScopeProps } from '$lib/components/utilities/focus-scope/types.js';
+import type { ScrollLockProps } from '$lib/components/utilities/scroll-lock/index.js';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '$lib/internal/types.js';
 import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/internal/attributes.js';
-import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/internal/types.js';
+import type { FloatingContentSnippetProps } from '$lib/internal/types.js';
 import type { PortalProps } from '$lib/types.js';
-import type { PresenceLayerProps } from '$lib/components/utilities/presence-layer/types.js';
+
+/**
+ * Content prop surface, composed from the same layer building blocks the (now-removed) Floating-UI
+ * `PopperLayer` aggregated. The component no longer renders any Floating-UI layer — positioning is
+ * native CSS `anchor()` — but the prop names are preserved so existing consumers keep type-checking;
+ * the Floating-UI-only positioning props are simply ignored at runtime.
+ */
+type PopoverFloatingProps = EscapeLayerProps &
+	Omit<DismissibleLayerProps, 'onInteractOutsideStart'> &
+	FloatingLayerContentProps &
+	PresenceLayerProps &
+	TextSelectionLayerProps &
+	FocusScopeProps &
+	Omit<ScrollLockProps, 'restoreScrollDelay'>;
 
 export type PopoverRootPropsWithoutHTML = WithChildren<{
 	/**
@@ -26,19 +44,11 @@ export type PopoverRootPropsWithoutHTML = WithChildren<{
 export type PopoverRootProps = PopoverRootPropsWithoutHTML;
 
 export type PopoverContentPropsWithoutHTML = WithChildNoChildrenSnippetProps<
-	Omit<PopperLayerProps, 'content' | 'loop'>,
+	Omit<PopoverFloatingProps, 'content' | 'loop'>,
 	FloatingContentSnippetProps
 >;
 
 export type PopoverContentProps = PopoverContentPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, PopoverContentPropsWithoutHTML>;
-
-export type PopoverContentStaticPropsWithoutHTML = WithChildNoChildrenSnippetProps<
-	Omit<PopperLayerStaticProps, 'content' | 'loop'>,
-	StaticContentSnippetProps
->;
-
-export type PopoverContentStaticProps = PopoverContentStaticPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, PopoverContentStaticPropsWithoutHTML>;
 
 export type PopoverTriggerPropsWithoutHTML = WithChild<{
 	/**
@@ -68,17 +78,5 @@ export type PopoverClosePropsWithoutHTML = WithChild;
 
 export type PopoverCloseProps = PopoverClosePropsWithoutHTML & Without<BitsPrimitiveButtonAttributes, PopoverClosePropsWithoutHTML>;
 
-export type PopoverArrowPropsWithoutHTML = ArrowPropsWithoutHTML;
-
-export type PopoverArrowProps = ArrowProps;
-
 export type PopoverPortalPropsWithoutHTML = PortalProps;
 export type PopoverPortalProps = PortalProps;
-
-export type PopoverOverlaySnippetProps = {
-	open: boolean;
-};
-
-export type PopoverOverlayPropsWithoutHTML = WithChild<PresenceLayerProps, PopoverOverlaySnippetProps>;
-
-export type PopoverOverlayProps = PopoverOverlayPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, PopoverOverlayPropsWithoutHTML>;

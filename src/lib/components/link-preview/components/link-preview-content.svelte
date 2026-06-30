@@ -3,9 +3,8 @@
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { LinkPreviewContentProps } from '../types.js';
 	import { LinkPreviewContentState } from '../link-preview.svelte.js';
-	import PopperLayer from '$lib/components/utilities/popper-layer/popper-layer.svelte';
-	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
+	import { on } from 'svelte/events';
 
 	const uid = $props.id();
 
@@ -15,17 +14,13 @@
 		id = createId(uid),
 		ref = $bindable(null),
 		side = 'top',
-		sideOffset = 4,
 		align = 'center',
-		avoidCollisions = true,
-		arrowPadding = 0,
-		sticky = 'partial',
-		hideWhenDetached = false,
-		collisionPadding = 0,
 		onInteractOutside = () => {},
 		onEscapeKeydown = () => {},
-		forceMount = false,
 		style,
+		// Floating-UI-only props kept for API compatibility; native positioning ignores them
+		// (sideOffset, alignOffset, avoidCollisions, collisionBoundary, collisionPadding, arrowPadding,
+		//  sticky, hideWhenDetached, dir, customAnchor, forceMount).
 		...restProps
 	}: LinkPreviewContentProps = $props();
 
@@ -39,54 +34,84 @@
 		onEscapeKeydown: boxWith(() => onEscapeKeydown),
 	});
 
-	const floatingProps = $derived({
-		side,
-		sideOffset,
-		align,
-		avoidCollisions,
-		arrowPadding,
-		sticky,
-		hideWhenDetached,
-		collisionPadding,
+	const anchorName = `--link-preview-anchor-${uid}`;
+
+	// Tag the active trigger as the CSS anchor (cleared when the trigger node changes).
+	$effect(() => {
+		const trigger = contentState.root.triggerNode;
+		if (!trigger) return;
+		trigger.style.setProperty('anchor-name', anchorName);
+		return () => trigger.style.removeProperty('anchor-name');
 	});
+
+	// Drive the native top layer from the existing open state (hover-intent/delay logic is untouched).
+	$effect(() => {
+		const el = ref;
+		const open = contentState.root.opts.open.current;
+		if (!el?.isConnected) return;
+		const shown = el.matches(':popover-open');
+		if (open && !shown) el.showPopover();
+		else if (!open && shown) el.hidePopover();
+	});
+
+	// `onOpenChangeComplete` once the enter/exit transition settles — the one bit CSS can't signal,
+	// so a single transitionend (gated to opacity) replaces what the presence manager measured.
+	$effect(() => {
+		const el = ref;
+		if (!el) return;
+		return on(el, 'transitionend', (e) => {
+			if (e.target !== el || e.propertyName !== 'opacity') return;
+			contentState.root.opts.onOpenChangeComplete.current(contentState.root.opts.open.current);
+		});
+	});
+
+	// Esc + outside pointerdown dismissal (Popover API "manual" gives no light-dismiss; this is the
+	// genuine dismissal behavior, re-homed from the old dismissible layer).
+	$effect(() => {
+		if (!contentState.root.opts.open.current) return;
+		const offKey = on(document, 'keydown', (e) => {
+			if (e.key !== 'Escape') return;
+			contentState.onEscapeKeydown(e);
+		});
+		const offPointer = on(
+			document,
+			'pointerdown',
+			(e) => {
+				const target = e.target as Node | null;
+				if (ref?.contains(target ?? null)) return;
+				if (contentState.root.triggerNode?.contains(target ?? null)) return;
+				contentState.onInteractOutside(e);
+			},
+			{ capture: true },
+		);
+		return () => {
+			offKey();
+			offPointer();
+		};
+	});
+
+	const mounted = mountedAttachment<HTMLElement>((m) => (contentState.root.contentMounted = m));
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
 				'data-slot': 'hover-card-content',
+				'data-anchored': '',
 				class:
-					'bg-popover text-popover-foreground transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[side=bottom]:starting:-translate-y-2 data-[side=top]:starting:translate-y-2 data-[side=left]:starting:translate-x-2 data-[side=right]:starting:-translate-x-2 z-50 mt-3 w-64 rounded-md border p-4 shadow-md outline-none',
+					'bg-popover text-popover-foreground z-50 w-64 rounded-md border p-4 shadow-md outline-none transition-[opacity,scale,translate,display,overlay] transition-discrete opacity-0 scale-95 open:opacity-100 open:scale-100 starting:open:opacity-0 starting:open:scale-95',
 			},
 			restProps,
-			floatingProps,
 			contentState.props,
+			{ style },
+			mounted,
 		),
 	);
-
-	const mounted = mountedAttachment<HTMLElement>((m) => (contentState.root.contentMounted = m));
 </script>
 
-<PopperLayer
-	{...mergedProps}
-	{...contentState.popperProps}
-	ref={contentState.opts.ref}
-	open={contentState.root.opts.open.current}
-	{id}
-	trapFocus={false}
-	loop={false}
-	preventScroll={false}
-	{forceMount}
-	shouldRender={contentState.shouldRender}>
-	{#snippet popper({ props, wrapperProps })}
-		{@const finalProps = mergeProps(props, { style: getFloatingContentCSSVars('link-preview') }, { style }, mounted)}
-		{#if child}
-			{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
-		{:else}
-			<div {...wrapperProps}>
-				<div {...finalProps}>
-					{@render children?.()}
-				</div>
-			</div>
-		{/if}
-	{/snippet}
-</PopperLayer>
+{#if child}
+	{@render child({ props: mergeProps(mergedProps, { popover: 'manual' }), wrapperProps: {}, ...contentState.snippetProps })}
+{:else}
+	<div {...mergedProps} bind:this={ref} popover="manual" data-side={side} data-align={align} style:position-anchor={anchorName}>
+		{@render children?.()}
+	</div>
+{/if}

@@ -4,7 +4,7 @@ import type { ArrowProps, ArrowPropsWithoutHTML } from '../utilities/arrow/types
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '$lib/internal/types.js';
 import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/internal/attributes.js';
 import type { Direction } from '$lib/internal/index.js';
-import type { PortalProps } from '$lib/components/utilities/portal/types.js';
+import type { PortalProps } from '$lib/components/utilities/portal/index.js';
 import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '$lib/internal/types.js';
 
 export type MenuRootPropsWithoutHTML = WithChildren<{

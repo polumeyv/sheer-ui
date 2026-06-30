@@ -7,10 +7,9 @@
 	import { useId } from '$lib/internal/use-id.js';
 	import DrawerPortal from './drawer-portal.svelte';
 	import DrawerOverlay from './drawer-overlay.svelte';
-	import { noop } from './util/internal/noop.js';
+	import { noop } from '@polumeyv/utilities';
 	import { useDrawerContent } from './util/use-drawer-content.svelte.js';
 	import type { ContentProps } from './util/components/drawer/index.js';
-	import Mounted from './util/components/utils/mounted.svelte';
 
 	let {
 		id = useId(),
@@ -84,6 +83,5 @@
 		<div class="bg-muted mx-auto mt-4 hidden h-2 w-25 shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block">
 		</div>
 		{@render children?.()}
-		<Mounted onMounted={contentState.setMounted} />
 	</DialogPrimitive.Content>
 </DrawerPortal>

@@ -2,7 +2,7 @@
 	import * as DialogPrimitive from '$lib/components/dialog/index.js';
 	import { box } from '$lib/internal/tools/index.js';
 	import type { RootProps } from './util/components/drawer/index.js';
-	import { noop } from './util/internal/noop.js';
+	import { noop } from '@polumeyv/utilities';
 	import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT } from './util/internal/constants.js';
 	import { useDrawerRoot } from './util/use-drawer-root.svelte.js';
 
@@ -31,18 +31,23 @@
 		preventScrollRestoration = false,
 		repositionInputs = true,
 		onAnimationEnd = noop,
+		onOpenChangeComplete = noop,
 		container = null,
 		autoFocus = false,
 		disablePreventScroll = true,
 		...restProps
 	}: RootProps = $props();
 
+	function handleOpenChangeComplete(o: boolean) {
+		rootState.handleOpenChangeComplete(o);
+		onOpenChangeComplete(o);
+	}
+
 	const rootState = useDrawerRoot({
 		open: box.with(
 			() => open,
 			(o) => {
 				open = o;
-				rootState.handleOpenChange(o);
 			},
 		),
 		closeThreshold: box.with(() => closeThreshold),
@@ -86,7 +91,8 @@
 			rootState.onDialogOpenChange(o);
 		}
 	}
-	{...restProps} />
+	{...restProps}
+	onOpenChangeComplete={handleOpenChangeComplete} />
 
 <style global>
 	:global([data-vaul-drawer]) {

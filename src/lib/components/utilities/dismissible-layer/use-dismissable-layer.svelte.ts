@@ -16,10 +16,8 @@ import { type EventCallback } from '$lib/internal/events.js';
 import { isElementOrSVGElement } from '@polumeyv/utilities/dom';
 import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '$lib/components/menu/menu.svelte.js';
 
-const isPointerOutsideElementRect = ({ clientX: x, clientY: y }: PointerEvent, node: HTMLElement) => {
-	const { left, right, top, bottom } = node.getBoundingClientRect();
-	return x < left || x > right || y < top || y > bottom;
-};
+const isPointerOutsideRect = ({ clientX: x, clientY: y }: PointerEvent, node: HTMLElement) =>
+	(({ left, right, top, bottom }) => x < left || x > right || y < top || y > bottom)(node.getBoundingClientRect());
 
 globalThis.bitsDismissableLayers ??= new Map<DismissibleLayerState, ReadableBox<InteractOutsideBehaviorType>>();
 
@@ -266,7 +264,7 @@ function isValidEvent(e: PointerEvent, node: HTMLElement): boolean {
 	}
 	if (targetIsContextMenuTrigger && nodeIsContextMenu) return false;
 
-	const isValid = target.ownerDocument.documentElement.contains(target) && !node.contains(target) && isPointerOutsideElementRect(e, node);
+	const isValid = target.ownerDocument.documentElement.contains(target) && !node.contains(target) && isPointerOutsideRect(e, node);
 	return isValid;
 }
 

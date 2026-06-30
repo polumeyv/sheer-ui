@@ -58,7 +58,8 @@ export function scrollReveal(options: ScrollRevealOptions = {}): Attachment<HTML
 		if (typeof IntersectionObserver === 'undefined' || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
 
 		const startTransform =
-			[x ? `translateX(${x}px)` : '', y ? `translateY(${y}px)` : '', scale !== 1 ? `scale(${scale})` : ''].filter(Boolean).join(' ') || 'none';
+			[x ? `translateX(${x}px)` : '', y ? `translateY(${y}px)` : '', scale !== 1 ? `scale(${scale})` : ''].filter(Boolean).join(' ') ||
+			'none';
 
 		const hide = () => {
 			node.style.opacity = String(opacity);

@@ -1,5 +1,5 @@
 import type { Box, Getter } from '$lib/internal/tools/index.js';
-import { isSafari } from './internal/browser.js';
+import { needsIOSFixedBodyScrollLock } from './internal/browser.js';
 import { untrack } from 'svelte';
 import { scrollY } from 'svelte/reactivity/window';
 
@@ -33,7 +33,7 @@ export function usePositionFixed({
 
 	function setPositionFixed() {
 		// All browsers on iOS will return true here.
-		if (!isSafari()) return;
+		if (!needsIOSFixedBodyScrollLock()) return;
 
 		// If previousBodyPosition is already set, don't set it again.
 		if (previousBodyPosition === null && open.current && !noBodyStyles.current) {
@@ -74,7 +74,7 @@ export function usePositionFixed({
 
 	function restorePositionSetting() {
 		// All browsers on iOS will return true here.
-		if (!isSafari()) return;
+		if (!needsIOSFixedBodyScrollLock()) return;
 
 		if (previousBodyPosition !== null && !noBodyStyles.current) {
 			// Convert the position from "px" to Int

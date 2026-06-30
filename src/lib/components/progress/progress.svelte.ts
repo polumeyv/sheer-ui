@@ -29,26 +29,22 @@ export class ProgressRootState {
 		this.attachment = attachRef(this.opts.ref);
 	}
 
-	readonly props = $derived.by(
-		() =>
-			({
-				role: 'progressbar',
-				value: this.opts.value.current,
-				'aria-valuemin': this.opts.min.current,
-				'aria-valuemax': this.opts.max.current,
-				'aria-valuenow': this.opts.value.current === null ? undefined : this.opts.value.current,
-				'data-value': this.opts.value.current === null ? undefined : this.opts.value.current,
-				'data-state': getProgressDataState(this.opts.value.current, this.opts.max.current),
-				'data-max': this.opts.max.current,
-				'data-min': this.opts.min.current,
-				'data-indeterminate': this.opts.value.current === null ? '' : undefined,
-				[progressAttrs.root]: '',
-				...this.attachment,
-			}) as const,
-	);
-}
-
-function getProgressDataState(value: number | null, max: number): 'indeterminate' | 'loaded' | 'loading' {
-	if (value === null) return 'indeterminate';
-	return value === max ? 'loaded' : 'loading';
+	readonly props = $derived.by(() => {
+		const value = this.opts.value.current;
+		const isIndeterminate = value === null;
+		return {
+			role: 'progressbar',
+			value,
+			'aria-valuemin': this.opts.min.current,
+			'aria-valuemax': this.opts.max.current,
+			'aria-valuenow': isIndeterminate ? undefined : value,
+			'data-value': isIndeterminate ? undefined : value,
+			'data-state': value === null ? 'indeterminate' : value === this.opts.max.current ? 'loaded' : 'loading',
+			'data-max': this.opts.max.current,
+			'data-min': this.opts.min.current,
+			'data-indeterminate': isIndeterminate ? '' : undefined,
+			[progressAttrs.root]: '',
+			...this.attachment,
+		} as const;
+	});
 }

@@ -3,8 +3,8 @@ import { getElemDirection } from './locale.js';
 import { getDirectionalKeys } from './get-directional-keys.js';
 import { kbd } from './kbd.js';
 import type { Orientation } from '$lib/internal/index.js';
-import { BROWSER } from 'esm-env';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
+import { BROWSER } from '@polumeyv/utilities/env';
 
 type RovingFocusGroupOptions = (
 	| {

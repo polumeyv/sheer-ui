@@ -1,10 +1,18 @@
 import type { Updater } from 'svelte/store';
 import { CalendarDateTime, Time, ZonedDateTime } from '@internationalized/date';
-import { attachRef, type WritableBox, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, simpleBox } from '$lib/internal/tools/index.js';
+import {
+	attachRef,
+	type WritableBox,
+	DOMContext,
+	type ReadableBoxedValues,
+	type WritableBoxedValues,
+	simpleBox,
+} from '$lib/internal/tools/index.js';
 import { createContext, onMount, untrack } from 'svelte';
 import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
-import { isBrowser, isNumberString } from '@polumeyv/utilities/dom';
+import { isNumberString } from '@polumeyv/utilities/dom';
+import { BROWSER } from '@polumeyv/utilities/env';
 import { kbd } from '$lib/internal/kbd.js';
 import { useId } from '$lib/internal/use-id.js';
 import type {
@@ -38,8 +46,8 @@ import {
 	getFirstTimeSegment,
 	handleTimeSegmentNavigation,
 	isSegmentNavigationKey,
-	moveToNextTimeSegment,
-	moveToPrevTimeSegment,
+	moveToNextSegment,
+	moveToPrevSegment,
 } from '$lib/internal/date-time/field/segments.js';
 import { getDefaultHourCycle, isAcceptableSegmentKey } from '$lib/internal/date-time/field/helpers.js';
 import type { TimeRangeFieldRootState } from '../../components/time-range-field/time-range-field.svelte.js';
@@ -602,7 +610,7 @@ export class TimeFieldInputState {
 	}
 
 	readonly #ariaDescribedBy = $derived.by(() => {
-		if (!isBrowser) return undefined;
+		if (!BROWSER) return undefined;
 		const doesDescriptionExist = this.domContext.getElementById(this.root.descriptionId);
 		if (!doesDescriptionExist) return undefined;
 		return this.root.descriptionId;
@@ -871,7 +879,7 @@ abstract class BaseTimeSegmentState {
 		});
 
 		if (moveToNext) {
-			moveToNextTimeSegment(e, this.root.getFieldNode());
+			moveToNextSegment(e, this.root.getFieldNode());
 		}
 	}
 
@@ -907,7 +915,7 @@ abstract class BaseTimeSegmentState {
 		});
 
 		if (moveToPrev) {
-			moveToPrevTimeSegment(e, this.root.getFieldNode());
+			moveToPrevSegment(e, this.root.getFieldNode());
 		}
 	}
 

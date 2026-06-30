@@ -4,7 +4,6 @@
 export const components = [
 	{"slug":"accordion","name":"Accordion","description":"A vertically stacked set of interactive headings that each reveal a section of content."},
 	{"slug":"alert","name":"Alert","description":"Displays a callout for user attention."},
-	{"slug":"alert-dialog","name":"Alert Dialog","description":"A modal dialog that interrupts the user with important content and expects a response."},
 	{"slug":"avatar","name":"Avatar","description":"An image element with a fallback for representing the user."},
 	{"slug":"badge","name":"Badge","description":"Displays a badge or a component that looks like a badge."},
 	{"slug":"breadcrumb","name":"Breadcrumb","description":"Displays the path to the current resource using a hierarchy of links."},
@@ -35,6 +34,7 @@ export const components = [
 	{"slug":"link-preview","name":"Link Preview","description":"Previews content behind a link when hovering over it."},
 	{"slug":"menubar","name":"Menubar","description":"A persistent menu bar providing quick access to a consistent set of commands."},
 	{"slug":"meter","name":"Meter","description":"Displays a value within a known range."},
+	{"slug":"native-dialog","name":"Native Dialog (spike)","description":"A modal dialog built on the native <dialog> element + showModal, as a CSS/HTML spike that drops the JS overlay stack."},
 	{"slug":"native-select","name":"Native Select","description":"A native select element for choosing from a list of options."},
 	{"slug":"navigation-menu","name":"Navigation Menu","description":"A collection of links for navigating a site."},
 	{"slug":"pagination","name":"Pagination","description":"Page navigation with next and previous links."},
@@ -72,9 +72,6 @@ export const componentDemos = {
 	],
 	"alert": [
 		{ key: "demo", name: "alert-demo", path: "/src/lib/registry/alert-demo.svelte", sourcePath: "../lib/registry/alert-demo.svelte" },
-	],
-	"alert-dialog": [
-		{ key: "demo", name: "alert-dialog-demo", path: "/src/lib/registry/alert-dialog-demo.svelte", sourcePath: "../lib/registry/alert-dialog-demo.svelte" },
 	],
 	"avatar": [
 		{ key: "demo", name: "avatar-demo", path: "/src/lib/registry/avatar-demo.svelte", sourcePath: "../lib/registry/avatar-demo.svelte" },
@@ -172,6 +169,9 @@ export const componentDemos = {
 	],
 	"meter": [
 		{ key: "demo", name: "meter-demo", path: "/src/lib/registry/meter-demo.svelte", sourcePath: "../lib/registry/meter-demo.svelte" },
+	],
+	"native-dialog": [
+		{ key: "demo", name: "native-dialog-demo", path: "/src/lib/registry/native-dialog-demo.svelte", sourcePath: "../lib/registry/native-dialog-demo.svelte" },
 	],
 	"native-select": [
 		{ key: "demo", name: "native-select-demo", path: "/src/lib/registry/native-select-demo.svelte", sourcePath: "../lib/registry/native-select-demo.svelte" },

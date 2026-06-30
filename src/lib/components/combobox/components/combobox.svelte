@@ -35,14 +35,7 @@
 
 	$effect.pre(() => {
 		value;
-
-		untrack(() => {
-			/**
-			 * Parent spread-prop resets can make the bindable value undefined again.
-			 * Repairing it preserves the controlled value shape observed by bind:value.
-			 */
-			repairUndefinedControlledValue();
-		});
+		untrack(() => repairUndefinedControlledValue());
 	});
 
 	const rootState = SelectRootState.create({

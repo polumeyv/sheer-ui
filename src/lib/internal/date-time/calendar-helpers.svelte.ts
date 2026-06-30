@@ -15,7 +15,8 @@ import {
 import type { Formatter } from './formatter.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
 import { chunk, isValidIndex } from '$lib/internal/arrays.js';
-import { isBrowser, isHTMLElement } from '@polumeyv/utilities/dom';
+import { isHTMLElement } from '@polumeyv/utilities/dom';
+import { BROWSER } from '@polumeyv/utilities/env';
 import { kbd } from '$lib/internal/kbd.js';
 import type { DateMatcher, Month } from '$lib/internal/index.js';
 
@@ -709,7 +710,7 @@ export function pickerOpenFocus(e: Event) {
 }
 
 export function getFirstNonDisabledDateInView(calendarRef: HTMLElement): DateValue | undefined {
-	if (!isBrowser) return;
+	if (!BROWSER) return;
 	const daysInView = Array.from(calendarRef.querySelectorAll<HTMLElement>('[data-bits-day]:not([aria-disabled=true])'));
 	if (daysInView.length === 0) return;
 	const element = daysInView[0];

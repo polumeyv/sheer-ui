@@ -1,13 +1,13 @@
 <script lang="ts">
 	import './layout.css';
 	import * as Sidebar from '$lib/components/sidebar/index.js';
-	import { ModeWatcher, ThemeToggle } from '$lib/components/theme-toggle/index.js';
+	import { initTheme, ThemeToggle } from '$lib/components/theme-toggle/index.js';
 	import AppSidebar from './components/_app-sidebar.svelte';
 
 	let { children } = $props();
-</script>
 
-<ModeWatcher />
+	initTheme();
+</script>
 
 <Sidebar.Provider>
 	<AppSidebar />

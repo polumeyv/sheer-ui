@@ -1,71 +1,69 @@
+<script lang="ts" module>
+	import type { Snippet } from 'svelte';
+
+	export type PortalTarget = Element | string;
+
+	export type PortalProps = {
+		/**
+		 * Where to portal the content to.
+		 *
+		 * @default document.body
+		 */
+		to?: PortalTarget;
+
+		/**
+		 * Disable portalling and render the component inline
+		 *
+		 * @defaultValue false
+		 */
+		disabled?: boolean;
+
+		/**
+		 * The children content to render within the portal.
+		 */
+		children?: Snippet;
+	};
+</script>
+
 <script lang="ts">
-	import { getAllContexts, mount, unmount, untrack } from 'svelte';
-	import { DEV } from 'esm-env';
-	import PortalConsumer from './portal-consumer.svelte';
-	import type { PortalProps } from './types.js';
-	import { isBrowser } from '@polumeyv/utilities/dom';
 	import { resolvePortalToProp } from '../config/prop-resolvers.js';
+	import { BROWSER, DEV } from '@polumeyv/utilities/env';
 
 	let { to: toProp, children, disabled }: PortalProps = $props();
 
 	const to = resolvePortalToProp(() => toProp);
-	const context = getAllContexts();
 
-	let target = $derived(getTarget());
+	// Teleports the rendered node into the resolved target on mount and removes it on
+	// cleanup. Runs in an effect, so it re-targets automatically when `to` changes (e.g. a
+	// viewport ref that populates later). The wrapper carries `display: contents`, so it adds
+	// no box of its own — the content lays out as if it were a direct child of the target.
+	function portal(node: HTMLElement) {
+		if (!BROWSER || disabled) return;
 
-	function getTarget() {
-		if (!isBrowser || disabled) return null;
-
-		let localTarget: Element | null = null;
-
-		if (typeof to.current === 'string') {
-			const target = document.querySelector(to.current);
+		const t = to.current;
+		let target: Element | null;
+		if (typeof t === 'string') {
+			target = document.querySelector(t);
 			if (DEV && target === null) {
-				throw new Error(`Target element "${to.current}" not found.`);
+				throw new Error(`Target element "${t}" not found.`);
 			}
-			localTarget = target;
 		} else {
-			localTarget = to.current;
-		}
-
-		if (DEV && !(localTarget instanceof Element)) {
-			const type = localTarget === null ? 'null' : typeof localTarget;
-			throw new TypeError(`Unknown portal target type: ${type}. Allowed types: string (query selector) or Element.`);
-		}
-
-		return localTarget;
-	}
-
-	let instance: ReturnType<typeof mount> | null;
-
-	function unmountInstance() {
-		if (instance) {
-			unmount(instance);
-			instance = null;
-		}
-	}
-
-	$effect(() => {
-		target;
-		disabled;
-		return untrack(() => {
-			if (!target || disabled) {
-				unmountInstance();
-				return;
+			target = t;
+			if (DEV && !(target instanceof Element)) {
+				throw new TypeError(`Unknown portal target type: ${typeof target}. Allowed types: string (query selector) or Element.`);
 			}
-			instance = mount(PortalConsumer, {
-				target: target,
-				props: { children },
-				context,
-			});
+		}
 
-			return () => {
-				unmountInstance();
-			};
-		});
-	});
+		if (!target) return;
+		target.appendChild(node);
+		return () => node.remove();
+	}
 </script>
 
 {#if disabled}
 	{@render children?.()}
+{:else}
+	<div style="display: contents" {@attach portal}>
+		{@render children?.()}
+	</div>
 {/if}

@@ -1,10 +1,9 @@
 <script lang="ts">
-	import HiddenInput from '$lib/components/utilities/hidden-input.svelte';
 	import { RadioGroupInputState } from '../radio-group.svelte.js';
 
 	const inputState = RadioGroupInputState.create();
 </script>
 
 {#if inputState.shouldRender}
-	<HiddenInput {...inputState.props} />
+	<input {...inputState.props} class="sr-only" aria-hidden="true" tabindex={-1} />
 {/if}

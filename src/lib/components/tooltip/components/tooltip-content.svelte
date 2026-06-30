@@ -96,6 +96,7 @@
 		mergeProps(
 			{
 				'data-slot': 'tooltip-content',
+				'data-anchored': '',
 				class: cn(
 					'native-tooltip-content z-50 w-fit rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background',
 					'transition-[opacity,translate,display,overlay] transition-discrete opacity-0 translate-y-1 open:opacity-100 open:translate-y-0 starting:open:opacity-0 starting:open:translate-y-1',
@@ -118,51 +119,6 @@
 {/if}
 
 <style>
-	:global(.native-tooltip-content) {
-		position: fixed;
-		inset: auto;
-		margin: 0;
-		overflow: visible;
-		border: none;
-
-		/* default: above the trigger, centered (matches the FU default side='top' align='center') */
-		bottom: anchor(top);
-		justify-self: anchor-center;
-		margin-bottom: 0.5rem;
-		position-try-fallbacks: flip-block;
-	}
-
-	:global(.native-tooltip-content[data-side='bottom']) {
-		bottom: auto;
-		top: anchor(bottom);
-		margin: 0.5rem 0 0;
-	}
-	:global(.native-tooltip-content[data-side='left']) {
-		bottom: auto;
-		right: anchor(left);
-		left: auto;
-		top: anchor(center);
-		justify-self: initial;
-		margin: 0 0.5rem 0 0;
-	}
-	:global(.native-tooltip-content[data-side='right']) {
-		bottom: auto;
-		left: anchor(right);
-		top: anchor(center);
-		justify-self: initial;
-		margin: 0 0 0 0.5rem;
-	}
-
-	:global(.native-tooltip-content[data-align='start']) {
-		justify-self: initial;
-		left: anchor(left);
-	}
-	:global(.native-tooltip-content[data-align='end']) {
-		justify-self: initial;
-		left: auto;
-		right: anchor(right);
-	}
-
 	/* static arrow — points correctly per side; flip updates data-side so no JS tracking needed */
 	:global(.native-tooltip-arrow) {
 		position: absolute;

@@ -14,8 +14,6 @@
 	import type { NavigationMenuTriggerProps } from '../types.js';
 	import { NavigationMenuTriggerState } from '../navigation-menu.svelte.js';
 
-	import VisuallyHidden from '../../utilities/visually-hidden/visually-hidden.svelte';
-
 	import { createId } from '$lib/internal/create-id.js';
 	import { cn } from '$lib/utils.js';
 
@@ -73,7 +71,8 @@
 {/if}
 
 {#if triggerState.open}
-	<VisuallyHidden {...mergeProps(triggerState.focusProxyProps, mounted)} />
+	<!-- focus proxy: visually hidden (the sr-only utility) but focusable, for nav-menu focus management -->
+	<span {...mergeProps(triggerState.focusProxyProps, mounted, { class: 'sr-only' })}></span>
 
 	{#if triggerState.context.viewportRef.current}
 		<span aria-owns={triggerState.itemContext.contentId ?? undefined}></span>

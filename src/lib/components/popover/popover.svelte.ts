@@ -1,7 +1,7 @@
 import { createContext, untrack } from 'svelte';
 import { type ReadableBox, type ReadableBoxedValues, type WritableBoxedValues, attachRef, boxWith, DOMContext } from '$lib/internal/tools/index.js';
 import { kbd } from '$lib/internal/kbd.js';
-import { createBitsAttrs, boolToStr, getDataOpenClosed, getDataTransitionAttrs } from '$lib/internal/attrs.js';
+import { createBitsAttrs, boolToStr, getDataOpenClosed } from '$lib/internal/attrs.js';
 import type {
 	BitsFocusEvent,
 	BitsKeyboardEvent,
@@ -11,15 +11,14 @@ import type {
 	RefAttachment,
 	WithRefOpts,
 } from '$lib/internal/types.js';
-import { isElement, isTouch } from '@polumeyv/utilities/dom';
+import { isElement } from '@polumeyv/utilities/dom';
 import type { Measurable } from '$lib/internal/floating-svelte/types.js';
-import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
 import { isTabbable } from 'tabbable';
 
 const popoverAttrs = createBitsAttrs({
 	component: 'popover',
-	parts: ['root', 'trigger', 'content', 'close', 'overlay'],
+	parts: ['root', 'trigger', 'content', 'close'],
 });
 
 const [getPopoverRoot, setPopoverRoot] = createContext<PopoverRootState>();
@@ -40,10 +39,7 @@ export class PopoverRootState {
 
 	readonly opts: PopoverRootStateOpts;
 	contentNode = $state<HTMLElement | null>(null);
-	contentPresence: PresenceManager;
 	triggerNode = $state<HTMLElement | null>(null);
-	overlayNode = $state<HTMLElement | null>(null);
-	overlayPresence: PresenceManager;
 
 	// hover tracking state
 	openedViaHover = $state(false);
@@ -56,19 +52,6 @@ export class PopoverRootState {
 
 	constructor(opts: PopoverRootStateOpts) {
 		this.opts = opts;
-
-		this.contentPresence = new PresenceManager({
-			ref: boxWith(() => this.contentNode),
-			open: this.opts.open,
-			onComplete: () => {
-				this.opts.onOpenChangeComplete.current(this.opts.open.current);
-			},
-		});
-
-		this.overlayPresence = new PresenceManager({
-			ref: boxWith(() => this.overlayNode),
-			open: this.opts.open,
-		});
 
 		$effect(() => {
 			const isOpen = this.opts.open.current;
@@ -212,7 +195,7 @@ export class PopoverTriggerState {
 	onpointerenter(e: BitsPointerEvent) {
 		if (this.opts.disabled.current) return;
 		if (!this.opts.openOnHover.current) return;
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 
 		this.#isHovering = true;
 		this.#clearCloseTimeout();
@@ -234,7 +217,7 @@ export class PopoverTriggerState {
 	onpointerleave(e: BitsPointerEvent) {
 		if (this.opts.disabled.current) return;
 		if (!this.opts.openOnHover.current) return;
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 
 		this.#isHovering = false;
 		this.#clearOpenTimeout();
@@ -355,12 +338,12 @@ export class PopoverContentState {
 	}
 
 	onpointerenter(e: BitsPointerEvent) {
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 		this.root.cancelDelayedClose();
 	}
 
 	onpointerleave(e: BitsPointerEvent) {
-		if (isTouch(e)) return;
+		if (e.pointerType === 'touch') return;
 		// handled by grace area
 	}
 
@@ -388,12 +371,8 @@ export class PopoverContentState {
 		this.root.handleClose();
 	};
 
+	// Always mounted now — the native popover toggles `display` itself (display … allow-discrete).
 	get shouldRender(): boolean {
-		return this.root.contentPresence.shouldRender;
-	}
-
-	get shouldTrapFocus(): boolean {
-		if (this.root.openedViaHover && !this.root.hasInteractedWithContent) return false;
 		return true;
 	}
 
@@ -405,13 +384,7 @@ export class PopoverContentState {
 				id: this.opts.id.current,
 				tabindex: -1,
 				'data-state': getDataOpenClosed(this.root.opts.open.current),
-				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
 				[popoverAttrs.content]: '',
-				style: {
-					pointerEvents: 'auto',
-					// CSS containment isolates style/layout/paint calculations from the rest of the page
-					contain: 'layout style',
-				},
 				onpointerdown: this.onpointerdown,
 				onfocusin: this.onfocusin,
 				onpointerenter: this.onpointerenter,
@@ -419,11 +392,6 @@ export class PopoverContentState {
 				...this.attachment,
 			}) as const,
 	);
-
-	readonly popperProps = {
-		onInteractOutside: this.onInteractOutside,
-		onEscapeKeydown: this.onEscapeKeydown,
-	};
 }
 
 interface PopoverCloseStateOpts extends WithRefOpts {}
@@ -463,44 +431,6 @@ export class PopoverCloseState {
 				onkeydown: this.onkeydown,
 				type: 'button',
 				[popoverAttrs.close]: '',
-				...this.attachment,
-			}) as const,
-	);
-}
-
-interface PopoverOverlayStateOpts extends WithRefOpts {}
-
-export class PopoverOverlayState {
-	static create(opts: PopoverOverlayStateOpts) {
-		return new PopoverOverlayState(opts, getPopoverRoot());
-	}
-
-	readonly opts: PopoverOverlayStateOpts;
-	readonly root: PopoverRootState;
-	readonly attachment: RefAttachment;
-
-	constructor(opts: PopoverOverlayStateOpts, root: PopoverRootState) {
-		this.opts = opts;
-		this.root = root;
-		this.attachment = attachRef(this.opts.ref, (v) => (this.root.overlayNode = v));
-	}
-
-	get shouldRender() {
-		return this.root.overlayPresence.shouldRender;
-	}
-
-	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open.current }));
-
-	readonly props = $derived.by(
-		() =>
-			({
-				id: this.opts.id.current,
-				[popoverAttrs.overlay]: '',
-				style: {
-					pointerEvents: 'auto',
-				},
-				'data-state': getDataOpenClosed(this.root.opts.open.current),
-				...getDataTransitionAttrs(this.root.overlayPresence.transitionStatus),
 				...this.attachment,
 			}) as const,
 	);

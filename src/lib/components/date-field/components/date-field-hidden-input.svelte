@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { DateFieldHiddenInputState } from "../date-field.svelte.js";
-	import HiddenInput from "$lib/components/utilities/hidden-input.svelte";
 
 	const hiddenInputState = DateFieldHiddenInputState.create();
 </script>
 
 {#if hiddenInputState.shouldRender}
-	<HiddenInput {...hiddenInputState.props} />
+	<input {...hiddenInputState.props} class="sr-only" aria-hidden="true" tabindex={-1} />
 {/if}

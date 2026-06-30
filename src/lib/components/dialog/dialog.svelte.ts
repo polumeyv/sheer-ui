@@ -239,33 +239,6 @@ export class DialogCloseState {
 	);
 }
 
-interface DialogActionStateOpts extends WithRefOpts {}
-
-export class DialogActionState {
-	static create(opts: DialogActionStateOpts) {
-		return new DialogActionState(opts, getDialogRoot());
-	}
-
-	readonly opts: DialogActionStateOpts;
-	readonly root: DialogRootState;
-	readonly attachment: RefAttachment;
-	constructor(opts: DialogActionStateOpts, root: DialogRootState) {
-		this.opts = opts;
-		this.root = root;
-		this.attachment = attachRef(this.opts.ref);
-	}
-
-	readonly props = $derived.by(
-		() =>
-			({
-				id: this.opts.id.current,
-				[this.root.getBitsAttr('action')]: '',
-				...this.root.sharedProps,
-				...this.attachment,
-			}) as const,
-	);
-}
-
 interface DialogTitleStateOpts extends WithRefOpts, ReadableBoxedValues<{ level: 1 | 2 | 3 | 4 | 5 | 6 }> {}
 
 export class DialogTitleState {
@@ -422,52 +395,4 @@ export class DialogOverlayState {
 	get shouldRender() {
 		return this.root.overlayPresence.shouldRender;
 	}
-}
-
-interface AlertDialogCancelStateOpts extends WithRefOpts, ReadableBoxedValues<{ disabled: boolean }> {}
-
-export class AlertDialogCancelState {
-	static create(opts: AlertDialogCancelStateOpts) {
-		return new AlertDialogCancelState(opts, getDialogRoot());
-	}
-
-	readonly opts: AlertDialogCancelStateOpts;
-	readonly root: DialogRootState;
-	readonly attachment: RefAttachment;
-
-	constructor(opts: AlertDialogCancelStateOpts, root: DialogRootState) {
-		this.opts = opts;
-		this.root = root;
-		this.attachment = attachRef(this.opts.ref, (v) => (this.root.cancelNode = v));
-		this.onclick = this.onclick.bind(this);
-		this.onkeydown = this.onkeydown.bind(this);
-	}
-
-	onclick(e: BitsMouseEvent) {
-		if (this.opts.disabled.current) return;
-		if (e.button > 0) return;
-		this.root.handleClose();
-	}
-
-	onkeydown(e: BitsKeyboardEvent) {
-		if (this.opts.disabled.current) return;
-		if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
-			e.preventDefault();
-			this.root.handleClose();
-		}
-	}
-
-	readonly props = $derived.by(
-		() =>
-			({
-				id: this.opts.id.current,
-				[this.root.getBitsAttr('cancel')]: '',
-				onclick: this.onclick,
-				onkeydown: this.onkeydown,
-				tabindex: 0,
-				disabled: this.opts.disabled.current,
-				...this.root.sharedProps,
-				...this.attachment,
-			}) as const,
-	);
 }

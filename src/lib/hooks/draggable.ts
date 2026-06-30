@@ -14,17 +14,16 @@ export function draggable(get: () => { x: number; y: number }, set: (p: { x: num
 		const move = (e: PointerEvent) => dragging && set({ x: e.clientX - start.x, y: e.clientY - start.y });
 		const up = (e: PointerEvent) => {
 			dragging = false;
-			node.releasePointerCapture(e.pointerId);
+			if (node.hasPointerCapture(e.pointerId)) node.releasePointerCapture(e.pointerId);
 		};
 		const cleanup = [
 			on(node, 'pointerdown', down),
 			on(node, 'pointermove', move),
 			on(node, 'pointerup', up),
+			on(node, 'pointercancel', up),
 			on(node, 'pointerleave', up),
 		];
 
-		return () => {
-			cleanup.forEach((remove) => remove());
-		};
+		return () => cleanup.forEach((off) => off());
 	};
 }

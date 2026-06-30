@@ -30,22 +30,13 @@
 	const group = getMenuCheckboxGroupOr(null);
 
 	function syncCheckedFromGroupValue() {
-		if (!group || !value) return;
-		checked = group.opts.value.current.includes(value);
+		if (group && value) checked = group.opts.value.current.includes(value);
 	}
 
-	// Initial setup: grouped menu checkbox items derive checked from the group value.
 	syncCheckedFromGroupValue();
-
 	$effect.pre(() => {
 		value;
-		untrack(() => {
-			/**
-			 * Dynamic item values are supported: when an item changes which group
-			 * value it represents, checked must be repaired from the current group value.
-			 */
-			syncCheckedFromGroupValue();
-		});
+		untrack(() => syncCheckedFromGroupValue());
 	});
 
 	const checkboxItemState = MenuCheckboxItemState.create(

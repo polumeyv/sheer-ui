@@ -1,5 +1,6 @@
-import Root, { inputVariants, type InputVariant } from './input.svelte';
+import { inputVariants, type InputVariant } from './variants';
 import FileInput from './file-input.svelte';
+import Root from './input.svelte';
 
 export {
 	Root,

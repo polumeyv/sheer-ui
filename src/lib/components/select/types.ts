@@ -1,5 +1,5 @@
 import type { Expand } from '$lib/internal/tools/index.js';
-import type { PortalProps } from '../utilities/portal/types.js';
+import type { PortalProps } from '$lib/components/utilities/portal/index.js';
 import type { PopperLayerProps, PopperLayerStaticProps } from '../utilities/popper-layer/types.js';
 import type { ArrowProps, ArrowPropsWithoutHTML } from '../utilities/arrow/types.js';
 import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes, BitsPrimitiveSpanAttributes } from '$lib/internal/attributes.js';

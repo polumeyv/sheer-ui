@@ -1,5 +1,6 @@
 import { srOnlyStylesString } from '$lib/internal/tools/index.js';
-import { isBrowser, isHTMLElement } from '@polumeyv/utilities/dom';
+import { isHTMLElement } from '@polumeyv/utilities/dom';
+import { BROWSER } from '@polumeyv/utilities/env';
 
 /**
  * Creates or gets an announcer element which is used to announce messages to screen readers.
@@ -7,7 +8,7 @@ import { isBrowser, isHTMLElement } from '@polumeyv/utilities/dom';
  * change, as without it we get inconsistent behavior across screen readers.
  */
 function initAnnouncer(doc: Document | null) {
-	if (!isBrowser || !doc) return null;
+	if (!BROWSER || !doc) return null;
 	let el = doc.querySelector('[data-bits-announcer]');
 
 	/**
@@ -58,7 +59,7 @@ export function getAnnouncer(doc: Document | null) {
 	 * Announces a message to screen readers using the specified kind of announcement.
 	 */
 	function announce(value: string | null | number, kind: 'assertive' | 'polite' = 'assertive', timeout = 7500) {
-		if (!announcer || !isBrowser || !doc) return;
+		if (!announcer || !BROWSER || !doc) return;
 		const log = announcer.getLog(kind);
 		const content = doc.createElement('div');
 		if (typeof value === 'number') {

@@ -308,8 +308,7 @@ export class AccordionContentState {
 
 	#attachBeforeMatch(node: HTMLElement) {
 		if (!this.opts.hiddenUntilFound.current) return;
-
-		const handleBeforeMatch = () => {
+		return on(node, 'beforematch', () => {
 			if (this.item.isActive) return;
 			// we need to defer opening until after browser completes search highlighting
 			// otherwise the browser will immediately open the accordion
@@ -317,9 +316,7 @@ export class AccordionContentState {
 			requestAnimationFrame(() => {
 				this.item.updateValue();
 			});
-		};
-
-		return on(node, 'beforematch', handleBeforeMatch);
+		});
 	}
 
 	#updateDimensions = ([_, node]: [boolean, HTMLElement | null]): void => {

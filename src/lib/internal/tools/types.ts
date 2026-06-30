@@ -2,12 +2,14 @@
 import type { Snippet } from 'svelte';
 import type * as CSS from 'csstype';
 import type { ReadableBox, WritableBox } from './runed/box.svelte.js';
-import { BROWSER } from 'esm-env';
+import { BROWSER } from '@polumeyv/utilities/env';
 
 export type Getter<T> = () => T;
 export type MaybeGetter<T> = T | Getter<T>;
 export type MaybeBoxOrGetter<T> = T | Getter<T> | ReadableBox<T>;
 export type MaybeElementGetter<T extends Element = HTMLElement> = MaybeGetter<T | null | undefined>;
+
+export const get = <T>(value: MaybeGetter<T>): T => (typeof value === 'function' ? (value as Getter<T>)() : value);
 
 export type Box<T> = ReadableBox<T> | WritableBox<T>;
 

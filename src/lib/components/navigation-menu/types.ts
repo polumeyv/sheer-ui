@@ -82,7 +82,7 @@ export type NavigationMenuListPropsWithoutHTML = WithChildNoChildrenSnippetProps
 	{
 		/**
 		 * Attributes to spread onto a wrapper element around the content.
-		 * Do not style the wrapper element, its styles are computed by Floating UI.
+		 * Do not style the wrapper element, its position is handled by the component's own CSS.
 		 */
 		wrapperProps: Record<string, unknown>;
 	}

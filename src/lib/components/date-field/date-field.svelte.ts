@@ -14,7 +14,8 @@ import { createContext, onMount, untrack } from 'svelte';
 import type { DateRangeFieldRootState } from '../date-range-field/date-range-field.svelte.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, WithRefOpts, RefAttachment } from '$lib/internal/types.js';
 import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
-import { isBrowser, isNumberString } from '@polumeyv/utilities/dom';
+import { isNumberString } from '@polumeyv/utilities/dom';
+import { BROWSER } from '@polumeyv/utilities/env';
 import { kbd } from '$lib/internal/kbd.js';
 import { useId } from '$lib/internal/use-id.js';
 import type {
@@ -44,7 +45,6 @@ import {
 	isDateAndTimeSegmentObj,
 	isDateSegmentPart,
 	isFirstSegment,
-	removeDescriptionElement,
 	setDescription,
 } from '$lib/internal/date-time/field/helpers.js';
 import { DATE_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from '$lib/internal/date-time/field/parts.js';
@@ -245,7 +245,7 @@ export class DateFieldRootState {
 
 		onMount(() => () => {
 			if (rangeRoot) return;
-			removeDescriptionElement(this.descriptionId, this.domContext.getDocument());
+			this.domContext.getDocument().getElementById(this.descriptionId)?.remove();
 		});
 
 		$effect(() => {
@@ -484,7 +484,7 @@ export class DateFieldRootState {
 	readonly isInvalid = $derived.by(() => {
 		if (this.validationStatus === false) return false;
 		if (this.isInvalidProp.current) return true;
-		return true;
+		return false;
 	});
 
 	readonly inferredGranularity = $derived.by(() => {
@@ -717,7 +717,7 @@ export class DateFieldInputState {
 	}
 
 	readonly #ariaDescribedBy = $derived.by(() => {
-		if (!isBrowser) return undefined;
+		if (!BROWSER) return undefined;
 		const doesDescriptionExist = this.domContext.getElementById(this.root.descriptionId);
 		if (!doesDescriptionExist) return undefined;
 		return this.root.descriptionId;
@@ -1350,7 +1350,7 @@ export class DateFieldDayPeriodSegmentState {
 			});
 		}
 
-		if (e.key === kbd.A || e.key === kbd.P || kbd.a || kbd.p) {
+		if (e.key === kbd.A || e.key === kbd.P || e.key === kbd.a || e.key === kbd.p) {
 			this.root.updateSegment('dayPeriod', () => {
 				const next = e.key === kbd.A || e.key === kbd.a ? 'AM' : 'PM';
 				this.#announcer.announce(next);

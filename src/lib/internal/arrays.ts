@@ -15,7 +15,7 @@ function isEqual(a: unknown, b: unknown): boolean {
 
 	if (Array.isArray(a) && Array.isArray(b)) return arraysAreEqual(a as unknown[], b as unknown[]);
 
-	if (typeof a === "object" && typeof b === "object") return isDeepEqual(a, b);
+	if (typeof a === 'object' && typeof b === 'object') return isDeepEqual(a, b);
 
 	return Object.is(a, b);
 }
@@ -24,7 +24,7 @@ function isEqual(a: unknown, b: unknown): boolean {
  * A utility function that compares two values for deep equality.
  */
 function isDeepEqual(a: unknown, b: unknown): boolean {
-	if (typeof a !== "object" || typeof b !== "object" || a === null || b === null) return false;
+	if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false;
 
 	const aKeys = Object.keys(a);
 	const bKeys = Object.keys(b);
@@ -117,12 +117,7 @@ export function prev<T>(array: T[], index: number, loop = true): T | undefined {
  * @param increment the number of elements to move forward (can be negative).
  * @param loop loop around the array if the target index is out of bounds?
  */
-export function forward<T>(
-	array: T[],
-	index: number,
-	increment: number,
-	loop = true
-): T | undefined {
+export function forward<T>(array: T[], index: number, increment: number, loop = true): T | undefined {
 	if (array.length === 0 || index < 0 || index >= array.length) return;
 
 	let targetIndex = index + increment;
@@ -148,12 +143,7 @@ export function forward<T>(
  * @param decrement the number of elements to move backward (can be negative).
  * @param loop loop around the array if the target index is out of bounds?
  */
-export function backward<T>(
-	array: T[],
-	index: number,
-	decrement: number,
-	loop = true
-): T | undefined {
+export function backward<T>(array: T[], index: number, decrement: number, loop = true): T | undefined {
 	if (array.length === 0 || index < 0 || index >= array.length) return;
 
 	let targetIndex = index - decrement;
@@ -194,11 +184,9 @@ export function backward<T>(
 export function getNextMatch(values: string[], search: string, currentMatch?: string) {
 	const lowerSearch = search.toLowerCase();
 
-	if (lowerSearch.endsWith(" ")) {
+	if (lowerSearch.endsWith(' ')) {
 		const searchWithoutSpace = lowerSearch.slice(0, -1);
-		const matchesWithoutSpace = values.filter((value) =>
-			value.toLowerCase().startsWith(searchWithoutSpace)
-		);
+		const matchesWithoutSpace = values.filter((value) => value.toLowerCase().startsWith(searchWithoutSpace));
 
 		/**
 		 * If there's only one match for the prefix without space, we don't
@@ -218,7 +206,7 @@ export function getNextMatch(values: string[], search: string, currentMatch?: st
 		if (
 			currentMatchLowercase &&
 			currentMatchLowercase.startsWith(searchWithoutSpace) &&
-			currentMatchLowercase.charAt(searchWithoutSpace.length) === " " &&
+			currentMatchLowercase.charAt(searchWithoutSpace.length) === ' ' &&
 			search.trim() === searchWithoutSpace
 		) {
 			return currentMatch;
@@ -252,9 +240,7 @@ export function getNextMatch(values: string[], search: string, currentMatch?: st
 	const excludeCurrentMatch = normalizedSearch.length === 1;
 	if (excludeCurrentMatch) wrappedValues = wrappedValues.filter((v) => v !== currentMatch);
 
-	const nextMatch = wrappedValues.find((value) =>
-		value?.toLowerCase().startsWith(normalizedLowerSearch)
-	);
+	const nextMatch = wrappedValues.find((value) => value?.toLowerCase().startsWith(normalizedLowerSearch));
 
 	return nextMatch !== currentMatch ? nextMatch : undefined;
 }

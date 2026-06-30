@@ -1,30 +1,9 @@
 <script lang="ts">
-	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-	import type { WithoutChildren } from "$lib/internal/index.js";
-	import { getCarouselContext } from './carouselState.svelte';
-	import { cn } from "$lib/utils.js";
-	import { Button, type Props } from '../button';
+	import type { WithoutChildren } from '$lib/internal/index.js';
+	import type { Props } from '../button';
+	import CarouselArrow from './carousel-arrow.svelte';
 
-	let { ref = $bindable(null), class: className, variant = 'outline', size = 'icon', ...restProps }: WithoutChildren<Props> = $props();
-
-	const emblaCtx = getCarouselContext();
+	let { ref = $bindable(null), ...restProps }: WithoutChildren<Props> = $props();
 </script>
 
-<Button
-	data-slot="carousel-previous"
-	{variant}
-	{size}
-	disabled={!emblaCtx.canScrollPrev}
-	aria-disabled={!emblaCtx.canScrollPrev}
-	class={cn(
-		'absolute size-8! rounded-full!',
-		emblaCtx.orientation === 'horizontal' ? '-inset-s-12 top-1/2 -translate-y-1/2' : 'inset-s-1/2 -top-12 -translate-x-1/2 rotate-90',
-		className,
-	)}
-	onclick={emblaCtx.scrollPrev}
-	onkeydown={emblaCtx.handleKeyDown}
-	{...restProps}
-	bind:ref>
-	<ArrowLeftIcon class="size-4" />
-	<span class="sr-only">Previous slide</span>
-</Button>
+<CarouselArrow direction="previous" bind:ref {...restProps} />

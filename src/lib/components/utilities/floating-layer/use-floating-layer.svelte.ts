@@ -11,11 +11,9 @@ import {
 	type RefAttachment,
 	type Box,
 	simpleBox,
-	boxFrom,
 	boxWith,
 } from '$lib/internal/tools/index.js';
 import type { Arrayable, WithRefOpts } from '$lib/internal/types.js';
-import { isNotNull } from '@polumeyv/utilities/dom';
 import { useId } from '$lib/internal/use-id.js';
 import { useFloating } from '$lib/internal/floating-svelte/use-floating.svelte.js';
 import type { Measurable, UseFloatingReturn } from '$lib/internal/floating-svelte/types.js';
@@ -134,7 +132,7 @@ export class FloatingContentState {
 	hasExplicitBoundaries = $derived(this.#boundary.length > 0);
 	detectOverflowOptions = $derived.by(() => ({
 		padding: this.opts.collisionPadding.current,
-		boundary: this.#boundary.filter(isNotNull),
+		boundary: this.#boundary.filter((boundary): boundary is Element => boundary !== null),
 		altBoundary: this.hasExplicitBoundaries,
 	}));
 	#availableWidth = $state<number | undefined>(undefined);
@@ -345,18 +343,11 @@ export function setFloatingAnchor(source: ReadableBox<AnchorNode>, tooltip = fal
 	root.triggerSource = source;
 }
 
-/**
- * Registers the element it is attached to as the floating root's trigger/reference source, replacing
- * the renderless `<FloatingLayer.Anchor>` wrapper for the common real-element case. Spread it onto the
- * trigger element (e.g. merge into the trigger props). Reads the floating-root context, so it must be
- * called during component init. The cursor/virtual-element case (context menu) keeps the imperative
- * `root.triggerSource = box` path, since an attachment only ever receives a real node.
- */
 export function floatingAnchor(tooltip = false): RefAttachment {
 	const root = tooltip ? getFloatingTooltipRoot() : getFloatingRoot();
 	return {
 		[createAttachmentKey()]: (node) => {
-			root.triggerSource = boxFrom(node);
+			root.triggerSource = simpleBox(node);
 			return () => {
 				root.triggerSource = simpleBox(null);
 			};

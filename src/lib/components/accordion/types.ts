@@ -1,14 +1,6 @@
-import type {
-	OnChangeFn,
-	WithChild,
-	WithChildNoChildrenSnippetProps,
-	Without,
-} from "$lib/internal/types.js";
-import type {
-	BitsPrimitiveButtonAttributes,
-	BitsPrimitiveDivAttributes,
-} from "$lib/internal/attributes.js";
-import type { Orientation } from "$lib/internal/index.js";
+import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, Without } from '$lib/internal/types.js';
+import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/internal/attributes.js';
+import type { Orientation } from '$lib/internal/index.js';
 
 export type BaseAccordionRootPropsWithoutHTML = {
 	/**
@@ -42,7 +34,7 @@ export type AccordionRootSinglePropsWithoutHTML = BaseAccordionRootPropsWithoutH
 	 *
 	 * @required
 	 */
-	type: "single";
+	type: 'single';
 
 	/**
 	 * The value of the currently open accordion item.
@@ -66,7 +58,7 @@ export type AccordionRootMultiplePropsWithoutHTML = BaseAccordionRootPropsWithou
 	 *
 	 * @required
 	 */
-	type: "multiple";
+	type: 'multiple';
 
 	/**
 	 * The value of the currently open accordion item.
@@ -83,11 +75,9 @@ export type AccordionRootMultiplePropsWithoutHTML = BaseAccordionRootPropsWithou
 };
 
 export type AccordionRootPropsWithoutHTML =
-	| WithChild<AccordionRootSinglePropsWithoutHTML>
-	| WithChild<AccordionRootMultiplePropsWithoutHTML>;
+	WithChild<AccordionRootSinglePropsWithoutHTML> | WithChild<AccordionRootMultiplePropsWithoutHTML>;
 
-export type AccordionRootProps = AccordionRootPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, AccordionRootPropsWithoutHTML>;
+export type AccordionRootProps = AccordionRootPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, AccordionRootPropsWithoutHTML>;
 
 export type AccordionRootSingleProps = AccordionRootSinglePropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, AccordionRootSinglePropsWithoutHTML>;

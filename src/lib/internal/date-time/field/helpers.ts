@@ -15,7 +15,8 @@ import type {
 } from './types.js';
 import { ALL_SEGMENT_PARTS, DATE_SEGMENT_PARTS, EDITABLE_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';
 import { getSegments } from './segments.js';
-import { isBrowser, isNumberString } from '@polumeyv/utilities/dom';
+import { isNumberString } from '@polumeyv/utilities/dom';
+import { BROWSER } from '@polumeyv/utilities/env';
 import { useId } from '$lib/internal/use-id.js';
 import { kbd } from '$lib/internal/kbd.js';
 import type { Granularity, HourCycle, TimeSegmentValueObj } from '$lib/internal/date-time/types.js';
@@ -274,7 +275,7 @@ export function isAnySegmentPart(part: unknown): part is SegmentPart {
  * been filled.
  */
 function getUsedSegments(fieldNode: HTMLElement | null) {
-	if (!isBrowser || !fieldNode) return [];
+	if (!BROWSER || !fieldNode) return [];
 	const usedSegments = getSegments(fieldNode)
 		.map((el) => el.dataset.segment)
 		.filter((part): part is EditableSegmentPart => {
@@ -386,7 +387,7 @@ export function isAcceptableSegmentKey(key: string) {
  * @param fieldNode - The id of the date field associated with the segment
  */
 export function isFirstSegment(id: string, fieldNode: HTMLElement | null) {
-	if (!isBrowser) return false;
+	if (!BROWSER) return false;
 	const segments = getSegments(fieldNode);
 	return segments.length ? segments[0]!.id === id : false;
 }
@@ -407,7 +408,7 @@ type SetDescriptionProps = {
  */
 export function setDescription(props: SetDescriptionProps) {
 	const { id, formatter, value, doc } = props;
-	if (!isBrowser) return;
+	if (!BROWSER) return;
 	const valueString = formatter.selectedDate(value);
 	const el = doc.getElementById(id);
 	if (!el) {
@@ -421,18 +422,6 @@ export function setDescription(props: SetDescriptionProps) {
 	} else {
 		el.innerText = `Selected Date: ${valueString}`;
 	}
-}
-
-/**
- * Removes the description element for the date field with
- * the provided ID. This function should be called when the
- * date field is unmounted.
- */
-export function removeDescriptionElement(id: string, doc: Document) {
-	if (!isBrowser) return;
-	const el = doc.getElementById(id);
-	if (!el) return;
-	doc.body.removeChild(el);
 }
 
 export function getDefaultHourCycle(locale: string): 12 | 24 {
