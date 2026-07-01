@@ -1,5 +1,5 @@
 import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
-import { createContext } from 'svelte';
+import { createContext, tick } from 'svelte';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed, getDataTransitionAttrs } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
@@ -87,15 +87,53 @@ export class CollapsibleContentState {
 		if (this.opts.hiddenUntilFound.current) return this.root.opts.open.current;
 		return this.opts.forceMount.current || this.root.opts.open.current;
 	});
+	#originalStyles: { transitionDuration: string; animationName: string } | undefined;
+	#isMountAnimationPrevented = $state(false);
+	#dimensions = $state({ width: 0, height: 0 });
 
 	constructor(opts: CollapsibleContentStateOpts, root: CollapsibleRootState) {
 		this.opts = opts;
 		this.root = root;
+		this.#isMountAnimationPrevented = this.root.opts.open.current;
 		this.root.contentState = this;
 		this.attachment = {
 			...attachRef(this.opts.ref, (v) => (this.root.contentNode = v)),
 			[createAttachmentKey()]: ((node) => this.#attachBeforeMatch(node)) satisfies Attachment<HTMLElement>,
 		};
+
+		$effect(() => {
+			const frame = requestAnimationFrame(() => {
+				this.#isMountAnimationPrevented = false;
+			});
+
+			return () => cancelAnimationFrame(frame);
+		});
+
+		$effect(() => {
+			const node = this.opts.ref.current;
+			const present = this.present;
+			if (!node) return;
+
+			tick().then(() => {
+				if (this.opts.ref.current !== node || this.present !== present) return;
+
+				this.#originalStyles ??= {
+					transitionDuration: node.style.transitionDuration,
+					animationName: node.style.animationName,
+				};
+
+				node.style.transitionDuration = '0s';
+				node.style.animationName = 'none';
+
+				const rect = node.getBoundingClientRect();
+				this.#dimensions = { width: rect.width, height: rect.height };
+
+				if (!this.#isMountAnimationPrevented) {
+					node.style.transitionDuration = this.#originalStyles.transitionDuration;
+					node.style.animationName = this.#originalStyles.animationName;
+				}
+			});
+		});
 	}
 
 	get shouldRender() {
@@ -131,6 +169,12 @@ export class CollapsibleContentState {
 				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
 				'data-disabled': boolToEmptyStrOrUndef(this.root.opts.disabled.current),
 				[collapsibleAttrs.content]: '',
+				style: {
+					'--bits-disclosure-content-height': `${this.#dimensions.height}px`,
+					'--bits-disclosure-content-width': `${this.#dimensions.width}px`,
+					'--bits-collapsible-content-height': `${this.#dimensions.height}px`,
+					'--bits-collapsible-content-width': `${this.#dimensions.width}px`,
+				},
 				...(this.opts.hiddenUntilFound.current && !this.shouldRender
 					? {}
 					: {

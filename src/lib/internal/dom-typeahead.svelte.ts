@@ -1,6 +1,5 @@
-import type { WritableBox } from '$lib/internal/tools/index.js';
+import { boxAutoReset, type WritableBox } from '$lib/internal/tools/index.js';
 import { getNextMatch } from './arrays.js';
-import { boxAutoReset } from './box-auto-reset.svelte.js';
 
 type DOMTypeaheadOptions = {
 	onMatch?: (item: HTMLElement) => void;

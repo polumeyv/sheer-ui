@@ -1,5 +1,12 @@
 import { createContext, untrack } from 'svelte';
-import { type ReadableBox, type ReadableBoxedValues, type WritableBoxedValues, attachRef, boxWith, DOMContext } from '$lib/internal/tools/index.js';
+import {
+	type ReadableBox,
+	type ReadableBoxedValues,
+	type WritableBoxedValues,
+	attachRef,
+	boxWith,
+	DOMContext,
+} from '$lib/internal/tools/index.js';
 import { kbd } from '$lib/internal/kbd.js';
 import { createBitsAttrs, boolToStr, getDataOpenClosed } from '$lib/internal/attrs.js';
 import type {

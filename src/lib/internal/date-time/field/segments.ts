@@ -56,10 +56,10 @@ const prevNext = (startingNode: HTMLElement, segments: HTMLElement[]) => ({
 /**
  * Retrieves the next and previous segments relative to the current node.
  */
-export const getPrevNextSegments = (startingNode: HTMLElement, fieldNode: HTMLElement | null) =>
+const getPrevNextSegments = (startingNode: HTMLElement, fieldNode: HTMLElement | null) =>
 	prevNext(startingNode, getSegments(fieldNode));
 
-export const getPrevNextTimeSegments = (startingNode: HTMLElement, fieldNode: HTMLElement | null) =>
+const getPrevNextTimeSegments = (startingNode: HTMLElement, fieldNode: HTMLElement | null) =>
 	prevNext(startingNode, getTimeSegments(fieldNode));
 
 /**

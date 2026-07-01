@@ -14,32 +14,32 @@
 	const components: { title: string; href: string; description: string }[] = [
 		{
 			title: 'Alert Dialog',
-			href: '#',
+			href: '/components/dialog',
 			description: 'A modal dialog that interrupts the user with important content and expects a response.',
 		},
 		{
 			title: 'Hover Card',
-			href: '#',
+			href: '/components/link-preview',
 			description: 'For sighted users to preview content available behind a link.',
 		},
 		{
 			title: 'Progress',
-			href: '#',
+			href: '/components/progress',
 			description: 'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
 		},
 		{
 			title: 'Scroll-area',
-			href: '#',
+			href: '/components/scroll-area',
 			description: 'Visually or semantically separates content.',
 		},
 		{
 			title: 'Tabs',
-			href: '#',
+			href: '/components/tabs',
 			description: 'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
 		},
 		{
 			title: 'Tooltip',
-			href: '#',
+			href: '/components/tooltip',
 			description:
 				'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
 		},
@@ -91,17 +91,17 @@
 						</NavigationMenu.Link>
 					</li>
 					{@render ListItem({
-						href: '#',
+						href: '/',
 						title: 'Introduction',
 						content: 'Re-usable components built using Bits UI and Tailwind CSS.',
 					})}
 					{@render ListItem({
-						href: '#',
+						href: '/components/button',
 						title: 'Installation',
 						content: 'How to install dependencies and structure your app.',
 					})}
 					{@render ListItem({
-						href: '#',
+						href: '/components/heading',
 						title: 'Typography',
 						content: 'Styles for headings, paragraphs, lists...etc',
 					})}
@@ -126,7 +126,7 @@
 		<NavigationMenu.Item>
 			<NavigationMenu.Link>
 				{#snippet child()}
-					<a href="#" class={navigationMenuTriggerStyle()}>Docs</a>
+					<a href="/" class={navigationMenuTriggerStyle()}>Docs</a>
 				{/snippet}
 			</NavigationMenu.Link>
 		</NavigationMenu.Item>

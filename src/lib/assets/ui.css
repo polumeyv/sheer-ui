@@ -182,67 +182,31 @@
 		}
 	}
 
-	--animate-accordion-down: accordion-down var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out)
+	--animate-accordion-down: disclosure-down var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out)
 		var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
 		var(--tw-animation-fill-mode, none);
-	--animate-accordion-up: accordion-up var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out)
+	--animate-accordion-up: disclosure-up var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out)
 		var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
 		var(--tw-animation-fill-mode, none);
-	--animate-collapsible-down: collapsible-down var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out)
+	--animate-collapsible-down: disclosure-down var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out)
 		var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
 		var(--tw-animation-fill-mode, none);
-	--animate-collapsible-up: collapsible-up var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out)
+	--animate-collapsible-up: disclosure-up var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out)
 		var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
 		var(--tw-animation-fill-mode, none);
 
-	@keyframes accordion-down {
+	@keyframes disclosure-down {
 		from {
 			height: 0;
 		}
 		to {
-			height: var(
-				--radix-accordion-content-height,
-				var(
-					--bits-accordion-content-height,
-					var(--reka-accordion-content-height, var(--kb-accordion-content-height, var(--ngp-accordion-content-height, auto)))
-				)
-			);
+			height: var(--bits-disclosure-content-height, auto);
 		}
 	}
 
-	@keyframes accordion-up {
+	@keyframes disclosure-up {
 		from {
-			height: var(
-				--radix-accordion-content-height,
-				var(
-					--bits-accordion-content-height,
-					var(--reka-accordion-content-height, var(--kb-accordion-content-height, var(--ngp-accordion-content-height, auto)))
-				)
-			);
-		}
-		to {
-			height: 0;
-		}
-	}
-
-	@keyframes collapsible-down {
-		from {
-			height: 0;
-		}
-		to {
-			height: var(
-				--radix-collapsible-content-height,
-				var(--bits-collapsible-content-height, var(--reka-collapsible-content-height, var(--kb-collapsible-content-height, auto)))
-			);
-		}
-	}
-
-	@keyframes collapsible-up {
-		from {
-			height: var(
-				--radix-collapsible-content-height,
-				var(--bits-collapsible-content-height, var(--reka-collapsible-content-height, var(--kb-collapsible-content-height, auto)))
-			);
+			height: var(--bits-disclosure-content-height, auto);
 		}
 		to {
 			height: 0;
@@ -278,14 +242,6 @@
 @keyframes fadeOut {
 	to {
 		opacity: 0;
-	}
-}
-
-/* No-op animation: lets vaul delay unmount via animationend without a visual change. */
-@keyframes fake-animation {
-	from {
-	}
-	to {
 	}
 }
 

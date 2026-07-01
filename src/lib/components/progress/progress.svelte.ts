@@ -7,6 +7,13 @@ const progressAttrs = createBitsAttrs({
 	parts: ['root'],
 });
 
+export function getProgressPercent(value: number | null, min: number, max: number): number | null {
+	if (value === null) return null;
+	const range = max - min;
+	if (!Number.isFinite(value) || !Number.isFinite(min) || !Number.isFinite(max) || range <= 0) return 0;
+	return Math.min(100, Math.max(0, ((value - min) / range) * 100));
+}
+
 interface ProgressRootStateOpts
 	extends
 		WithRefOpts,
@@ -31,6 +38,7 @@ export class ProgressRootState {
 
 	readonly props = $derived.by(() => {
 		const value = this.opts.value.current;
+		const percent = getProgressPercent(value, this.opts.min.current, this.opts.max.current);
 		const isIndeterminate = value === null;
 		return {
 			role: 'progressbar',
@@ -39,7 +47,7 @@ export class ProgressRootState {
 			'aria-valuemax': this.opts.max.current,
 			'aria-valuenow': isIndeterminate ? undefined : value,
 			'data-value': isIndeterminate ? undefined : value,
-			'data-state': value === null ? 'indeterminate' : value === this.opts.max.current ? 'loaded' : 'loading',
+			'data-state': value === null ? 'indeterminate' : percent === 100 ? 'loaded' : 'loading',
 			'data-max': this.opts.max.current,
 			'data-min': this.opts.min.current,
 			'data-indeterminate': isIndeterminate ? '' : undefined,

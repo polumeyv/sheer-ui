@@ -31,6 +31,12 @@ function getScope() {
 	return node;
 }
 
+function getInsideButton() {
+	const node = document.body.querySelector<HTMLButtonElement>('[data-testid="inside"]');
+	if (!node) throw new Error("Expected inside button to render");
+	return node;
+}
+
 function runAnimationFrame() {
 	vi.advanceTimersByTime(16);
 	flushSync();
@@ -96,6 +102,27 @@ describe("FocusScope lifecycle", () => {
 			flushSync();
 
 			expect(onCloseAutoFocus).toHaveBeenCalledTimes(1);
+		} finally {
+			unmount(component);
+		}
+	});
+
+	test("trap listeners respond to trapFocus changes while mounted", () => {
+		vi.useFakeTimers();
+		const { component } = renderFixture({ enabled: true, trapFocus: false });
+
+		try {
+			runAnimationFrame();
+			getInsideButton().focus();
+			getBeforeButton().focus();
+			expect(document.activeElement).toBe(getBeforeButton());
+
+			component.setTrapFocus(true);
+			flushSync();
+
+			getInsideButton().focus();
+			getBeforeButton().focus();
+			expect(getScope().contains(document.activeElement)).toBe(true);
 		} finally {
 			unmount(component);
 		}

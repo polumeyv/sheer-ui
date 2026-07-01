@@ -27,7 +27,16 @@
 		),
 	});
 
-	const mergedProps = $derived(mergeProps({ 'data-slot': 'collapsible-content' }, restProps, contentState.props));
+	const mergedProps = $derived(
+		mergeProps(
+			{
+				'data-slot': 'collapsible-content',
+				class: 'data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden',
+			},
+			restProps,
+			contentState.props,
+		),
+	);
 </script>
 
 {#if child}

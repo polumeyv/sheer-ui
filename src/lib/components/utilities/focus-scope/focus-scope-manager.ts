@@ -1,17 +1,28 @@
-import { simpleBox } from '$lib/internal/tools/index.js';
-import { FocusScope } from './focus-scope.svelte.js';
+type FocusScope = {
+	pause(): void;
+	resume(): void;
+};
 
 export class FocusScopeManager {
 	static instance: FocusScopeManager;
-	#scopeStack = simpleBox<FocusScope[]>([]);
+	static #instances = new WeakMap<Document, FocusScopeManager>();
+	#scopeStack: FocusScope[] = [];
 	#focusHistory = new WeakMap<FocusScope, HTMLElement>();
 	#preFocusHistory = new WeakMap<FocusScope, HTMLElement>();
+	#document: Document;
 
-	static getInstance() {
-		if (!this.instance) {
-			this.instance = new FocusScopeManager();
+	constructor(doc: Document) {
+		this.#document = doc;
+	}
+
+	static getInstance(doc: Document = document) {
+		let instance = this.#instances.get(doc);
+		if (!instance) {
+			instance = new FocusScopeManager(doc);
+			this.#instances.set(doc, instance);
+			this.instance ??= instance;
 		}
-		return this.instance;
+		return instance;
 	}
 
 	register(scope: FocusScope) {
@@ -21,17 +32,17 @@ export class FocusScopeManager {
 		}
 
 		// capture the currently focused element before this scope becomes active
-		const activeElement = document.activeElement as HTMLElement;
-		if (activeElement && activeElement !== document.body) {
+		const activeElement = this.#document.activeElement as HTMLElement;
+		if (activeElement && activeElement !== this.#document.body) {
 			this.#preFocusHistory.set(scope, activeElement);
 		}
 
-		this.#scopeStack.current = this.#scopeStack.current.filter((s) => s !== scope);
-		this.#scopeStack.current.unshift(scope);
+		this.#scopeStack = this.#scopeStack.filter((s) => s !== scope);
+		this.#scopeStack.unshift(scope);
 	}
 
 	unregister(scope: FocusScope) {
-		this.#scopeStack.current = this.#scopeStack.current.filter((s) => s !== scope);
+		this.#scopeStack = this.#scopeStack.filter((s) => s !== scope);
 		const next = this.getActive();
 		if (next) {
 			next.resume();
@@ -39,7 +50,7 @@ export class FocusScopeManager {
 	}
 
 	getActive(): FocusScope | undefined {
-		return this.#scopeStack.current[0];
+		return this.#scopeStack[0];
 	}
 
 	setFocusMemory(scope: FocusScope, element: HTMLElement) {

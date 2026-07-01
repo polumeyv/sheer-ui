@@ -1,6 +1,5 @@
 import { createContext } from "svelte";
-import { isMobile } from "$lib/hooks/is-mobile.svelte";
-import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants';
+import { SIDEBAR_DESKTOP_MEDIA_QUERY, SIDEBAR_KEYBOARD_SHORTCUT } from './constants';
 
 type SidebarStateProps = {
 	/**
@@ -34,7 +33,7 @@ export class SidebarState {
 	handleShortcutKeydown = (e: KeyboardEvent) => {
 		if (e.key === SIDEBAR_KEYBOARD_SHORTCUT && (e.metaKey || e.ctrlKey)) {
 			e.preventDefault();
-			this.toggle();
+			this.toggleForViewport();
 		}
 	};
 
@@ -42,8 +41,24 @@ export class SidebarState {
 		this.openMobile = value;
 	};
 
+	toggleDesktop = () => {
+		this.setOpen(!this.open);
+	};
+
+	toggleMobile = () => {
+		this.openMobile = !this.openMobile;
+	};
+
+	toggleForViewport = () => {
+		if (globalThis.matchMedia?.(SIDEBAR_DESKTOP_MEDIA_QUERY).matches) {
+			this.toggleDesktop();
+		} else {
+			this.toggleMobile();
+		}
+	};
+
 	toggle = () => {
-		return isMobile.current ? (this.openMobile = !this.openMobile) : this.setOpen(!this.open);
+		this.toggleForViewport();
 	};
 }
 

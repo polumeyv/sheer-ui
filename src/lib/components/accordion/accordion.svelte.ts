@@ -1,5 +1,5 @@
 import { attachRef, boxWith, type Box, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
-import { createContext } from 'svelte';
+import { createContext, tick } from 'svelte';
 import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed, getDataTransitionAttrs } from '$lib/internal/attrs.js';
 import { kbd } from '$lib/internal/kbd.js';
@@ -268,6 +268,9 @@ export class AccordionContentState {
 	readonly opts: AccordionContentStateOpts;
 	readonly item: AccordionItemState;
 	readonly attachment: RefAttachment;
+	#originalStyles: { transitionDuration: string; animationName: string } | undefined;
+	#isMountAnimationPrevented = $state(false);
+	#dimensions = $state({ width: 0, height: 0 });
 
 	readonly open = $derived.by(() => {
 		if (this.opts.hiddenUntilFound.current) return this.item.isActive;
@@ -277,10 +280,45 @@ export class AccordionContentState {
 	constructor(opts: AccordionContentStateOpts, item: AccordionItemState) {
 		this.opts = opts;
 		this.item = item;
+		this.#isMountAnimationPrevented = this.item.isActive;
 		this.attachment = {
 			...attachRef(this.opts.ref, (v) => (this.item.contentNode = v)),
 			[createAttachmentKey()]: ((node) => this.#attachBeforeMatch(node)) satisfies Attachment<HTMLElement>,
 		};
+
+		$effect(() => {
+			const frame = requestAnimationFrame(() => {
+				this.#isMountAnimationPrevented = false;
+			});
+
+			return () => cancelAnimationFrame(frame);
+		});
+
+		$effect(() => {
+			const node = this.opts.ref.current;
+			const open = this.open;
+			if (!node) return;
+
+			tick().then(() => {
+				if (this.opts.ref.current !== node || this.open !== open) return;
+
+				this.#originalStyles ??= {
+					transitionDuration: node.style.transitionDuration,
+					animationName: node.style.animationName,
+				};
+
+				node.style.transitionDuration = '0s';
+				node.style.animationName = 'none';
+
+				const rect = node.getBoundingClientRect();
+				this.#dimensions = { width: rect.width, height: rect.height };
+
+				if (!this.#isMountAnimationPrevented) {
+					node.style.transitionDuration = this.#originalStyles.transitionDuration;
+					node.style.animationName = this.#originalStyles.animationName;
+				}
+			});
+		});
 	}
 
 	static create(props: AccordionContentStateOpts): AccordionContentState {
@@ -315,6 +353,12 @@ export class AccordionContentState {
 				'data-disabled': boolToEmptyStrOrUndef(this.item.isDisabled),
 				'data-orientation': this.item.root.opts.orientation.current,
 				[accordionAttrs.content]: '',
+				style: {
+					'--bits-disclosure-content-height': `${this.#dimensions.height}px`,
+					'--bits-disclosure-content-width': `${this.#dimensions.width}px`,
+					'--bits-accordion-content-height': `${this.#dimensions.height}px`,
+					'--bits-accordion-content-width': `${this.#dimensions.width}px`,
+				},
 				hidden: this.opts.hiddenUntilFound.current && !this.item.isActive ? 'until-found' : undefined,
 				...(this.opts.hiddenUntilFound.current && !this.shouldRender
 					? {}

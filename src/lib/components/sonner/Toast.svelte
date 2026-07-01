@@ -30,6 +30,12 @@
 		loading: '',
 	};
 
+	// Shared by the action/cancel buttons. Deliberately carries no bg-*/text-* utility —
+	// each button supplies its own so cn() (plain join, no conflict resolution) never has
+	// to arbitrate between two colors for the same property.
+	const BUTTON_BASE_CLASS =
+		'ms-auto flex h-6 shrink-0 cursor-pointer items-center rounded border-0 px-2 text-xs font-medium outline-none [transition:opacity_400ms,box-shadow_200ms] focus-visible:shadow-[0_0_0_2px_rgba(0,0,0,0.4)]';
+
 	function getDefaultSwipeDirections(position: string): Array<SwipeDirection> {
 		const [y, x] = position.split('-');
 		const directions: Array<SwipeDirection> = [];
@@ -89,12 +95,10 @@
 		...restProps
 	}: ToastProps = $props();
 
-	const defaultClasses: ToastClasses = { ...DEFAULT_TOAST_CLASSES };
-
 	const styled = $derived(!(toast.component || toast.unstyled || unstyled));
 	const toastType = $derived(toast.type);
 	const toastClass = $derived(toast.class || '');
-	const classes = $derived({ ...defaultClasses, ...classesProp });
+	const classes = $derived({ ...DEFAULT_TOAST_CLASSES, ...classesProp });
 
 	const toastRootClass = $derived(
 		cn(
@@ -109,6 +113,9 @@
 			'data-[swiping=true]:[transform:var(--y)_translateY(var(--swipe-amount-y,0px))_translateX(var(--swipe-amount-x,0px))]',
 			'data-[swiping=true]:transition-none',
 			'data-[x-position=left]:left-0 data-[x-position=right]:right-0',
+			// !-forced: ties data-[styled=true]:w-[var(--width)] on specificity (both class+attribute),
+			// and without !important this loses the tie to Tailwind's own internal utility ordering.
+			'max-[600px]:inset-x-0! max-[600px]:w-[calc(100%-var(--mobile-offset-left)*2)]!',
 			'data-[styled=true]:flex data-[styled=true]:w-[var(--width)] data-[styled=true]:items-center data-[styled=true]:gap-1.5',
 			'data-[styled=true]:rounded-[var(--border-radius)] data-[styled=true]:border data-[styled=true]:border-[color:var(--normal-border)]',
 			'data-[styled=true]:bg-[var(--normal-bg)] data-[styled=true]:p-4 data-[styled=true]:text-[13px] data-[styled=true]:text-[color:var(--normal-text)]',
@@ -122,6 +129,9 @@
 			toast?.classes?.[toastType],
 		),
 	);
+
+	// Fades the icon in when it's swapped mid-flight (loading -> success/error) during a toast.promise() sequence.
+	const iconClass = $derived(cn('size-4 shrink-0 ms-[-1px]', toast.promise && '[animation:sonner-fade-in_300ms_ease_forwards]'));
 
 	let mounted = $state(false);
 	let removed = $state(false);
@@ -449,7 +459,17 @@
 				deleteToast();
 				toast.onDismiss?.(toast);
 			}}
-			class={cn(classes?.closeButton, toast?.classes?.closeButton)}>
+			class={cn(
+				'absolute start-0 top-0 z-[1] flex size-5 items-center justify-center rounded-full border p-0 outline-none',
+				'cursor-pointer border-[hsl(0,0%,93%)] bg-(--normal-bg) text-[hsl(0,0%,9%)]',
+				'[transform:translate(-35%,-35%)] rtl:[transform:translate(35%,-35%)]',
+				'[transition:opacity_100ms,background_200ms,border-color_200ms]',
+				'hover:border-[hsl(0,0%,90.9%)] hover:bg-[hsl(0,0%,97.3%)]',
+				'focus-visible:shadow-[0px_4px_12px_rgba(0,0,0,0.1),0_0_0_2px_rgba(0,0,0,0.2)]',
+				'data-[disabled=true]:cursor-not-allowed',
+				classes?.closeButton,
+				toast?.classes?.closeButton,
+			)}>
 			<XIcon class="size-3" />
 		</button>
 	{/if}
@@ -459,22 +479,24 @@
 		<Component {...toast.componentProps} closeToast={deleteToast} />
 	{:else}
 		{#if toastType === 'loading' || toastType === 'success' || toastType === 'error' || toastType === 'warning' || toastType === 'info'}
-			<div data-icon="" class={cn(classes?.icon, toast?.classes?.icon)}>
+			<div
+				data-icon=""
+				class={cn('relative flex size-4 shrink-0 items-center justify-start ms-[-3px] me-1', classes?.icon, toast?.classes?.icon)}>
 				{#if toastType === 'loading'}
-					<Loader2Icon class="size-4 animate-spin" />
+					<Loader2Icon class={cn(iconClass, 'animate-spin')} />
 				{:else if toastType === 'success'}
-					<CircleCheckIcon class="size-4" strokeWidth={2.5} />
+					<CircleCheckIcon class={iconClass} strokeWidth={2.5} />
 				{:else if toastType === 'error'}
-					<OctagonXIcon class="size-4" strokeWidth={2.5} />
+					<OctagonXIcon class={iconClass} strokeWidth={2.5} />
 				{:else if toastType === 'warning'}
-					<TriangleAlertIcon class="size-4" strokeWidth={2.5} />
+					<TriangleAlertIcon class={iconClass} strokeWidth={2.5} />
 				{:else if toastType === 'info'}
-					<InfoIcon class="size-4" strokeWidth={2.5} />
+					<InfoIcon class={iconClass} strokeWidth={2.5} />
 				{/if}
 			</div>
 		{/if}
-		<div data-content="" class={cn(classes?.content, toast?.classes?.content)}>
-			<div data-title="" class={cn(classes?.title, toast?.classes?.title)}>
+		<div data-content="" class={cn('flex flex-col gap-0.5', classes?.content, toast?.classes?.content)}>
+			<div data-title="" class={cn('font-medium leading-normal', classes?.title, toast?.classes?.title)}>
 				{#if toast.title}
 					{#if typeof toast.title !== 'string'}
 						{@const Title = toast.title}
@@ -485,7 +507,15 @@
 				{/if}
 			</div>
 			{#if toast.description}
-				<div data-description="" class={cn(descriptionClass, toastDescriptionClass, classes?.description, toast.classes?.description)}>
+				<div
+					data-description=""
+					class={cn(
+						'font-normal leading-[1.4] text-[#3f3f3f]',
+						descriptionClass,
+						toastDescriptionClass,
+						classes?.description,
+						toast.classes?.description,
+					)}>
 					{#if typeof toast.description !== 'string'}
 						{@const Description = toast.description}
 						<Description {...toast.componentProps} />
@@ -503,7 +533,7 @@
 					data-button
 					data-cancel
 					style={toast.cancelButtonStyle ?? cancelButtonStyle}
-					class={cn(classes?.cancelButton, toast?.classes?.cancelButton)}
+					class={cn(BUTTON_BASE_CLASS, 'bg-black/8 text-(--normal-text)', classes?.cancelButton, toast?.classes?.cancelButton)}
 					onclick={(event) => {
 						if (!isAction(toast.cancel)) return;
 						if (!dismissible) return;
@@ -521,7 +551,7 @@
 				<button
 					data-button=""
 					style={toast.actionButtonStyle ?? actionButtonStyle}
-					class={cn(classes?.actionButton, toast?.classes?.actionButton)}
+					class={cn(BUTTON_BASE_CLASS, 'bg-(--normal-text) text-(--normal-bg)', classes?.actionButton, toast?.classes?.actionButton)}
 					onclick={(event) => {
 						if (!isAction(toast.action)) return;
 						toast.action?.onClick(event);

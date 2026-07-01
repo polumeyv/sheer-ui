@@ -1,31 +1,26 @@
-import { type ReadableBoxedValues } from '$lib/internal/tools/index.js';
+import { type Getter, type RefAttachment } from '$lib/internal/tools/index.js';
 import { FocusScopeManager } from './focus-scope-manager.js';
 import { focusable, isFocusable, tabbable } from 'tabbable';
 import { on } from 'svelte/events';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 import { untrack } from 'svelte';
 
-interface FocusScopeOpts extends ReadableBoxedValues<{
-	onOpenAutoFocus: (event: Event) => void;
-	onCloseAutoFocus: (event: Event) => void;
-	trap: boolean;
-}> {
-	loop: boolean;
+export interface FocusScopeOpts {
+	onOpenAutoFocus: Getter<(event: Event) => void>;
+	onCloseAutoFocus: Getter<(event: Event) => void>;
+	trap: Getter<boolean>;
+	loop: Getter<boolean>;
 }
 
-interface FocusScopeUseOpts
-	extends
-		FocusScopeOpts,
-		ReadableBoxedValues<{
-			enabled: boolean;
-			ref: HTMLElement | null;
-		}> {}
+export interface FocusScopeAttachmentOpts extends FocusScopeOpts {
+	enabled: Getter<boolean>;
+}
 
-export class FocusScope {
+class FocusScope {
 	#paused = false;
 	#container: HTMLElement | null = null;
-	#manager = FocusScopeManager.getInstance();
-	#cleanupFns: Array<() => void> = [];
+	#manager: FocusScopeManager | null = null;
+	#trapCleanupFns: Array<() => void> = [];
 	#opts: FocusScopeOpts;
 
 	constructor(opts: FocusScopeOpts) {
@@ -45,10 +40,10 @@ export class FocusScope {
 	}
 
 	#cleanup() {
-		for (const fn of this.#cleanupFns) {
+		for (const fn of this.#trapCleanupFns) {
 			fn();
 		}
-		this.#cleanupFns = [];
+		this.#trapCleanupFns = [];
 	}
 
 	mount(container: HTMLElement) {
@@ -57,9 +52,8 @@ export class FocusScope {
 		}
 
 		this.#container = container;
+		this.#manager = FocusScopeManager.getInstance(container.ownerDocument);
 		this.#manager.register(this);
-
-		this.#setupEventListeners();
 		this.#handleOpenAutoFocus();
 	}
 
@@ -71,9 +65,10 @@ export class FocusScope {
 		// handle close auto-focus
 		this.#handleCloseAutoFocus();
 
-		this.#manager.unregister(this);
-		this.#manager.clearPreFocusMemory(this);
+		this.#manager?.unregister(this);
+		this.#manager?.clearPreFocusMemory(this);
 		this.#container = null;
+		this.#manager = null;
 	}
 
 	#handleOpenAutoFocus() {
@@ -83,7 +78,7 @@ export class FocusScope {
 			bubbles: false,
 			cancelable: true,
 		});
-		this.#opts.onOpenAutoFocus.current(event);
+		this.#opts.onOpenAutoFocus()(event);
 
 		if (!event.defaultPrevented) {
 			requestAnimationFrame(() => {
@@ -91,7 +86,7 @@ export class FocusScope {
 				const firstTabbable = this.#getFirstTabbable();
 				if (firstTabbable) {
 					firstTabbable.focus();
-					this.#manager.setFocusMemory(this, firstTabbable);
+					this.#manager?.setFocusMemory(this, firstTabbable);
 				} else {
 					this.#container.focus();
 				}
@@ -105,31 +100,32 @@ export class FocusScope {
 			cancelable: true,
 		});
 
-		this.#opts.onCloseAutoFocus.current?.(event);
+		this.#opts.onCloseAutoFocus()?.(event);
 
 		if (!event.defaultPrevented) {
 			// return focus to the element that was focused before this scope opened
-			const preFocusedElement = this.#manager.getPreFocusMemory(this);
-			if (preFocusedElement && document.contains(preFocusedElement)) {
+			const preFocusedElement = this.#manager?.getPreFocusMemory(this);
+			const doc = this.#container?.ownerDocument;
+			if (preFocusedElement && doc?.contains(preFocusedElement)) {
 				// ensure the element is still focusable and in the document
 				try {
 					preFocusedElement.focus();
 				} catch {
 					// fallback if focus fails
-					document.body.focus();
+					doc.body.focus();
 				}
 			}
 		}
 	}
 
-	#setupEventListeners() {
-		if (!this.#container || !this.#opts.trap.current) return;
+	enableTrap() {
+		if (!this.#container || this.#trapCleanupFns.length > 0) return;
 
 		const container = this.#container;
 		const doc = container.ownerDocument;
 
 		const handleFocus = (e: FocusEvent) => {
-			if (this.#paused || !this.#manager.isActiveScope(this)) return;
+			if (this.#paused || !this.#manager?.isActiveScope(this)) return;
 
 			const target = e.target as HTMLElement;
 			if (!target) return;
@@ -138,10 +134,10 @@ export class FocusScope {
 
 			if (isInside) {
 				// store last focused element
-				this.#manager.setFocusMemory(this, target);
+				this.#manager?.setFocusMemory(this, target);
 			} else {
 				// focus escaped - bring it back
-				const lastFocused = this.#manager.getFocusMemory(this);
+				const lastFocused = this.#manager?.getFocusMemory(this);
 				if (lastFocused && container.contains(lastFocused) && isFocusable(lastFocused)) {
 					e.preventDefault();
 					lastFocused.focus();
@@ -155,8 +151,8 @@ export class FocusScope {
 		};
 
 		const handleKeydown = (e: KeyboardEvent) => {
-			if (!this.#opts.loop || this.#paused || e.key !== 'Tab') return;
-			if (!this.#manager.isActiveScope(this)) return;
+			if (!this.#opts.loop() || this.#paused || e.key !== 'Tab') return;
+			if (!this.#manager?.isActiveScope(this)) return;
 
 			const tabbables = this.#getTabbables();
 			if (tabbables.length === 0) return;
@@ -173,10 +169,11 @@ export class FocusScope {
 			}
 		};
 
-		this.#cleanupFns.push(on(doc, 'focusin', handleFocus, { capture: true }), on(container, 'keydown', handleKeydown));
+		this.#trapCleanupFns.push(on(doc, 'focusin', handleFocus, { capture: true }), on(container, 'keydown', handleKeydown));
 
-		const observer = new MutationObserver(() => {
-			const lastFocused = this.#manager.getFocusMemory(this);
+		const Observer = doc.defaultView?.MutationObserver ?? MutationObserver;
+		const observer = new Observer(() => {
+			const lastFocused = this.#manager?.getFocusMemory(this);
 			if (lastFocused && !container.contains(lastFocused)) {
 				// last focused element was removed
 				const firstTabbable = this.#getFirstTabbable();
@@ -185,7 +182,7 @@ export class FocusScope {
 
 				if (elementToFocus) {
 					elementToFocus.focus();
-					this.#manager.setFocusMemory(this, elementToFocus);
+					this.#manager?.setFocusMemory(this, elementToFocus);
 				} else {
 					// no focusable elements left, focus container
 					container.focus();
@@ -198,7 +195,11 @@ export class FocusScope {
 			subtree: true,
 		});
 
-		this.#cleanupFns.push(() => observer.disconnect());
+		this.#trapCleanupFns.push(() => observer.disconnect());
+	}
+
+	disableTrap() {
+		this.#cleanup();
 	}
 
 	#getTabbables(): HTMLElement[] {
@@ -224,27 +225,45 @@ export class FocusScope {
 		}) as HTMLElement[];
 	}
 
-	static use(opts: FocusScopeUseOpts) {
-		const focusScopeAttachment = {
-			[createAttachmentKey()]: ((node) => {
-				if (!opts.enabled.current) return;
+}
 
-				const scope = new FocusScope(opts);
-				untrack(() => scope.mount(node));
+export function createFocusScopeAttachment(opts: FocusScopeAttachmentOpts): RefAttachment<HTMLElement> {
+	return {
+		[createAttachmentKey()]: ((node) => {
+			if (!opts.enabled()) return;
+
+			const scope = new FocusScope(opts);
+			untrack(() => scope.mount(node));
+
+			$effect(() => {
+				if (!opts.trap()) {
+					untrack(() => scope.disableTrap());
+					return;
+				}
+
+				untrack(() => scope.enableTrap());
 
 				return () => {
-					untrack(() => scope.unmount());
+					untrack(() => scope.disableTrap());
 				};
-			}) satisfies Attachment<HTMLElement>,
-		};
+			});
 
-		return {
-			get props() {
-				return {
-					tabindex: -1,
-					...focusScopeAttachment,
-				};
-			},
-		};
-	}
+			return () => {
+				untrack(() => scope.unmount());
+			};
+		}) satisfies Attachment<HTMLElement>,
+	};
+}
+
+export function createFocusScopeProps(opts: FocusScopeAttachmentOpts) {
+	const focusScopeAttachment = createFocusScopeAttachment(opts);
+
+	return {
+		get props() {
+			return {
+				tabindex: -1,
+				...focusScopeAttachment,
+			};
+		},
+	};
 }

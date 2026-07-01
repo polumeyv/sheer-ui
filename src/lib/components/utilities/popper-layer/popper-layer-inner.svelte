@@ -6,8 +6,7 @@
 	import { escapeKeydownAttachment } from '$lib/components/utilities/escape-layer/use-escape-layer.svelte.js';
 	import { interactOutsideAttachment } from '$lib/components/utilities/dismissible-layer/use-dismissable-layer.svelte.js';
 	import { textSelectionAttachment } from '$lib/components/utilities/text-selection-layer/use-text-selection-layer.svelte.js';
-	import { FocusScope } from '$lib/components/utilities/focus-scope/focus-scope.svelte.js';
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { createFocusScopeProps } from '$lib/components/utilities/focus-scope/focus-scope.svelte.js';
 
 	let {
 		popper,
@@ -79,13 +78,12 @@
 		enabled: () => enabled && (preventOverflowTextSelection ?? true),
 	});
 
-	const focusScope = FocusScope.use({
-		enabled: boxWith(() => enabled),
-		trap: boxWith(() => trapFocus),
-		loop: loop ?? false,
-		onCloseAutoFocus: boxWith(() => onCloseAutoFocus ?? (() => {})),
-		onOpenAutoFocus: boxWith(() => onOpenAutoFocus ?? (() => {})),
-		ref,
+	const focusScope = createFocusScopeProps({
+		enabled: () => enabled,
+		trap: () => trapFocus,
+		loop: () => loop ?? false,
+		onCloseAutoFocus: () => onCloseAutoFocus ?? (() => {}),
+		onOpenAutoFocus: () => onOpenAutoFocus ?? (() => {}),
 	});
 </script>
 

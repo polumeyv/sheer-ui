@@ -32,7 +32,6 @@
 	import type { ComponentProps, Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { useSidebar } from './context.svelte';
-	import { isMobile } from '$lib/hooks/is-mobile.svelte';
 
 	let {
 		ref = $bindable(null),
@@ -64,6 +63,10 @@
 		'data-active': isActive,
 		...restProps,
 	});
+
+	const contentProps = $derived(
+		mergeProps({ side: 'right', align: 'center', hidden: sidebar.state !== 'collapsed', class: 'max-md:hidden' }, tooltipContentProps),
+	);
 </script>
 
 {#snippet Button({ props }: { props?: Record<string, unknown> })}
@@ -85,7 +88,7 @@
 				{@render Button({ props })}
 			{/snippet}
 		</Tooltip.Trigger>
-		<Tooltip.Content side="right" align="center" hidden={sidebar.state !== 'collapsed' || isMobile.current} {...tooltipContentProps}>
+		<Tooltip.Content {...contentProps}>
 			{#if typeof tooltipContent === 'string'}
 				{tooltipContent}
 			{:else if tooltipContent}

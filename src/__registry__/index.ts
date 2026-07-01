@@ -222,6 +222,14 @@ export const Index = {
 		type: "registry:example",
 		files: ["../lib/registry/sidebar-demo.svelte"],
 	},
+	"sidebar-floating": {
+		type: "registry:example",
+		files: ["../lib/registry/sidebar-floating.svelte"],
+	},
+	"sidebar-right": {
+		type: "registry:example",
+		files: ["../lib/registry/sidebar-right.svelte"],
+	},
 	"skeleton-demo": {
 		type: "registry:example",
 		files: ["../lib/registry/skeleton-demo.svelte"],

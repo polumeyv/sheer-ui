@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { boxWith } from "../../src/lib/internal/tools/index.js";
-	import { FocusScope } from "../../src/lib/components/utilities/focus-scope/focus-scope.svelte.js";
+	import { createFocusScopeProps } from "../../src/lib/components/utilities/focus-scope/focus-scope.svelte.js";
 
 	let {
 		enabled = $bindable(true),
@@ -21,20 +20,20 @@
 		enabled = next;
 	}
 
+	export function setTrapFocus(next: boolean) {
+		trapFocus = next;
+	}
+
 	export function hideScope() {
 		renderScope = false;
 	}
 
-	const focusScope = FocusScope.use({
-		enabled: boxWith(() => enabled),
-		trap: boxWith(() => trapFocus),
-		loop: true,
-		onOpenAutoFocus: boxWith(() => onOpenAutoFocus),
-		onCloseAutoFocus: boxWith(() => onCloseAutoFocus),
-		ref: boxWith(
-			() => scopeRef,
-			(v) => (scopeRef = v),
-		),
+	const focusScope = createFocusScopeProps({
+		enabled: () => enabled,
+		trap: () => trapFocus,
+		loop: () => true,
+		onOpenAutoFocus: () => onOpenAutoFocus,
+		onCloseAutoFocus: () => onCloseAutoFocus,
 	});
 </script>
 
