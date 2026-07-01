@@ -105,6 +105,20 @@
 	:root {
 		interpolate-size: allow-keywords;
 	}
+
+	[data-accordion-content] {
+		height: 0;
+		transition: height var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out);
+		animation: none;
+	}
+
+	[data-accordion-content][data-state='open'] {
+		height: auto;
+
+		@starting-style {
+			height: 0;
+		}
+	}
 }
 
 @theme inline {
@@ -278,14 +292,6 @@
 @keyframes fadeOut {
 	to {
 		opacity: 0;
-	}
-}
-
-/* No-op animation: lets vaul delay unmount via animationend without a visual change. */
-@keyframes fake-animation {
-	from {
-	}
-	to {
 	}
 }
 
