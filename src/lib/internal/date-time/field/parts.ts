@@ -13,8 +13,3 @@ export const ALL_TIME_SEGMENT_PARTS = [
 	...EDITABLE_TIME_SEGMENT_PARTS,
 	...NON_EDITABLE_SEGMENT_PARTS,
 ] as const;
-
-export const ALL_EXCEPT_LITERAL_PARTS = ALL_SEGMENT_PARTS.filter((part) => part !== "literal");
-export const ALL_TIME_EXCEPT_LITERAL_PARTS = ALL_TIME_SEGMENT_PARTS.filter(
-	(part) => part !== "literal"
-);
