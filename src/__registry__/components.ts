@@ -215,6 +215,8 @@ export const componentDemos = {
 	],
 	"sidebar": [
 		{ key: "demo", name: "sidebar-demo", path: "/src/lib/registry/sidebar-demo.svelte", sourcePath: "../lib/registry/sidebar-demo.svelte" },
+		{ key: "floating", name: "sidebar-floating", path: "/src/lib/registry/sidebar-floating.svelte", sourcePath: "../lib/registry/sidebar-floating.svelte" },
+		{ key: "right", name: "sidebar-right", path: "/src/lib/registry/sidebar-right.svelte", sourcePath: "../lib/registry/sidebar-right.svelte" },
 	],
 	"skeleton": [
 		{ key: "demo", name: "skeleton-demo", path: "/src/lib/registry/skeleton-demo.svelte", sourcePath: "../lib/registry/skeleton-demo.svelte" },

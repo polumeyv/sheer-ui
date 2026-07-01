@@ -71,7 +71,10 @@ export function textCell<T>(key: keyof T | ((row: T) => string | number | null |
 /**
  * Creates a muted text cell renderer
  */
-export function mutedCell<T>(key: keyof T | ((row: T) => string | number | null | undefined), options?: { prefix?: string; suffix?: string }) {
+export function mutedCell<T>(
+	key: keyof T | ((row: T) => string | number | null | undefined),
+	options?: { prefix?: string; suffix?: string },
+) {
 	return ({ row }: CellContext<T, unknown>) => {
 		const value = typeof key === 'function' ? key(row.original) : row.original[key];
 		if (value == null) {

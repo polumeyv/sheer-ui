@@ -1,6 +1,5 @@
-import type { Getter, WritableBox } from '$lib/internal/tools/index.js';
+import { boxAutoReset, type Getter, type WritableBox } from '$lib/internal/tools/index.js';
 import { getNextMatch } from './arrays.js';
-import { boxAutoReset } from './box-auto-reset.svelte.js';
 
 interface DataTypeaheadOpts {
 	onMatch: (value: string) => void;

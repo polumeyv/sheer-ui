@@ -74,6 +74,7 @@
 	import type { Position } from './types.js';
 	import type { DragEventHandler, FocusEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
 	import { on } from 'svelte/events';
+	import { MediaQuery } from 'svelte/reactivity';
 
 	let {
 		invert = false,
@@ -132,6 +133,9 @@
 			'data-[y-position=bottom]:bottom-(--offset-bottom)',
 			'max-[600px]:fixed max-[600px]:right-(--mobile-offset-right)',
 			'max-[600px]:left-(--mobile-offset-left) max-[600px]:w-full',
+			// !-forced: rtl:/max-[600px]: add no specificity over the plain max-[600px]:left-(...)
+			// rule above, so without !important this loses the tie to Tailwind's internal ordering.
+			'rtl:max-[600px]:left-[calc(var(--mobile-offset-left)*-1)]!',
 			'max-[600px]:data-[x-position=left]:left-(--mobile-offset-left)',
 			'max-[600px]:data-[y-position=bottom]:bottom-(--mobile-offset-bottom)',
 			'max-[600px]:data-[y-position=top]:top-(--mobile-offset-top)',
@@ -167,9 +171,9 @@
 
 	let expanded = $state(false);
 	let interacting = $state(false);
-	let systemTheme = $state<typeof DARK | typeof LIGHT>(LIGHT);
+	const prefersDark = new MediaQuery('prefers-color-scheme: dark');
 
-	const actualTheme = $derived(theme === 'system' ? systemTheme : theme);
+	const actualTheme = $derived(theme === 'system' ? (prefersDark.current ? DARK : LIGHT) : theme);
 	let listRef = $state<HTMLOListElement>();
 	let lastFocusedElementRef = $state<HTMLElement | null>(null);
 	let isFocusWithin = $state(false);
@@ -226,24 +230,6 @@
 		};
 
 		return on(document, 'keydown', handleKeydown);
-	});
-
-	$effect(() => {
-		if (typeof window === 'undefined' || theme !== 'system') return;
-
-		const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
-
-		const syncSystemTheme = () => {
-			systemTheme = mediaQueryList.matches ? DARK : LIGHT;
-		};
-
-		syncSystemTheme();
-
-		mediaQueryList.addEventListener('change', syncSystemTheme);
-
-		return () => {
-			mediaQueryList.removeEventListener('change', syncSystemTheme);
-		};
 	});
 
 	const handleBlur: FocusEventHandler<HTMLOListElement> = (event) => {
@@ -378,32 +364,6 @@
 
 <style lang="postcss">
 	:global {
-		html[dir='ltr'],
-		[data-sonner-toaster][dir='ltr'] {
-			--toast-icon-margin-start: -3px;
-			--toast-icon-margin-end: 4px;
-			--toast-svg-margin-start: -1px;
-			--toast-svg-margin-end: 0px;
-			--toast-button-margin-start: auto;
-			--toast-button-margin-end: 0;
-			--toast-close-button-start: 0;
-			--toast-close-button-end: unset;
-			--toast-close-button-transform: translate(-35%, -35%);
-		}
-
-		html[dir='rtl'],
-		[data-sonner-toaster][dir='rtl'] {
-			--toast-icon-margin-start: 4px;
-			--toast-icon-margin-end: -3px;
-			--toast-svg-margin-start: 0px;
-			--toast-svg-margin-end: -1px;
-			--toast-button-margin-start: 0;
-			--toast-button-margin-end: auto;
-			--toast-close-button-start: unset;
-			--toast-close-button-end: 0;
-			--toast-close-button-transform: translate(35%, -35%);
-		}
-
 		[data-sonner-toaster] {
 			--gray1: hsl(0, 0%, 99%);
 			--gray2: hsl(0, 0%, 97.3%);
@@ -420,30 +380,6 @@
 			--border-radius: 8px;
 		}
 
-		@media (hover: none) and (pointer: coarse) {
-			[data-sonner-toaster][data-lifted='true'] {
-				transform: none;
-			}
-		}
-
-		@media (max-width: 600px) {
-			[data-sonner-toaster][dir='rtl'] {
-				left: calc(var(--mobile-offset-left) * -1);
-			}
-
-			[data-sonner-toaster] [data-sonner-toast] {
-				left: 0;
-				right: 0;
-				width: calc(100% - var(--mobile-offset-left) * 2);
-			}
-		}
-
-		[data-sonner-toast][data-styled='true'] [data-description] {
-			font-weight: 400;
-			line-height: 1.4;
-			color: #3f3f3f;
-		}
-
 		[data-rich-colors='true'][data-sonner-toast][data-styled='true'] [data-description] {
 			color: inherit;
 		}
@@ -452,123 +388,8 @@
 			color: hsl(0, 0%, 91%);
 		}
 
-		[data-sonner-toast][data-styled='true'] [data-title] {
-			font-weight: 500;
-			line-height: 1.5;
-			color: inherit;
-		}
-
-		[data-sonner-toast][data-styled='true'] [data-icon] {
-			display: flex;
-			height: 16px;
-			width: 16px;
-			position: relative;
-			justify-content: flex-start;
-			align-items: center;
-			flex-shrink: 0;
-			margin-left: var(--toast-icon-margin-start);
-			margin-right: var(--toast-icon-margin-end);
-		}
-
-		[data-sonner-toast][data-promise='true'] [data-icon] > svg {
-			opacity: 0;
-			transform: scale(0.8);
-			transform-origin: center;
-			animation: sonner-fade-in 300ms ease forwards;
-		}
-
-		[data-sonner-toast][data-styled='true'] [data-icon] > * {
-			flex-shrink: 0;
-		}
-
-		[data-sonner-toast][data-styled='true'] [data-icon] svg {
-			margin-left: var(--toast-svg-margin-start);
-			margin-right: var(--toast-svg-margin-end);
-		}
-
-		[data-sonner-toast][data-styled='true'] [data-content] {
-			display: flex;
-			flex-direction: column;
-			gap: 2px;
-		}
-
-		[data-sonner-toast][data-styled='true'] [data-button] {
-			border-radius: 4px;
-			padding-left: 8px;
-			padding-right: 8px;
-			height: 24px;
-			font-size: 12px;
-			color: var(--normal-bg);
-			background: var(--normal-text);
-			margin-left: var(--toast-button-margin-start);
-			margin-right: var(--toast-button-margin-end);
-			border: none;
-			font-weight: 500;
-			cursor: pointer;
-			outline: none;
-			display: flex;
-			align-items: center;
-			flex-shrink: 0;
-			transition:
-				opacity 400ms,
-				box-shadow 200ms;
-		}
-
-		[data-sonner-toast][data-styled='true'] [data-button]:focus-visible {
-			box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4);
-		}
-
-		[data-sonner-toast][data-styled='true'] [data-button]:first-of-type {
-			margin-left: var(--toast-button-margin-start);
-			margin-right: var(--toast-button-margin-end);
-		}
-
-		[data-sonner-toast][data-styled='true'] [data-cancel] {
-			color: var(--normal-text);
-			background: rgba(0, 0, 0, 0.08);
-		}
-
 		[data-sonner-toaster][data-sonner-theme='dark'] [data-sonner-toast][data-styled='true'] [data-cancel] {
 			background: rgba(255, 255, 255, 0.3);
-		}
-
-		[data-sonner-toast][data-styled='true'] [data-close-button] {
-			position: absolute;
-			left: var(--toast-close-button-start);
-			right: var(--toast-close-button-end);
-			top: 0;
-			height: 20px;
-			width: 20px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			padding: 0;
-			color: var(--gray12);
-			background: var(--normal-bg);
-			border: 1px solid var(--gray4);
-			transform: var(--toast-close-button-transform);
-			border-radius: 50%;
-			cursor: pointer;
-			z-index: 1;
-			transition:
-				opacity 100ms,
-				background 200ms,
-				border-color 200ms;
-		}
-
-		[data-sonner-toast][data-styled='true'] [data-close-button]:focus-visible {
-			box-shadow:
-				0px 4px 12px rgba(0, 0, 0, 0.1),
-				0 0 0 2px rgba(0, 0, 0, 0.2);
-		}
-
-		[data-sonner-toast][data-styled='true'] [data-disabled='true'] {
-			cursor: not-allowed;
-		}
-
-		[data-sonner-toast][data-styled='true']:hover [data-close-button]:hover {
-			background: var(--gray2);
-			border-color: var(--gray5);
 		}
 
 		[data-sonner-toast][data-swiping='true']::before {
@@ -693,10 +514,6 @@
 		}
 
 		[data-sonner-toaster][data-sonner-theme='light'] {
-			--normal-bg: #fff;
-			--normal-border: var(--gray4);
-			--normal-text: var(--gray12);
-
 			--success-bg: hsl(143, 85%, 96%);
 			--success-border: hsl(145, 92%, 87%);
 			--success-text: hsl(140, 100%, 27%);
@@ -727,11 +544,8 @@
 		}
 
 		[data-sonner-toaster][data-sonner-theme='dark'] {
-			--normal-bg: #000;
 			--normal-bg-hover: hsl(0, 0%, 12%);
-			--normal-border: hsl(0, 0%, 20%);
 			--normal-border-hover: hsl(0, 0%, 25%);
-			--normal-text: var(--gray1);
 
 			--success-bg: hsl(150, 100%, 6%);
 			--success-border: hsl(147, 100%, 12%);
@@ -811,8 +625,7 @@
 
 		@media (prefers-reduced-motion) {
 			[data-sonner-toast],
-			[data-sonner-toast] > *,
-			.sonner-loading-bar {
+			[data-sonner-toast] > * {
 				transition: none !important;
 				animation: none !important;
 			}

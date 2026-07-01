@@ -73,3 +73,5 @@ export {
 	Trigger,
 	useSidebar,
 };
+
+export type { SidebarCollapsible, SidebarRootProps, SidebarSide, SidebarVariant } from './types.js';

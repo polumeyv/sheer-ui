@@ -5,7 +5,7 @@
 	import type { DialogContentProps } from '../types.js';
 	import { interactOutsideAttachment } from '../../utilities/dismissible-layer/use-dismissable-layer.svelte.js';
 	import { escapeKeydownAttachment } from '../../utilities/escape-layer/use-escape-layer.svelte.js';
-	import { FocusScope } from '../../utilities/focus-scope/focus-scope.svelte.js';
+	import { createFocusScopeProps } from '../../utilities/focus-scope/focus-scope.svelte.js';
 	import { textSelectionAttachment } from '../../utilities/text-selection-layer/use-text-selection-layer.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import ScrollLock from '../../utilities/scroll-lock/scroll-lock.svelte';
@@ -69,13 +69,12 @@
 		enabled: () => contentState.root.opts.open.current && (restProps.preventOverflowTextSelection ?? true),
 	});
 
-	const focusScope = FocusScope.use({
-		enabled: boxWith(() => contentState.root.opts.open.current),
-		trap: boxWith(() => trapFocus),
-		loop: true,
-		onCloseAutoFocus: boxWith(() => onCloseAutoFocus),
-		onOpenAutoFocus: boxWith(() => onOpenAutoFocus),
-		ref: contentState.opts.ref,
+	const focusScope = createFocusScopeProps({
+		enabled: () => contentState.root.opts.open.current,
+		trap: () => trapFocus,
+		loop: () => true,
+		onCloseAutoFocus: () => onCloseAutoFocus,
+		onOpenAutoFocus: () => onOpenAutoFocus,
 	});
 </script>
 

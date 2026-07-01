@@ -8,6 +8,7 @@
 	import { buttonVariants } from '$lib/components/button';
 	import { RangeCalendar } from '$lib/components/range-calendar';
 	import { Popover } from '$lib/components/popover';
+	import * as Resizable from '$lib/components/resizable';
 
 	interface Props {
 		/** Selected range as `@internationalized/date` `DateValue`s — every date prop and callback speaks the same type. */
@@ -78,36 +79,51 @@
 							<ChevronRightIcon class="size-4" />
 						</RangeCalendar.NextButton>
 					</RangeCalendar.Header>
-					<div class="flex flex-col space-y-4 pt-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-						{#each months as month, i (i)}
-							<RangeCalendar.Grid class="w-full border-collapse select-none space-y-1">
-								<RangeCalendar.GridHead>
-									<RangeCalendar.GridRow class="flex w-full justify-between">
-										{#each weekdays as day, di (di)}
-											<RangeCalendar.HeadCell class="w-9 rounded-md text-xs font-normal! text-muted-foreground">
-												{day.slice(0, 2)}
-											</RangeCalendar.HeadCell>
+					{#snippet monthGrid(month: (typeof months)[number])}
+						<RangeCalendar.Grid class="w-full border-collapse select-none space-y-1">
+							<RangeCalendar.GridHead>
+								<RangeCalendar.GridRow class="flex w-full justify-between">
+									{#each weekdays as day, di (di)}
+										<RangeCalendar.HeadCell class="w-9 rounded-md text-xs font-normal! text-muted-foreground">
+											{day.slice(0, 2)}
+										</RangeCalendar.HeadCell>
+									{/each}
+								</RangeCalendar.GridRow>
+							</RangeCalendar.GridHead>
+							<RangeCalendar.GridBody>
+								{#each month.weeks as weekDates, wi (wi)}
+									<RangeCalendar.GridRow class="mt-1 flex w-full">
+										{#each weekDates as date, ci (ci)}
+											<RangeCalendar.Cell
+												{date}
+												month={month.value}
+												class="relative size-9 p-0! text-center text-sm data-highlighted:bg-accent data-selection-end:rounded-r-md data-selection-start:rounded-l-md">
+												<RangeCalendar.Day
+													class="inline-grid size-9 place-items-center whitespace-nowrap rounded-md border border-transparent bg-transparent p-0 text-sm font-normal text-foreground hover:border-foreground data-disabled:pointer-events-none data-disabled:text-foreground/30 data-outside-month:pointer-events-none data-selected:bg-primary data-selected:font-medium data-selected:text-primary-foreground data-unavailable:text-muted-foreground data-unavailable:line-through" />
+											</RangeCalendar.Cell>
 										{/each}
 									</RangeCalendar.GridRow>
-								</RangeCalendar.GridHead>
-								<RangeCalendar.GridBody>
-									{#each month.weeks as weekDates, wi (wi)}
-										<RangeCalendar.GridRow class="mt-1 flex w-full">
-											{#each weekDates as date, ci (ci)}
-												<RangeCalendar.Cell
-													{date}
-													month={month.value}
-													class="relative size-9 p-0! text-center text-sm data-highlighted:bg-accent data-selection-end:rounded-r-md data-selection-start:rounded-l-md">
-													<RangeCalendar.Day
-														class="inline-grid size-9 place-items-center whitespace-nowrap rounded-md border border-transparent bg-transparent p-0 text-sm font-normal text-foreground hover:border-foreground data-disabled:pointer-events-none data-disabled:text-foreground/30 data-outside-month:pointer-events-none data-selected:bg-primary data-selected:font-medium data-selected:text-primary-foreground data-unavailable:text-muted-foreground data-unavailable:line-through" />
-												</RangeCalendar.Cell>
-											{/each}
-										</RangeCalendar.GridRow>
-									{/each}
-								</RangeCalendar.GridBody>
-							</RangeCalendar.Grid>
-						{/each}
-					</div>
+								{/each}
+							</RangeCalendar.GridBody>
+						</RangeCalendar.Grid>
+					{/snippet}
+					{#if months.length > 1}
+						<Resizable.PaneGroup direction="horizontal" class="pt-4">
+							{#each months as month, i (i)}
+								{#if i > 0}
+									<Resizable.Handle
+										class="mx-2 w-px shrink-0 cursor-col-resize rounded-full bg-border transition-colors hover:bg-foreground/30 data-[active]:bg-foreground/40" />
+								{/if}
+								<Resizable.Pane minSize={30} defaultSize={100 / months.length}>
+									{@render monthGrid(month)}
+								</Resizable.Pane>
+							{/each}
+						</Resizable.PaneGroup>
+					{:else}
+						<div class="pt-4">
+							{@render monthGrid(months[0])}
+						</div>
+					{/if}
 				{/snippet}
 			</RangeCalendar.Root>
 		</Popover.Content>
