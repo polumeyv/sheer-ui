@@ -641,28 +641,21 @@ type GetCalendarHeadingValueProps = {
 	locale: string;
 };
 
-export function getCalendarHeadingValue({ months, locale, formatter }: GetCalendarHeadingValueProps) {
+export function getCalendarHeadingValue({ months, formatter }: GetCalendarHeadingValueProps) {
 	if (!months.length) return '';
-	if (months.length === 1) {
-		const month = toDate(months[0]!.value);
-		return `${formatter.fullMonthAndYear(month)}`;
-	}
 
 	const startMonth = toDate(months[0]!.value);
-	const endMonth = toDate(months[months.length - 1]!.value);
+	if (months.length === 1) return formatter.fullMonthAndYear(startMonth);
 
+	const endMonth = toDate(months[months.length - 1]!.value);
 	const startMonthName = formatter.fullMonth(startMonth);
 	const endMonthName = formatter.fullMonth(endMonth);
+	const startYear = formatter.fullYear(startMonth);
+	const endYear = formatter.fullYear(endMonth);
 
-	const startMonthYear = formatter.fullYear(startMonth);
-	const endMonthYear = formatter.fullYear(endMonth);
-
-	const content =
-		startMonthYear === endMonthYear
-			? `${startMonthName} - ${endMonthName} ${endMonthYear}`
-			: `${startMonthName} ${startMonthYear} - ${endMonthName} ${endMonthYear}`;
-
-	return content;
+	return startYear === endYear
+		? `${startMonthName} - ${endMonthName} ${endYear}`
+		: `${startMonthName} ${startYear} - ${endMonthName} ${endYear}`;
 }
 
 type GetCalendarElementProps = {
@@ -812,32 +805,12 @@ type GetDefaultYearsProps = {
 };
 
 export function getDefaultYears(opts: GetDefaultYearsProps) {
-	const currentYear = new Date().getFullYear();
-	const latestYear = Math.max(opts.placeholderYear, currentYear);
+	const latestYear = Math.max(opts.placeholderYear, new Date().getFullYear());
+	const initialMinYear = latestYear - 100;
 
-	// use minValue/maxValue as boundaries if provided, otherwise calculate default range
-	let minYear: number;
-	let maxYear: number;
+	const minYear = opts.minValue?.year ?? (opts.placeholderYear < initialMinYear ? opts.placeholderYear - 10 : initialMinYear);
+	const maxYear = opts.maxValue?.year ?? latestYear + 10;
 
-	if (opts.minValue) {
-		minYear = opts.minValue.year;
-	} else {
-		// (111 years: latestYear - 100 to latestYear + 10)
-		const initialMinYear = latestYear - 100;
-		minYear = opts.placeholderYear < initialMinYear ? opts.placeholderYear - 10 : initialMinYear;
-	}
-
-	if (opts.maxValue) {
-		maxYear = opts.maxValue.year;
-	} else {
-		maxYear = latestYear + 10;
-	}
-
-	// ensure we have at least one year and minYear <= maxYear
-	if (minYear > maxYear) {
-		minYear = maxYear;
-	}
-
-	const totalYears = maxYear - minYear + 1;
-	return Array.from({ length: totalYears }, (_, i) => minYear + i);
+	const start = Math.min(minYear, maxYear);
+	return Array.from({ length: maxYear - start + 1 }, (_, i) => start + i);
 }
