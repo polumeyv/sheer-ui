@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { cn } from "$lib/utils.js";
-	import * as NativeSelect from "$lib/components/native-select";
-	import { Button } from "$lib/components/button";
+	import { join } from 'overrule';
+	import * as NativeSelect from '$lib/components/native-select';
+	import { Button } from '$lib/components/button';
 
 	interface Props {
 		value?: string;
@@ -14,7 +14,16 @@
 		use24Hour?: boolean;
 	}
 
-	let { value = $bindable(''), placeholder = 'Time', disabled = false, class: className, triggerClass, onValueChange, interval = 30, use24Hour = false }: Props = $props();
+	let {
+		value = $bindable(''),
+		placeholder = 'Time',
+		disabled = false,
+		class: className,
+		triggerClass,
+		onValueChange,
+		interval = 30,
+		use24Hour = false,
+	}: Props = $props();
 
 	// Generate time slots based on mode
 	const slots = $derived.by(() => {
@@ -90,14 +99,14 @@
 	}
 </script>
 
-<div class={cn('flex items-center gap-1', className)}>
+<div class={join('flex items-center gap-1', className)}>
 	<NativeSelect.Root
 		value={display || ''}
 		onchange={(e) => handleSelect(e.currentTarget.value || undefined)}
 		{disabled}
 		{placeholder}
 		maxHeight="12.5rem"
-		class={cn('h-8', use24Hour ? 'w-18!' : 'w-15!', triggerClass)}
+		class={join('h-8', use24Hour ? 'w-18!' : 'w-15!', triggerClass)}
 		triggerClass="justify-center px-2">
 		{#each slots as slot (slot)}
 			<NativeSelect.Option value={slot}>{slot}</NativeSelect.Option>

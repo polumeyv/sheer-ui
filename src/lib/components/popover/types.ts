@@ -8,7 +8,7 @@ import type { ScrollLockProps } from '$lib/components/utilities/scroll-lock/inde
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '$lib/internal/types.js';
 import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '$lib/internal/attributes.js';
 import type { FloatingContentSnippetProps } from '$lib/internal/types.js';
-import type { PortalProps } from '$lib/types.js';
+import type { PortalProps } from '$lib/components/utilities/portal/index.js';
 
 /**
  * Content prop surface, composed from the same layer building blocks the (now-removed) Floating-UI

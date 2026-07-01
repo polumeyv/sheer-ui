@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { join } from 'overrule';
 	import { declareVariants, type VariantProps } from 'overrule';
 
 	export const alertVariants = declareVariants({
@@ -19,7 +20,7 @@
 
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -32,6 +33,6 @@
 	} = $props();
 </script>
 
-<div bind:this={ref} data-slot="alert" role="alert" class={cn(alertVariants({ variant }), className)} {...restProps}>
+<div bind:this={ref} data-slot="alert" role="alert" class={join(alertVariants({ variant }), className)} {...restProps}>
 	{@render children?.()}
 </div>

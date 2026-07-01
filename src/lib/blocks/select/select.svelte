@@ -5,7 +5,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import * as Select from '$lib/components/select/index.js';
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 	import Check from '@lucide/svelte/icons/check';
 	import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';
 	import ChevronsUp from '@lucide/svelte/icons/chevrons-up';
@@ -50,7 +50,7 @@
 
 <Select.Root type="single" {items} bind:value {allowDeselect} {onValueChange}>
 	<Select.Trigger
-		class={cn(
+		class={join(
 			'inline-flex h-9 w-74 touch-none select-none items-center rounded-md border border-input bg-background px-2.75 text-sm transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] data-placeholder:text-muted-foreground',
 			triggerClass,
 		)}
@@ -61,7 +61,7 @@
 	</Select.Trigger>
 	<Select.Portal>
 		<Select.Content
-			class={cn(
+			class={join(
 				'z-50 h-96 max-h-(--bits-select-content-available-height) w-(--bits-select-anchor-width) min-w-(--bits-select-anchor-width) select-none overflow-hidden rounded-xl border bg-popover px-1 py-3 text-popover-foreground shadow-md outline-hidden transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[side=bottom]:starting:-translate-y-1 data-[side=top]:starting:translate-y-1 data-[side=left]:starting:translate-x-1 data-[side=right]:starting:-translate-x-1',
 				contentClass,
 			)}
@@ -72,7 +72,7 @@
 			<Select.Viewport class="p-1">
 				{#each items as item (item.value)}
 					<Select.Item
-						class={cn(
+						class={join(
 							'flex h-10 w-full select-none items-center rounded-sm py-3 pl-5 pr-1.5 text-sm capitalize outline-hidden data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:opacity-50',
 							itemClass,
 						)}

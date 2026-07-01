@@ -1,8 +1,8 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import type { Snippet } from 'svelte';
 	import type { HTMLDialogAttributes } from 'svelte/elements';
 	import { on } from 'svelte/events';
-	import { cn } from '$lib/utils.js';
 
 	/**
 	 * SPIKE: a modal dialog on the native <dialog> element + showModal(), to diff against the vendored
@@ -105,7 +105,7 @@
 	{...restProps}
 	id={dialogId}
 	data-slot="native-dialog"
-	class={cn(
+	class={join(
 		'native-dialog bg-background fixed inset-0 m-auto h-fit max-h-[calc(100dvh-2rem)] w-full max-w-[calc(100%-2rem)] overflow-y-auto rounded-lg border p-6 shadow-lg sm:max-w-lg',
 		'scale-95 opacity-0 transition-[opacity,scale,display,overlay] transition-discrete duration-200',
 		'open:scale-100 open:opacity-100 starting:open:scale-95 starting:open:opacity-0',

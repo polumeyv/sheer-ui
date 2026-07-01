@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 	import { isMobile } from '$lib/hooks/is-mobile.svelte';
 	import MobileSurface from './sidebar-mobile-surface.svelte';
 	import DesktopSurface from './sidebar-desktop-surface.svelte';
@@ -17,7 +17,10 @@
 </script>
 
 {#if collapsible === 'none'}
-	<div class={cn('bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col', className)} bind:this={ref} {...restProps}>
+	<div
+		class={join('bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col', className)}
+		bind:this={ref}
+		{...restProps}>
 		{@render children?.()}
 	</div>
 {:else if isMobile.current}

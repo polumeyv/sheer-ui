@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { join } from 'overrule';
 	import { declareVariants, type VariantProps } from 'overrule';
 
 	export const itemVariants = declareVariants({
@@ -26,7 +27,7 @@
 </script>
 
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 
@@ -44,7 +45,7 @@
 	} = $props();
 
 	const mergedProps = $derived({
-		class: cn(itemVariants({ variant, size }), className),
+		class: join(itemVariants({ variant, size }), className),
 		'data-slot': 'item',
 		'data-variant': variant,
 		'data-size': size,

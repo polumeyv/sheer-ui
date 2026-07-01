@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import { join } from 'overrule';
+	import type { WithElementRef } from '$lib/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import ChartStyle from './chart-style.svelte';
 	import { setChartContext, type ChartConfig } from './chart-utils.js';
@@ -30,7 +31,7 @@
 	bind:this={ref}
 	data-chart={chartId}
 	data-slot="chart"
-	class={cn(
+	class={join(
 		'flex aspect-video justify-center overflow-visible text-xs',
 		// Overrides
 		//

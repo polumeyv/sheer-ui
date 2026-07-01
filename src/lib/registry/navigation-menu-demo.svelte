@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as NavigationMenu from '$lib/components/navigation-menu/index.js';
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 	import { navigationMenuTriggerStyle } from '$lib/components/navigation-menu/components/navigation-menu-trigger.svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import CircleHelpIcon from '@lucide/svelte/icons/circle-help';
@@ -58,7 +58,7 @@
 			{#snippet child()}
 				<a
 					{href}
-					class={cn(
+					class={join(
 						'hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none',
 						className,
 					)}

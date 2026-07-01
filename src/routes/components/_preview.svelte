@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 
 	let {
 		children,
@@ -15,7 +15,7 @@
 	styling to what it frames — the component renders with its own library
 	styling. `align` controls vertical placement (center | start | end).
 -->
-<div class={cn('relative rounded-lg border', className)}>
+<div class={join('relative rounded-lg border', className)}>
 	<div
 		data-align={align}
 		class="flex min-h-87.5 w-full flex-wrap justify-center gap-4 p-10 data-[align=center]:items-center data-[align=end]:items-end data-[align=start]:items-start">

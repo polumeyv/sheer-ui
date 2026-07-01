@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Clock from '@lucide/svelte/icons/clock';
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 	import { buttonVariants } from '$lib/components/button';
 	import * as NativeSelect from '$lib/components/native-select';
 	import { compareTime, generateTimeSlots, isTimeInRange, type TimeSlot, b_HOURS, EXTENDED_HOURS } from './time-slots';
@@ -89,7 +89,7 @@
 	}
 </script>
 
-<div class={cn('grid gap-2', className)}>
+<div class={join('grid gap-2', className)}>
 	<NativeSelect.Root
 		{value}
 		onchange={(e) => handleValueChange(e.currentTarget.value || undefined)}
@@ -102,7 +102,7 @@
 			variant: 'outline',
 			class: 'w-45 justify-start! text-start font-normal!',
 		})}
-		triggerClass={cn('justify-start px-0', !value && 'text-muted-foreground', triggerClass)}>
+		triggerClass={join('justify-start px-0', !value && 'text-muted-foreground', triggerClass)}>
 		{#snippet icon()}
 			<Clock class="size-4" />
 		{/snippet}

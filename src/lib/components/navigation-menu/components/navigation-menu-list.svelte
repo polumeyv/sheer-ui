@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { boxWith, mountedAttachment } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 
@@ -6,7 +7,6 @@
 	import { NavigationMenuListState } from '../navigation-menu.svelte.js';
 
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -29,7 +29,7 @@
 		),
 	});
 
-	const listClass = $derived(cn('group flex flex-1 list-none items-center justify-center gap-0', className));
+	const listClass = $derived(join('group flex flex-1 list-none items-center justify-center gap-0', className));
 
 	const mergedProps = $derived(
 		mergeProps(

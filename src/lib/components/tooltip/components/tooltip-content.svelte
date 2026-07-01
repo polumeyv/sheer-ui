@@ -1,11 +1,11 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { TooltipContentProps } from '../types.js';
 	import { TooltipContentState } from '../tooltip.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { on } from 'svelte/events';
-	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -97,7 +97,7 @@
 			{
 				'data-slot': 'tooltip-content',
 				'data-anchored': '',
-				class: cn(
+				class: join(
 					'native-tooltip-content z-50 w-fit rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background',
 					'transition-[opacity,translate,display,overlay] transition-discrete opacity-0 translate-y-1 open:opacity-100 open:translate-y-0 starting:open:opacity-0 starting:open:translate-y-1',
 				),
@@ -114,7 +114,7 @@
 {:else}
 	<div {...mergedProps} bind:this={ref} popover="manual" data-side={side} data-align={align} style:position-anchor={anchorName}>
 		{@render children?.()}
-		<div class={cn('native-tooltip-arrow bg-foreground size-2.5 rotate-45 rounded-xs', arrowClasses)}></div>
+		<div class={join('native-tooltip-arrow bg-foreground size-2.5 rotate-45 rounded-xs', arrowClasses)}></div>
 	</div>
 {/if}
 

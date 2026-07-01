@@ -1,13 +1,8 @@
 <script lang="ts">
-import { Description, type DescriptionProps } from '$lib/components/dialog/index.js';
-import { cn } from "$lib/utils.js";
+	import { join } from 'overrule';
+	import { Description, type DescriptionProps } from '$lib/components/dialog/index.js';
 
-let { ref = $bindable(null), class: className, ...restProps }: DescriptionProps = $props();
+	let { ref = $bindable(null), class: className, ...restProps }: DescriptionProps = $props();
 </script>
 
-<Description
-	bind:ref
-	data-slot="drawer-description"
-	class={cn("text-muted-foreground text-sm", className)}
-	{...restProps}
-/>
+<Description bind:ref data-slot="drawer-description" class={join('text-muted-foreground text-sm', className)} {...restProps} />

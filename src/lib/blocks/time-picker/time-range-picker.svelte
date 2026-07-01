@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Clock from '@lucide/svelte/icons/clock';
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 	import { buttonVariants } from '$lib/components/button';
 	import * as NativeSelect from '$lib/components/native-select';
 	import { Popover } from '$lib/components/popover';
@@ -154,11 +154,11 @@
 	}
 </script>
 
-<div class={cn('grid gap-2', className)}>
+<div class={join('grid gap-2', className)}>
 	<Popover.Root>
 		<Popover.Trigger
 			{disabled}
-			class={cn(
+			class={join(
 				buttonVariants({
 					variant: 'outline',
 					class: 'w-auto min-w-[220px] justify-start! text-start font-normal!',
@@ -169,7 +169,7 @@
 			<Clock class="me-2 size-4" />
 			{displayValue}
 		</Popover.Trigger>
-		<Popover.Content class={cn('flex w-auto! gap-2 p-3!', contentClass)} {align} {side}>
+		<Popover.Content class={join('flex w-auto! gap-2 p-3!', contentClass)} {align} {side}>
 			<div class="flex flex-col gap-1">
 				<span class="text-xs text-muted-foreground px-1">Start</span>
 				<NativeSelect.Root

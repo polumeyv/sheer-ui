@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { join } from 'overrule';
 	import { declareVariants } from 'overrule';
 
 	export const navigationMenuTriggerStyle = declareVariants({
@@ -15,7 +16,6 @@
 	import { NavigationMenuTriggerState } from '../navigation-menu.svelte.js';
 
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -41,7 +41,7 @@
 		),
 	});
 
-	const triggerClass = $derived(cn(navigationMenuTriggerStyle(), 'group', className));
+	const triggerClass = $derived(join(navigationMenuTriggerStyle(), 'group', className));
 
 	const mergedProps = $derived(
 		mergeProps(

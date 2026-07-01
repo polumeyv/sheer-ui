@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { inputVariants, inputVariantSlots, type InputVariant } from './variants';
 	import type { HTMLInputAttributes, HTMLInputTypeAttribute } from 'svelte/elements';
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 
 	type InputType = Exclude<HTMLInputTypeAttribute, 'file'>;
 
@@ -18,7 +19,7 @@
 <input
 	bind:this={ref}
 	data-slot={inputVariantSlots[variant!]}
-	class={cn(inputVariants({ variant }), className)}
+	class={join(inputVariants({ variant }), className)}
 	{type}
 	bind:value
 	{...restProps} />

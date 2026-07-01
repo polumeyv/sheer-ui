@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 
@@ -6,7 +7,6 @@
 	import type { SelectGroupProps } from '../types.js';
 
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -34,7 +34,7 @@
 			restProps,
 			{
 				'data-slot': 'select-group',
-				class: cn('scroll-my-1 p-1', className),
+				class: join('scroll-my-1 p-1', className),
 			},
 			groupState.props,
 		),

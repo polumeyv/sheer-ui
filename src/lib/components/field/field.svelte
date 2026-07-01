@@ -1,10 +1,11 @@
 <script lang="ts" module>
+	import { join } from 'overrule';
 	import { fieldVariants, type FieldOrientation } from './variants';
 	export { fieldVariants, type FieldOrientation };
 </script>
 
 <script lang="ts">
-	import { cn, type WithElementRef } from "$lib/utils.js";
+	import type { WithElementRef } from '$lib/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 	let {
 		ref = $bindable(null),
@@ -22,7 +23,7 @@
 	role="group"
 	data-slot="field"
 	data-orientation={orientation}
-	class={cn(fieldVariants({ orientation }), className)}
+	class={join(fieldVariants({ orientation }), className)}
 	{...restProps}>
 	{@render children?.()}
 </div>

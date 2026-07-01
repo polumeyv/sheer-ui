@@ -1,15 +1,14 @@
 <script lang="ts" generics="TData">
+	import { join } from 'overrule';
 	import Settings2Icon from '@lucide/svelte/icons/settings-2';
 	import type { Table } from '@tanstack/table-core';
 	import * as DropdownMenu from '../dropdown-menu';
 	import { buttonVariants } from '../button';
-	import { cn } from "$lib/utils.js";
 	let { table }: { table: Table<TData> } = $props();
 </script>
 
 <DropdownMenu.Root>
-	<DropdownMenu.Trigger
-		class={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'ms-auto max-lg:hidden')}>
+	<DropdownMenu.Trigger class={join(buttonVariants({ variant: 'outline', size: 'sm' }), 'ms-auto max-lg:hidden')}>
 		<Settings2Icon />
 		View
 	</DropdownMenu.Trigger>

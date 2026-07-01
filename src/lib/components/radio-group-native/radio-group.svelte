@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
@@ -82,6 +82,6 @@
 	data-readonly={readonly ? '' : undefined}
 	data-orientation={orientation}
 	{...restProps}
-	class={cn('grid gap-3', className)}>
+	class={join('grid gap-3', className)}>
 	{@render children?.()}
 </div>

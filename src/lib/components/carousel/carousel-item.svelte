@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { getCarouselContext } from './carouselState.svelte';
-	import { cn, type WithElementRef } from "$lib/utils.js";
+	import type { WithElementRef } from '$lib/utils.js';
 
 	let { ref = $bindable(null), class: className, children, ...restProps }: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
 </script>
@@ -11,7 +12,7 @@
 	data-slot="carousel-item"
 	role="group"
 	aria-roledescription="slide"
-	class={cn('min-w-0 shrink-0 grow-0 basis-full', getCarouselContext().orientation === 'horizontal' ? 'ps-4' : 'pt-4', className)}
+	class={join('min-w-0 shrink-0 grow-0 basis-full', getCarouselContext().orientation === 'horizontal' ? 'ps-4' : 'pt-4', className)}
 	data-embla-slide=""
 	{...restProps}>
 	{@render children?.()}

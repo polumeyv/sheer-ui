@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	export type SwitchProps = Omit<HTMLAttributes<HTMLSpanElement>, 'class'> & {
@@ -44,7 +44,7 @@
 	data-switch-root=""
 	{...shared}
 	{...restProps}
-	class={cn(
+	class={join(
 		// Sizing is driven by one variable: --switch-size is the track height; width is
 		// 1.75x it, the thumb fills the height, and travel is 0.75x it (W - thumb). Override
 		// --switch-size alone to rescale the whole control. See the thumb span below.

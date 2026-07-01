@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button } from "$lib/components/button";
+	import { join } from 'overrule';
+	import { Button } from '$lib/components/button';
 	import ArrowUpRight from '@lucide/svelte/icons/arrow-up-right';
-	import { cn } from "$lib/utils.js";
 
 	interface Props {
 		navLinks: { href: string; label: string }[];
@@ -16,13 +16,7 @@
 		class?: string;
 	}
 
-	let {
-		navLinks,
-		actions = [],
-		open = $bindable(false),
-		id = 'mobile-dropdown',
-		class: className
-	}: Props = $props();
+	let { navLinks, actions = [], open = $bindable(false), id = 'mobile-dropdown', class: className }: Props = $props();
 
 	function close() {
 		open = false;
@@ -37,11 +31,10 @@
 	aria-expanded={open}
 	aria-controls={id}
 	aria-label={open ? 'Close menu' : 'Open menu'}
-	class={cn(
+	class={join(
 		'group md:hidden inline-grid size-10 place-items-center relative z-50 bg-transparent border-0 cursor-pointer text-current',
-		className
-	)}
->
+		className,
+	)}>
 	<span
 		class="absolute left-1/2 -translate-x-1/2 w-5 h-0.5 bg-current rounded-full transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] top-[calc(50%-6px)] group-aria-expanded:top-1/2 group-aria-expanded:rotate-45"
 	></span>
@@ -59,8 +52,7 @@
 	aria-hidden={!open}
 	class="md:hidden fixed inset-0 w-screen h-dvh bg-sidebar text-foreground overflow-y-auto flex flex-col z-40 transition-[clip-path] duration-500 ease-in-out {open
 		? '[clip-path:inset(0_0_0_0)]'
-		: '[clip-path:inset(0_0_100%_0)]'}"
->
+		: '[clip-path:inset(0_0_100%_0)]'}">
 	<div class="h-20 shrink-0"></div>
 	<nav class="flex-1 px-8 pt-2">
 		<ul class="list-none p-0 m-0">
@@ -69,8 +61,7 @@
 					<a
 						href={link.href}
 						onclick={close}
-						class="flex items-center justify-between py-6 text-3xl pr-5 font-medium tracking-tight transition-colors hover:text-muted-foreground"
-					>
+						class="flex items-center justify-between py-6 text-3xl pr-5 font-medium tracking-tight transition-colors hover:text-muted-foreground">
 						<span>{link.label}</span>
 						<ArrowUpRight class="size-6 opacity-60" />
 					</a>
@@ -82,12 +73,7 @@
 	{#if actions.length > 0}
 		<div class="px-6 py-6 flex flex-col gap-3">
 			{#each actions as action (action.href)}
-				<Button
-					href={action.href}
-					variant={action.variant ?? 'default'}
-					size={action.size ?? 'lg'}
-					onclick={close}>{action.label}</Button
-				>
+				<Button href={action.href} variant={action.variant ?? 'default'} size={action.size ?? 'lg'} onclick={close}>{action.label}</Button>
 			{/each}
 		</div>
 	{/if}

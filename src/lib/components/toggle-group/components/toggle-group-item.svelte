@@ -1,11 +1,11 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { ToggleGroupItemProps } from '../types.js';
 	import { ToggleGroupItemState } from '../toggle-group.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import { getToggleGroupCtx } from './toggle-group.svelte';
-	import { cn } from '$lib/utils.js';
 	import { toggleVariants, type ToggleSize, type ToggleVariant } from '$lib/components/toggle/variants.js';
 
 	const uid = $props.id();
@@ -45,7 +45,7 @@
 				'data-variant': ctx.variant || variant,
 				'data-size': ctx.size || size,
 				'data-spacing': ctx.spacing,
-				class: cn(
+				class: join(
 					toggleVariants({
 						variant: ctx.variant || variant,
 						size: ctx.size || size,

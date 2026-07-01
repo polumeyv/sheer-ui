@@ -1,18 +1,9 @@
-import type { DateValue } from "@internationalized/date";
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
-import type {
-	BitsPrimitiveDivAttributes,
-	BitsPrimitiveSpanAttributes,
-} from "$lib/internal/attributes.js";
-import type {
-	DateOnInvalid,
-	DateRange,
-	DateRangeValidator,
-	EditableSegmentPart,
-	SegmentPart,
-} from "$lib/internal/index.js";
-import type { DateFieldSegmentProps, DateFieldSegmentPropsWithoutHTML } from "$lib/types.js";
-import type { Granularity } from "$lib/internal/date-time/types.js";
+import type { DateValue } from '@internationalized/date';
+import type { OnChangeFn, WithChild, Without } from '$lib/internal/types.js';
+import type { BitsPrimitiveDivAttributes, BitsPrimitiveSpanAttributes } from '$lib/internal/attributes.js';
+import type { DateOnInvalid, DateRange, DateRangeValidator, EditableSegmentPart, SegmentPart } from '$lib/internal/index.js';
+import type { DateFieldSegmentProps, DateFieldSegmentPropsWithoutHTML } from '$lib/components/date-field/types.js';
+import type { Granularity } from '$lib/internal/date-time/types.js';
 
 export type DateRangeFieldRootPropsWithoutHTML = WithChild<{
 	/**
@@ -181,7 +172,7 @@ export type DateRangeFieldInputPropsWithoutHTML = WithChild<
 		/**
 		 * Whether this input represents the start or end of the date range.
 		 */
-		type: "start" | "end";
+		type: 'start' | 'end';
 	},
 	DateRangeFieldInputSnippetProps
 >;

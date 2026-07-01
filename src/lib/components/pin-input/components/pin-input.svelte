@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { PinInputRootProps } from '../types.js';
 	import { PinInputRootState } from '../pin-input.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -61,7 +61,7 @@
 	const mergedInputProps = $derived(mergeProps({ 'data-slot': 'pin-input' }, restProps, rootState.inputProps));
 	const mergedRootProps = $derived(
 		mergeProps(rootState.rootProps, {
-			class: cn('flex items-center gap-2 has-disabled:opacity-50 [&_input]:disabled:cursor-not-allowed', className),
+			class: join('flex items-center gap-2 has-disabled:opacity-50 [&_input]:disabled:cursor-not-allowed', className),
 		}),
 	);
 	const mergedInputWrapperProps = $derived(mergeProps(rootState.inputWrapperProps, {}));

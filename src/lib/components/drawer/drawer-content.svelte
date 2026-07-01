@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import * as DialogPrimitive from '$lib/components/dialog/index.js';
 	import { type WithChildren, box } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { ComponentProps } from 'svelte';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import type { WithoutChildrenOrChild } from '$lib/utils.js';
 	import { useId } from '$lib/internal/use-id.js';
 	import DrawerPortal from './drawer-portal.svelte';
 	import DrawerOverlay from './drawer-overlay.svelte';
@@ -60,7 +61,7 @@
 		mergeProps(
 			{
 				'data-slot': 'drawer-content',
-				class: cn(
+				class: join(
 					'group/drawer-content fixed z-50 flex h-auto flex-col bg-background',
 					'data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-lg data-[vaul-drawer-direction=top]:border-b',
 					'data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=bottom]:rounded-t-lg data-[vaul-drawer-direction=bottom]:border-t',

@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import { AccordionContentState } from '../accordion.svelte.js';
 	import type { AccordionContentProps } from '../types.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -48,7 +48,7 @@
 	})}
 {:else}
 	<div {...mergedProps}>
-		<div class={cn('pt-0 pb-4', className)}>
+		<div class={join('pt-0 pb-4', className)}>
 			{@render children?.()}
 		</div>
 	</div>
