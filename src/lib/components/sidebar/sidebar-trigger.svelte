@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { Button } from '../button/index.js';
 	import PanelLeftIcon from '@lucide/svelte/icons/panel-left';
-	import { cn } from '$lib/utils.js';
 	import type { ComponentProps } from 'svelte';
 	import { useSidebar } from './context.svelte.js';
 
@@ -23,7 +23,7 @@
 	data-slot="sidebar-trigger"
 	variant="ghost"
 	size="icon-sm"
-	class={cn('np-sidebar-trigger', className)}
+	class={join('np-sidebar-trigger', className)}
 	type="button"
 	onclick={(e) => {
 		onclick?.(e);

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Button } from "$lib/components/button";
+	import { join } from 'overrule';
+	import { Button } from '$lib/components/button';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import Plus from '@lucide/svelte/icons/plus';
-	import { cn } from "$lib/utils.js";
 
 	interface Props {
 		navLinks: { href: string; label: string; children?: { href: string; label: string }[] }[];
@@ -28,7 +28,7 @@
 	popovertarget={id}
 	aria-expanded={open}
 	aria-label={open ? 'Close menu' : 'Open menu'}
-	class={cn('hamburger md:hidden inline-grid size-10 place-items-center', className)}>
+	class={join('hamburger md:hidden inline-grid size-10 place-items-center', className)}>
 	<span class="bar bar-top"></span>
 	<span class="bar bar-mid"></span>
 	<span class="bar bar-bot"></span>
@@ -108,13 +108,27 @@
 		margin-left: -0.625rem;
 	}
 
-	.bar-top { top: calc(50% - 6px); }
-	.bar-mid { top: 50%; }
-	.bar-bot { top: calc(50% + 6px); }
+	.bar-top {
+		top: calc(50% - 6px);
+	}
+	.bar-mid {
+		top: 50%;
+	}
+	.bar-bot {
+		top: calc(50% + 6px);
+	}
 
-	.hamburger[aria-expanded='true'] .bar-top { top: 50%; transform: rotate(45deg); }
-	.hamburger[aria-expanded='true'] .bar-mid { opacity: 0; }
-	.hamburger[aria-expanded='true'] .bar-bot { top: 50%; transform: rotate(-45deg); }
+	.hamburger[aria-expanded='true'] .bar-top {
+		top: 50%;
+		transform: rotate(45deg);
+	}
+	.hamburger[aria-expanded='true'] .bar-mid {
+		opacity: 0;
+	}
+	.hamburger[aria-expanded='true'] .bar-bot {
+		top: 50%;
+		transform: rotate(-45deg);
+	}
 
 	.mobile-nav-popover {
 		position: fixed;

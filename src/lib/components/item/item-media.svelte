@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { join } from 'overrule';
 	import { declareVariants, type VariantProps } from 'overrule';
 
 	export const itemMediaVariants = declareVariants({
@@ -20,7 +21,7 @@
 </script>
 
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let {
@@ -32,6 +33,6 @@
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & { variant?: ItemMediaVariant } = $props();
 </script>
 
-<div bind:this={ref} data-slot="item-media" data-variant={variant} class={cn(itemMediaVariants({ variant }), className)} {...restProps}>
+<div bind:this={ref} data-slot="item-media" data-variant={variant} class={join(itemMediaVariants({ variant }), className)} {...restProps}>
 	{@render children?.()}
 </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { cn, type WithElementRef, type WithoutChildren } from '$lib/utils.js';
+	import { join } from 'overrule';
+	import type { WithElementRef, WithoutChildren } from '$lib/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { getPayloadConfigFromPayload, useChart, type TooltipPayload } from './chart-utils.js';
 	import { getChartContext, Tooltip as TooltipPrimitive } from 'layerchart';
@@ -32,7 +33,8 @@
 		labelKey?: string;
 		hideIndicator?: boolean;
 		labelClassName?: string;
-		labelFormatter?: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+		labelFormatter?:
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			((value: any, payload: TooltipPayload[]) => string | number | Snippet) | null;
 		formatter?: Snippet<
 			[
@@ -85,7 +87,7 @@
 
 {#snippet TooltipLabel()}
 	{#if formattedLabel}
-		<div class={cn('font-medium', labelClassName)}>
+		<div class={join('font-medium', labelClassName)}>
 			{#if typeof formattedLabel === 'function'}
 				{@render formattedLabel()}
 			{:else}
@@ -98,7 +100,7 @@
 <TooltipPrimitive.Root variant="none">
 	<div
 		bind:this={ref}
-		class={cn(
+		class={join(
 			'border-border/50 bg-background grid min-w-36 items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl',
 			className,
 		)}
@@ -112,7 +114,7 @@
 				{@const itemConfig = getPayloadConfigFromPayload(chart.config, item, key, chartCtx.tooltip.data)}
 				{@const indicatorColor = color || item.config?.color || item.color}
 				<div
-					class={cn(
+					class={join(
 						'[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:size-2.5',
 						indicator === 'dot' && 'items-center',
 					)}>
@@ -130,7 +132,7 @@
 						{:else if !hideIndicator}
 							<div
 								style="--color-bg: {indicatorColor}; --color-border: {indicatorColor};"
-								class={cn('shrink-0 rounded-xs border-(--color-border) bg-(--color-bg)', {
+								class={join('shrink-0 rounded-xs border-(--color-border) bg-(--color-bg)', {
 									'size-2.5': indicator === 'dot',
 									'h-full w-1': indicator === 'line',
 									'w-0 border-[1.5px] border-dashed bg-transparent': indicator === 'dashed',
@@ -138,7 +140,7 @@
 								})}>
 							</div>
 						{/if}
-						<div class={cn('flex flex-1 shrink-0 justify-between leading-none', nestLabel ? 'items-end' : 'items-center')}>
+						<div class={join('flex flex-1 shrink-0 justify-between leading-none', nestLabel ? 'items-end' : 'items-center')}>
 							<div class="grid gap-1.5">
 								{#if nestLabel}
 									{@render TooltipLabel()}

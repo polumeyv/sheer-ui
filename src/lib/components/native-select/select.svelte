@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import { join } from 'overrule';
+	import type { WithElementRef } from '$lib/utils.js';
 	import type { HTMLSelectAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
@@ -78,7 +79,7 @@
 	data-side={side}
 	data-align={align}
 	style={maxHeight ? `--select-content-max-height: ${maxHeight}` : undefined}
-	class={cn(
+	class={join(
 		'select',
 		'flex items-center justify-between gap-2',
 		widthClass,
@@ -93,7 +94,7 @@
 	)}
 	onchange={handleChange}
 	{...restProps}>
-	<button type="button" class={cn('flex min-w-0 w-full items-center justify-between gap-2 px-3 py-2', triggerClass)}>
+	<button type="button" class={join('flex min-w-0 w-full items-center justify-between gap-2 px-3 py-2', triggerClass)}>
 		<span class="flex min-w-0 items-center gap-2">
 			{@render icon?.()}
 

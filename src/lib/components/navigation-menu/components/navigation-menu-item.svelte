@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 
@@ -6,7 +7,6 @@
 	import { NavigationMenuItemState } from '../navigation-menu.svelte.js';
 
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 	const defaultId = createId(uid);
@@ -39,7 +39,7 @@
 			restProps,
 			{
 				'data-slot': 'navigation-menu-item',
-				class: cn('relative', className),
+				class: join('relative', className),
 			},
 			itemState.props,
 		),

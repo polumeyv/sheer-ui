@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 
@@ -11,7 +12,6 @@
 
 	import { createId } from '$lib/internal/create-id.js';
 	import { getDataTransitionAttrs } from '$lib/internal/attrs.js';
-	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -30,7 +30,7 @@
 	const indicatorState = NavigationMenuIndicatorState.create();
 
 	const indicatorClass = $derived(
-		cn(
+		join(
 			'top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:animate-in data-[state=visible]:fade-in',
 			className,
 		),

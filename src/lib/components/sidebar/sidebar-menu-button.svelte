@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { join } from 'overrule';
 	import { declareVariants, type VariantProps } from 'overrule';
 
 	export const sidebarMenuButtonVariants = declareVariants({
@@ -27,7 +28,7 @@
 
 <script lang="ts">
 	import * as Tooltip from '../tooltip/index';
-	import { cn, type WithElementRef, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import type { WithElementRef, WithoutChildrenOrChild } from '$lib/utils.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { ComponentProps, Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
@@ -56,7 +57,7 @@
 	const sidebar = useSidebar();
 
 	const buttonProps = $derived({
-		class: cn(sidebarMenuButtonVariants({ variant, size }), className),
+		class: join(sidebarMenuButtonVariants({ variant, size }), className),
 		'data-slot': 'sidebar-menu-button',
 		'data-sidebar': 'menu-button',
 		'data-size': size,

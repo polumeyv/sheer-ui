@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { join } from 'overrule';
 	// Default lifetime of a toasts (in ms)
 	const TOAST_LIFETIME = 4000;
 
@@ -31,7 +32,7 @@
 	};
 
 	// Shared by the action/cancel buttons. Deliberately carries no bg-*/text-* utility —
-	// each button supplies its own so cn() (plain join, no conflict resolution) never has
+	// each button supplies its own so join() (plain join, no conflict resolution) never has
 	// to arbitrate between two colors for the same property.
 	const BUTTON_BASE_CLASS =
 		'ms-auto flex h-6 shrink-0 cursor-pointer items-center rounded border-0 px-2 text-xs font-medium outline-none [transition:opacity_400ms,box-shadow_200ms] focus-visible:shadow-[0_0_0_2px_rgba(0,0,0,0.4)]';
@@ -62,7 +63,6 @@
 	import { onMount, untrack } from 'svelte';
 	import { isAction, type SwipeDirection, type ToastClasses, type ToastProps } from './types.js';
 	import { toastState } from './toast-state.svelte.js';
-	import { cn } from '$lib/utils.js';
 	import type { DragEventHandler, PointerEventHandler } from 'svelte/elements';
 	import { on } from 'svelte/events';
 	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
@@ -101,7 +101,7 @@
 	const classes = $derived({ ...DEFAULT_TOAST_CLASSES, ...classesProp });
 
 	const toastRootClass = $derived(
-		cn(
+		join(
 			'absolute box-border touch-none [overflow-wrap:anywhere] opacity-0 outline-none',
 			'z-[var(--z-index)] [transform:var(--y)]',
 			'transition-[transform,opacity,height,box-shadow] duration-[400ms]',
@@ -131,7 +131,7 @@
 	);
 
 	// Fades the icon in when it's swapped mid-flight (loading -> success/error) during a toast.promise() sequence.
-	const iconClass = $derived(cn('size-4 shrink-0 ms-[-1px]', toast.promise && '[animation:sonner-fade-in_300ms_ease_forwards]'));
+	const iconClass = $derived(join('size-4 shrink-0 ms-[-1px]', toast.promise && '[animation:sonner-fade-in_300ms_ease_forwards]'));
 
 	let mounted = $state(false);
 	let removed = $state(false);
@@ -459,7 +459,7 @@
 				deleteToast();
 				toast.onDismiss?.(toast);
 			}}
-			class={cn(
+			class={join(
 				'absolute start-0 top-0 z-[1] flex size-5 items-center justify-center rounded-full border p-0 outline-none',
 				'cursor-pointer border-[hsl(0,0%,93%)] bg-(--normal-bg) text-[hsl(0,0%,9%)]',
 				'[transform:translate(-35%,-35%)] rtl:[transform:translate(35%,-35%)]',
@@ -481,9 +481,9 @@
 		{#if toastType === 'loading' || toastType === 'success' || toastType === 'error' || toastType === 'warning' || toastType === 'info'}
 			<div
 				data-icon=""
-				class={cn('relative flex size-4 shrink-0 items-center justify-start ms-[-3px] me-1', classes?.icon, toast?.classes?.icon)}>
+				class={join('relative flex size-4 shrink-0 items-center justify-start ms-[-3px] me-1', classes?.icon, toast?.classes?.icon)}>
 				{#if toastType === 'loading'}
-					<Loader2Icon class={cn(iconClass, 'animate-spin')} />
+					<Loader2Icon class={join(iconClass, 'animate-spin')} />
 				{:else if toastType === 'success'}
 					<CircleCheckIcon class={iconClass} strokeWidth={2.5} />
 				{:else if toastType === 'error'}
@@ -495,8 +495,8 @@
 				{/if}
 			</div>
 		{/if}
-		<div data-content="" class={cn('flex flex-col gap-0.5', classes?.content, toast?.classes?.content)}>
-			<div data-title="" class={cn('font-medium leading-normal', classes?.title, toast?.classes?.title)}>
+		<div data-content="" class={join('flex flex-col gap-0.5', classes?.content, toast?.classes?.content)}>
+			<div data-title="" class={join('font-medium leading-normal', classes?.title, toast?.classes?.title)}>
 				{#if toast.title}
 					{#if typeof toast.title !== 'string'}
 						{@const Title = toast.title}
@@ -509,7 +509,7 @@
 			{#if toast.description}
 				<div
 					data-description=""
-					class={cn(
+					class={join(
 						'font-normal leading-[1.4] text-[#3f3f3f]',
 						descriptionClass,
 						toastDescriptionClass,
@@ -533,7 +533,7 @@
 					data-button
 					data-cancel
 					style={toast.cancelButtonStyle ?? cancelButtonStyle}
-					class={cn(BUTTON_BASE_CLASS, 'bg-black/8 text-(--normal-text)', classes?.cancelButton, toast?.classes?.cancelButton)}
+					class={join(BUTTON_BASE_CLASS, 'bg-black/8 text-(--normal-text)', classes?.cancelButton, toast?.classes?.cancelButton)}
 					onclick={(event) => {
 						if (!isAction(toast.cancel)) return;
 						if (!dismissible) return;
@@ -551,7 +551,7 @@
 				<button
 					data-button=""
 					style={toast.actionButtonStyle ?? actionButtonStyle}
-					class={cn(BUTTON_BASE_CLASS, 'bg-(--normal-text) text-(--normal-bg)', classes?.actionButton, toast?.classes?.actionButton)}
+					class={join(BUTTON_BASE_CLASS, 'bg-(--normal-text) text-(--normal-bg)', classes?.actionButton, toast?.classes?.actionButton)}
 					onclick={(event) => {
 						if (!isAction(toast.action)) return;
 						toast.action?.onClick(event);

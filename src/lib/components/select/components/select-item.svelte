@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import CheckIcon from '@lucide/svelte/icons/check';
 
 	import { boxWith, mountedAttachment } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '$lib/utils.js';
 
 	import { SelectItemState } from '../select.svelte.js';
 	import type { SelectItemProps } from '../types.js';
@@ -45,7 +45,7 @@
 	});
 
 	const itemClass = $derived(
-		cn(
+		join(
 			"relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
 			className,
 		),

@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { join } from 'overrule';
 	import { declareVariants, type VariantProps } from 'overrule';
 
 	export const badgeVariants = declareVariants({
@@ -24,7 +25,7 @@
 
 <script lang="ts">
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
-	import { cn, type WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -43,7 +44,7 @@
 	bind:this={ref}
 	data-slot="badge"
 	{href}
-	class={cn(badgeVariants({ variant }), className)}
+	class={join(badgeVariants({ variant }), className)}
 	{...restProps}>
 	{@render children?.()}
 </svelte:element>

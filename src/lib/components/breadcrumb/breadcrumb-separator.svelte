@@ -1,9 +1,10 @@
 <script lang="ts">
-import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-import { cn, type WithElementRef } from "$lib/utils.js";
-import type { HTMLLiAttributes } from 'svelte/elements';
+	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+	import { join } from 'overrule';
+	import type { WithElementRef } from '$lib/utils.js';
+	import type { HTMLLiAttributes } from 'svelte/elements';
 
-let { ref = $bindable(null), class: className, children, ...restProps }: WithElementRef<HTMLLiAttributes> = $props();
+	let { ref = $bindable(null), class: className, children, ...restProps }: WithElementRef<HTMLLiAttributes> = $props();
 </script>
 
 <li
@@ -11,9 +12,8 @@ let { ref = $bindable(null), class: className, children, ...restProps }: WithEle
 	data-slot="breadcrumb-separator"
 	role="presentation"
 	aria-hidden="true"
-	class={cn("[&>svg]:size-3.5", className)}
-	{...restProps}
->
+	class={join('[&>svg]:size-3.5', className)}
+	{...restProps}>
 	{#if children}
 		{@render children?.()}
 	{:else}

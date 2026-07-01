@@ -1,9 +1,9 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import type { WithoutChildren } from '$lib/internal/index.js';
 	import { getCarouselContext } from './carouselState.svelte';
-	import { cn } from '$lib/utils.js';
 	import { Button, type Props } from '../button';
 
 	let {
@@ -21,13 +21,9 @@
 	const Icon = $derived(isNext ? ArrowRightIcon : ArrowLeftIcon);
 	const canScroll = $derived(isNext ? emblaCtx.canScrollNext : emblaCtx.canScrollPrev);
 	// Full literal class strings per (direction, orientation) so Tailwind's scanner sees them intact.
-	const horizontal = $derived(
-		isNext ? '-inset-e-12 top-1/2 -translate-y-1/2' : '-inset-s-12 top-1/2 -translate-y-1/2',
-	);
+	const horizontal = $derived(isNext ? '-inset-e-12 top-1/2 -translate-y-1/2' : '-inset-s-12 top-1/2 -translate-y-1/2');
 	const vertical = $derived(
-		isNext
-			? 'inset-s-1/2 -bottom-12 -translate-x-1/2 rotate-90'
-			: 'inset-s-1/2 -top-12 -translate-x-1/2 rotate-90',
+		isNext ? 'inset-s-1/2 -bottom-12 -translate-x-1/2 rotate-90' : 'inset-s-1/2 -top-12 -translate-x-1/2 rotate-90',
 	);
 </script>
 
@@ -37,7 +33,7 @@
 	{size}
 	disabled={!canScroll}
 	aria-disabled={!canScroll}
-	class={cn('absolute size-8! rounded-full!', emblaCtx.orientation === 'horizontal' ? horizontal : vertical, className)}
+	class={join('absolute size-8! rounded-full!', emblaCtx.orientation === 'horizontal' ? horizontal : vertical, className)}
 	onclick={isNext ? emblaCtx.scrollNext : emblaCtx.scrollPrev}
 	onkeydown={emblaCtx.handleKeyDown}
 	{...restProps}

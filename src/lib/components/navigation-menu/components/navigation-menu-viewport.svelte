@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { boxWith, mountedAttachment } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 
@@ -9,7 +10,6 @@
 
 	import { createId } from '$lib/internal/create-id.js';
 	import { getDataTransitionAttrs } from '$lib/internal/attrs.js';
-	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -34,7 +34,7 @@
 	});
 
 	const viewportClass = $derived(
-		cn(
+		join(
 			'origin-top-center relative mt-1.5 h-[calc(var(--bits-navigation-menu-viewport-height)+1rem)] w-full overflow-hidden rounded-lg bg-popover text-popover-foreground shadow ring-1 ring-foreground/10 duration-100 md:w-[calc(var(--bits-navigation-menu-viewport-width)+1rem)] data-open:animate-in data-open:zoom-in-90 data-closed:animate-out data-closed:zoom-out-90',
 			className,
 		),

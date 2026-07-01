@@ -1,15 +1,10 @@
-import type { DateValue } from "@internationalized/date";
-import type { OnChangeFn, WithChild, WithChildren, Without } from "$lib/internal/types.js";
-import type { BitsPrimitiveDivAttributes } from "$lib/internal/attributes.js";
-import type { CalendarRootSnippetProps } from "$lib/types.js";
-import type {
-	DateMatcher,
-	DateOnInvalid,
-	DateValidator,
-	EditableSegmentPart,
-} from "$lib/internal/index.js";
-import type { Granularity, WeekStartsOn } from "$lib/internal/date-time/types.js";
-import type { PortalProps } from "$lib/components/utilities/portal/index.js";
+import type { DateValue } from '@internationalized/date';
+import type { OnChangeFn, WithChild, WithChildren, Without } from '$lib/internal/types.js';
+import type { BitsPrimitiveDivAttributes } from '$lib/internal/attributes.js';
+import type { CalendarRootSnippetProps } from '$lib/components/calendar/types.js';
+import type { DateMatcher, DateOnInvalid, DateValidator, EditableSegmentPart } from '$lib/internal/index.js';
+import type { Granularity, WeekStartsOn } from '$lib/internal/date-time/types.js';
+import type { PortalProps } from '$lib/components/utilities/portal/index.js';
 
 export type DatePickerRootPropsWithoutHTML = WithChildren<{
 	/**
@@ -199,7 +194,7 @@ export type DatePickerRootPropsWithoutHTML = WithChildren<{
 	 *
 	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#weekday
 	 */
-	weekdayFormat?: Intl.DateTimeFormatOptions["weekday"];
+	weekdayFormat?: Intl.DateTimeFormatOptions['weekday'];
 
 	/**
 	 * Display 6 weeks per month, regardless the month's number of weeks.
@@ -273,14 +268,14 @@ export type DatePickerRootPropsWithoutHTML = WithChildren<{
 	 *
 	 * @default "long"
 	 */
-	monthFormat?: Intl.DateTimeFormatOptions["month"] | ((month: number) => string);
+	monthFormat?: Intl.DateTimeFormatOptions['month'] | ((month: number) => string);
 
 	/**
 	 * The format of the year names in the calendar.
 	 *
 	 * @default "numeric"
 	 */
-	yearFormat?: Intl.DateTimeFormatOptions["year"] | ((year: number) => string);
+	yearFormat?: Intl.DateTimeFormatOptions['year'] | ((year: number) => string);
 }>;
 
 export type DatePickerRootProps = DatePickerRootPropsWithoutHTML;
@@ -292,7 +287,7 @@ export type {
 	PopoverContentProps as DatePickerContentProps,
 	PopoverClosePropsWithoutHTML as DatePickerClosePropsWithoutHTML,
 	PopoverCloseProps as DatePickerCloseProps,
-} from "$lib/components/popover/types.js";
+} from '$lib/components/popover/types.js';
 
 export type {
 	DateFieldInputPropsWithoutHTML as DatePickerInputPropsWithoutHTML,
@@ -301,7 +296,7 @@ export type {
 	DateFieldLabelProps as DatePickerLabelProps,
 	DateFieldSegmentPropsWithoutHTML as DatePickerSegmentPropsWithoutHTML,
 	DateFieldSegmentProps as DatePickerSegmentProps,
-} from "$lib/components/date-field/types.js";
+} from '$lib/components/date-field/types.js';
 
 export type DatePickerCalendarPropsWithoutHTML = WithChild<{}, CalendarRootSnippetProps>;
 
@@ -338,4 +333,4 @@ export type {
 	CalendarMonthSelectPropsWithoutHTML as DatePickerMonthSelectPropsWithoutHTML,
 	CalendarYearSelectProps as DatePickerYearSelectProps,
 	CalendarYearSelectPropsWithoutHTML as DatePickerYearSelectPropsWithoutHTML,
-} from "$lib/components/calendar/types.js";
+} from '$lib/components/calendar/types.js';

@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { join } from 'overrule';
 	import { sheetVariants, type Side } from '$lib/components/sheet/variants.js';
 	export { sheetVariants, type Side };
 </script>
@@ -12,7 +13,7 @@
 	import { createId } from '$lib/internal/create-id.js';
 	import { on } from 'svelte/events';
 	import { createAttachmentKey } from 'svelte/attachments';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import type { WithoutChildrenOrChild } from '$lib/utils.js';
 	import ScrollLock from '$lib/components/utilities/scroll-lock/scroll-lock.svelte';
 	import SheetClose from './sheet-close.svelte';
 	import XIcon from '@lucide/svelte/icons/x';
@@ -126,7 +127,9 @@
 		};
 	}
 
-	const mergedProps = $derived(mergeProps({ 'data-slot': 'sheet-content', class: cn('sheet-dialog', sheetVariants({ side })) }, restProps, contentState.props));
+	const mergedProps = $derived(
+		mergeProps({ 'data-slot': 'sheet-content', class: join('sheet-dialog', sheetVariants({ side })) }, restProps, contentState.props),
+	);
 
 	// For the (currently unused) `child` path the controller rides along as an attachment, so a
 	// consumer MUST spread these props onto a native <dialog> for showModal()/close() to work.
@@ -141,7 +144,7 @@
 {:else}
 	<!-- DialogContentState.props / DialogContentProps are authored for a <div>; their generic event
 	     handlers are typed to HTMLDivElement, so assert the merged set as dialog attributes. -->
-	<dialog {@attach controller} {...(mergedProps as unknown as HTMLDialogAttributes)}>
+	<dialog {@attach controller} {...mergedProps as unknown as HTMLDialogAttributes}>
 		{@render children?.()}
 		<SheetClose
 			class="ring-offset-background focus-visible:ring-ring absolute inset-e-4 top-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none">

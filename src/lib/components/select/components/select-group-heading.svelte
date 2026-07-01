@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 
@@ -6,7 +7,6 @@
 	import { SelectGroupHeadingState } from '../select.svelte.js';
 
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -34,7 +34,7 @@
 			restProps,
 			{
 				'data-slot': 'select-group-heading',
-				class: cn('px-2 py-1.5 text-xs text-muted-foreground', className),
+				class: join('px-2 py-1.5 text-xs text-muted-foreground', className),
 			},
 			groupHeadingState.props,
 		),

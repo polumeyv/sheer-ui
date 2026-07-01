@@ -1,6 +1,6 @@
 <script lang="ts" generics="T extends string">
 	import type { Component } from 'svelte';
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 
 	type Tab<T extends string> = {
 		id: T;
@@ -28,7 +28,7 @@
 	});
 </script>
 
-<nav data-slot="heading-nav" class={cn('w-full border-b mb-2 md:mb-4 lg:mb-6 min-h-9 inline-flex', className)}>
+<nav data-slot="heading-nav" class={join('w-full border-b mb-2 md:mb-4 lg:mb-6 min-h-9 inline-flex', className)}>
 	{#if tabs.length > 0}
 		<div role="tablist" aria-orientation="horizontal" class="relative flex">
 			{#each tabs as tab (tab.id)}
@@ -44,7 +44,7 @@
 					aria-selected={isActive}
 					aria-current={tab.href && isActive ? 'page' : undefined}
 					tabindex={isActive ? 0 : -1}
-					class={cn(
+					class={join(
 						'relative z-10 flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap',
 						isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
 					)}>

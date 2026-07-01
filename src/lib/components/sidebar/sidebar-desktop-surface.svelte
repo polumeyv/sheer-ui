@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 	import { useSidebar } from './context.svelte.js';
 	import type { SidebarRootProps } from './types.js';
 
@@ -27,7 +27,7 @@
 	<!-- This is what handles the sidebar gap on desktop -->
 	<div
 		data-slot="sidebar-gap"
-		class={cn(
+		class={join(
 			'transition-[width] duration-200 ease-linear relative w-(--sidebar-width) bg-transparent',
 			'group-data-[collapsible=offcanvas]:w-0',
 			'group-data-[side=right]:rotate-180',
@@ -38,7 +38,7 @@
 	</div>
 	<div
 		data-slot="sidebar-container"
-		class={cn(
+		class={join(
 			'fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex',
 			side === 'left'
 				? 'inset-s-0 group-data-[collapsible=offcanvas]:-inset-s-(--sidebar-width)'
@@ -50,7 +50,10 @@
 			className,
 		)}
 		{...restProps}>
-		<div data-sidebar="sidebar" data-slot="sidebar-inner" class="bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:shadow-sm group-data-[variant=floating]:ring-1 group-data-[variant=floating]:ring-sidebar-border flex size-full flex-col">
+		<div
+			data-sidebar="sidebar"
+			data-slot="sidebar-inner"
+			class="bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:shadow-sm group-data-[variant=floating]:ring-1 group-data-[variant=floating]:ring-sidebar-border flex size-full flex-col">
 			{@render children?.()}
 		</div>
 	</div>

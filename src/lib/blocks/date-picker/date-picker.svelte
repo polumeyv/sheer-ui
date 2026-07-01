@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import type { DateValue } from '@internationalized/date';
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 	import { buttonVariants } from '$lib/components/button';
 	import Calendar from '../calendar.svelte';
 	import { Popover } from '$lib/components/popover';
@@ -65,11 +65,11 @@
 	}
 </script>
 
-<div class={cn('grid gap-2', className)}>
+<div class={join('grid gap-2', className)}>
 	<Popover.Root>
 		<Popover.Trigger
 			{disabled}
-			class={cn(
+			class={join(
 				buttonVariants({
 					variant: 'outline',
 					class: 'w-70 justify-start! text-start font-normal!',
@@ -80,7 +80,7 @@
 			<CalendarIcon class="size-4" />
 			{displayValue}
 		</Popover.Trigger>
-		<Popover.Content class={cn('w-auto! p-0!', contentClass)} {align} {side}>
+		<Popover.Content class={join('w-auto! p-0!', contentClass)} {align} {side}>
 			<Calendar
 				type="single"
 				{value}

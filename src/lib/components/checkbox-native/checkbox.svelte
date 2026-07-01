@@ -2,7 +2,7 @@
 	// CheckboxNative: the form checkbox. A real <input type=checkbox> that submits
 	// (name/value) and supports bind:checked / bind:indeterminate. For controlled,
 	// headless, or grouped use (table select-all, Checkbox.Group) use `../checkbox`.
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
@@ -58,7 +58,7 @@
 	data-slot="checkbox"
 	{...shared}
 	{...restProps}
-	class={cn(
+	class={join(
 		'border-border dark:bg-border/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-within:border-ring focus-within:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive relative grid size-4 shrink-0 place-items-center rounded-[4px] border shadow-xs transition-shadow outline-none focus-within:ring-[3px] data-disabled:cursor-not-allowed data-disabled:opacity-50',
 		className,
 	)}>

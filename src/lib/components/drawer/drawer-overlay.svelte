@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import * as DialogPrimitive from '$lib/components/dialog/index.js';
 	import { type WithChildren, box, attachRef } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import type { WithoutChildrenOrChild } from '$lib/utils.js';
 	import { useId } from '$lib/internal/use-id.js';
 	import { getDrawer } from './util/context.js';
 	import type { OverlayProps } from './util/components/drawer/index.js';
@@ -34,7 +35,7 @@
 		mergeProps(
 			{
 				'data-slot': 'drawer-overlay',
-				class: cn('fixed inset-0 z-50 bg-black/50 transition-opacity data-[state=closed]:opacity-0 starting:opacity-0', className),
+				class: join('fixed inset-0 z-50 bg-black/50 transition-opacity data-[state=closed]:opacity-0 starting:opacity-0', className),
 			},
 			restProps,
 			{

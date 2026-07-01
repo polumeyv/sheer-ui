@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { PinInputCellProps } from '../types.js';
 	import { PinInputCellState } from '../pin-input.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -23,7 +23,7 @@
 		mergeProps(
 			{
 				'data-slot': 'pin-input-slot',
-				class: cn(
+				class: join(
 					'relative grid size-9 place-items-center border-y border-e border-border text-sm transition-all outline-none first:rounded-s-md first:border-s last:rounded-e-md aria-invalid:border-destructive dark:bg-border/30',
 					cell.isActive &&
 						'z-10 border-ring ring-[3px] ring-ring/50 ring-offset-background aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40',

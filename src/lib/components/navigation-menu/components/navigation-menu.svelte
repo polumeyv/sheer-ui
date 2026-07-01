@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 
@@ -8,7 +9,6 @@
 	import NavigationMenuViewport from './navigation-menu-viewport.svelte';
 
 	import { createId } from '$lib/internal/create-id.js';
-	import { cn } from '$lib/utils.js';
 
 	const uid = $props.id();
 
@@ -50,7 +50,7 @@
 		),
 	});
 
-	const rootClass = $derived(cn('group/navigation-menu relative flex max-w-max flex-1 items-center justify-center', className));
+	const rootClass = $derived(join('group/navigation-menu relative flex max-w-max flex-1 items-center justify-center', className));
 
 	const mergedProps = $derived(
 		mergeProps(

@@ -1,15 +1,3 @@
-import { join } from 'overrule';
-
-export type ClassValue = Parameters<typeof join>[number];
-
-/**
- * Plain class join — conflict resolution is an authoring-time invariant, not a
- * runtime feature. Base/variant/caller classes must never set the same property
- * for the same modifier prefix (use a trailing `!` for deliberate overrides).
- * Ships zero tailwind-merge bytes in production.
- */
-export const cn = join;
-
 // Snippet/ref prop helpers used across the styled bits-ui components (the
 // shadcn-svelte convention). The reactive accessor/box types live in
 // `$lib/internal/tools` and `$lib/internal/types` — these are only the surface props.

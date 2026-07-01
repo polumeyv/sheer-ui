@@ -4,7 +4,7 @@
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import type { DateValue } from '@internationalized/date';
 	import type { DateRange } from '$lib/internal/index.js';
-	import { cn } from '$lib/utils.js';
+	import { join } from 'overrule';
 	import { buttonVariants } from '$lib/components/button';
 	import { RangeCalendar } from '$lib/components/range-calendar';
 	import { Popover } from '$lib/components/popover';
@@ -55,11 +55,11 @@
 	);
 </script>
 
-<div class={cn('grid gap-2', className)}>
+<div class={join('grid gap-2', className)}>
 	<Popover.Root>
 		<Popover.Trigger
 			{disabled}
-			class={cn(
+			class={join(
 				buttonVariants({ variant: 'outline', class: 'w-70 justify-start! text-start font-normal!' }),
 				!value?.start && 'text-muted-foreground',
 				triggerClass,
@@ -67,7 +67,7 @@
 			<CalendarIcon class="size-4" />
 			{displayValue}
 		</Popover.Trigger>
-		<Popover.Content class={cn('w-auto! p-0!', contentClass)} {align} {side}>
+		<Popover.Content class={join('w-auto! p-0!', contentClass)} {align} {side}>
 			<RangeCalendar.Root bind:value {onValueChange} {minValue} {maxValue} {numberOfMonths} {weekdayFormat} {locale} class="p-3">
 				{#snippet children({ months, weekdays })}
 					<RangeCalendar.Header class="flex items-center justify-between">

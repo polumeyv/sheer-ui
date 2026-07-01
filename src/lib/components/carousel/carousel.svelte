@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { join } from 'overrule';
 	import { type CarouselAPI, type CarouselContext, type CarouselProps, setCarouselContext } from './carouselState.svelte';
-	import { cn, type WithElementRef } from "$lib/utils.js";
+	import type { WithElementRef } from '$lib/utils.js';
 
 	let {
 		ref = $bindable(null),
@@ -160,7 +161,7 @@
 <div
 	bind:this={ref}
 	data-slot="carousel"
-	class={cn('relative', className)}
+	class={join('relative', className)}
 	role="region"
 	aria-roledescription="carousel"
 	onkeydown={handleKeyDown}
