@@ -26,6 +26,14 @@
 		loading: '',
 	};
 
+	// Default (non-richColors) toasts keep a neutral body; the type reads through the icon color alone.
+	const ICON_COLORS: Partial<Record<ToastProps['toast']['type'], string>> = {
+		success: 'text-emerald-600 dark:text-emerald-400',
+		error: 'text-red-600 dark:text-red-400',
+		warning: 'text-amber-600 dark:text-amber-400',
+		info: 'text-sky-600 dark:text-sky-400',
+	};
+
 	// Shared by the action/cancel buttons. Deliberately carries no bg-*/text-* utility —
 	// each button supplies its own so join() (plain join, no conflict resolution) never has
 	// to arbitrate between two colors for the same property.
@@ -459,7 +467,12 @@
 		{#if toastType === 'loading' || toastType === 'success' || toastType === 'error' || toastType === 'warning' || toastType === 'info'}
 			<div
 				data-icon=""
-				class={join('relative flex size-4 shrink-0 items-center justify-start ms-[-3px] me-1', classes?.icon, toast?.classes?.icon)}>
+				class={join(
+					'relative flex size-4 shrink-0 items-center justify-start ms-[-3px] me-1',
+					ICON_COLORS[toastType],
+					classes?.icon,
+					toast?.classes?.icon,
+				)}>
 				{#if toastType === 'loading'}
 					<Loader2Icon class={join(iconClass, 'animate-spin')} />
 				{:else if toastType === 'success'}
