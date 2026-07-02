@@ -7,7 +7,7 @@ import { useId } from '$lib/internal/use-id.js';
 import type { TimeSegmentPart } from '$lib/internal/index.js';
 import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
-import type { TimeGranularity, TimeOnInvalid, TimeRange, TimeRangeValidator, TimeValue } from '$lib/internal/date-time/types.js';
+import type { TimeGranularity, TimeOnInvalid, TimeEndpoints, TimeRangeValidator, TimeValue } from '$lib/internal/date-time/types.js';
 import { type TimeFormatter, createTimeFormatter } from '$lib/internal/date-time/formatter.js';
 import { getFirstSegment } from '$lib/internal/date-time/field/segments.js';
 import { convertTimeValueToTime, isTimeBefore } from '$lib/internal/date-time/field/time-helpers.js';
@@ -23,7 +23,7 @@ interface TimeRangeFieldRootStateOpts<T extends TimeValue = Time>
 	extends
 		WithRefOpts,
 		WritableBoxedValues<{
-			value: TimeRange<T>;
+			value: TimeEndpoints<T>;
 			placeholder: TimeValue;
 		}>,
 		ReadableBoxedValues<{
@@ -171,7 +171,7 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 		return true;
 	});
 
-	#updateValue(cb: (value: TimeRange<T>) => TimeRange<T>) {
+	#updateValue(cb: (value: TimeEndpoints<T>) => TimeEndpoints<T>) {
 		const value = this.opts.value.current;
 		const newValue = cb(value);
 		this.opts.value.current = newValue;

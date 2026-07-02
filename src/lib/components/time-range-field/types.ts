@@ -13,7 +13,7 @@ import type {
 	EditableTimeSegmentPart,
 	TimeGranularity,
 	TimeOnInvalid,
-	TimeRange,
+	TimeEndpoints,
 	TimeRangeValidator,
 	TimeValue,
 } from "$lib/internal/date-time/types.js";
@@ -24,12 +24,12 @@ export type TimeRangeFieldRootPropsWithoutHTML<T extends TimeValue = Time> = Wit
 	 *
 	 * @bindable
 	 */
-	value?: TimeRange<T>;
+	value?: TimeEndpoints<T>;
 
 	/**
 	 * A callback that is called when the value of the date range field changes.
 	 */
-	onValueChange?: OnChangeFn<TimeRange<T> | undefined>;
+	onValueChange?: OnChangeFn<TimeEndpoints<T> | undefined>;
 
 	/**
 	 * The placeholder value of the time field. This determines the format

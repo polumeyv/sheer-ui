@@ -35,7 +35,7 @@ export type {
 	DateRange,
 	TimeValue,
 	TimeSegmentPart,
-	TimeRange,
+	TimeEndpoints,
 	TimeValidator,
 	TimeRangeValidator,
 	TimeOnInvalid,

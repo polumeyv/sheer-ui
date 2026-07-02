@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { TimeRange, TimeValue } from '$lib/internal/date-time/types.js';
+	import type { TimeEndpoints, TimeValue } from '$lib/internal/date-time/types.js';
 	import type { Time } from '@internationalized/date';
 </script>
 
@@ -54,7 +54,7 @@
 		value = defaultValue;
 	}
 
-	// Range field state owns a TimeRange object, even when empty.
+	// Range field state owns a TimeEndpoints object, even when empty.
 	repairBindable(() => value, repairUndefinedControlledValue);
 
 	const rootState = TimeRangeFieldRootState.create({
@@ -82,7 +82,7 @@
 		),
 		readonlySegments: boxWith(() => readonlySegments),
 		value: boxWith(
-			() => value as TimeRange<T>,
+			() => value as TimeEndpoints<T>,
 			(v) => {
 				value = v;
 				onValueChange(v);
