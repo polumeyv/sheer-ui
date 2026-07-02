@@ -9,8 +9,8 @@ export type ScrollAnimatorType<API extends ReInitApi = ReInitApi> = {
 	render: (engine: EngineType<API>, alpha: number) => void;
 };
 
-export function ScrollAnimator<API extends ReInitApi>(): ScrollAnimatorType<API> {
-	function update(engine: EngineType<API>): void {
+export const ScrollAnimator = <API extends ReInitApi>(): ScrollAnimatorType<API> => {
+	const update = (engine: EngineType<API>): void => {
 		const {
 			dragHandler,
 			scrollBody,
@@ -21,9 +21,9 @@ export function ScrollAnimator<API extends ReInitApi>(): ScrollAnimatorType<API>
 		if (!loop) scrollBounds.constrain(dragHandler.pointerDown());
 
 		scrollBody.seek();
-	}
+	};
 
-	function render(engine: EngineType<API>, alpha: number): void {
+	const render = (engine: EngineType<API>, alpha: number): void => {
 		const {
 			scrollBody,
 			translate,
@@ -72,7 +72,7 @@ export function ScrollAnimator<API extends ReInitApi>(): ScrollAnimatorType<API>
 		if (isScrolling) {
 			eventHandler.createEvent('scroll', { isDragging }).emit();
 		}
-	}
+	};
 
 	const self: ScrollAnimatorType<API> = {
 		update,
@@ -80,4 +80,4 @@ export function ScrollAnimator<API extends ReInitApi>(): ScrollAnimatorType<API>
 	};
 
 	return self;
-}
+};

@@ -5,7 +5,6 @@ import { type SlidesToScrollType } from './SlidesToScroll'
 import {
   arrayFromRange,
   arrayIsLastIndex,
-  arrayLast,
   arrayLastIndex
 } from './utils'
 
@@ -18,7 +17,7 @@ export type ScrollSnapListType = {
   length: number
 }
 
-export function ScrollSnapList(
+export const ScrollSnapList = (
   containSnaps: boolean,
   containScroll: ScrollContainOptionType,
   scrollSnaps: number[],
@@ -26,15 +25,11 @@ export function ScrollSnapList(
   slidesToScroll: SlidesToScrollType,
   slideIndexes: number[],
   scrollProgress: ScrollProgressType
-): ScrollSnapListType {
+): ScrollSnapListType => {
   const { groupSlides } = slidesToScroll
   const { min, max } = scrollContainLimit
-  const slidesBySnap = getSlidesBySnap()
-  const snapBySlide = getSnapsBySlide()
-  const progressBySnap = scrollSnaps.map(scrollProgress.get)
-  const length = scrollSnaps.length
 
-  function getSlidesBySnap(): number[][] {
+  const getSlidesBySnap = (): number[][] => {
     const groupedSlideIndexes = groupSlides(slideIndexes)
     const doNotContain = !containSnaps || containScroll === 'keepSnaps'
 
@@ -46,7 +41,7 @@ export function ScrollSnapList(
       const isLast = arrayIsLastIndex(groups, index)
 
       if (isFirst) {
-        const rangeEnd = arrayLast(group)
+        const rangeEnd = group.at(-1)!
         return arrayFromRange(rangeEnd)
       }
       if (isLast) {
@@ -57,7 +52,7 @@ export function ScrollSnapList(
     })
   }
 
-  function getSnapsBySlide(): SnapBySlideType {
+  const getSnapsBySlide = (): SnapBySlideType => {
     const snapBySlide: SnapBySlideType = {}
 
     slidesBySnap.forEach((slideGroup, snapIndex) => {
@@ -67,6 +62,11 @@ export function ScrollSnapList(
     })
     return snapBySlide
   }
+
+  const slidesBySnap = getSlidesBySnap()
+  const snapBySlide = getSnapsBySlide()
+  const progressBySnap = scrollSnaps.map(scrollProgress.get)
+  const length = scrollSnaps.length
 
   const self: ScrollSnapListType = {
     slidesBySnap,

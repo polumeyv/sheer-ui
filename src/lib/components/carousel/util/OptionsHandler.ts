@@ -1,39 +1,56 @@
-import { type NodeHandlerType } from './NodeHandler'
+import { MediaQuery } from 'svelte/reactivity'
+import { BROWSER } from '@polumeyv/utilities/env'
 import { type LooseOptionsType, type CreateOptionsType } from './Options'
-import { objectsMergeDeep, type WindowType } from './utils'
+import { objectsMergeDeep } from './utils'
 
 type OptionsType = Partial<CreateOptionsType<LooseOptionsType>>
 
 export type OptionsHandlerType = {
-  init: (ownerWindow: NodeHandlerType['ownerWindow']) => void
   mergeOptions: <TypeA extends OptionsType, TypeB extends OptionsType>(
     optionsA: TypeA,
     optionsB?: TypeB
   ) => TypeA
   optionsAtMedia: <Type extends OptionsType>(options: Type) => Type
-  optionsMediaQueries: (optionsList: OptionsType[]) => MediaQueryList[]
 }
 
-export function OptionsHandler(): OptionsHandlerType {
-  let windowInstance: WindowType
+// One MediaQuery per query string, shared across carousels. Reading `current`
+// inside an effect subscribes it; reads outside reactive contexts are plain.
+const mediaQueries = new Map<string, MediaQuery>()
 
-  function init(ownerWindow: NodeHandlerType['ownerWindow']): void {
-    if (ownerWindow) windowInstance = ownerWindow
+const matchesMedia = (query: string): boolean => {
+  if (!BROWSER) return false
+
+  let mediaQuery = mediaQueries.get(query)
+
+  if (!mediaQuery) {
+    mediaQuery = new MediaQuery(query)
+    mediaQueries.set(query, mediaQuery)
   }
 
-  function mergeOptions<TypeA extends OptionsType, TypeB extends OptionsType>(
+  return mediaQuery.current
+}
+
+// Reads every declared breakpoint so a tracked caller (the carousel config
+// effect) re-runs when any of them flips. Replaces embla's matchMedia
+// 'change' listeners.
+export const observeOptionsBreakpoints = (optionsList: OptionsType[]): void => {
+  for (const options of optionsList) {
+    for (const query of Object.keys(options.breakpoints || {})) {
+      matchesMedia(query)
+    }
+  }
+}
+
+export const OptionsHandler = (): OptionsHandlerType => {
+  const mergeOptions = <TypeA extends OptionsType, TypeB extends OptionsType>(
     optionsA: TypeA,
     optionsB?: TypeB
-  ): TypeA {
-    return <TypeA>objectsMergeDeep(optionsA, optionsB || {})
-  }
+  ): TypeA => <TypeA>objectsMergeDeep(optionsA, optionsB || {})
 
-  function optionsAtMedia<Type extends OptionsType>(options: Type): Type {
-    if (!windowInstance) return options
-
+  const optionsAtMedia = <Type extends OptionsType>(options: Type): Type => {
     const optionsAtMedia = options.breakpoints || {}
     const matchedMediaOptions = Object.keys(optionsAtMedia)
-      .filter((media) => windowInstance.matchMedia(media).matches)
+      .filter((media) => matchesMedia(media))
       .map((media) => optionsAtMedia[media])
       .reduce(
         (mediaOptions, mediaOption) => mergeOptions(mediaOptions, mediaOption),
@@ -43,20 +60,9 @@ export function OptionsHandler(): OptionsHandlerType {
     return mergeOptions(options, matchedMediaOptions)
   }
 
-  function optionsMediaQueries(optionsList: OptionsType[]): MediaQueryList[] {
-    if (!windowInstance) return []
-
-    return optionsList
-      .map((options) => Object.keys(options.breakpoints || {}))
-      .reduce((mediaQueries, mediaQuery) => mediaQueries.concat(mediaQuery), [])
-      .map(windowInstance.matchMedia)
-  }
-
   const self: OptionsHandlerType = {
-    init,
     mergeOptions,
-    optionsAtMedia,
-    optionsMediaQueries
+    optionsAtMedia
   }
   return self
 }

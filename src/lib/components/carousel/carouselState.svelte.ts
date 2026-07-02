@@ -3,10 +3,9 @@ import type { Attachment } from 'svelte/attachments';
 import type { HTMLAttributes } from 'svelte/elements';
 import { EventHandler, type EventHandlerType } from './util/EventHandler';
 import { Engine, type EngineType } from './util/Engine';
-import { EventStore } from './util/EventStore';
 import { defaultOptions, type CarouselOptionsType, type CreateOptionsType, type LooseOptionsType, type OptionsType } from './util/Options';
 import { NodeHandler, type NodeHandlerType } from './util/NodeHandler';
-import { OptionsHandler, type OptionsHandlerType } from './util/OptionsHandler';
+import { observeOptionsBreakpoints, OptionsHandler, type OptionsHandlerType } from './util/OptionsHandler';
 import { type ScrollToDirectionType } from './util/ScrollTo';
 
 import type { WithElementRef } from "$lib/utils.js";
@@ -93,28 +92,28 @@ type SetCarouselApi = (api: CarouselAPI | undefined) => void;
 const fallbackOptions: CarouselOptions = {};
 const fallbackPlugins: CarouselPlugins = [];
 
-function readCarouselConfig(readConfig?: GetCarouselConfig) {
+const readCarouselConfig = (readConfig?: GetCarouselConfig) => {
 	const config = readConfig?.();
 
 	return {
 		options: config?.options ?? fallbackOptions,
 		plugins: config?.plugins ?? fallbackPlugins,
 	};
-}
+};
 
-function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}, userPlugins: CarouselPlugins = []): CarouselAPI {
+const createCarousel = (userRoot: HTMLElement, userOptions: CarouselOptions = {}, userPlugins: CarouselPlugins = []): CarouselAPI => {
 	const optionsHandler = OptionsHandler();
 	let activePlugins: CarouselPlugins = [];
 	let pluginList = userPlugins;
 	let pluginApis: CarouselPluginsType = {};
-	const mediaHandlers = EventStore();
 	const eventHandler = EventHandler<CarouselAPI>();
 
-	const { mergeOptions, optionsAtMedia, optionsMediaQueries } = optionsHandler;
+	const { mergeOptions, optionsAtMedia } = optionsHandler;
 	const { on, off, createEvent } = eventHandler;
 
 	let destroyed = false;
-	let engine: EngineType<CarouselAPI>;
+	// Swapped on every (re)activation; reactive so snap list / index reads re-derive after reInit.
+	let engine = $state.raw() as EngineType<CarouselAPI>;
 	let nodeHandler: NodeHandlerType;
 
 	let optionsBase = mergeOptions(defaultOptions, userOptions);
@@ -124,17 +123,17 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 	let container: HTMLElement;
 	let slides: HTMLElement[];
 
-	function cloneEngine(userOptions?: CarouselOptions): EngineType<CarouselAPI> {
+	const cloneEngine = (userOptions?: CarouselOptions): EngineType<CarouselAPI> => {
 		const engineOptions = mergeOptions(options, userOptions);
 		return createEngine(engineOptions, container, slides, true);
-	}
+	};
 
-	function createEngine(
+	const createEngine = (
 		options: OptionsType,
 		container: HTMLElement,
 		slides: HTMLElement[],
 		useCachedRects?: boolean,
-	): EngineType<CarouselAPI> {
+	): EngineType<CarouselAPI> => {
 		const rects = nodeHandler.getRects(container, slides, useCachedRects);
 
 		const nextEngine = Engine<CarouselAPI>(root, container, slides, options, nodeHandler, eventHandler, rects, false);
@@ -144,9 +143,9 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 		}
 
 		return nextEngine;
-	}
+	};
 
-	function initPlugins(api: CarouselAPI, plugins: CarouselPlugins): CarouselPluginsType {
+	const initPlugins = (api: CarouselAPI, plugins: CarouselPlugins): CarouselPluginsType => {
 		activePlugins = plugins;
 
 		return plugins.reduce<CarouselPluginsType>((pluginList, plugin) => {
@@ -154,24 +153,22 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 			pluginList[plugin.name] = plugin;
 			return pluginList;
 		}, {});
-	}
+	};
 
-	function destroyPlugins(): void {
+	const destroyPlugins = (): void => {
 		activePlugins.forEach((plugin) => {
 			plugin.destroy();
 		});
 
 		activePlugins = [];
-	}
+	};
 
-	function activate(withOptions?: CarouselOptions, withPlugins?: CarouselPlugins): void {
+	const activate = (withOptions?: CarouselOptions, withPlugins?: CarouselPlugins): void => {
 		if (destroyed) return;
 
 		nodeHandler = NodeHandler(userRoot);
 
 		const { ownerWindow } = nodeHandler;
-
-		optionsHandler.init(ownerWindow);
 
 		optionsBase = mergeOptions(optionsBase, withOptions);
 		options = optionsAtMedia(optionsBase);
@@ -183,10 +180,6 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 		container = nodes.container;
 		slides = nodes.slides;
 		engine = createEngine(options, container, slides);
-
-		optionsMediaQueries([optionsBase, ...pluginList.map(({ options }) => options)]).forEach((query) => {
-			mediaHandlers.add(query, 'change', reActivate);
-		});
 
 		if (!options.active) return;
 
@@ -210,9 +203,9 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 		}
 
 		pluginApis = initPlugins(self, pluginList);
-	}
+	};
 
-	function reActivate(withOptions?: CarouselOptions, withPlugins?: CarouselPlugins): void {
+	const reActivate = (withOptions?: CarouselOptions, withPlugins?: CarouselPlugins): void => {
 		const event = eventHandler.createEvent('reinit', null);
 		const startSnap = selectedSnap();
 
@@ -220,9 +213,9 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 		activate(mergeOptions({ startSnap }, withOptions), withPlugins);
 
 		event.emit();
-	}
+	};
 
-	function deActivate(): void {
+	const deActivate = (): void => {
 		engine.dragHandler.destroy();
 		engine.resizeHandler.destroy();
 		engine.slidesHandler.destroy();
@@ -232,91 +225,90 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 		destroyPlugins();
 
 		engine.eventStore.clear();
-		mediaHandlers.clear();
 		engine.translate.clear();
 		engine.slideTranslates.forEach((translate) => translate.clear());
-	}
+	};
 
-	function destroy(): void {
+	const destroy = (): void => {
 		if (destroyed) return;
 
 		const event = eventHandler.createEvent('destroy', null);
 
 		destroyed = true;
 
-		mediaHandlers.clear();
 		deActivate();
 		event.emit();
 		eventHandler.clear();
-	}
+	};
 
-	function goTo(index: number, instant?: boolean, direction?: ScrollToDirectionType): void {
+	const goTo = (index: number, instant?: boolean, direction?: ScrollToDirectionType): void => {
 		if (destroyed) return;
 		if (!options.active) return;
 
 		engine.scrollBody.useBaseFriction().useDuration(instant === true ? 0 : options.duration);
 		engine.scrollTo.index(index, direction);
-	}
+	};
 
-	function goToNext(instant?: boolean): void {
+	const goToNext = (instant?: boolean): void => {
 		goTo(snapIndex(1), instant, -1);
-	}
+	};
 
-	function goToPrev(instant?: boolean): void {
+	const goToPrev = (instant?: boolean): void => {
 		goTo(snapIndex(-1), instant, 1);
-	}
+	};
 
-	function canGoToNext(): boolean {
+	const canGoToNext = (): boolean => {
 		return snapIndex(1) !== selectedSnap();
-	}
+	};
 
-	function canGoToPrev(): boolean {
+	const canGoToPrev = (): boolean => {
 		return snapIndex(-1) !== selectedSnap();
-	}
+	};
 
-	function scrollProgress(): number {
+	const scrollProgress = (): number => {
 		return engine.scrollProgress.get(engine.offsetLocation);
-	}
+	};
 
-	function snapIndex(offset: number): number {
-		return engine.indexCurrent.add(offset).get();
-	}
+	const snapIndex = (offset: number): number => {
+		const { indexCurrent } = engine;
+		return indexCurrent.normalize(indexCurrent.get() + offset);
+	};
 
-	function snapList(): number[] {
+	const snapList = (): number[] => {
 		return engine.scrollSnapList.progressBySnap;
-	}
+	};
 
-	function selectedSnap(): number {
+	const selectedSnap = (): number => {
 		return snapIndex(0);
-	}
+	};
 
-	function previousSnap(): number {
+	const previousSnap = (): number => {
 		return engine.indexPrevious.get();
-	}
+	};
 
-	function slidesInView(): number[] {
+	const slidesInView = (): number[] => {
 		return engine.slidesInView.get();
-	}
+	};
 
-	function plugins(): CarouselPluginsType {
+	const plugins = (): CarouselPluginsType => {
 		return pluginApis;
-	}
+	};
 
-	function internalEngine(): EngineType<CarouselAPI> {
+	const internalEngine = (): EngineType<CarouselAPI> => {
 		return engine;
-	}
+	};
 
-	function rootNode(): HTMLElement {
+	const rootNode = (): HTMLElement => {
 		return root;
-	}
+	};
 
-	function containerNode(): HTMLElement {
+	const containerNode = (): HTMLElement => {
 		return container;
-	}
+	};
 
-	function slideNodes(): HTMLElement[] {
+	const slideNodes = (): HTMLElement[] => {
 		return slides;
-	}
+	};
 
 	const self: CarouselAPI = {
 		canGoToNext,
@@ -346,22 +338,33 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 	activate(userOptions, userPlugins);
 
 	return self;
-}
+};
 
-export function useCarousel(readConfig?: GetCarouselConfig, setApi?: SetCarouselApi): Attachment<HTMLElement> {
+export const useCarousel = (readConfig?: GetCarouselConfig, setApi?: SetCarouselApi): Attachment<HTMLElement> => {
 	return (node) => {
 		const initial = untrack(() => readCarouselConfig(readConfig));
-		const api = createCarousel(node, initial.options, initial.plugins);
+		// untrack: activation reads the reactive engine/counter state it creates; the
+		// attachment must not become a dependent of it, or a reInit would re-attach.
+		const api = untrack(() => createCarousel(node, initial.options, initial.plugins));
 
 		untrack(() => setApi?.(api));
 
 		let initialized = false;
 
+		// Deliberately a post-DOM $effect, not $effect.pre: an orientation change
+		// flips container classes in this same flush and reInit must measure the
+		// new layout.
 		$effect(() => {
 			const next = readCarouselConfig(readConfig);
 
+			// Track every declared breakpoint; a flip re-runs this effect and reInit
+			// re-resolves optionsAtMedia against the new matches.
+			observeOptionsBreakpoints([next.options, ...next.plugins.map((plugin) => plugin.options)]);
+
 			if (initialized) {
-				api.reInit(next.options, next.plugins);
+				// untrack: reInit reads engine state it also swaps; this effect must only
+				// depend on the config and the breakpoints observed above.
+				untrack(() => api.reInit(next.options, next.plugins));
 			}
 
 			initialized = true;
@@ -372,4 +375,4 @@ export function useCarousel(readConfig?: GetCarouselConfig, setApi?: SetCarousel
 			api.destroy();
 		};
 	};
-}
+};

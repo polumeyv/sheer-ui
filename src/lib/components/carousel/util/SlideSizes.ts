@@ -1,7 +1,7 @@
 import { type AxisType } from './Axis'
 import { type NodeHandlerType } from './NodeHandler'
 import { type NodeRectType } from './NodeHandler'
-import { arrayIsLastIndex, arrayLast} from './utils'
+import { arrayIsLastIndex } from './utils'
 
 export type SlideSizesType = {
   slideSizes: number[]
@@ -10,36 +10,32 @@ export type SlideSizesType = {
   endGap: number
 }
 
-export function SlideSizes(
+export const SlideSizes = (
   axis: AxisType,
   containerRect: NodeRectType,
   slideRects: NodeRectType[],
   slides: HTMLElement[],
   readEdgeGap: boolean,
   nodeHandler: NodeHandlerType
-): SlideSizesType {
+): SlideSizesType => {
   const { ownerWindow } = nodeHandler
   const { getSize, startEdge, endEdge } = axis
   const withEdgeGap = slideRects[0] && readEdgeGap && ownerWindow
-  const startGap = getStartGap()
-  const endGap = getEndGap()
-  const slideSizes = slideRects.map(getSize)
-  const slideSizesWithGaps = getSlideSizesWithGaps()
 
-  function getStartGap(): number {
+  const getStartGap = (): number => {
     if (!withEdgeGap) return 0
     const slideRect = slideRects[0]
     return Math.abs(containerRect[startEdge] - slideRect[startEdge])
   }
 
-  function getEndGap(): number {
+  const getEndGap = (): number => {
     if (!withEdgeGap) return 0
-    const style = ownerWindow.getComputedStyle(arrayLast(slides))
+    const style = ownerWindow.getComputedStyle(slides.at(-1)!)
     return parseFloat(style.getPropertyValue(`margin-${endEdge}`))
   }
 
-  function getSlideSizesWithGaps(): number[] {
-    return slideRects
+  const getSlideSizesWithGaps = (): number[] =>
+    slideRects
       .map((rect, index, rects) => {
         const isFirst = !index
         const isLast = arrayIsLastIndex(rects, index)
@@ -48,7 +44,11 @@ export function SlideSizes(
         return rects[index + 1][startEdge] - rect[startEdge]
       })
       .map(Math.abs)
-  }
+
+  const startGap = getStartGap()
+  const endGap = getEndGap()
+  const slideSizes = slideRects.map(getSize)
+  const slideSizesWithGaps = getSlideSizesWithGaps()
 
   const self: SlideSizesType = {
     slideSizes,

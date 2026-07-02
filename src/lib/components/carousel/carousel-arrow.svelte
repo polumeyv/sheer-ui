@@ -35,7 +35,6 @@
 	aria-disabled={!canScroll}
 	class={join('absolute size-8! rounded-full!', emblaCtx.orientation === 'horizontal' ? horizontal : vertical, className)}
 	onclick={isNext ? emblaCtx.scrollNext : emblaCtx.scrollPrev}
-	onkeydown={emblaCtx.handleKeyDown}
 	{...restProps}
 	bind:ref>
 	<Icon class="size-4" />

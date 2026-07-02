@@ -2,7 +2,7 @@ import { type AlignmentOptionType } from './Alignment';
 import { type AxisDirectionOptionType, type AxisOptionType } from './Axis';
 import { type SlidesToScrollOptionType } from './SlidesToScroll';
 import { type ScrollContainOptionType } from './ScrollContain';
-import { type SlidesInViewMarginOptionsType, type SlidesInViewThresholdOptionsType } from './SlidesInView';
+import { type SlidesInViewMarginOptionsType, type SlidesInViewThresholdOptionsType } from './SlidesInView.svelte';
 
 export type LooseOptionsType = {
 	[key: string]: unknown;

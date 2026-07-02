@@ -1,6 +1,6 @@
 import { type AxisType } from './Axis';
 import { type NodeRectType } from './NodeHandler';
-import { arrayLast, arrayLastIndex, isNumber } from './utils';
+import { arrayLastIndex, isNumber } from './utils';
 
 export type SlidesToScrollOptionType = 'auto' | number;
 
@@ -8,7 +8,7 @@ export type SlidesToScrollType = {
 	groupSlides: <Type>(array: Type[]) => Type[][];
 };
 
-export function SlidesToScroll(
+export const SlidesToScroll = (
 	axis: AxisType,
 	viewSize: number,
 	slidesToScroll: SlidesToScrollOptionType,
@@ -18,24 +18,23 @@ export function SlidesToScroll(
 	startGap: number,
 	endGap: number,
 	pixelTolerance: number,
-): SlidesToScrollType {
+): SlidesToScrollType => {
 	const { startEdge, endEdge, direction } = axis;
 	const groupByNumber = isNumber(slidesToScroll);
 
-	function byNumber<Type>(array: Type[], groupSize: number): Type[][] {
-		return Object.keys(array)
+	const byNumber = <Type>(array: Type[], groupSize: number): Type[][] =>
+		Object.keys(array)
 			.map(Number)
 			.filter((i) => i % groupSize === 0)
 			.map((i) => array.slice(i, i + groupSize));
-	}
 
-	function bySize<Type>(array: Type[]): Type[][] {
+	const bySize = <Type>(array: Type[]): Type[][] => {
 		if (!array.length) return [];
 
 		return Object.keys(array)
 			.map(Number)
 			.reduce((groups: number[], rectB, index) => {
-				const rectA = arrayLast(groups) || 0;
+				const rectA = groups.at(-1) ?? 0;
 				const isFirst = rectA === 0;
 				const isLast = rectB === arrayLastIndex(array);
 
@@ -53,14 +52,13 @@ export function SlidesToScroll(
 				const previousSize = Math.max(groups[index - 1] || 0);
 				return array.slice(previousSize, currentSize);
 			});
-	}
+	};
 
-	function groupSlides<Type>(array: Type[]): Type[][] {
-		return groupByNumber ? byNumber(array, slidesToScroll) : bySize(array);
-	}
+	const groupSlides = <Type>(array: Type[]): Type[][] =>
+		groupByNumber ? byNumber(array, slidesToScroll) : bySize(array);
 
 	const self: SlidesToScrollType = {
 		groupSlides,
 	};
 	return self;
-}
+};

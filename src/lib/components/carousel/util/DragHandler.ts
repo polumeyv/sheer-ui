@@ -1,5 +1,5 @@
 import { type AnimationsType } from './Animations';
-import { type CounterType } from './Counter';
+import { type CounterType } from './Counter.svelte';
 import { type DragTrackerType, type PointerEventType } from './DragTracker';
 import { type EventHandlerType } from './EventHandler';
 import { type AxisType } from './Axis';
@@ -10,7 +10,7 @@ import { type ScrollToType } from './ScrollTo';
 import { type NumberStoreType } from './NumberStore';
 import { type PercentOfViewType } from './PercentOfView';
 import { Limit } from './Limit';
-import { deltaAbs, factorAbs, isMouseEvent, type WindowType } from './utils';
+import { isMouseEvent, type WindowType } from './utils';
 
 export type DragHandlerType = {
 	init: (ownerWindow: WindowType) => void;
@@ -18,7 +18,15 @@ export type DragHandlerType = {
 	pointerDown: () => boolean;
 };
 
-export function DragHandler<API>(
+// Fraction by which |inputB| exceeds |inputA|; 0 when either is 0 or it does not exceed.
+const factorAbs = (inputB: number, inputA: number): number => {
+	if (inputB === 0 || inputA === 0) return 0;
+	if (Math.abs(inputB) <= Math.abs(inputA)) return 0;
+
+	return Math.abs((Math.abs(inputB) - Math.abs(inputA)) / inputB);
+};
+
+export const DragHandler = <API>(
 	active: boolean,
 	axis: AxisType,
 	rootNode: HTMLElement,
@@ -36,7 +44,7 @@ export function DragHandler<API>(
 	dragThreshold: number,
 	skipSnaps: boolean,
 	baseFriction: number,
-): DragHandlerType {
+): DragHandlerType => {
 	const { cross: crossAxis, direction } = axis;
 	const focusNodes = ['INPUT', 'SELECT', 'TEXTAREA'];
 	const nonPassiveEvent = { passive: false };
@@ -58,7 +66,7 @@ export function DragHandler<API>(
 	let preventClick = false;
 	let isMouse = false;
 
-	function init(ownerWindow: WindowType): void {
+	const init = (ownerWindow: WindowType): void => {
 		if (!active) return;
 
 		documentInstance = ownerWindow.document;
@@ -76,50 +84,38 @@ export function DragHandler<API>(
 			.add(node, 'touchcancel', up)
 			.add(node, 'contextmenu', up)
 			.add(node, 'click', click, true);
-	}
+	};
 
-	function destroy(): void {
+	const destroy = (): void => {
 		initEvents.clear();
 		mouseEvents.clear();
 		runTouchEvents = false;
-	}
+	};
 
-	function addMouseEvents(): void {
+	const addMouseEvents = (): void => {
 		const node = isMouse ? documentInstance : rootNode;
 
 		mouseEvents.add(node, 'mousemove', move, nonPassiveEvent).add(node, 'mouseup', up);
-	}
+	};
 
-	function isFocusNode(node: Element): boolean {
-		const nodeName = node.nodeName || '';
-		return focusNodes.includes(nodeName);
-	}
+	const isFocusNode = (node: Element): boolean => focusNodes.includes(node.nodeName || '');
 
-	function forceBoost(): number {
-		const boost = dragFree ? freeForceBoost : snapForceBoost;
-		const type = isMouse ? 'mouse' : 'touch';
-		return boost[type];
-	}
+	const forceBoost = (): number => (dragFree ? freeForceBoost : snapForceBoost)[isMouse ? 'mouse' : 'touch'];
 
-	function indexChanged(): boolean {
-		const currentLocation = scrollTarget.byDistance(0, false);
-		return currentLocation.index !== indexCurrent.get();
-	}
+	const indexChanged = (): boolean => scrollTarget.byDistance(0, false).index !== indexCurrent.get();
 
-	function baseForce(force: number): number {
-		return scrollTarget.byDistance(force, !dragFree).distance;
-	}
+	const baseForce = (force: number): number => scrollTarget.byDistance(force, !dragFree).distance;
 
-	function allowedForce(force: number): number {
-		const next = indexCurrent.add(Math.sign(force) * -1);
+	const allowedForce = (force: number): number => {
+		const next = indexCurrent.normalize(indexCurrent.get() + Math.sign(force) * -1);
 
 		if (dragFree || Math.abs(force) < goToNextThreshold) return baseForce(force);
 		if (skipSnaps && indexChanged()) return baseForce(force) * 0.5;
 
-		return scrollTarget.byIndex(next.get(), 0).distance;
-	}
+		return scrollTarget.byIndex(next, 0).distance;
+	};
 
-	function down(evt: PointerEventType): void {
+	const down = (evt: PointerEventType): void => {
 		const event = eventHandler.createEvent('pointerdown', evt);
 		const preventDefault = !event.emit();
 		if (preventDefault) return;
@@ -143,9 +139,9 @@ export function DragHandler<API>(
 
 		addMouseEvents();
 		runTouchEvents = true;
-	}
+	};
 
-	function move(evt: PointerEventType): void {
+	const move = (evt: PointerEventType): void => {
 		const event = eventHandler.createEvent('pointermove', evt);
 		const preventDefault = !event.emit();
 		if (preventDefault) return up(evt);
@@ -172,9 +168,9 @@ export function DragHandler<API>(
 		target.add(direction(diff));
 
 		if (evt.cancelable) evt.preventDefault();
-	}
+	};
 
-	function up(evt: PointerEventType): void {
+	const up = (evt: PointerEventType): void => {
 		const event = eventHandler.createEvent('pointerup', evt);
 
 		const rawForce = dragTracker.pointerUp(evt) * forceBoost();
@@ -192,19 +188,17 @@ export function DragHandler<API>(
 		scrollBody.useDuration(duration).useFriction(friction);
 		scrollTo.distance(force, !dragFree);
 		event.emit();
-	}
+	};
 
-	function click(evt: MouseEvent): void {
+	const click = (evt: MouseEvent): void => {
 		if (preventClick) {
 			evt.stopPropagation();
 			evt.preventDefault();
 			preventClick = false;
 		}
-	}
+	};
 
-	function pointerDown(): boolean {
-		return pointerIsDown;
-	}
+	const pointerDown = (): boolean => pointerIsDown;
 
 	const self: DragHandlerType = {
 		init,
@@ -212,4 +206,4 @@ export function DragHandler<API>(
 		pointerDown,
 	};
 	return self;
-}
+};

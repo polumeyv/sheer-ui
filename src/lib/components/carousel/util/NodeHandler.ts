@@ -29,13 +29,13 @@ export type NodeHandlerType = {
 	getRects: (container: HTMLElement, slides: HTMLElement[], fromCache?: boolean) => NodeRectsType;
 };
 
-export function NodeHandler(root?: HTMLElement | null): NodeHandlerType {
+export const NodeHandler = (root?: HTMLElement | null): NodeHandlerType => {
 	const ownerDocument = root ? root.ownerDocument : null;
 	const ownerWindow = ownerDocument ? <WindowType>ownerDocument.defaultView : null;
 
 	let rects: NodeRectsType;
 
-	function getRect(node: HTMLElement): NodeRectType {
+	const getRect = (node: HTMLElement): NodeRectType => {
 		const { offsetTop: top, offsetLeft: left, offsetWidth, offsetHeight } = node;
 		const offset: NodeRectType = {
 			top,
@@ -47,9 +47,9 @@ export function NodeHandler(root?: HTMLElement | null): NodeHandlerType {
 		};
 
 		return offset;
-	}
+	};
 
-	function getRects(container: HTMLElement, slides: HTMLElement[], fromCache?: boolean): NodeRectsType {
+	const getRects = (container: HTMLElement, slides: HTMLElement[], fromCache?: boolean): NodeRectsType => {
 		if (fromCache && rects) return rects;
 
 		const containerStyle = root ? container.style : { transform: '' };
@@ -62,9 +62,9 @@ export function NodeHandler(root?: HTMLElement | null): NodeHandlerType {
 		containerStyle.transform = previousTransform;
 		rects = { containerRect, slideRects };
 		return rects;
-	}
+	};
 
-	function getNodes(options: OptionsType): NodesType {
+	const getNodes = (options: OptionsType): NodesType => {
 		if (!root) {
 			return { root: <HTMLElement>{}, container: <HTMLElement>{}, slides: [] };
 		}
@@ -77,7 +77,7 @@ export function NodeHandler(root?: HTMLElement | null): NodeHandlerType {
 		const slides = <HTMLElement[]>Array.from(slideNodes || container.children);
 
 		return { root, container, slides };
-	}
+	};
 
 	const self: NodeHandlerType = {
 		ownerDocument,
@@ -87,4 +87,4 @@ export function NodeHandler(root?: HTMLElement | null): NodeHandlerType {
 		getRects,
 	};
 	return self;
-}
+};

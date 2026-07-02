@@ -14,10 +14,10 @@ export type AnimationsType = {
   render: (alpha: number) => void
 }
 
-export function Animations(
+export const Animations = (
   update: () => void,
   render: (alpha: number) => void
-): AnimationsType {
+): AnimationsType => {
   const documentVisibleHandler = EventStore()
   const fixedTimeStep = 1000 / 60
 
@@ -26,7 +26,7 @@ export function Animations(
   let accumulatedTime = 0
   let animationId = 0
 
-  function init(ownerWindow: WindowType): void {
+  const init = (ownerWindow: WindowType): void => {
     const ownerDocument = ownerWindow.document
     windowInstance = ownerWindow
 
@@ -35,12 +35,12 @@ export function Animations(
     })
   }
 
-  function destroy(): void {
+  const destroy = (): void => {
     stop()
     documentVisibleHandler.clear()
   }
 
-  function animate(timeStamp: DOMHighResTimeStamp): void {
+  const animate = (timeStamp: DOMHighResTimeStamp): void => {
     if (!animationId) return
     if (!lastTimeStamp) {
       lastTimeStamp = timeStamp
@@ -65,12 +65,12 @@ export function Animations(
     }
   }
 
-  function start(): void {
+  const start = (): void => {
     if (animationId) return
     animationId = windowInstance.requestAnimationFrame(animate)
   }
 
-  function stop(): void {
+  const stop = (): void => {
     if (!animationId) return
     windowInstance.cancelAnimationFrame(animationId)
     lastTimeStamp = null
@@ -78,7 +78,7 @@ export function Animations(
     animationId = 0
   }
 
-  function reset(): void {
+  const reset = (): void => {
     lastTimeStamp = null
     accumulatedTime = 0
   }

@@ -4,28 +4,20 @@ export type AlignmentType = {
 	measure: (input: number, index: number) => number;
 };
 
-export function Alignment(align: AlignmentOptionType, viewSize: number): AlignmentType {
+export const Alignment = (align: AlignmentOptionType, viewSize: number): AlignmentType => {
+	const start = (): number => 0;
+
+	const center = (input: number): number => end(input) / 2;
+
+	const end = (input: number): number => viewSize - input;
+
 	const predefined = { start, center, end };
 
-	function start(): number {
-		return 0;
-	}
-
-	function center(input: number): number {
-		return end(input) / 2;
-	}
-
-	function end(input: number): number {
-		return viewSize - input;
-	}
-
-	function measure(input: number, index: number): number {
-		if (typeof align === 'string') return predefined[align](input);
-		return align(viewSize, input, index);
-	}
+	const measure = (input: number, index: number): number =>
+		typeof align === 'string' ? predefined[align](input) : align(viewSize, input, index);
 
 	const self: AlignmentType = {
 		measure,
 	};
 	return self;
-}
+};
