@@ -18,12 +18,8 @@ import {
 	getIsPrevButtonDisabled,
 	getWeekdays,
 	handleCalendarKeydown,
-	handleCalendarNextPage,
-	handleCalendarPrevPage,
 	shiftCalendarFocus,
 	useEnsureNonDisabledPlaceholder,
-	useMonthViewOptionsSync,
-	useMonthViewPlaceholderSync,
 } from '$lib/internal/date-time/calendar-helpers.svelte.js';
 import { areAllDaysBetweenValid, getDateValueType, isAfter, isBefore, isBetweenInclusive, toDate } from '$lib/internal/date-time/utils.js';
 import type { WeekStartsOn } from '$lib/internal/date-time/types.js';
@@ -76,7 +72,19 @@ export class RangeCalendarRootState {
 	readonly opts: RangeCalendarRootStateOpts;
 	readonly attachment: RefAttachment;
 	readonly visibleMonths = $derived.by(() => this.months.map((month) => month.value));
-	months: Month<DateValue>[] = $state.raw([]);
+	/** The month anchoring the view. Owned by navigation; the placeholder follow effect snaps it. */
+	#anchor = $state.raw<DateValue | undefined>(undefined);
+	readonly months = $derived.by((): Month<DateValue>[] => {
+		const anchor = this.#anchor;
+		if (!anchor) return [];
+		return createMonths({
+			dateObj: anchor,
+			weekStartsOn: this.opts.weekStartsOn.current,
+			locale: this.opts.locale.current,
+			fixedWeeks: this.opts.fixedWeeks.current,
+			numberOfMonths: this.opts.numberOfMonths.current,
+		});
+	});
 	announcer: Announcer;
 	formatter: Formatter;
 	accessibleHeadingId = useId();
@@ -190,13 +198,7 @@ export class RangeCalendarRootState {
 			yearFormat: this.opts.yearFormat,
 		});
 
-		this.months = createMonths({
-			dateObj: this.opts.placeholder.current,
-			weekStartsOn: this.opts.weekStartsOn.current,
-			locale: this.opts.locale.current,
-			fixedWeeks: this.opts.fixedWeeks.current,
-			numberOfMonths: this.opts.numberOfMonths.current,
-		});
+		this.#anchor = this.opts.placeholder.current;
 
 		this.#setupAccessibleHeadingEffect();
 
@@ -204,31 +206,14 @@ export class RangeCalendarRootState {
 			this.announcer = getAnnouncer(this.domContext.getDocument());
 		});
 
-		/**
-		 * Updates the displayed months based on changes in the placeholder values,
-		 * which determines the month to show in the calendar.
-		 */
-		useMonthViewPlaceholderSync({
-			placeholder: this.opts.placeholder,
-			getVisibleMonths: () => this.visibleMonths,
-			weekStartsOn: this.opts.weekStartsOn,
-			locale: this.opts.locale,
-			fixedWeeks: this.opts.fixedWeeks,
-			numberOfMonths: this.opts.numberOfMonths,
-			setMonths: this.setMonths,
-		});
-
-		/**
-		 * Updates the displayed months based on changes in the options values,
-		 * which determines the month to show in the calendar.
-		 */
-		useMonthViewOptionsSync({
-			fixedWeeks: this.opts.fixedWeeks,
-			locale: this.opts.locale,
-			numberOfMonths: this.opts.numberOfMonths,
-			placeholder: this.opts.placeholder,
-			setMonths: this.setMonths,
-			weekStartsOn: this.opts.weekStartsOn,
+		// Snap the view when the placeholder moves outside it (keyboard nav, dropdowns, external binds).
+		$effect(() => {
+			const placeholder = this.opts.placeholder.current;
+			untrack(() => {
+				if (!this.visibleMonths.some((month) => isSameMonth(month, placeholder))) {
+					this.#anchor = placeholder;
+				}
+			});
 		});
 
 		/**
@@ -327,10 +312,6 @@ export class RangeCalendarRootState {
 			end: value,
 		}));
 	}
-
-	setMonths = (months: Month<DateValue>[]) => {
-		this.months = months;
-	};
 
 	isOutsideVisibleMonths(date: DateValue) {
 		return !this.visibleMonths.some((month) => isSameMonth(date, month));
@@ -502,32 +483,24 @@ export class RangeCalendarRootState {
 	 * Navigates to the next page of the calendar.
 	 */
 	nextPage() {
-		handleCalendarNextPage({
-			fixedWeeks: this.opts.fixedWeeks.current,
-			locale: this.opts.locale.current,
-			numberOfMonths: this.opts.numberOfMonths.current,
-			pagedNavigation: this.opts.pagedNavigation.current,
-			setMonths: this.setMonths,
-			setPlaceholder: (date: DateValue) => (this.opts.placeholder.current = date),
-			weekStartsOn: this.opts.weekStartsOn.current,
-			months: this.months,
-		});
+		this.#shiftView(1);
 	}
 
 	/**
 	 * Navigates to the previous page of the calendar.
 	 */
 	prevPage() {
-		handleCalendarPrevPage({
-			fixedWeeks: this.opts.fixedWeeks.current,
-			locale: this.opts.locale.current,
-			numberOfMonths: this.opts.numberOfMonths.current,
-			pagedNavigation: this.opts.pagedNavigation.current,
-			setMonths: this.setMonths,
-			setPlaceholder: (date: DateValue) => (this.opts.placeholder.current = date),
-			weekStartsOn: this.opts.weekStartsOn.current,
-			months: this.months,
-		});
+		this.#shiftView(-1);
+	}
+
+	/** Moves the anchor a page (or single month) and keeps the placeholder in the new view. */
+	#shiftView(direction: 1 | -1) {
+		const first = this.months[0]?.value;
+		if (!first) return;
+		const step = this.opts.pagedNavigation.current ? this.opts.numberOfMonths.current : 1;
+		const target = direction === 1 ? first.add({ months: step }) : first.subtract({ months: step });
+		this.#anchor = target;
+		this.opts.placeholder.current = target;
 	}
 
 	nextYear() {
