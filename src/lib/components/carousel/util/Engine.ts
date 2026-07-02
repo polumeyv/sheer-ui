@@ -25,7 +25,7 @@ import { ScrollTo, type ScrollToType } from './ScrollTo';
 import { SlideFocus, type SlideFocusType } from './SlideFocus';
 import { SlideLooper, type SlideLooperType } from './SlideLooper';
 import { SlidesHandler, type SlidesHandlerType } from './SlidesHandler';
-import { SlidesInView, type SlidesInViewType } from './SlidesInView';
+import { SlidesInView, type SlidesInViewType } from './SlidesInView.svelte';
 import { SlideSizes } from './SlideSizes';
 import { SlidesToScroll, type SlidesToScrollType } from './SlidesToScroll';
 import { Translate, type TranslateType } from './Translate';

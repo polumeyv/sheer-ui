@@ -3,10 +3,9 @@ import type { Attachment } from 'svelte/attachments';
 import type { HTMLAttributes } from 'svelte/elements';
 import { EventHandler, type EventHandlerType } from './util/EventHandler';
 import { Engine, type EngineType } from './util/Engine';
-import { EventStore } from './util/EventStore';
 import { defaultOptions, type CarouselOptionsType, type CreateOptionsType, type LooseOptionsType, type OptionsType } from './util/Options';
 import { NodeHandler, type NodeHandlerType } from './util/NodeHandler';
-import { OptionsHandler, type OptionsHandlerType } from './util/OptionsHandler';
+import { observeOptionsBreakpoints, OptionsHandler, type OptionsHandlerType } from './util/OptionsHandler';
 import { type ScrollToDirectionType } from './util/ScrollTo';
 
 import type { WithElementRef } from "$lib/utils.js";
@@ -107,10 +106,9 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 	let activePlugins: CarouselPlugins = [];
 	let pluginList = userPlugins;
 	let pluginApis: CarouselPluginsType = {};
-	const mediaHandlers = EventStore();
 	const eventHandler = EventHandler<CarouselAPI>();
 
-	const { mergeOptions, optionsAtMedia, optionsMediaQueries } = optionsHandler;
+	const { mergeOptions, optionsAtMedia } = optionsHandler;
 	const { on, off, createEvent } = eventHandler;
 
 	let destroyed = false;
@@ -172,8 +170,6 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 
 		const { ownerWindow } = nodeHandler;
 
-		optionsHandler.init(ownerWindow);
-
 		optionsBase = mergeOptions(optionsBase, withOptions);
 		options = optionsAtMedia(optionsBase);
 		pluginList = withPlugins ?? pluginList;
@@ -184,10 +180,6 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 		container = nodes.container;
 		slides = nodes.slides;
 		engine = createEngine(options, container, slides);
-
-		optionsMediaQueries([optionsBase, ...pluginList.map(({ options }) => options)]).forEach((query) => {
-			mediaHandlers.add(query, 'change', reActivate);
-		});
 
 		if (!options.active) return;
 
@@ -233,7 +225,6 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 		destroyPlugins();
 
 		engine.eventStore.clear();
-		mediaHandlers.clear();
 		engine.translate.clear();
 		engine.slideTranslates.forEach((translate) => translate.clear());
 	}
@@ -245,7 +236,6 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 
 		destroyed = true;
 
-		mediaHandlers.clear();
 		deActivate();
 		event.emit();
 		eventHandler.clear();
@@ -360,12 +350,19 @@ export function useCarousel(readConfig?: GetCarouselConfig, setApi?: SetCarousel
 
 		let initialized = false;
 
+		// Deliberately a post-DOM $effect, not $effect.pre: an orientation change
+		// flips container classes in this same flush and reInit must measure the
+		// new layout.
 		$effect(() => {
 			const next = readCarouselConfig(readConfig);
 
+			// Track every declared breakpoint; a flip re-runs this effect and reInit
+			// re-resolves optionsAtMedia against the new matches.
+			observeOptionsBreakpoints([next.options, ...next.plugins.map((plugin) => plugin.options)]);
+
 			if (initialized) {
 				// untrack: reInit reads engine state it also swaps; this effect must only
-				// depend on the config.
+				// depend on the config and the breakpoints observed above.
 				untrack(() => api.reInit(next.options, next.plugins));
 			}
 

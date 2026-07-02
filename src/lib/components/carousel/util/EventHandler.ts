@@ -1,7 +1,7 @@
 import type { PointerEventType } from './DragTracker';
 import type { SelectEventType } from './ScrollTo';
 import type { ScrollEventType } from './ScrollAnimator';
-import type { SlidesInViewEventType } from './SlidesInView';
+import type { SlidesInViewEventType } from './SlidesInView.svelte';
 
 export type CarouselEventType = keyof CarouselEventListType;
 

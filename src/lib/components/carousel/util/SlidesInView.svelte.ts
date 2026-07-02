@@ -25,6 +25,9 @@ export function SlidesInView<API>(
 	rootMargin: SlidesInViewMarginOptionsType,
 ): SlidesInViewType {
 	const slidesInView = new Set<number>();
+	// Reactive snapshot so get() composes into deriveds; written once per
+	// IntersectionObserver callback, never per animation frame.
+	let inView = $state.raw<number[]>([]);
 	let intersectionObserver: IntersectionObserver;
 	let destroyed = false;
 
@@ -61,6 +64,8 @@ export function SlidesInView<API>(
 			}
 		}
 
+		inView = [...slidesInView];
+
 		eventHandler
 			.createEvent('slidesinview', {
 				slidesInView: get(),
@@ -71,7 +76,7 @@ export function SlidesInView<API>(
 	}
 
 	function get(): number[] {
-		return [...slidesInView];
+		return inView;
 	}
 
 	const self: SlidesInViewType = {
