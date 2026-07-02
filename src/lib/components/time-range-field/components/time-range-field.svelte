@@ -35,14 +35,9 @@
 		readonlySegments = [],
 		children,
 		child,
-		onStartValueChange = () => {},
-		onEndValueChange = () => {},
 		errorMessageId,
 		...restProps
 	}: TimeRangeFieldRootProps<T> = $props();
-
-	let startValue = $state<T | undefined>(value?.start);
-	let endValue = $state<T | undefined>(value?.end);
 
 	function repairUndefinedControlledPlaceholder() {
 		if (placeholder !== undefined) return;
@@ -91,20 +86,6 @@
 			(v) => {
 				value = v;
 				onValueChange(v);
-			},
-		),
-		startValue: boxWith(
-			() => startValue,
-			(v) => {
-				startValue = v;
-				onStartValueChange(v);
-			},
-		),
-		endValue: boxWith(
-			() => endValue,
-			(v) => {
-				endValue = v;
-				onEndValueChange(v);
 			},
 		),
 		onInvalid: boxWith(() => onInvalid),

@@ -138,20 +138,6 @@ export type TimeRangeFieldRootPropsWithoutHTML<T extends TimeValue = Time> = Wit
 	hideTimeZone?: boolean;
 
 	/**
-	 * A callback function called when the start value changes. This doesn't necessarily mean
-	 * the `value` has updated and should be used to apply cosmetic changes to the field when
-	 * only part of the value is changed/completed.
-	 */
-	onStartValueChange?: OnChangeFn<T | undefined>;
-
-	/**
-	 * A callback function called when the end value changes. This doesn't necessarily mean
-	 * the `value` has updated and should be used to apply cosmetic changes to the field when
-	 * only part of the value is changed/completed.
-	 */
-	onEndValueChange?: OnChangeFn<T | undefined>;
-
-	/**
 	 * The `id` of the element which contains the error messages for the time field when the
 	 * time is invalid.
 	 */

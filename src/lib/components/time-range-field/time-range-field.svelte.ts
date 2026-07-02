@@ -1,6 +1,6 @@
 import type { Time } from '@internationalized/date';
 import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
-import { createContext, onMount } from 'svelte';
+import { createContext, onMount, untrack } from 'svelte';
 import { TimeFieldRootState } from '$lib/components/time-field/time-field.svelte.js';
 import { TimeFieldInputState } from '$lib/components/time-field/time-field.svelte.js';
 import { useId } from '$lib/internal/use-id.js';
@@ -11,7 +11,6 @@ import type { TimeGranularity, TimeOnInvalid, TimeRange, TimeRangeValidator, Tim
 import { type TimeFormatter, createTimeFormatter } from '$lib/internal/date-time/formatter.js';
 import { getFirstSegment } from '$lib/internal/date-time/field/segments.js';
 import { convertTimeValueToTime, isTimeBefore } from '$lib/internal/date-time/field/time-helpers.js';
-import { useCompleteRangeSync } from '$lib/internal/date-time/range-state.svelte.js';
 
 export const timeRangeFieldAttrs = createBitsAttrs({
 	component: 'time-range-field',
@@ -26,8 +25,6 @@ interface TimeRangeFieldRootStateOpts<T extends TimeValue = Time>
 		WritableBoxedValues<{
 			value: TimeRange<T>;
 			placeholder: TimeValue;
-			startValue: T | undefined;
-			endValue: T | undefined;
 		}>,
 		ReadableBoxedValues<{
 			readonlySegments: TimeSegmentPart[];
@@ -58,18 +55,21 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 	fieldNode = $state<HTMLElement | null>(null);
 	labelNode = $state<HTMLElement | null>(null);
 	descriptionNode = $state<HTMLElement | null>(null);
-	readonly startValueComplete = $derived.by(() => this.opts.startValue.current !== undefined);
-	readonly endValueComplete = $derived.by(() => this.opts.endValue.current !== undefined);
+	/** Per-side values derive from the bound range; a child-field write overrides until the range recommits. */
+	startValue = $derived(this.opts.value.current?.start);
+	endValue = $derived(this.opts.value.current?.end);
+	readonly startValueComplete = $derived.by(() => this.startValue !== undefined);
+	readonly endValueComplete = $derived.by(() => this.endValue !== undefined);
 	readonly rangeComplete = $derived(this.startValueComplete && this.endValueComplete);
 
 	readonly startValueTime = $derived.by(() => {
-		if (!this.opts.startValue.current) return undefined;
-		return convertTimeValueToTime(this.opts.startValue.current);
+		if (!this.startValue) return undefined;
+		return convertTimeValueToTime(this.startValue);
 	});
 
 	readonly endValueTime = $derived.by(() => {
-		if (!this.opts.endValue.current) return undefined;
-		return convertTimeValueToTime(this.opts.endValue.current);
+		if (!this.endValue) return undefined;
+		return convertTimeValueToTime(this.endValue);
 	});
 
 	readonly minValueTime = $derived.by(() => {
@@ -97,13 +97,41 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 			this.formatter.setLocale(this.opts.locale.current);
 		});
 
-		useCompleteRangeSync({
-			value: this.opts.value,
-			startValue: this.opts.startValue,
-			endValue: this.opts.endValue,
-			placeholder: this.opts.placeholder,
-			updateValue: (cb) => this.#updateValue(cb),
+		// Keep the placeholder on the committed start so both fields render segments around it.
+		$effect(() => {
+			const start = this.opts.value.current?.start;
+			untrack(() => {
+				if (start && this.opts.placeholder.current !== start) {
+					this.opts.placeholder.current = start;
+				}
+			});
 		});
+	}
+
+	/** Box for a child field's value: reads the derived side; writes override it and recommit the range. */
+	sideValueBox(type: 'start' | 'end') {
+		return boxWith(
+			() => (type === 'start' ? this.startValue : this.endValue),
+			(v: T | undefined) => {
+				if (type === 'start') this.startValue = v;
+				else this.endValue = v;
+				this.#commitSides();
+			},
+		);
+	}
+
+	/** Child-field write: commit when both sides are set, clear a committed range when one side empties. */
+	#commitSides() {
+		const start = this.startValue;
+		const end = this.endValue;
+		const value = this.opts.value.current;
+		if (start !== undefined && end !== undefined) {
+			if (value?.start !== start || value?.end !== end) {
+				this.#updateValue(() => ({ start, end }));
+			}
+		} else if (value?.start !== undefined && value?.end !== undefined) {
+			this.#updateValue(() => ({ start: undefined, end: undefined }));
+		}
 	}
 
 	readonly validationStatus = $derived.by(() => {
@@ -212,7 +240,7 @@ export class TimeRangeFieldInputState {
 		const root = getTimeRangeFieldRoot();
 		const fieldState = TimeFieldRootState.create(
 			{
-				value: type === 'start' ? root.opts.startValue : root.opts.endValue,
+				value: root.sideValueBox(type),
 				disabled: root.opts.disabled,
 				readonly: root.opts.readonly,
 				readonlySegments: root.opts.readonlySegments,
