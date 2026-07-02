@@ -25,7 +25,6 @@ import {
 	useMonthViewOptionsSync,
 	useMonthViewPlaceholderSync,
 } from '$lib/internal/date-time/calendar-helpers.svelte.js';
-import { useRangeCursorSync } from '$lib/internal/date-time/range-state.svelte.js';
 import { areAllDaysBetweenValid, getDateValueType, isAfter, isBefore, isBetweenInclusive, toDate } from '$lib/internal/date-time/utils.js';
 import type { WeekStartsOn } from '$lib/internal/date-time/types.js';
 import { createContext, onMount, untrack } from 'svelte';
@@ -38,8 +37,6 @@ interface RangeCalendarRootStateOpts
 		WritableBoxedValues<{
 			value: DateRange;
 			placeholder: DateValue;
-			startValue: DateValue | undefined;
-			endValue: DateValue | undefined;
 		}>,
 		ReadableBoxedValues<{
 			preventDeselect: boolean;
@@ -102,20 +99,24 @@ export class RangeCalendarRootState {
 		});
 	});
 
+	/** The in-progress selection cursor IS the bound value — start-only ranges included — so both ends derive from it. */
+	readonly startValue = $derived.by(() => this.opts.value.current.start);
+	readonly endValue = $derived.by(() => this.opts.value.current.end);
+
 	readonly isStartInvalid = $derived.by(() => {
-		if (!this.opts.startValue.current) return false;
-		return this.isDateUnavailable(this.opts.startValue.current) || this.isDateDisabled(this.opts.startValue.current);
+		if (!this.startValue) return false;
+		return this.isDateUnavailable(this.startValue) || this.isDateDisabled(this.startValue);
 	});
 
 	readonly isEndInvalid = $derived.by(() => {
-		if (!this.opts.endValue.current) return false;
-		return this.isDateUnavailable(this.opts.endValue.current) || this.isDateDisabled(this.opts.endValue.current);
+		if (!this.endValue) return false;
+		return this.isDateUnavailable(this.endValue) || this.isDateDisabled(this.endValue);
 	});
 
 	readonly isInvalid = $derived.by(() => {
 		if (this.isStartInvalid || this.isEndInvalid) return true;
 
-		if (this.opts.endValue.current && this.opts.startValue.current && isBefore(this.opts.endValue.current, this.opts.startValue.current))
+		if (this.endValue && this.startValue && isBefore(this.endValue, this.startValue))
 			return true;
 
 		return false;
@@ -150,12 +151,12 @@ export class RangeCalendarRootState {
 	readonly fullCalendarLabel = $derived.by(() => `${this.opts.calendarLabel.current} ${this.headingValue}`);
 
 	readonly highlightedRange = $derived.by(() => {
-		if (this.opts.startValue.current && this.opts.endValue.current) return null;
-		if (!this.opts.startValue.current || !this.focusedValue) return null;
+		if (this.startValue && this.endValue) return null;
+		if (!this.startValue || !this.focusedValue) return null;
 
-		const isStartBeforeFocused = isBefore(this.opts.startValue.current, this.focusedValue);
-		const start = isStartBeforeFocused ? this.opts.startValue.current : this.focusedValue;
-		const end = isStartBeforeFocused ? this.focusedValue : this.opts.startValue.current;
+		const isStartBeforeFocused = isBefore(this.startValue, this.focusedValue);
+		const start = isStartBeforeFocused ? this.startValue : this.focusedValue;
+		const end = isStartBeforeFocused ? this.focusedValue : this.startValue;
 		const range = { start, end };
 
 		if (isSameDay(start.add({ days: 1 }), end) || isSameDay(start, end)) {
@@ -240,19 +241,22 @@ export class RangeCalendarRootState {
 			node.textContent = this.fullCalendarLabel;
 		});
 
-		useRangeCursorSync({
-			value: this.opts.value,
-			startValue: this.opts.startValue,
-			endValue: this.opts.endValue,
-			placeholder: this.opts.placeholder,
+		// Snap the visible month to a newly set range start (covers external value writes too).
+		$effect(() => {
+			const start = this.opts.value.current.start;
+			untrack(() => {
+				if (start && this.opts.placeholder.current !== start) {
+					this.opts.placeholder.current = start;
+				}
+			});
 		});
 
 		/**
 		 * Check for disabled dates in the selected range when excludeDisabled is enabled
 		 */
 		$effect(() => {
-			const startValue = this.opts.startValue.current;
-			const endValue = this.opts.endValue.current;
+			const startValue = this.startValue;
+			const endValue = this.endValue;
 			const excludeDisabled = this.opts.excludeDisabled.current;
 			untrack(() => {
 				if (!excludeDisabled || !startValue || !endValue) return;
@@ -261,53 +265,6 @@ export class RangeCalendarRootState {
 					this.#setStartValue(undefined);
 					this.#setEndValue(undefined);
 					this.#announceEmpty();
-				}
-			});
-		});
-
-		/**
-		 * Internal partial selection composes the public bind:value range object.
-		 * This is why parent bind:value observes start-only and completed ranges.
-		 */
-		$effect(() => {
-			const startValue = this.opts.startValue.current;
-			const endValue = this.opts.endValue.current;
-			untrack(() => {
-				if (this.opts.value.current && this.opts.value.current.start === startValue && this.opts.value.current.end === endValue) {
-					return;
-				}
-
-				if (startValue && endValue) {
-					this.#updateValue((prev) => {
-						if (prev.start === startValue && prev.end === endValue) {
-							return prev;
-						}
-						if (isBefore(endValue, startValue)) {
-							const start = startValue;
-							const end = endValue;
-							this.#setStartValue(end);
-							this.#setEndValue(start);
-							if (!this.#isRangeValid(endValue, startValue)) {
-								this.#setStartValue(startValue);
-								this.#setEndValue(undefined);
-								return { start: startValue, end: undefined };
-							}
-							return { start: endValue, end: startValue };
-						} else {
-							if (!this.#isRangeValid(startValue, endValue)) {
-								this.#setStartValue(endValue);
-								this.#setEndValue(undefined);
-								return { start: endValue, end: undefined };
-							}
-							return {
-								start: startValue,
-								end: endValue,
-							};
-						}
-					});
-				} else if (this.opts.value.current && this.opts.value.current.start && this.opts.value.current.end) {
-					this.opts.value.current.start = undefined;
-					this.opts.value.current.end = undefined;
 				}
 			});
 		});
@@ -358,8 +315,6 @@ export class RangeCalendarRootState {
 	}
 
 	#setStartValue(value: DateValue | undefined) {
-		this.opts.startValue.current = value;
-		// update the main value prop immediately for external consumers
 		this.#updateValue((prev) => ({
 			...prev,
 			start: value,
@@ -367,8 +322,6 @@ export class RangeCalendarRootState {
 	}
 
 	#setEndValue(value: DateValue | undefined) {
-		this.opts.endValue.current = value;
-		// update the main value prop immediately for external consumers
 		this.#updateValue((prev) => ({
 			...prev,
 			end: value,
@@ -398,20 +351,20 @@ export class RangeCalendarRootState {
 	}
 
 	isSelectionStart(date: DateValue) {
-		if (!this.opts.startValue.current) return false;
-		return isSameDay(date, this.opts.startValue.current);
+		if (!this.startValue) return false;
+		return isSameDay(date, this.startValue);
 	}
 
 	isSelectionEnd(date: DateValue) {
-		if (!this.opts.endValue.current) return false;
-		return isSameDay(date, this.opts.endValue.current);
+		if (!this.endValue) return false;
+		return isSameDay(date, this.endValue);
 	}
 
 	isSelected(date: DateValue) {
-		if (this.opts.startValue.current && isSameDay(this.opts.startValue.current, date)) return true;
-		if (this.opts.endValue.current && isSameDay(this.opts.endValue.current, date)) return true;
-		if (this.opts.startValue.current && this.opts.endValue.current) {
-			return isBetweenInclusive(date, this.opts.startValue.current, this.opts.endValue.current);
+		if (this.startValue && isSameDay(this.startValue, date)) return true;
+		if (this.endValue && isSameDay(this.endValue, date)) return true;
+		if (this.startValue && this.endValue) {
+			return isBetweenInclusive(date, this.startValue, this.endValue);
 		}
 		return false;
 	}
@@ -472,13 +425,13 @@ export class RangeCalendarRootState {
 		const prevLastPressedDate = this.lastPressedDateValue;
 		this.lastPressedDateValue = date;
 
-		if (this.opts.startValue.current && this.highlightedRange === null) {
-			if (isSameDay(this.opts.startValue.current, date) && !this.opts.preventDeselect.current && !this.opts.endValue.current) {
+		if (this.startValue && this.highlightedRange === null) {
+			if (isSameDay(this.startValue, date) && !this.opts.preventDeselect.current && !this.endValue) {
 				this.#setStartValue(undefined);
 				this.opts.placeholder.current = date;
 				this.#announceEmpty();
 				return;
-			} else if (!this.opts.endValue.current) {
+			} else if (!this.endValue) {
 				e.preventDefault();
 				if (prevLastPressedDate && isSameDay(prevLastPressedDate, date)) {
 					this.#setStartValue(date);
@@ -488,9 +441,9 @@ export class RangeCalendarRootState {
 		}
 
 		if (
-			this.opts.startValue.current &&
-			this.opts.endValue.current &&
-			isSameDay(this.opts.endValue.current, date) &&
+			this.startValue &&
+			this.endValue &&
+			isSameDay(this.endValue, date) &&
 			!this.opts.preventDeselect.current
 		) {
 			this.#setStartValue(undefined);
@@ -500,12 +453,12 @@ export class RangeCalendarRootState {
 			return;
 		}
 
-		if (!this.opts.startValue.current) {
+		if (!this.startValue) {
 			this.#announceSelectedDate(date);
 			this.#setStartValue(date);
-		} else if (!this.opts.endValue.current) {
+		} else if (!this.endValue) {
 			// determine the start and end dates for validation
-			const startDate = this.opts.startValue.current;
+			const startDate = this.startValue;
 			const endDate = date;
 			const orderedStart = isBefore(endDate, startDate) ? endDate : startDate;
 			const orderedEnd = isBefore(endDate, startDate) ? startDate : endDate;
@@ -526,10 +479,10 @@ export class RangeCalendarRootState {
 				} else {
 					// forward selection - keep original order
 					this.#setEndValue(date);
-					this.#announceSelectedRange(this.opts.startValue.current, date);
+					this.#announceSelectedRange(this.startValue, date);
 				}
 			}
-		} else if (this.opts.endValue.current && this.opts.startValue.current) {
+		} else if (this.endValue && this.startValue) {
 			this.#setEndValue(undefined);
 			this.#announceSelectedDate(date);
 			this.#setStartValue(date);
@@ -658,7 +611,7 @@ export class RangeCalendarCellState {
 	readonly isRangeStart = $derived.by(() => this.root.isSelectionStart(this.opts.date.current));
 
 	readonly isRangeEnd = $derived.by(() => {
-		if (!this.root.opts.endValue.current) return this.root.isSelectionStart(this.opts.date.current);
+		if (!this.root.endValue) return this.root.isSelectionStart(this.opts.date.current);
 		return this.root.isSelectionEnd(this.opts.date.current);
 	});
 
