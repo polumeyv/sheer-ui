@@ -270,7 +270,8 @@ const createCarousel = (userRoot: HTMLElement, userOptions: CarouselOptions = {}
 	};
 
 	const snapIndex = (offset: number): number => {
-		return engine.indexCurrent.add(offset).get();
+		const { indexCurrent } = engine;
+		return indexCurrent.normalize(indexCurrent.get() + offset);
 	};
 
 	const snapList = (): number[] => {

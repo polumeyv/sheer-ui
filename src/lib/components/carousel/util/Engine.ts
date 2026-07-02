@@ -136,7 +136,7 @@ export const Engine = <API extends ReInitApi>(
 	const { limit } = ScrollLimit(contentSize, scrollSnaps, loop);
 
 	const indexCurrent = Counter(arrayLastIndex(scrollSnaps), startSnap, loop);
-	const indexPrevious = indexCurrent.clone();
+	const indexPrevious = Counter(arrayLastIndex(scrollSnaps), startSnap, loop);
 	const slideIndexes = [...slides.keys()];
 
 	const scrollAnimator = ScrollAnimator<API>();

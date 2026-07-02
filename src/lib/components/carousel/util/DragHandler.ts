@@ -107,12 +107,12 @@ export const DragHandler = <API>(
 	const baseForce = (force: number): number => scrollTarget.byDistance(force, !dragFree).distance;
 
 	const allowedForce = (force: number): number => {
-		const next = indexCurrent.add(Math.sign(force) * -1);
+		const next = indexCurrent.normalize(indexCurrent.get() + Math.sign(force) * -1);
 
 		if (dragFree || Math.abs(force) < goToNextThreshold) return baseForce(force);
 		if (skipSnaps && indexChanged()) return baseForce(force) * 0.5;
 
-		return scrollTarget.byIndex(next.get(), 0).distance;
+		return scrollTarget.byIndex(next, 0).distance;
 	};
 
 	const down = (evt: PointerEventType): void => {

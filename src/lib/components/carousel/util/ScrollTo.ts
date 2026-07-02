@@ -59,7 +59,7 @@ export const ScrollTo = <API>(
 	};
 
 	const index = (input: number, direction?: ScrollToDirectionType): void => {
-		const targetIndex = indexCurrent.clone().set(input).get();
+		const targetIndex = indexCurrent.normalize(input);
 		const target = scrollTarget.byIndex(targetIndex, getDirection(direction));
 		scrollTo(target);
 	};
