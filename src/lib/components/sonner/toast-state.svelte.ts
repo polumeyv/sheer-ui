@@ -168,12 +168,13 @@ class ToastState {
 	};
 
 	setHeight = (data: HeightT) => {
-		const toastIdx = this.#findToastIdx(data.toastId);
-		if (toastIdx === null) {
-			this.heights.push(data);
+		const idx = this.heights.findIndex((height) => height.toastId === data.toastId);
+		// New heights go to the front, mirroring addToast's unshift so both arrays share the visual order.
+		if (idx === -1) {
+			this.heights.unshift(data);
 			return;
 		}
-		this.heights[toastIdx] = data;
+		this.heights[idx] = data;
 	};
 
 	reset = () => {

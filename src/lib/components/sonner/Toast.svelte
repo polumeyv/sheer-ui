@@ -9,11 +9,6 @@
 	// Threshold to dismiss a toast
 	const SWIPE_THRESHOLD = 45;
 
-	// Equal to exit animation duration
-	const TIME_BEFORE_UNMOUNT = 200;
-
-	const SCALE_MULTIPLIER = 0.05;
-
 	const DEFAULT_TOAST_CLASSES: ToastClasses = {
 		toast: '',
 		title: '',
@@ -63,6 +58,8 @@
 	import { onMount, untrack } from 'svelte';
 	import { isAction, type SwipeDirection, type ToastClasses, type ToastProps } from './types.js';
 	import { toastState } from './toast-state.svelte.js';
+	import { AnimationsComplete } from '$lib/internal/animations-complete.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
 	import type { DragEventHandler, PointerEventHandler } from 'svelte/elements';
 	import { on } from 'svelte/events';
 	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
@@ -150,7 +147,10 @@
 	const dismissible = $derived(toast.dismissible !== undefined ? toast.dismissible !== false : toast.dismissable !== false);
 	const toastDescriptionClass = $derived(toast.descriptionClass || '');
 	// height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
-	const heightIndex = $derived(toastState.heights.findIndex((height) => height.toastId === toast.id) || 0);
+	const heightIndex = $derived.by(() => {
+		const idx = toastState.heights.findIndex((height) => height.toastId === toast.id);
+		return idx === -1 ? 0 : idx;
+	});
 	const closeButton = $derived(toast.closeButton ?? closeButtonFromToaster);
 	const duration = $derived(toast.duration ?? durationFromToaster ?? TOAST_LIFETIME);
 	let pointerStart: { x: number; y: number } | null = null;
@@ -178,60 +178,42 @@
 	const invert = $derived(toast.invert || invertFromToaster);
 	const disabled = $derived(toastType === 'loading');
 
-	const toastTitle = $derived(toast.title);
-	const toastDescription = $derived(toast.description);
-
 	let closeTimerStartTime = $state(0);
 	let lastCloseTimerStartTime = $state(0);
 
 	const offset = $derived(Math.round(heightIndex * GAP + toastsHeightBefore));
 
-	$effect(() => {
-		toastTitle;
-		toastDescription;
-		let scale: number;
-
-		if (expanded || expandByDefault) {
-			scale = 1;
-		} else {
-			scale = 1 - index * SCALE_MULTIPLIER;
-		}
-
-		const toastEl = untrack(() => toastRef);
-		if (toastEl === undefined) return;
+	/** Record the toast's natural height, measured with height:auto so the stacked pin and scale transform can't skew it. */
+	function measure() {
+		const toastEl = toastRef;
+		if (!toastEl) return;
 		toastEl.style.setProperty('height', 'auto');
-
-		const offsetHeight = toastEl.offsetHeight;
-		const rectHeight = toastEl.getBoundingClientRect().height;
-		const scaledRectHeight = Math.round((rectHeight / scale + Number.EPSILON) & 100) / 100;
-
+		const height = toastEl.offsetHeight;
 		toastEl.style.removeProperty('height');
 
-		let finalHeight: number;
+		initialHeight = height;
+		toastState.setHeight({ toastId: toast.id, height });
+	}
 
-		if (Math.abs(scaledRectHeight - offsetHeight) < 1) {
-			// use scaledRectHeight as it's more precise
-			finalHeight = scaledRectHeight;
-		} else {
-			// toast was transitioning its scale, so scaledRectHeight isn't accurate
-			finalHeight = offsetHeight;
-		}
+	// Re-measure when the toast is swapped in place (a promise toast moving loading -> result).
+	$effect(() => {
+		if (toast.updated) untrack(measure);
+	});
 
-		initialHeight = finalHeight;
-
-		toastState.setHeight({ toastId: toast.id, height: finalHeight });
+	const exitAnimations = new AnimationsComplete({
+		ref: boxWith(() => toastRef ?? null),
+		// Defers past the style recalc that starts the exit transition, so getAnimations() can see it.
+		deferToTick: boxWith(() => true),
 	});
 
 	function deleteToast() {
+		if (removed) return;
 		removed = true;
 		// save the offset for the exit swipe animation
 		offsetBeforeRemove = offset;
 
 		toastState.removeHeight(toast.id);
-
-		setTimeout(() => {
-			toastState.remove(toast.id);
-		}, TIME_BEFORE_UNMOUNT);
+		exitAnimations.run(() => toastState.remove(toast.id));
 	}
 
 	let timeoutId: ReturnType<typeof setTimeout>;
@@ -287,11 +269,7 @@
 
 	onMount(() => {
 		mounted = true;
-
-		const height = toastRef?.getBoundingClientRect().height as number;
-
-		initialHeight = height;
-		toastState.setHeight({ toastId: toast.id, height });
+		measure();
 
 		return () => {
 			toastState.removeHeight(toast.id);
@@ -299,7 +277,7 @@
 	});
 
 	$effect(() => {
-		if (toast.delete) {
+		if (toast.dismiss && !removed) {
 			untrack(() => {
 				deleteToast();
 				toast.onDismiss?.(toast);
