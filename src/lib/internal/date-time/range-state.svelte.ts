@@ -21,7 +21,7 @@ interface CompleteRangeValueSyncOptions<T extends Placeholder, Placeholder, Rang
 	updateValue: (cb: (value: Range) => Range) => void;
 }
 
-export function useRangeCursorSync<T extends Placeholder, Placeholder, Range extends RangeValue<T>>(
+function useRangeCursorSync<T extends Placeholder, Placeholder, Range extends RangeValue<T>>(
 	opts: RangeCursorSyncOptions<T, Placeholder, Range>,
 ) {
 	$effect(() => {
@@ -51,7 +51,7 @@ export function useRangeCursorSync<T extends Placeholder, Placeholder, Range ext
 	});
 }
 
-export function useCompleteRangeValueSync<T extends Placeholder, Placeholder, Range extends RangeValue<T>>(
+function useCompleteRangeValueSync<T extends Placeholder, Placeholder, Range extends RangeValue<T>>(
 	opts: CompleteRangeValueSyncOptions<T, Placeholder, Range>,
 ) {
 	$effect(() => {
