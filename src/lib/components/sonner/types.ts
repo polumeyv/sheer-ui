@@ -63,7 +63,6 @@ export type ToastT<T extends AnyComponent = AnyComponent> = {
 	important?: boolean;
 	description?: string | AnyComponent;
 	duration?: number;
-	delete?: boolean;
 	action?: ToastAction | AnyComponent;
 	cancel?: ToastAction | AnyComponent;
 	onDismiss?: (toast: ToastT) => void;
