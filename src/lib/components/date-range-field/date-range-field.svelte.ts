@@ -1,6 +1,6 @@
 import type { DateValue } from '@internationalized/date';
 import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
-import { createContext, onMount } from 'svelte';
+import { createContext, onMount, untrack } from 'svelte';
 import { DateFieldInputState, DateFieldRootState } from '../date-field/date-field.svelte.js';
 import { useId } from '$lib/internal/use-id.js';
 import type { DateOnInvalid, DateRange, DateRangeValidator, SegmentPart } from '$lib/internal/index.js';
@@ -10,7 +10,6 @@ import type { Granularity } from '$lib/internal/date-time/types.js';
 import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
 import { isBefore } from '$lib/internal/date-time/utils.js';
 import { getFirstSegment } from '$lib/internal/date-time/field/segments.js';
-import { useCompleteRangeSync } from '$lib/internal/date-time/range-state.svelte.js';
 
 export const dateRangeFieldAttrs = createBitsAttrs({
 	component: 'date-range-field',
@@ -25,8 +24,6 @@ interface DateRangeFieldRootStateOpts
 		WritableBoxedValues<{
 			value: DateRange;
 			placeholder: DateValue;
-			startValue: DateValue | undefined;
-			endValue: DateValue | undefined;
 		}>,
 		ReadableBoxedValues<{
 			readonlySegments: SegmentPart[];
@@ -57,8 +54,11 @@ export class DateRangeFieldRootState {
 	fieldNode = $state<HTMLElement | null>(null);
 	labelNode = $state<HTMLElement | null>(null);
 	descriptionNode = $state<HTMLElement | null>(null);
-	readonly startValueComplete = $derived.by(() => this.opts.startValue.current !== undefined);
-	readonly endValueComplete = $derived.by(() => this.opts.endValue.current !== undefined);
+	/** Per-side values derive from the bound range; a child-field write overrides until the range recommits. */
+	startValue = $derived(this.opts.value.current?.start);
+	endValue = $derived(this.opts.value.current?.end);
+	readonly startValueComplete = $derived.by(() => this.startValue !== undefined);
+	readonly endValueComplete = $derived.by(() => this.endValue !== undefined);
 	readonly rangeComplete = $derived(this.startValueComplete && this.endValueComplete);
 	domContext: DOMContext;
 	readonly attachment: RefAttachment;
@@ -77,13 +77,41 @@ export class DateRangeFieldRootState {
 			this.domContext.getDocument().getElementById(this.descriptionId)?.remove();
 		});
 
-		useCompleteRangeSync({
-			value: this.opts.value,
-			startValue: this.opts.startValue,
-			endValue: this.opts.endValue,
-			placeholder: this.opts.placeholder,
-			updateValue: (cb) => this.#updateValue(cb),
+		// Keep the placeholder on the committed start so both fields render segments around it.
+		$effect(() => {
+			const start = this.opts.value.current?.start;
+			untrack(() => {
+				if (start && this.opts.placeholder.current !== start) {
+					this.opts.placeholder.current = start;
+				}
+			});
 		});
+	}
+
+	/** Box for a child field's value: reads the derived side; writes override it and recommit the range. */
+	sideValueBox(type: 'start' | 'end') {
+		return boxWith(
+			() => (type === 'start' ? this.startValue : this.endValue),
+			(v: DateValue | undefined) => {
+				if (type === 'start') this.startValue = v;
+				else this.endValue = v;
+				this.#commitSides();
+			},
+		);
+	}
+
+	/** Child-field write: commit when both sides are set, clear a committed range when one side empties. */
+	#commitSides() {
+		const start = this.startValue;
+		const end = this.endValue;
+		const value = this.opts.value.current;
+		if (start !== undefined && end !== undefined) {
+			if (value?.start !== start || value?.end !== end) {
+				this.#updateValue(() => ({ start, end }));
+			}
+		} else if (value?.start !== undefined && value?.end !== undefined) {
+			this.#updateValue(() => ({ start: undefined, end: undefined }));
+		}
 	}
 
 	readonly validationStatus = $derived.by(() => {
@@ -196,7 +224,7 @@ export class DateRangeFieldInputState {
 		const root = getDateRangeFieldRoot();
 		const fieldState = DateFieldRootState.create(
 			{
-				value: type === 'start' ? root.opts.startValue : root.opts.endValue,
+				value: root.sideValueBox(type),
 				disabled: root.opts.disabled,
 				readonly: root.opts.readonly,
 				readonlySegments: root.opts.readonlySegments,
