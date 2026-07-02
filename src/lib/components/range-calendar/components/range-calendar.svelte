@@ -37,16 +37,11 @@
 		disableDaysOutsideMonth = true,
 		minDays,
 		maxDays,
-		onStartValueChange = () => {},
-		onEndValueChange = () => {},
 		excludeDisabled = false,
 		monthFormat = 'long',
 		yearFormat = 'numeric',
 		...restProps
 	}: RangeCalendarRootProps = $props();
-
-	let startValue = $state<DateValue | undefined>(value?.start);
-	let endValue = $state<DateValue | undefined>(value?.end);
 
 	const defaultPlaceholder = untrack(() =>
 		getDefaultDate({
@@ -108,20 +103,6 @@
 		minDays: boxWith(() => minDays),
 		maxDays: boxWith(() => maxDays),
 		excludeDisabled: boxWith(() => excludeDisabled),
-		startValue: boxWith(
-			() => startValue,
-			(v) => {
-				startValue = v;
-				onStartValueChange(v);
-			},
-		),
-		endValue: boxWith(
-			() => endValue,
-			(v) => {
-				endValue = v;
-				onEndValueChange(v);
-			},
-		),
 		monthFormat: boxWith(() => monthFormat),
 		yearFormat: boxWith(() => yearFormat),
 		defaultPlaceholder,
