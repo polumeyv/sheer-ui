@@ -78,4 +78,26 @@ describe("Sidebar desktop behavior", () => {
 			unmount(component);
 		}
 	});
+
+	test("keyboard shortcut toggles once and does not steal editable shortcuts", async () => {
+		const { component } = await renderFixture();
+
+		try {
+			window.dispatchEvent(new KeyboardEvent("keydown", { key: "b", ctrlKey: true }));
+			flushSync();
+			expect(getDesktopSidebar().dataset.state).toBe("collapsed");
+
+			window.dispatchEvent(new KeyboardEvent("keydown", { key: "b", ctrlKey: true, repeat: true }));
+			flushSync();
+			expect(getDesktopSidebar().dataset.state).toBe("collapsed");
+
+			const input = document.createElement("input");
+			document.body.append(input);
+			input.dispatchEvent(new KeyboardEvent("keydown", { key: "b", ctrlKey: true, bubbles: true }));
+			flushSync();
+			expect(getDesktopSidebar().dataset.state).toBe("collapsed");
+		} finally {
+			unmount(component);
+		}
+	});
 });

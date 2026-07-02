@@ -179,11 +179,9 @@ export class DateFieldRootState {
 	isInvalidProp: DateFieldRootStateOpts['isInvalidProp'];
 	descriptionId = useId();
 	formatter: Formatter;
-	initialSegments: SegmentValueObj;
 	segmentValues = $state() as SegmentValueObj;
 	announcer: Announcer;
 	readonly readonlySegmentsSet = $derived.by(() => new Set(this.readonlySegments.current));
-	segmentStates = initSegmentStates();
 	#fieldNode = $state<HTMLElement | null>(null);
 	#labelNode = $state<HTMLElement | null>(null);
 	descriptionNode = $state<HTMLElement | null>(null);
@@ -225,19 +223,12 @@ export class DateFieldRootState {
 			monthFormat: boxWith(() => 'long'),
 			yearFormat: boxWith(() => 'numeric'),
 		});
-		this.initialSegments = initializeSegmentValues(this.inferredGranularity);
-		this.segmentValues = this.initialSegments;
+		this.segmentValues = initializeSegmentValues(this.inferredGranularity);
 		this.announcer = getAnnouncer(null);
 		this.getFieldNode = this.getFieldNode.bind(this);
 		this.updateSegment = this.updateSegment.bind(this);
 		this.handleSegmentClick = this.handleSegmentClick.bind(this);
 		this.getBaseSegmentAttrs = this.getBaseSegmentAttrs.bind(this);
-
-		$effect(() => {
-			untrack(() => {
-				this.initialSegments = initializeSegmentValues(this.inferredGranularity);
-			});
-		});
 
 		onMount(() => {
 			this.announcer = getAnnouncer(this.domContext.getDocument());
@@ -482,9 +473,8 @@ export class DateFieldRootState {
 	});
 
 	readonly isInvalid = $derived.by(() => {
-		if (this.validationStatus === false) return false;
 		if (this.isInvalidProp.current) return true;
-		return false;
+		return this.validationStatus !== false;
 	});
 
 	readonly inferredGranularity = $derived.by(() => {

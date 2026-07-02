@@ -1,4 +1,5 @@
-import { type AnyFn, executeCallbacks } from '$lib/internal/tools/index.js';
+import { mergeDisposers } from '$lib/internal/tools/index.js';
+import { SharedState } from '$lib/internal/shared-state.svelte.js';
 import { on } from 'svelte/events';
 
 /**
@@ -34,47 +35,36 @@ export function createInputModality(): InputModality {
 	};
 }
 
-let globalIsKeyboard = $state(false);
-let refs = 0;
-let stop: AnyFn | undefined;
-
 /**
  * Global modality: one shared, reference-counted set of capture-phase document listeners
- * (`keydown` → keyboard, `pointerdown` → pointer). Every consumer reads the same flag; listeners
- * attach on the first consumer and detach when the last one tears down.
+ * (`keydown` → keyboard, `pointerdown` → pointer), reused via `SharedState` so listeners attach on
+ * the first consumer and detach when the last one tears down.
  */
-export function useGlobalInputModality(): InputModality {
-	$effect(() => {
-		if (refs === 0) {
-			stop = executeCallbacks(
-				on(document, 'pointerdown', () => (globalIsKeyboard = false), { capture: true }),
-				on(document, 'keydown', () => (globalIsKeyboard = true), { capture: true }),
-			);
-		}
-		refs++;
+const globalInputModality = new SharedState((): InputModality => {
+	let isKeyboard = $state(false);
 
-		return () => {
-			refs--;
-			if (refs === 0) {
-				globalIsKeyboard = false;
-				stop?.();
-				stop = undefined;
-			}
-		};
-	});
+	const stop = mergeDisposers(
+		on(document, 'pointerdown', () => (isKeyboard = false), { capture: true }),
+		on(document, 'keydown', () => (isKeyboard = true), { capture: true }),
+	);
+	$effect(() => stop);
 
 	return {
 		get isKeyboard() {
-			return globalIsKeyboard;
+			return isKeyboard;
 		},
 		keyboard() {
-			globalIsKeyboard = true;
+			isKeyboard = true;
 		},
 		pointer() {
-			globalIsKeyboard = false;
+			isKeyboard = false;
 		},
 		reset() {
-			globalIsKeyboard = false;
+			isKeyboard = false;
 		},
 	};
+});
+
+export function useGlobalInputModality(): InputModality {
+	return globalInputModality.get();
 }

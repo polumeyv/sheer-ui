@@ -1,15 +1,13 @@
-import { createContext, onMount, untrack } from 'svelte';
+import { createContext, onMount, tick, untrack } from 'svelte';
 import { on } from 'svelte/events';
-import type { FocusEventHandler, KeyboardEventHandler, MouseEventHandler, TouchEventHandler } from 'svelte/elements';
+import type { FocusEventHandler, KeyboardEventHandler } from 'svelte/elements';
 import {
 	type ReadableBoxedValues,
 	type RefAttachment,
 	type WithRefProps,
-	afterTick,
 	attachRef,
 	DOMContext,
-	executeCallbacks,
-	watch,
+	mergeDisposers,
 } from '$lib/internal/tools/index.js';
 import {
 	callPaneCallbacks,
@@ -81,7 +79,8 @@ export class PaneGroupState {
 	layout = $state.raw<number[]>([]);
 	panesArray = $state.raw<PaneState[]>([]);
 	panesArrayChanged = $state<boolean>(false);
-	paneIdToLastNotifiedSizeMap = $state<Record<string, number>>({});
+	// Written on every resize event; nothing derives from it, so keep it non-reactive.
+	paneIdToLastNotifiedSizeMap: Record<string, number> = {};
 	paneSizeBeforeCollapseMap = new Map<string, number>();
 	prevDelta = 0;
 
@@ -90,39 +89,57 @@ export class PaneGroupState {
 		this.attachment = attachRef(this.opts.ref);
 		this.domContext = new DOMContext(this.opts.ref);
 
-		watch([() => this.opts.id.current, () => this.layout, () => this.panesArray], () => {
-			return updateResizeHandleAriaValues({
-				groupId: this.opts.id.current,
-				layout: this.layout,
-				panesArray: this.panesArray,
-				domContext: this.domContext,
+		$effect(() => {
+			const groupId = this.opts.id.current;
+			const layout = this.layout;
+			const panesArray = this.panesArray;
+
+			return untrack(() => {
+				return updateResizeHandleAriaValues({
+					groupId,
+					layout,
+					panesArray,
+					domContext: this.domContext,
+				});
 			});
 		});
 
+		// Track id + panesArray so handles added after initial mount get their keydown
+		// listeners — mirrors the effect deps in react-resizable-panels'
+		// useWindowSplitterPanelGroupBehavior. Layout is deliberately left untracked:
+		// the handlers read it live, and tracking it would re-attach listeners on
+		// every drag frame.
 		$effect(() => {
+			void this.opts.id.current;
+			void this.panesArray;
+
 			return untrack(() => {
 				return this.#setResizeHandlerEventListeners();
 			});
 		});
 
-		watch(
-			[() => this.opts.autoSaveId.current, () => this.layout, () => this.opts.storage.current],
-			() => {
-				if (!this.opts.autoSaveId.current) return;
+		$effect(() => {
+			const autoSaveId = this.opts.autoSaveId.current;
+			const layout = this.layout;
+			const storage = this.opts.storage.current;
+
+			untrack(() => {
+				if (!autoSaveId) return;
 				updateStorageValues({
-					autoSaveId: this.opts.autoSaveId.current,
-					layout: this.layout,
-					storage: this.opts.storage.current,
+					autoSaveId,
+					layout,
+					storage,
 					panesArray: this.panesArray,
 					paneSizeBeforeCollapse: this.paneSizeBeforeCollapseMap,
 				});
-			},
-		);
+			});
+		});
 
-		watch(
-			() => this.panesArrayChanged,
-			() => {
-				if (!this.panesArrayChanged) return;
+		$effect(() => {
+			const panesArrayChanged = this.panesArrayChanged;
+
+			untrack(() => {
+				if (!panesArrayChanged) return;
 				this.panesArrayChanged = false;
 				const prevLayout = this.layout;
 
@@ -153,8 +170,8 @@ export class PaneGroupState {
 				this.opts.onLayout.current?.(nextLayout);
 
 				callPaneCallbacks(this.panesArray, nextLayout, this.paneIdToLastNotifiedSizeMap);
-			},
-		);
+			});
+		});
 	}
 
 	setLayout = (newLayout: number[]) => {
@@ -545,21 +562,15 @@ export class PaneResizerState {
 
 	readonly #isDragging = $derived.by(() => this.#group.dragState?.dragHandleId === this.opts.id.current);
 	#isFocused = $state(false);
-	resizeHandler: ResizeHandler | null = null;
+	readonly resizeHandler: ResizeHandler | null = $derived.by(() =>
+		this.opts.disabled.current ? null : this.#group.registerResizeHandle(this.opts.id.current),
+	);
 
 	constructor(opts: PaneResizerStateOpts, group: PaneGroupState) {
 		this.opts = opts;
 		this.#group = group;
 		this.attachment = attachRef(this.opts.ref);
 		this.domContext = new DOMContext(this.opts.ref);
-
-		$effect(() => {
-			if (this.opts.disabled.current) {
-				this.resizeHandler = null;
-			} else {
-				this.resizeHandler = this.#group.registerResizeHandle(this.opts.id.current);
-			}
-		});
 
 		$effect(() => {
 			const node = this.opts.ref.current;
@@ -569,14 +580,6 @@ export class PaneResizerState {
 			const isDragging = this.#isDragging;
 			if (disabled || resizeHandler === null || !isDragging) return;
 
-			const onMove = (e: ResizeEvent) => {
-				resizeHandler(e);
-			};
-
-			const onMouseLeave = (e: ResizeEvent) => {
-				resizeHandler(e);
-			};
-
 			const stopDraggingAndBlur = () => {
 				node.blur();
 				this.#group.stopDragging();
@@ -585,11 +588,11 @@ export class PaneResizerState {
 			const domBody = this.domContext.getDocument().body;
 			const domWindow = this.domContext.getWindow();
 
-			return executeCallbacks(
+			return mergeDisposers(
 				on(domBody, 'contextmenu', stopDraggingAndBlur),
-				on(domBody, 'mousemove', onMove),
-				on(domBody, 'touchmove', onMove, { passive: false }),
-				on(domBody, 'mouseleave', onMouseLeave),
+				on(domBody, 'mousemove', resizeHandler),
+				on(domBody, 'touchmove', resizeHandler, { passive: false }),
+				on(domBody, 'mouseleave', resizeHandler),
 				on(domWindow, 'mouseup', stopDraggingAndBlur),
 				on(domWindow, 'touchend', stopDraggingAndBlur),
 			);
@@ -664,26 +667,6 @@ export class PaneResizerState {
 		this.#isFocused = true;
 	};
 
-	#onmousedown: MouseEventHandler<HTMLElement> = (e) => {
-		this.#startDragging(e);
-	};
-
-	#onmouseup: MouseEventHandler<HTMLElement> = () => {
-		this.#stopDraggingAndBlur();
-	};
-
-	#ontouchcancel: TouchEventHandler<HTMLElement> = () => {
-		this.#stopDraggingAndBlur();
-	};
-
-	#ontouchend: TouchEventHandler<HTMLElement> = () => {
-		this.#stopDraggingAndBlur();
-	};
-
-	#ontouchstart: TouchEventHandler<HTMLElement> = (e: TouchEvent) => {
-		this.#startDragging(e);
-	};
-
 	readonly props = $derived.by(
 		() =>
 			({
@@ -706,11 +689,11 @@ export class PaneResizerState {
 				onkeydown: this.#onkeydown,
 				onblur: this.#onblur,
 				onfocus: this.#onfocus,
-				onmousedown: this.#onmousedown,
-				onmouseup: this.#onmouseup,
-				ontouchcancel: this.#ontouchcancel,
-				ontouchend: this.#ontouchend,
-				ontouchstart: this.#ontouchstart,
+				onmousedown: this.#startDragging,
+				onmouseup: this.#stopDraggingAndBlur,
+				ontouchcancel: this.#stopDraggingAndBlur,
+				ontouchend: this.#stopDraggingAndBlur,
+				ontouchstart: this.#startDragging,
 				...this.attachment,
 			}) as const,
 	);
@@ -757,7 +740,7 @@ export class PaneState {
 
 	#handleTransition = (state: PaneTransitionState) => {
 		this.#paneTransitionState = state;
-		afterTick(() => {
+		tick().then(() => {
 			if (this.opts.ref.current) {
 				const element = this.opts.ref.current;
 				const computedStyle = getComputedStyle(element);
@@ -810,12 +793,12 @@ export class PaneState {
 			return this.group.registerPane(this);
 		});
 
-		watch(
-			() => $state.snapshot(this.constraints),
-			() => {
-				this.group.panesArrayChanged = true;
-			},
-		);
+		// constraints is a fresh plain object per recompute, so reading it is enough
+		// to re-run whenever any constraint option changes.
+		$effect(() => {
+			void this.constraints;
+			this.group.panesArrayChanged = true;
+		});
 	}
 
 	readonly #isCollapsed = $derived.by(() => this.group.isPaneCollapsed(this));

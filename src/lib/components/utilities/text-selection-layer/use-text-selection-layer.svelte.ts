@@ -7,12 +7,13 @@ import {
 	type RefAttachment,
 	composeHandlers,
 	contains,
-	executeCallbacks,
+	mergeDisposers,
 } from '$lib/internal/tools/index.js';
 import { untrack } from 'svelte';
 import { on } from 'svelte/events';
 import { createAttachmentKey } from 'svelte/attachments';
 import type { PointerHandler, TextSelectionLayerImplProps } from './types.js';
+import { createLayerStack } from '$lib/internal/layer-stack.js';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
 
 interface TextSelectionLayerStateOpts extends ReadableBoxedValues<
@@ -21,7 +22,7 @@ interface TextSelectionLayerStateOpts extends ReadableBoxedValues<
 	}
 > {}
 
-globalThis.bitsTextSelectionLayers ??= new Map<TextSelectionLayerState, ReadableBox<boolean>>();
+globalThis.bitsTextSelectionLayers ??= createLayerStack<TextSelectionLayerState, ReadableBox<boolean>>();
 
 export class TextSelectionLayerState {
 	static create(opts: TextSelectionLayerStateOpts) {
@@ -52,7 +53,7 @@ export class TextSelectionLayerState {
 				this.#onPointerUpSnapshot = onPointerUp;
 
 				if (enabled) {
-					globalThis.bitsTextSelectionLayers.set(this, this.opts.enabled);
+					globalThis.bitsTextSelectionLayers.register(this, this.opts.enabled);
 					unsubEvents();
 					unsubEvents = this.#addEventListeners();
 				}
@@ -60,14 +61,14 @@ export class TextSelectionLayerState {
 					this.#enabledSnapshot = false;
 					unsubEvents();
 					this.#resetSelectionLock();
-					globalThis.bitsTextSelectionLayers.delete(this);
+					globalThis.bitsTextSelectionLayers.unregister(this);
 				};
 			});
 		});
 	}
 
 	#addEventListeners() {
-		return executeCallbacks(
+		return mergeDisposers(
 			on(this.domContext.getDocument(), 'pointerdown', this.#pointerdown),
 			on(this.domContext.getDocument(), 'pointerup', composeHandlers(this.#resetSelectionLock, this.#pointerupUserHandler)),
 		);
@@ -86,7 +87,7 @@ export class TextSelectionLayerState {
 		 * pointerdown occurred inside the node. You are still allowed to select text
 		 * outside the node provided pointerdown occurs outside the node.
 		 */
-		if (!isHighestLayer(this) || !contains(node, target)) return;
+		if (!globalThis.bitsTextSelectionLayers.isResponsible(this) || !contains(node, target)) return;
 		this.#onPointerDownSnapshot(e);
 		if (e.defaultPrevented) return;
 		this.#unsubSelectionLock = preventTextSelectionOverflow(node, this.domContext.getDocument().body);
@@ -139,12 +140,4 @@ function preventTextSelectionOverflow(node: HTMLElement, body: HTMLElement) {
 function setUserSelect(node: HTMLElement, value: string) {
 	node.style.userSelect = value;
 	node.style.webkitUserSelect = value;
-}
-
-function isHighestLayer(instance: TextSelectionLayerState) {
-	const layersArr = [...globalThis.bitsTextSelectionLayers];
-	if (!layersArr.length) return false;
-	const highestLayer = layersArr.at(-1);
-	if (!highestLayer) return false;
-	return highestLayer[0] === instance;
 }

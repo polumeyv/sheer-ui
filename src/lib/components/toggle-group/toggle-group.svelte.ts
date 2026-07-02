@@ -5,6 +5,7 @@ import { kbd } from '$lib/internal/kbd.js';
 import type { Orientation } from '$lib/internal/index.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
+import { RovingFocusItem } from '$lib/internal/roving-focus-item.svelte.js';
 
 export const toggleGroupAttrs = createBitsAttrs({
 	component: 'toggle-group',
@@ -159,7 +160,7 @@ export class ToggleGroupItemState {
 	}
 	readonly opts: ToggleGroupItemStateOpts;
 	readonly root: ToggleGroup;
-	readonly attachment: RefAttachment;
+	readonly rovingItem: RovingFocusItem;
 	readonly #isDisabled = $derived.by(() => this.opts.disabled.current || this.root.opts.disabled.current);
 	readonly isPressed = $derived.by(() => this.root.includesItem(this.opts.value.current));
 
@@ -174,13 +175,10 @@ export class ToggleGroupItemState {
 	constructor(opts: ToggleGroupItemStateOpts, root: ToggleGroup) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref);
-		$effect(() => {
-			if (!this.root.opts.rovingFocus.current) {
-				this.#tabIndex = 0;
-			} else {
-				this.#tabIndex = this.root.rovingFocusGroup.getTabIndex(this.opts.ref.current);
-			}
+		this.rovingItem = new RovingFocusItem({
+			group: this.root.rovingFocusGroup,
+			ref: this.opts.ref,
+			enabled: this.root.opts.rovingFocus,
 		});
 
 		this.onclick = this.onclick.bind(this);
@@ -206,10 +204,8 @@ export class ToggleGroupItemState {
 		}
 		if (!this.root.opts.rovingFocus.current) return;
 
-		this.root.rovingFocusGroup.handleKeydown(this.opts.ref.current, e);
+		this.rovingItem.handleKeydown(e);
 	}
-
-	#tabIndex = $state(0);
 
 	readonly snippetProps = $derived.by(() => ({
 		pressed: this.isPressed,
@@ -220,7 +216,6 @@ export class ToggleGroupItemState {
 			({
 				id: this.opts.id.current,
 				role: this.root.isMulti ? undefined : 'radio',
-				tabindex: this.#tabIndex,
 				'data-orientation': this.root.opts.orientation.current,
 				'data-disabled': boolToEmptyStrOrUndef(this.#isDisabled),
 				'data-state': getToggleItemDataState(this.isPressed),
@@ -232,7 +227,7 @@ export class ToggleGroupItemState {
 				//
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
-				...this.attachment,
+				...this.rovingItem.props,
 			}) as const,
 	);
 }

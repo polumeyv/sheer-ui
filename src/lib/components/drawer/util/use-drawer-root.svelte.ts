@@ -1,4 +1,4 @@
-import { box, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { simpleBox, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
 import type { DrawerDirection } from './types.js';
 import { useSnapPoints } from './use-snap-points.svelte.js';
 import { isInput, usePreventScroll } from './use-prevent-scroll.svelte.js';
@@ -62,7 +62,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 	let isAllowedToDrag = false;
 	let nestedOpenChangeTimer: number | null = null;
 	let pointerStart = 0;
-	let keyboardIsOpen = box(false);
+	let keyboardIsOpen = simpleBox(false);
 	let shouldAnimate = $state(!opts.open.current);
 	let previousDiffFromInitial = 0;
 	let drawerHeight = 0;

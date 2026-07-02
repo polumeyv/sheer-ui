@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { box } from '$lib/internal/tools/index.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import { noop } from '@polumeyv/utilities';
 	import type { PaneResizerProps } from './types.js';
@@ -19,14 +19,14 @@
 	}: PaneResizerProps = $props();
 
 	const resizerState = PaneResizerState.create({
-		id: box.with(() => id),
-		ref: box.with(
+		id: boxWith(() => id),
+		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),
 		),
-		disabled: box.with(() => disabled),
-		onDraggingChange: box.with(() => onDraggingChange),
-		tabIndex: box.with(() => tabindex),
+		disabled: boxWith(() => disabled),
+		onDraggingChange: boxWith(() => onDraggingChange),
+		tabIndex: boxWith(() => tabindex),
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, resizerState.props));

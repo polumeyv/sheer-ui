@@ -200,13 +200,13 @@
 			height: 0;
 		}
 		to {
-			height: var(--bits-disclosure-content-height, auto);
+			height: auto;
 		}
 	}
 
 	@keyframes disclosure-up {
 		from {
-			height: var(--bits-disclosure-content-height, auto);
+			height: auto;
 		}
 		to {
 			height: 0;

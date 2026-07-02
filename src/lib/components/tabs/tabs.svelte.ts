@@ -133,8 +133,8 @@ export class TabsTriggerState {
 	readonly opts: TabsTriggerStateOpts;
 	readonly root: TabsRootState;
 	readonly attachment: RefAttachment;
-	#tabIndex = $state(0);
 	readonly #isActive = $derived.by(() => this.root.opts.value.current === this.opts.value.current);
+	readonly #tabIndex = $derived.by(() => (this.#isActive || !this.root.opts.value.current ? 0 : -1));
 	readonly #isDisabled = $derived.by(() => this.opts.disabled.current || this.root.opts.disabled.current);
 	readonly #ariaControls = $derived.by(() => this.root.valueToContentId.get(this.opts.value.current));
 
@@ -150,14 +150,6 @@ export class TabsTriggerState {
 			});
 		});
 
-		$effect(() => {
-			this.root.triggerIds.length;
-			if (this.#isActive || !this.root.opts.value.current) {
-				this.#tabIndex = 0;
-			} else {
-				this.#tabIndex = -1;
-			}
-		});
 		this.onfocus = this.onfocus.bind(this);
 		this.onclick = this.onclick.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);

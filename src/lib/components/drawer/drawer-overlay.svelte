@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import * as DialogPrimitive from '$lib/components/dialog/index.js';
-	import { type WithChildren, box, attachRef } from '$lib/internal/tools/index.js';
+	import { type WithChildren, boxWith, attachRef } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { WithoutChildrenOrChild } from '$lib/utils.js';
 	import { useId } from '$lib/internal/use-id.js';
@@ -22,7 +22,7 @@
 	// through to it, capturing the node straight into context on mount and clearing
 	// it on unmount — no id lookup or mounted flag needed.
 	const attachment = attachRef(
-		box.with(
+		boxWith(
 			() => ref,
 			(v) => (ref = v),
 		),

@@ -3,7 +3,6 @@ import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 import { type Middleware, type Placement, arrow, autoUpdate, flip, hide, limitShift, offset, shift, size } from '@floating-ui/dom';
 import {
 	attachRef,
-	cssToStyleObj,
 	getWindow,
 	styleToString,
 	type ReadableBoxedValues,
@@ -117,10 +116,7 @@ export class FloatingContentState {
 	// ids
 	arrowId: Box<string> = simpleBox(useId());
 
-	#transformedStyle = $derived.by(() => {
-		if (typeof this.opts.style === 'string') return cssToStyleObj(this.opts.style);
-		if (!this.opts.style) return {};
-	});
+	#userStyle = $derived.by(() => styleToString(this.opts.style.current));
 
 	#updatePositionStrategy = undefined as unknown as FloatingContentStateOpts['updatePositionStrategy'];
 	#desiredPlacement = $derived.by(
@@ -189,25 +185,29 @@ export class FloatingContentState {
 		() =>
 			({
 				id: this.opts.wrapperId.current,
-				'data-bits-floating-content-wrapper': '',
-				style: {
-					...this.floating.floatingStyles,
-					// keep off page when measuring
-					transform: this.floating.isPositioned ? this.floating.floatingStyles.transform : 'translate(0, -200%)',
-					minWidth: 'max-content',
-					zIndex: this.contentZIndex,
-					'--bits-floating-transform-origin': `${this.floating.middlewareData.transformOrigin?.x} ${this.floating.middlewareData.transformOrigin?.y}`,
-					'--bits-floating-available-width': `${this.#availableWidth}px`,
-					'--bits-floating-available-height': `${this.#availableHeight}px`,
-					'--bits-floating-anchor-width': `${this.#anchorWidth}px`,
-					'--bits-floating-anchor-height': `${this.#anchorHeight}px`,
-					// hide the content if using the hide middleware and should be hidden
-					...(this.floating.middlewareData.hide?.referenceHidden && {
-						visibility: 'hidden',
-						'pointer-events': 'none',
+					'data-bits-floating-content-wrapper': '',
+				style: [
+					styleToString({
+						...this.floating.floatingStyles,
+						// keep off page when measuring
+						transform: this.floating.isPositioned ? this.floating.floatingStyles.transform : 'translate(0, -200%)',
+						minWidth: 'max-content',
+						zIndex: this.contentZIndex,
+						'--bits-floating-transform-origin': `${this.floating.middlewareData.transformOrigin?.x} ${this.floating.middlewareData.transformOrigin?.y}`,
+						'--bits-floating-available-width': `${this.#availableWidth}px`,
+						'--bits-floating-available-height': `${this.#availableHeight}px`,
+						'--bits-floating-anchor-width': `${this.#anchorWidth}px`,
+						'--bits-floating-anchor-height': `${this.#anchorHeight}px`,
+						// hide the content if using the hide middleware and should be hidden
+						...(this.floating.middlewareData.hide?.referenceHidden && {
+							visibility: 'hidden',
+							'pointer-events': 'none',
+						}),
 					}),
-					...this.#transformedStyle,
-				},
+					this.#userStyle,
+				]
+					.filter(Boolean)
+					.join(' '),
 				// Floating UI calculates logical alignment based the `dir` attribute
 				dir: this.opts.dir.current,
 				...this.wrapperAttachment,
@@ -218,9 +218,7 @@ export class FloatingContentState {
 			({
 				'data-side': this.placedSide,
 				'data-align': this.placedAlign,
-				style: styleToString({
-					...this.#transformedStyle,
-				}),
+				style: this.#userStyle,
 				...this.contentAttachment,
 			}) as const,
 	);

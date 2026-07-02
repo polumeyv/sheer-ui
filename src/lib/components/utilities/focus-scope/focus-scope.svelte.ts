@@ -1,6 +1,6 @@
 import { type Getter, type RefAttachment } from '$lib/internal/tools/index.js';
 import { FocusScopeManager } from './focus-scope-manager.js';
-import { focusable, isFocusable, tabbable } from 'tabbable';
+import { getFocusableCandidates, getTabbableCandidates, isFocusable } from '$lib/internal/tabbable.js';
 import { on } from 'svelte/events';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 import { untrack } from 'svelte';
@@ -205,10 +205,7 @@ class FocusScope {
 	#getTabbables(): HTMLElement[] {
 		if (!this.#container) return [];
 
-		return tabbable(this.#container, {
-			includeContainer: false,
-			getShadowRoot: true,
-		}) as HTMLElement[];
+		return getTabbableCandidates(this.#container);
 	}
 
 	#getFirstTabbable(): HTMLElement | null {
@@ -219,10 +216,7 @@ class FocusScope {
 	#getAllFocusables(): HTMLElement[] {
 		if (!this.#container) return [];
 
-		return focusable(this.#container, {
-			includeContainer: false,
-			getShadowRoot: true,
-		}) as HTMLElement[];
+		return getFocusableCandidates(this.#container);
 	}
 
 }

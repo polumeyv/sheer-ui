@@ -49,6 +49,8 @@
 	);
 
 	function handleInteractOutside(e: PointerEvent) {
+		contentState.handleInteractOutside(e);
+		if (e.defaultPrevented) return;
 		onInteractOutside(e);
 		if (e.defaultPrevented) return;
 		contentState.parentMenu.onClose();

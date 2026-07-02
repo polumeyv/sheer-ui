@@ -81,7 +81,7 @@ export class CalendarRootState {
 	readonly accessibleHeadingId = useId();
 	readonly domContext: DOMContext;
 	readonly attachment: RefAttachment;
-	months: Month<DateValue>[] = $state([]);
+	months: Month<DateValue>[] = $state.raw([]);
 	announcer: Announcer;
 
 	constructor(opts: CalendarRootStateOpts) {

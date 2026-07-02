@@ -12,8 +12,8 @@ import { resizePane } from './resize.js';
 export function adjustLayoutByDelta({
 	delta,
 	layout: prevLayout,
-	paneConstraints: paneConstraintsArray,
-	pivotIndices,
+	paneConstraints,
+	pivotIndices: [firstPivotIndex, secondPivotIndex],
 	trigger,
 }: {
 	delta: number;
@@ -25,200 +25,90 @@ export function adjustLayoutByDelta({
 	if (areNumbersAlmostEqual(delta, 0)) return prevLayout;
 
 	const nextLayout = [...prevLayout];
+	const safeSize = (paneIndex: number, initialSize: number) => resizePane({ paneConstraints, paneIndex, initialSize });
 
-	const [firstPivotIndex, secondPivotIndex] = pivotIndices;
+	// Keyboard resizes snap collapsible panes through their full collapsed<->min transition,
+	// rather than gating on the halfway threshold (which could prevent expansion entirely).
+	if (trigger === 'keyboard')
+		for (const expand of [true, false]) {
+			const index = delta < 0 === expand ? secondPivotIndex : firstPivotIndex;
+			const constraints = paneConstraints[index];
+			assert(constraints);
+			if (!constraints.collapsible) continue;
 
-	let deltaApplied = 0;
+			const { collapsedSize = 0, minSize = 0 } = constraints;
+			const prevSize = prevLayout[index];
+			assert(prevSize != null);
+			if (!areNumbersAlmostEqual(prevSize, expand ? collapsedSize : minSize)) continue;
 
-	// A resizing pane affects the panes before or after it.
-	//
-	// A negative delta means the pane(s) immediately after the resize handle should grow/expand by decreasing its offset.
-	// Other panes may also need to shrink/contract (and shift) to make room, depending on the min weights.
-	//
-	// A positive delta means the pane(s) immediately before the resize handle should "expand".
-	// This is accomplished by shrinking/contracting (and shifting) one or more of the panes after the resize handle.
-
-	{
-		// If this is a resize triggered by a keyboard event, our logic for expanding/collapsing is different.
-		// We no longer check the halfway threshold because this may prevent the pane from expanding at all.
-		if (trigger === 'keyboard') {
-			{
-				// Check if we should expand a collapsed pane
-				const index = delta < 0 ? secondPivotIndex : firstPivotIndex;
-				const paneConstraints = paneConstraintsArray[index];
-				assert(paneConstraints);
-
-				if (paneConstraints.collapsible) {
-					const prevSize = prevLayout[index];
-					assert(prevSize != null);
-
-					const paneConstraints = paneConstraintsArray[index];
-					assert(paneConstraints);
-					const { collapsedSize = 0, minSize = 0 } = paneConstraints;
-
-					if (areNumbersAlmostEqual(prevSize, collapsedSize)) {
-						const localDelta = minSize - prevSize;
-
-						if (compareNumbersWithTolerance(localDelta, Math.abs(delta)) > 0) {
-							delta = delta < 0 ? 0 - localDelta : localDelta;
-						}
-					}
-				}
-			}
-
-			{
-				// Check if we should collapse a pane at its minimum size
-				const index = delta < 0 ? firstPivotIndex : secondPivotIndex;
-				const paneConstraints = paneConstraintsArray[index];
-				assert(paneConstraints);
-				const { collapsible } = paneConstraints;
-
-				if (collapsible) {
-					const prevSize = prevLayout[index];
-					assert(prevSize != null);
-
-					const paneConstraints = paneConstraintsArray[index];
-					assert(paneConstraints);
-					const { collapsedSize = 0, minSize = 0 } = paneConstraints;
-
-					if (areNumbersAlmostEqual(prevSize, minSize)) {
-						const localDelta = prevSize - collapsedSize;
-
-						if (compareNumbersWithTolerance(localDelta, Math.abs(delta)) > 0) {
-							delta = delta < 0 ? 0 - localDelta : localDelta;
-						}
-					}
-				}
-			}
+			const localDelta = expand ? minSize - prevSize : prevSize - collapsedSize;
+			if (compareNumbersWithTolerance(localDelta, Math.abs(delta)) > 0) delta = delta < 0 ? -localDelta : localDelta;
 		}
-	}
 
+	// Clamp the requested delta to the max the panes opposite the pivot can actually yield.
 	{
-		// Pre-calculate max available delta in the opposite direction of our pivot.
-		// This will be the maximum amount we're allowed to expand/contract the panes in the primary direction.
-		// If this amount is less than the requested delta, adjust the requested delta.
-		// If this amount is greater than the requested delta, that's useful information too–
-		// as an expanding pane might change from collapsed to min size.
-
 		const increment = delta < 0 ? 1 : -1;
-
-		let index = delta < 0 ? secondPivotIndex : firstPivotIndex;
 		let maxAvailableDelta = 0;
-
-		while (true) {
+		for (let index = delta < 0 ? secondPivotIndex : firstPivotIndex; index >= 0 && index < paneConstraints.length; index += increment) {
 			const prevSize = prevLayout[index];
 			assert(prevSize != null);
-
-			const maxSafeSize = resizePane({
-				paneConstraints: paneConstraintsArray,
-				paneIndex: index,
-				initialSize: 100,
-			});
-			const delta = maxSafeSize - prevSize;
-
-			maxAvailableDelta += delta;
-			index += increment;
-
-			if (index < 0 || index >= paneConstraintsArray.length) {
-				break;
-			}
+			maxAvailableDelta += safeSize(index, 100) - prevSize;
 		}
-
 		const minAbsDelta = Math.min(Math.abs(delta), Math.abs(maxAvailableDelta));
-		delta = delta < 0 ? 0 - minAbsDelta : minAbsDelta;
+		delta = delta < 0 ? -minAbsDelta : minAbsDelta;
 	}
 
+	// Subtract the delta from panes on one side of the pivot, within their constraints.
+	let deltaApplied = 0;
 	{
-		// Delta added to a pane needs to be subtracted from other panes (within the constraints that those panes allow).
-
-		const pivotIndex = delta < 0 ? firstPivotIndex : secondPivotIndex;
-		let index = pivotIndex;
-		while (index >= 0 && index < paneConstraintsArray.length) {
-			const deltaRemaining = Math.abs(delta) - Math.abs(deltaApplied);
-
+		let index = delta < 0 ? firstPivotIndex : secondPivotIndex;
+		while (index >= 0 && index < paneConstraints.length) {
 			const prevSize = prevLayout[index];
 			assert(prevSize != null);
 
-			const unsafeSize = prevSize - deltaRemaining;
-			const safeSize = resizePane({
-				paneConstraints: paneConstraintsArray,
-				paneIndex: index,
-				initialSize: unsafeSize,
-			});
+			const next = safeSize(index, prevSize - (Math.abs(delta) - Math.abs(deltaApplied)));
+			if (!areNumbersAlmostEqual(prevSize, next)) {
+				deltaApplied += prevSize - next;
+				nextLayout[index] = next;
 
-			if (!areNumbersAlmostEqual(prevSize, safeSize)) {
-				deltaApplied += prevSize - safeSize;
-
-				nextLayout[index] = safeSize;
-
-				if (deltaApplied.toPrecision(3).localeCompare(Math.abs(delta).toPrecision(3), undefined, { numeric: true }) >= 0) {
-					break;
-				}
+				if (deltaApplied.toPrecision(3).localeCompare(Math.abs(delta).toPrecision(3), undefined, { numeric: true }) >= 0) break;
 			}
-
-			if (delta < 0) {
-				index--;
-			} else {
-				index++;
-			}
+			index += delta < 0 ? -1 : 1;
 		}
 	}
 
-	// If we were unable to resize any of the panes, return the previous state.
-	// This will essentially bailout and ignore e.g. drags past a pane's boundaries
-	if (areNumbersAlmostEqual(deltaApplied, 0)) {
-		return prevLayout;
-	}
+	// Nothing moved — bail (e.g. drag past a pane's boundary).
+	if (areNumbersAlmostEqual(deltaApplied, 0)) return prevLayout;
 
+	// Add the applied delta to the pivot pane on the other side.
 	{
-		// Now distribute the applied delta to the panes in the other direction
 		const pivotIndex = delta < 0 ? secondPivotIndex : firstPivotIndex;
-
 		const prevSize = prevLayout[pivotIndex];
 		assert(prevSize != null);
 
 		const unsafeSize = prevSize + deltaApplied;
-		const safeSize = resizePane({
-			paneConstraints: paneConstraintsArray,
-			paneIndex: pivotIndex,
-			initialSize: unsafeSize,
-		});
+		const size = safeSize(pivotIndex, unsafeSize);
+		nextLayout[pivotIndex] = size;
 
-		// Adjust the pivot pane before, but only by the amount that surrounding panes were able to shrink/contract.
-		nextLayout[pivotIndex] = safeSize;
-
-		// Edge case where expanding or contracting one pane caused another one to change collapsed state
-		if (!areNumbersAlmostEqual(safeSize, unsafeSize)) {
-			let deltaRemaining = unsafeSize - safeSize;
-
-			const pivotIndex = delta < 0 ? secondPivotIndex : firstPivotIndex;
+		// Expanding/contracting one pane flipped another's collapsed state — redistribute the remainder.
+		if (!areNumbersAlmostEqual(size, unsafeSize)) {
+			let deltaRemaining = unsafeSize - size;
 			let index = pivotIndex;
-			while (index >= 0 && index < paneConstraintsArray.length) {
+			while (index >= 0 && index < paneConstraints.length) {
 				const prevSize = nextLayout[index];
 				assert(prevSize != null);
 
-				const unsafeSize = prevSize + deltaRemaining;
-				const safeSize = resizePane({
-					paneConstraints: paneConstraintsArray,
-					paneIndex: index,
-					initialSize: unsafeSize,
-				});
-
-				if (!areNumbersAlmostEqual(prevSize, safeSize)) {
-					deltaRemaining -= safeSize - prevSize;
-					nextLayout[index] = safeSize;
+				const next = safeSize(index, prevSize + deltaRemaining);
+				if (!areNumbersAlmostEqual(prevSize, next)) {
+					deltaRemaining -= next - prevSize;
+					nextLayout[index] = next;
 				}
-
 				if (areNumbersAlmostEqual(deltaRemaining, 0)) break;
-
-				delta > 0 ? index-- : index++;
+				index += delta > 0 ? -1 : 1;
 			}
 		}
 	}
 
-	const totalSize = nextLayout.reduce((total, size) => size + total, 0);
-
-	if (!areNumbersAlmostEqual(totalSize, 100)) return prevLayout;
-
-	return nextLayout;
+	const totalSize = nextLayout.reduce((total, size) => total + size, 0);
+	return areNumbersAlmostEqual(totalSize, 100) ? nextLayout : prevLayout;
 }

@@ -13,6 +13,7 @@ export const components = [
 	{"slug":"carousel","name":"Carousel","description":"A carousel with motion and swipe built using Embla."},
 	{"slug":"chart","name":"Chart","description":"Visualize data with composable charts built on LayerChart."},
 	{"slug":"checkbox","name":"Checkbox","description":"A control that allows the user to toggle between checked and not checked."},
+	{"slug":"checkbox-native","name":"Checkbox (Native)","description":"A native form checkbox that submits name/value and supports indeterminate."},
 	{"slug":"collapsible","name":"Collapsible","description":"An interactive component which expands and collapses a panel."},
 	{"slug":"combobox","name":"Combobox","description":"Autocomplete input with a filterable list of suggestions."},
 	{"slug":"command","name":"Command","description":"A fast, composable command menu."},
@@ -41,7 +42,7 @@ export const components = [
 	{"slug":"pin-input","name":"Pin Input","description":"An accessible one-time-password / pin entry input."},
 	{"slug":"popover","name":"Popover","description":"Displays rich content in a portal, triggered by a button."},
 	{"slug":"progress","name":"Progress","description":"Displays an indicator showing the completion progress of a task."},
-	{"slug":"radio-group","name":"Radio Group","description":"A set of checkable buttons where only one can be checked at a time."},
+	{"slug":"radio-group","name":"Radio Group","description":"A set of native radio inputs where only one can be selected at a time."},
 	{"slug":"range-calendar","name":"Range Calendar","description":"A calendar component that allows users to select a range of dates."},
 	{"slug":"resizable","name":"Resizable","description":"Accessible resizable panel groups and layouts."},
 	{"slug":"scroll-area","name":"Scroll Area","description":"Augments native scroll with custom, cross-browser styling."},
@@ -52,7 +53,6 @@ export const components = [
 	{"slug":"skeleton","name":"Skeleton","description":"Show a placeholder while content is loading."},
 	{"slug":"slider","name":"Slider","description":"An input where the user selects a value from within a given range."},
 	{"slug":"sonner","name":"Sonner","description":"An opinionated toast component."},
-	{"slug":"switch","name":"Switch","description":"A control that allows the user to toggle between checked and not checked."},
 	{"slug":"switch-native","name":"Switch (Native)","description":"A native checkbox-based switch control."},
 	{"slug":"table","name":"Table","description":"A responsive table component."},
 	{"slug":"tabs","name":"Tabs","description":"Layered sections of content displayed one panel at a time."},
@@ -104,6 +104,11 @@ export const componentDemos = {
 		{ key: "demo", name: "checkbox-demo", path: "/src/lib/registry/checkbox-demo.svelte", sourcePath: "../lib/registry/checkbox-demo.svelte" },
 		{ key: "disabled", name: "checkbox-disabled", path: "/src/lib/registry/checkbox-disabled.svelte", sourcePath: "../lib/registry/checkbox-disabled.svelte" },
 		{ key: "group", name: "checkbox-group", path: "/src/lib/registry/checkbox-group.svelte", sourcePath: "../lib/registry/checkbox-group.svelte" },
+	],
+	"checkbox-native": [
+		{ key: "demo", name: "checkbox-native-demo", path: "/src/lib/registry/checkbox-native-demo.svelte", sourcePath: "../lib/registry/checkbox-native-demo.svelte" },
+		{ key: "indeterminate", name: "checkbox-native-indeterminate", path: "/src/lib/registry/checkbox-native-indeterminate.svelte", sourcePath: "../lib/registry/checkbox-native-indeterminate.svelte" },
+		{ key: "states", name: "checkbox-native-states", path: "/src/lib/registry/checkbox-native-states.svelte", sourcePath: "../lib/registry/checkbox-native-states.svelte" },
 	],
 	"collapsible": [
 		{ key: "demo", name: "collapsible-demo", path: "/src/lib/registry/collapsible-demo.svelte", sourcePath: "../lib/registry/collapsible-demo.svelte" },
@@ -193,6 +198,10 @@ export const componentDemos = {
 	],
 	"radio-group": [
 		{ key: "demo", name: "radio-group-demo", path: "/src/lib/registry/radio-group-demo.svelte", sourcePath: "../lib/registry/radio-group-demo.svelte" },
+		{ key: "form", name: "radio-group-form", path: "/src/lib/registry/radio-group-form.svelte", sourcePath: "../lib/registry/radio-group-form.svelte" },
+		{ key: "horizontal", name: "radio-group-horizontal", path: "/src/lib/registry/radio-group-horizontal.svelte", sourcePath: "../lib/registry/radio-group-horizontal.svelte" },
+		{ key: "states", name: "radio-group-states", path: "/src/lib/registry/radio-group-states.svelte", sourcePath: "../lib/registry/radio-group-states.svelte" },
+		{ key: "tiles", name: "radio-group-tiles", path: "/src/lib/registry/radio-group-tiles.svelte", sourcePath: "../lib/registry/radio-group-tiles.svelte" },
 	],
 	"range-calendar": [
 		{ key: "demo", name: "range-calendar-demo", path: "/src/lib/registry/range-calendar-demo.svelte", sourcePath: "../lib/registry/range-calendar-demo.svelte" },
@@ -228,11 +237,9 @@ export const componentDemos = {
 	"sonner": [
 		{ key: "demo", name: "sonner-demo", path: "/src/lib/registry/sonner-demo.svelte", sourcePath: "../lib/registry/sonner-demo.svelte" },
 	],
-	"switch": [
-		{ key: "demo", name: "switch-demo", path: "/src/lib/registry/switch-demo.svelte", sourcePath: "../lib/registry/switch-demo.svelte" },
-	],
 	"switch-native": [
 		{ key: "demo", name: "switch-native-demo", path: "/src/lib/registry/switch-native-demo.svelte", sourcePath: "../lib/registry/switch-native-demo.svelte" },
+		{ key: "states", name: "switch-native-states", path: "/src/lib/registry/switch-native-states.svelte", sourcePath: "../lib/registry/switch-native-states.svelte" },
 	],
 	"table": [
 		{ key: "demo", name: "table-demo", path: "/src/lib/registry/table-demo.svelte", sourcePath: "../lib/registry/table-demo.svelte" },

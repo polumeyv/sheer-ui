@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import * as DialogPrimitive from '$lib/components/dialog/index.js';
-	import { type WithChildren, box } from '$lib/internal/tools/index.js';
+	import { type WithChildren, boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { ComponentProps } from 'svelte';
 	import type { WithoutChildrenOrChild } from '$lib/utils.js';
@@ -32,19 +32,19 @@
 	} = $props();
 
 	const contentState = useDrawerContent({
-		id: box.with(() => id),
-		ref: box.with(
+		id: boxWith(() => id),
+		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),
 		),
-		oncontextmenu: box.with(() => oncontextmenu ?? noop),
-		onInteractOutside: box.with(() => onInteractOutside),
-		onpointerdown: box.with(() => onpointerdown ?? noop),
-		onpointermove: box.with(() => onpointermove ?? noop),
-		onpointerout: box.with(() => onpointerout ?? noop),
-		onpointerup: box.with(() => onpointerup ?? noop),
-		onOpenAutoFocus: box.with(() => onOpenAutoFocus),
-		onFocusOutside: box.with(() => onFocusOutside),
+		oncontextmenu: boxWith(() => oncontextmenu ?? noop),
+		onInteractOutside: boxWith(() => onInteractOutside),
+		onpointerdown: boxWith(() => onpointerdown ?? noop),
+		onpointermove: boxWith(() => onpointermove ?? noop),
+		onpointerout: boxWith(() => onpointerout ?? noop),
+		onpointerup: boxWith(() => onpointerup ?? noop),
+		onOpenAutoFocus: boxWith(() => onOpenAutoFocus),
+		onFocusOutside: boxWith(() => onFocusOutside),
 	});
 
 	const snapPointsOffset = $state.snapshot(contentState.ctx.snapPointsOffset);

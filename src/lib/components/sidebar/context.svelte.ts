@@ -1,5 +1,11 @@
 import { createContext } from "svelte";
-import { SIDEBAR_DESKTOP_MEDIA_QUERY, SIDEBAR_KEYBOARD_SHORTCUT } from './constants';
+import { isMobile } from '$lib/hooks/is-mobile.svelte.js';
+import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants';
+
+function isEditableTarget(target: EventTarget | null) {
+	if (!(target instanceof Element)) return false;
+	return target.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"], [role="textbox"]') !== null;
+}
 
 type SidebarStateProps = {
 	/**
@@ -20,45 +26,33 @@ type SidebarStateProps = {
 export class SidebarState {
 	readonly props: SidebarStateProps;
 	open = $derived.by(() => this.props.open());
-	openMobile = $state(false);
-	setOpen: SidebarStateProps['setOpen'];
+	#openMobile = $state(false);
 	state = $derived.by(() => (this.open ? 'expanded' : 'collapsed'));
+	openForViewport = $derived.by(() => (isMobile.current ? this.#openMobile : this.open));
 
 	constructor(props: SidebarStateProps) {
-		this.setOpen = props.setOpen;
 		this.props = props;
 	}
 
 	// Event handler to apply to the `<svelte:window>`
 	handleShortcutKeydown = (e: KeyboardEvent) => {
+		if (e.defaultPrevented || e.repeat || isEditableTarget(e.target)) return;
 		if (e.key === SIDEBAR_KEYBOARD_SHORTCUT && (e.metaKey || e.ctrlKey)) {
 			e.preventDefault();
-			this.toggleForViewport();
+			this.toggle();
 		}
 	};
 
-	setOpenMobile = (value: boolean) => {
-		this.openMobile = value;
-	};
-
-	toggleDesktop = () => {
-		this.setOpen(!this.open);
-	};
-
-	toggleMobile = () => {
-		this.openMobile = !this.openMobile;
-	};
-
-	toggleForViewport = () => {
-		if (globalThis.matchMedia?.(SIDEBAR_DESKTOP_MEDIA_QUERY).matches) {
-			this.toggleDesktop();
-		} else {
-			this.toggleMobile();
+	setOpen = (value: boolean) => {
+		if (isMobile.current) {
+			this.#openMobile = value;
+			return;
 		}
+		this.props.setOpen(value);
 	};
 
 	toggle = () => {
-		this.toggleForViewport();
+		this.setOpen(!this.openForViewport);
 	};
 }
 

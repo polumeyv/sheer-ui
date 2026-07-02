@@ -41,7 +41,8 @@
 	}: CheckboxProps = $props();
 
 	// A real <input type="checkbox"> is the interactive, focusable, form-participating element
-	// (focus lands on it, so the box's focus-within ring is correct), overlaid invisibly on the
+	// (focus lands on it, so the box's has-focus-visible ring only shows for keyboard focus,
+	// matching :focus-visible on a bare control), overlaid invisibly on the
 	// styled box + indicator icon. Mirrors the data-state semantics of the headless checkbox:
 	// indeterminate wins, then checked, then unchecked.
 	const state = $derived(indeterminate ? 'indeterminate' : checked ? 'checked' : 'unchecked');
@@ -59,7 +60,7 @@
 	{...shared}
 	{...restProps}
 	class={join(
-		'border-border dark:bg-border/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-within:border-ring focus-within:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive relative grid size-4 shrink-0 place-items-center rounded-[4px] border shadow-xs transition-shadow outline-none focus-within:ring-[3px] data-disabled:cursor-not-allowed data-disabled:opacity-50',
+		'border-border dark:bg-border/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary has-focus-visible:border-ring has-focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive relative grid size-4 shrink-0 place-items-center rounded-[4px] border shadow-xs transition-shadow outline-none has-focus-visible:ring-[3px] data-disabled:cursor-not-allowed data-disabled:opacity-50',
 		className,
 	)}>
 	<input

@@ -268,9 +268,8 @@ export class AccordionContentState {
 	readonly opts: AccordionContentStateOpts;
 	readonly item: AccordionItemState;
 	readonly attachment: RefAttachment;
-	#originalStyles: { transitionDuration: string; animationName: string } | undefined;
-	#isMountAnimationPrevented = $state(false);
-	#dimensions = $state({ width: 0, height: 0 });
+	// read only inside untracked tick callbacks, so a plain field suffices
+	#isMountAnimationPrevented = false;
 
 	readonly open = $derived.by(() => {
 		if (this.opts.hiddenUntilFound.current) return this.item.isActive;
@@ -294,6 +293,13 @@ export class AccordionContentState {
 			return () => cancelAnimationFrame(frame);
 		});
 
+		/**
+		 * The disclosure keyframes interpolate `height: 0 <-> auto` directly (global
+		 * `interpolate-size: allow-keywords`), so no measuring is needed. This effect only
+		 * suppresses the keyframes on an initially-open mount: the inline `animation-name: none`
+		 * is held until the first toggle, releasing it exactly then so the correct
+		 * open/close animation starts fresh.
+		 */
 		$effect(() => {
 			const node = this.opts.ref.current;
 			const open = this.open;
@@ -301,22 +307,7 @@ export class AccordionContentState {
 
 			tick().then(() => {
 				if (this.opts.ref.current !== node || this.open !== open) return;
-
-				this.#originalStyles ??= {
-					transitionDuration: node.style.transitionDuration,
-					animationName: node.style.animationName,
-				};
-
-				node.style.transitionDuration = '0s';
-				node.style.animationName = 'none';
-
-				const rect = node.getBoundingClientRect();
-				this.#dimensions = { width: rect.width, height: rect.height };
-
-				if (!this.#isMountAnimationPrevented) {
-					node.style.transitionDuration = this.#originalStyles.transitionDuration;
-					node.style.animationName = this.#originalStyles.animationName;
-				}
+				node.style.animationName = this.#isMountAnimationPrevented ? 'none' : '';
 			});
 		});
 	}
@@ -353,12 +344,6 @@ export class AccordionContentState {
 				'data-disabled': boolToEmptyStrOrUndef(this.item.isDisabled),
 				'data-orientation': this.item.root.opts.orientation.current,
 				[accordionAttrs.content]: '',
-				style: {
-					'--bits-disclosure-content-height': `${this.#dimensions.height}px`,
-					'--bits-disclosure-content-width': `${this.#dimensions.width}px`,
-					'--bits-accordion-content-height': `${this.#dimensions.height}px`,
-					'--bits-accordion-content-width': `${this.#dimensions.width}px`,
-				},
 				hidden: this.opts.hiddenUntilFound.current && !this.item.isActive ? 'until-found' : undefined,
 				...(this.opts.hiddenUntilFound.current && !this.shouldRender
 					? {}

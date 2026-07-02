@@ -10,7 +10,7 @@
 	const sidebar = useSidebar();
 </script>
 
-<Sheet.Root bind:open={() => sidebar.openMobile, (v) => sidebar.setOpenMobile(v)} {...restProps}>
+<Sheet.Root bind:open={() => sidebar.openForViewport, sidebar.setOpen} {...restProps}>
 	<Sheet.Content
 		bind:ref
 		data-sidebar="sidebar"

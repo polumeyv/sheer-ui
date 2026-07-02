@@ -1,4 +1,4 @@
-import { type Box, type ReadableBox, box } from '$lib/internal/tools/index.js';
+import { type Box, type ReadableBox, simpleBox } from '$lib/internal/tools/index.js';
 import { getElemDirection } from './locale.js';
 import { getDirectionalKeys } from './get-directional-keys.js';
 import { kbd } from './kbd.js';
@@ -46,7 +46,7 @@ type RovingFocusGroupOptions = (
 
 export class RovingFocusGroup {
 	readonly #opts: RovingFocusGroupOptions;
-	readonly #currentTabStopId = box<string | null>(null);
+	readonly #currentTabStopId = simpleBox<string | null>(null);
 
 	constructor(opts: RovingFocusGroupOptions) {
 		this.#opts = opts;

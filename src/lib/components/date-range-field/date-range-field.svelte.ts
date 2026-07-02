@@ -1,6 +1,6 @@
 import type { DateValue } from '@internationalized/date';
 import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
-import { createContext, onMount, untrack } from 'svelte';
+import { createContext, onMount } from 'svelte';
 import { DateFieldInputState, DateFieldRootState } from '../date-field/date-field.svelte.js';
 import { useId } from '$lib/internal/use-id.js';
 import type { DateOnInvalid, DateRange, DateRangeValidator, SegmentPart } from '$lib/internal/index.js';
@@ -10,6 +10,7 @@ import type { Granularity } from '$lib/internal/date-time/types.js';
 import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
 import { isBefore } from '$lib/internal/date-time/utils.js';
 import { getFirstSegment } from '$lib/internal/date-time/field/segments.js';
+import { useCompleteRangeSync } from '$lib/internal/date-time/range-state.svelte.js';
 
 export const dateRangeFieldAttrs = createBitsAttrs({
 	component: 'date-range-field',
@@ -76,67 +77,12 @@ export class DateRangeFieldRootState {
 			this.domContext.getDocument().getElementById(this.descriptionId)?.remove();
 		});
 
-		/**
-		 * External bind:value updates replace the range object. startValue/endValue
-		 * are internal field cursor state, so they must be repaired from value.
-		 */
-		$effect(() => {
-			const value = this.opts.value.current;
-			untrack(() => {
-				if (value.start && value.end) {
-					this.opts.startValue.current = value.start;
-					this.opts.endValue.current = value.end;
-				} else if (value.start) {
-					this.opts.startValue.current = value.start;
-					this.opts.endValue.current = undefined;
-				} else if (value.start === undefined && value.end === undefined) {
-					this.opts.startValue.current = undefined;
-					this.opts.endValue.current = undefined;
-				}
-			});
-		});
-
-		/**
-		 * The selected start date controls the placeholder used by both field inputs,
-		 * and parents using bind:placeholder should observe that state-machine update.
-		 */
-		$effect(() => {
-			const value = this.opts.value.current;
-			untrack(() => {
-				const startValue = value.start;
-				if (startValue && this.opts.placeholder.current !== startValue) {
-					this.opts.placeholder.current = startValue;
-				}
-			});
-		});
-
-		/**
-		 * Internal start/end field completion composes the public bind:value range object.
-		 * Parent bind:value only observes a completed range from segment entry.
-		 */
-		$effect(() => {
-			const startValue = this.opts.startValue.current;
-			const endValue = this.opts.endValue.current;
-			untrack(() => {
-				if (this.opts.value.current && this.opts.value.current.start === startValue && this.opts.value.current.end === endValue) {
-					return;
-				}
-
-				if (startValue && endValue) {
-					this.#updateValue((prev) => {
-						if (prev.start === startValue && prev.end === endValue) {
-							return prev;
-						}
-						return {
-							start: startValue,
-							end: endValue,
-						};
-					});
-				} else if (this.opts.value.current && this.opts.value.current.start && this.opts.value.current.end) {
-					this.opts.value.current.start = undefined;
-					this.opts.value.current.end = undefined;
-				}
-			});
+		useCompleteRangeSync({
+			value: this.opts.value,
+			startValue: this.opts.startValue,
+			endValue: this.opts.endValue,
+			placeholder: this.opts.placeholder,
+			updateValue: (cb) => this.#updateValue(cb),
 		});
 	}
 

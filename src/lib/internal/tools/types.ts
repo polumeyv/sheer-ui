@@ -6,8 +6,6 @@ import { BROWSER } from '@polumeyv/utilities/env';
 
 export type Getter<T> = () => T;
 export type MaybeGetter<T> = T | Getter<T>;
-export type MaybeBoxOrGetter<T> = T | Getter<T> | ReadableBox<T>;
-export type MaybeElementGetter<T extends Element = HTMLElement> = MaybeGetter<T | null | undefined>;
 
 export const get = <T>(value: MaybeGetter<T>): T => (typeof value === 'function' ? (value as Getter<T>)() : value);
 
@@ -30,13 +28,6 @@ export type ReadableBoxedValues<T> = {
 export type WritableBoxedValues<T> = {
 	[K in keyof T]: WritableBox<T[K]>;
 };
-
-export type ConfigurableWindow = {
-	/** Provide a custom `window` object to use in place of the global `window` object. */
-	window?: typeof globalThis & Window;
-};
-
-export const defaultWindow = BROWSER && typeof window !== 'undefined' ? window : undefined;
 
 export type WithChildren<Props = {}> = Props & {
 	children?: Snippet | undefined;

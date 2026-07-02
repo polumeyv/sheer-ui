@@ -212,10 +212,6 @@
 			"types": "./dist/components/progress/index.d.ts",
 			"svelte": "./dist/components/progress/index.js"
 		},
-		"./components/radio-group": {
-			"types": "./dist/components/radio-group/index.d.ts",
-			"svelte": "./dist/components/radio-group/index.js"
-		},
 		"./components/radio-group-native": {
 			"types": "./dist/components/radio-group-native/index.d.ts",
 			"svelte": "./dist/components/radio-group-native/index.js"
@@ -259,10 +255,6 @@
 		"./components/sonner": {
 			"types": "./dist/components/sonner/index.d.ts",
 			"svelte": "./dist/components/sonner/index.js"
-		},
-		"./components/switch": {
-			"types": "./dist/components/switch/index.d.ts",
-			"svelte": "./dist/components/switch/index.js"
 		},
 		"./components/switch-native": {
 			"types": "./dist/components/switch-native/index.d.ts",
@@ -314,9 +306,7 @@
 		"@tanstack/table-core": "^8.21.3",
 		"d3-scale": "^4.0.2",
 		"layerchart": "2.0.0-next.64",
-		"overrule": "^0.4.7",
-		"style-to-object": "^1.0.14",
-		"tabbable": "^6.4.0"
+		"overrule": "^0.4.7"
 	},
 	"devDependencies": {
 		"@fontsource-variable/inter": "^5.2.8",

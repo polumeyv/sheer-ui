@@ -5,6 +5,7 @@ import { kbd } from '$lib/internal/kbd.js';
 import type { Orientation } from '$lib/internal/index.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
+import { RovingFocusItem } from '$lib/internal/roving-focus-item.svelte.js';
 
 export const toolbarAttrs = createBitsAttrs({
 	component: 'toolbar',
@@ -195,17 +196,16 @@ export class ToolbarGroupItemState {
 	readonly opts: ToolbarGroupItemStateOpts;
 	readonly group: ToolbarGroup;
 	readonly root: ToolbarRootState;
-	readonly attachment: RefAttachment;
+	readonly rovingItem: RovingFocusItem;
 	readonly #isDisabled = $derived.by(() => this.opts.disabled.current || this.group.opts.disabled.current);
 
 	constructor(opts: ToolbarGroupItemStateOpts, group: ToolbarGroup, root: ToolbarRootState) {
 		this.opts = opts;
 		this.group = group;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref);
-
-		$effect(() => {
-			this.#tabIndex = this.root.rovingFocusGroup.getTabIndex(this.opts.ref.current);
+		this.rovingItem = new RovingFocusItem({
+			group: this.root.rovingFocusGroup,
+			ref: this.opts.ref,
 		});
 
 		this.onclick = this.onclick.bind(this);
@@ -230,7 +230,7 @@ export class ToolbarGroupItemState {
 			return;
 		}
 
-		this.root.rovingFocusGroup.handleKeydown(this.opts.ref.current, e);
+		this.rovingItem.handleKeydown(e);
 	}
 
 	readonly isPressed = $derived.by(() => this.group.includesItem(this.opts.value.current));
@@ -243,14 +243,11 @@ export class ToolbarGroupItemState {
 		return this.group.isMulti ? boolToStr(this.isPressed) : undefined;
 	});
 
-	#tabIndex = $state(0);
-
 	readonly props = $derived.by(
 		() =>
 			({
 				id: this.opts.id.current,
 				role: this.group.isMulti ? undefined : 'radio',
-				tabindex: this.#tabIndex,
 				'data-orientation': this.root.opts.orientation.current,
 				'data-disabled': boolToEmptyStrOrUndef(this.#isDisabled),
 				'data-state': getToggleItemDataState(this.isPressed),
@@ -263,7 +260,7 @@ export class ToolbarGroupItemState {
 				//
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
-				...this.attachment,
+				...this.rovingItem.props,
 			}) as const,
 	);
 }
@@ -276,22 +273,21 @@ export class ToolbarLinkState {
 	}
 	readonly opts: ToolbarLinkStateOpts;
 	readonly root: ToolbarRootState;
-	readonly attachment: RefAttachment;
+	readonly rovingItem: RovingFocusItem;
 
 	constructor(opts: ToolbarLinkStateOpts, root: ToolbarRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref);
-
-		$effect(() => {
-			this.#tabIndex = this.root.rovingFocusGroup.getTabIndex(this.opts.ref.current);
+		this.rovingItem = new RovingFocusItem({
+			group: this.root.rovingFocusGroup,
+			ref: this.opts.ref,
 		});
 
 		this.onkeydown = this.onkeydown.bind(this);
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
-		this.root.rovingFocusGroup.handleKeydown(this.opts.ref.current, e);
+		this.rovingItem.handleKeydown(e);
 	}
 
 	readonly #role = $derived.by(() => {
@@ -301,8 +297,6 @@ export class ToolbarLinkState {
 		return undefined;
 	});
 
-	#tabIndex = $state(0);
-
 	readonly props = $derived.by(
 		() =>
 			({
@@ -310,11 +304,10 @@ export class ToolbarLinkState {
 				[toolbarAttrs.link]: '',
 				[toolbarAttrs.item]: '',
 				role: this.#role,
-				tabindex: this.#tabIndex,
 				'data-orientation': this.root.opts.orientation.current,
 				//
 				onkeydown: this.onkeydown,
-				...this.attachment,
+				...this.rovingItem.props,
 			}) as const,
 	);
 }
@@ -332,24 +325,22 @@ export class ToolbarButtonState {
 	}
 	readonly opts: ToolbarButtonStateOpts;
 	readonly root: ToolbarRootState;
-	readonly attachment: RefAttachment;
+	readonly rovingItem: RovingFocusItem;
 
 	constructor(opts: ToolbarButtonStateOpts, root: ToolbarRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref);
-		$effect(() => {
-			this.#tabIndex = this.root.rovingFocusGroup.getTabIndex(this.opts.ref.current);
+		this.rovingItem = new RovingFocusItem({
+			group: this.root.rovingFocusGroup,
+			ref: this.opts.ref,
 		});
 
 		this.onkeydown = this.onkeydown.bind(this);
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
-		this.root.rovingFocusGroup.handleKeydown(this.opts.ref.current, e);
+		this.rovingItem.handleKeydown(e);
 	}
-
-	#tabIndex = $state(0);
 
 	readonly #role = $derived.by(() => {
 		if (!this.opts.ref.current) return undefined;
@@ -365,13 +356,12 @@ export class ToolbarButtonState {
 				[toolbarAttrs.item]: '',
 				[toolbarAttrs.button]: '',
 				role: this.#role,
-				tabindex: this.#tabIndex,
 				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
 				'data-orientation': this.root.opts.orientation.current,
 				disabled: boolToTrueOrUndef(this.opts.disabled.current),
 				//
 				onkeydown: this.onkeydown,
-				...this.attachment,
+				...this.rovingItem.props,
 			}) as const,
 	);
 }

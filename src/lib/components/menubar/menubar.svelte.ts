@@ -9,6 +9,7 @@ import { createContext, onMount, tick, untrack } from 'svelte';
 import type { FocusEventHandler, KeyboardEventHandler, PointerEventHandler } from 'svelte/elements';
 import { getFloatingContentCSSVars } from '../../internal/floating-svelte/floating-utils.svelte.js';
 import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
+import { RovingFocusItem } from '$lib/internal/roving-focus-item.svelte.js';
 
 const menubarAttrs = createBitsAttrs({
 	component: 'menubar',
@@ -194,24 +195,21 @@ export class MenubarTriggerState {
 	readonly opts: MenubarTriggerStateOpts;
 	readonly menu: MenubarMenuState;
 	readonly root: MenubarRootState;
-	readonly attachment: RefAttachment;
+	readonly rovingItem: RovingFocusItem;
 	isFocused = $state(false);
-	#tabIndex = $state(0);
 
 	constructor(opts: MenubarTriggerStateOpts, menu: MenubarMenuState) {
 		this.opts = opts;
 		this.menu = menu;
 		this.root = menu.root;
-		this.attachment = attachRef(this.opts.ref, (v) => (this.menu.triggerNode = v));
+		this.rovingItem = new RovingFocusItem({
+			group: this.root.rovingFocusGroup,
+			ref: this.opts.ref,
+			onRefChange: (v) => (this.menu.triggerNode = v),
+		});
 
 		onMount(() => {
 			return this.root.registerTrigger(opts.id.current);
-		});
-
-		$effect(() => {
-			if (this.root.triggerIds.length) {
-				this.#tabIndex = this.root.rovingFocusGroup.getTabIndex(this.menu.getTriggerNode());
-			}
 		});
 	}
 
@@ -251,7 +249,7 @@ export class MenubarTriggerState {
 			e.preventDefault();
 		}
 
-		this.root.rovingFocusGroup.handleKeydown(this.menu.getTriggerNode(), e);
+		this.rovingItem.handleKeydown(e);
 	};
 
 	onfocus: FocusEventHandler<HTMLElement> = () => {
@@ -276,14 +274,13 @@ export class MenubarTriggerState {
 				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
 				'data-menu-value': this.menu.opts.value.current,
 				disabled: this.opts.disabled.current ? true : undefined,
-				tabindex: this.#tabIndex,
 				[menubarAttrs.trigger]: '',
 				onpointerdown: this.onpointerdown,
 				onpointerenter: this.onpointerenter,
 				onkeydown: this.onkeydown,
 				onfocus: this.onfocus,
 				onblur: this.onblur,
-				...this.attachment,
+				...this.rovingItem.props,
 			}) as const,
 	);
 }

@@ -1,5 +1,5 @@
-import type { WithChild, Without } from "$lib/internal/types.js";
-import type { BitsPrimitiveDivAttributes } from "$lib/internal/attributes.js";
+import type { WithChild, Without } from '$lib/internal/types.js';
+import type { BitsPrimitiveDivAttributes } from '$lib/internal/attributes.js';
 
 export type ProgressRootPropsWithoutHTML = WithChild<{
 	/**
@@ -25,5 +25,4 @@ export type ProgressRootPropsWithoutHTML = WithChild<{
 	min?: number;
 }>;
 
-export type ProgressRootProps = ProgressRootPropsWithoutHTML &
-	Without<BitsPrimitiveDivAttributes, ProgressRootPropsWithoutHTML>;
+export type ProgressRootProps = ProgressRootPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, ProgressRootPropsWithoutHTML>;

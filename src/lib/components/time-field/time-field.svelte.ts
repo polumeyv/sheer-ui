@@ -149,11 +149,9 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 	isInvalidProp: TimeFieldRootStateOpts<T>['isInvalidProp'];
 	descriptionId = useId();
 	formatter: TimeFormatter;
-	initialSegments: TimeSegmentObj;
 	segmentValues = $state() as TimeSegmentObj;
 	announcer: Announcer;
 	readonly readonlySegmentsSet = $derived.by(() => new Set(this.readonlySegments.current));
-	segmentStates = initTimeSegmentStates();
 	#fieldNode = $state<HTMLElement | null>(null);
 	#labelNode = $state<HTMLElement | null>(null);
 	descriptionNode = $state<HTMLElement | null>(null);
@@ -205,20 +203,13 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 		this.errorMessageId = rangeRoot ? rangeRoot.opts.errorMessageId : props.errorMessageId;
 		this.isInvalidProp = props.isInvalidProp;
 		this.formatter = createTimeFormatter(this.locale.current);
-		this.initialSegments = this.#initializeTimeSegmentValues();
-		this.segmentValues = this.initialSegments;
+		this.segmentValues = this.#initializeTimeSegmentValues();
 		this.announcer = getAnnouncer(null);
 
 		this.getFieldNode = this.getFieldNode.bind(this);
 		this.updateSegment = this.updateSegment.bind(this);
 		this.handleSegmentClick = this.handleSegmentClick.bind(this);
 		this.getBaseSegmentAttrs = this.getBaseSegmentAttrs.bind(this);
-
-		$effect(() => {
-			untrack(() => {
-				this.initialSegments = this.#initializeTimeSegmentValues();
-			});
-		});
 
 		onMount(() => {
 			this.announcer = getAnnouncer(this.domContext.getDocument());
@@ -427,9 +418,8 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 	});
 
 	isInvalid = $derived.by(() => {
-		if (this.validationStatus === false) return false;
 		if (this.isInvalidProp.current) return true;
-		return true;
+		return this.validationStatus !== false;
 	});
 
 	inferredGranularity = $derived.by(() => {
@@ -1189,7 +1179,7 @@ class TimeFieldTimeZoneSegmentState {
 	);
 }
 
-export class DateFieldSegmentState {
+export class TimeFieldSegmentState {
 	static create(part: SegmentPart, opts: WithRefOpts) {
 		const root = getTimeFieldRoot();
 		switch (part) {

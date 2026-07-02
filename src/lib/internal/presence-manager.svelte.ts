@@ -27,14 +27,14 @@ export class PresenceManager {
 	#opts: PresenceManagerOpts;
 	#enabled: boolean;
 	#afterAnimations: AfterAnimationsRunner;
-	#shouldRender = $state(false);
-	#transitionStatus = $state<TransitionState>(undefined);
+	shouldRender = $state(false);
+	transitionStatus = $state<TransitionState>(undefined);
 	#hasMounted = false;
 	#transitionFrame: number | null = null;
 
 	constructor(opts: PresenceManagerOpts) {
 		this.#opts = opts;
-		this.#shouldRender = opts.open.current;
+		this.shouldRender = opts.open.current;
 		this.#enabled = opts.enabled ?? true;
 		this.#afterAnimations =
 			opts.afterAnimations ??
@@ -55,28 +55,28 @@ export class PresenceManager {
 				this.#clearTransitionFrame();
 
 				if (!isOpen && this.#opts.shouldSkipExitAnimation?.()) {
-					this.#shouldRender = false;
-					this.#transitionStatus = undefined;
+					this.shouldRender = false;
+					this.transitionStatus = undefined;
 					this.#opts.onComplete?.();
 					return;
 				}
 
-				if (isOpen) this.#shouldRender = true;
-				this.#transitionStatus = isOpen ? 'starting' : 'ending';
+				if (isOpen) this.shouldRender = true;
+				this.transitionStatus = isOpen ? 'starting' : 'ending';
 				if (isOpen) {
 					this.#transitionFrame = window.requestAnimationFrame(() => {
 						this.#transitionFrame = null;
 						if (this.#opts.open.current) {
-							this.#transitionStatus = undefined;
+							this.transitionStatus = undefined;
 						}
 					});
 				}
 
 				if (!this.#enabled) {
 					if (!isOpen) {
-						this.#shouldRender = false;
+						this.shouldRender = false;
 					}
-					this.#transitionStatus = undefined;
+					this.transitionStatus = undefined;
 					this.#opts.onComplete?.();
 					return;
 				}
@@ -84,22 +84,14 @@ export class PresenceManager {
 				this.#afterAnimations.run(() => {
 					if (isOpen === this.#opts.open.current) {
 						if (!this.#opts.open.current) {
-							this.#shouldRender = false;
+							this.shouldRender = false;
 						}
-						this.#transitionStatus = undefined;
+						this.transitionStatus = undefined;
 						this.#opts.onComplete?.();
 					}
 				});
 			});
 		});
-	}
-
-	get shouldRender() {
-		return this.#shouldRender;
-	}
-
-	get transitionStatus(): TransitionState {
-		return this.#transitionStatus;
 	}
 
 	#clearTransitionFrame(): void {

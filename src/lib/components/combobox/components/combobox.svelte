@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { type WritableBox, boxWith } from '$lib/internal/tools/index.js';
+	import { type WritableBox, boxWith, repairBindable } from '$lib/internal/tools/index.js';
 	import type { ComboboxRootProps } from '../types.js';
 	import FloatingLayer from '$lib/components/utilities/floating-layer/components/floating-layer.svelte';
 	import { SelectRootState } from '$lib/components/select/select.svelte.js';
@@ -30,13 +30,8 @@
 		value = defaultValue;
 	}
 
-	// SSR/initial setup: Combobox owns a mode-specific controlled value.
-	repairUndefinedControlledValue();
-
-	$effect.pre(() => {
-		value;
-		untrack(() => repairUndefinedControlledValue());
-	});
+	// Combobox owns a mode-specific controlled value.
+	repairBindable(() => value, repairUndefinedControlledValue);
 
 	const rootState = SelectRootState.create({
 		type: untrack(() => type),

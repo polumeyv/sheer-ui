@@ -5,15 +5,10 @@ const DOCUMENT_NODE = 9;
 const DOCUMENT_FRAGMENT_NODE = 11;
 
 const hasNodeType = (node: unknown): node is { nodeType: number } => isObject(node) && typeof node.nodeType === 'number';
-
 const isNode = (node: unknown): node is Node => hasNodeType(node);
-
 const isElement = (node: unknown): node is Element => hasNodeType(node) && node.nodeType === ELEMENT_NODE;
-
 const isDocument = (node: unknown): node is Document => hasNodeType(node) && node.nodeType === DOCUMENT_NODE;
-
 const isShadowRoot = (node: unknown): node is ShadowRoot => hasNodeType(node) && node.nodeType === DOCUMENT_FRAGMENT_NODE && 'host' in node;
-
 const isWindow = (node: unknown): node is Window => isObject(node) && node === node.window;
 
 type Target = Node | EventTarget | null | undefined;
@@ -21,24 +16,18 @@ type Target = Node | EventTarget | null | undefined;
 export function contains(parent: Target, child: Target) {
 	if (!parent || !child) return false;
 	if (!isNode(parent) || !isNode(child)) return false;
-
 	if (parent === child) return true;
 	if (parent.contains(child)) return true;
-
 	let current: Node | null = child;
-
 	while (current) {
 		if (current === parent) return true;
-
 		const root = current.getRootNode?.();
-
 		if (isShadowRoot(root) && current === root) {
 			current = root.host;
 		} else {
 			current = current.parentNode;
 		}
 	}
-
 	return false;
 }
 
@@ -53,16 +42,4 @@ export function getWindow(node: Node | ShadowRoot | Document | null | undefined)
 	if (isDocument(node)) return node.defaultView ?? window;
 	if (isNode(node)) return node.ownerDocument?.defaultView ?? window;
 	return window;
-}
-
-export function getActiveElement(rootNode: Document | ShadowRoot): HTMLElement | null {
-	let activeElement = rootNode.activeElement as HTMLElement | null;
-
-	while (activeElement?.shadowRoot) {
-		const next = activeElement.shadowRoot.activeElement as HTMLElement | null;
-		if (!next || next === activeElement) break;
-		activeElement = next;
-	}
-
-	return activeElement;
 }

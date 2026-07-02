@@ -259,11 +259,6 @@ export class LinkPreviewContentState {
 		this.root.handleClose();
 	};
 
-	// Always mounted now — the native popover toggles `display` itself (display … allow-discrete).
-	get shouldRender() {
-		return true;
-	}
-
 	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open.current }));
 
 	readonly props = $derived.by(

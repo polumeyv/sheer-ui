@@ -5,7 +5,7 @@
 	import type { TooltipContentProps } from '../types.js';
 	import { TooltipContentState } from '../tooltip.svelte.js';
 	import { createId } from '$lib/internal/create-id.js';
-	import { on } from 'svelte/events';
+	import { useNativePopoverLifecycle } from '$lib/internal/native-popover.svelte.js';
 
 	const uid = $props.id();
 
@@ -36,60 +36,14 @@
 		onEscapeKeydown: boxWith(() => onEscapeKeydown),
 	});
 
-	const anchorName = `--tooltip-anchor-${uid}`;
-
-	// Tag the *active* trigger as the CSS anchor (multi-trigger safe: cleared when it changes).
-	$effect(() => {
-		const trigger = contentState.root.triggerNode;
-		if (!trigger) return;
-		trigger.style.setProperty('anchor-name', anchorName);
-		return () => trigger.style.removeProperty('anchor-name');
-	});
-
-	// Drive the native top layer from the existing open state (delay/hover logic is untouched).
-	$effect(() => {
-		const el = ref;
-		const open = contentState.root.opts.open.current;
-		if (!el?.isConnected) return;
-		const shown = el.matches(':popover-open');
-		if (open && !shown) el.showPopover();
-		else if (!open && shown) el.hidePopover();
-	});
-
-	// `onOpenChangeComplete` once the enter/exit transition settles — the one bit CSS can't signal,
-	// so a single transitionend (gated to opacity) replaces what AnimationsComplete measured.
-	$effect(() => {
-		const el = ref;
-		if (!el) return;
-		return on(el, 'transitionend', (e) => {
-			if (e.target !== el || e.propertyName !== 'opacity') return;
-			contentState.root.opts.onOpenChangeComplete.current(contentState.root.opts.open.current);
-		});
-	});
-
-	// Esc + outside pointerdown dismissal (Popover API "manual" gives no light-dismiss; this is the
-	// genuine dismissal behavior, re-homed from the old dismissible layer).
-	$effect(() => {
-		if (!contentState.root.opts.open.current) return;
-		const offKey = on(document, 'keydown', (e) => {
-			if (e.key !== 'Escape') return;
-			contentState.onEscapeKeydown(e);
-		});
-		const offPointer = on(
-			document,
-			'pointerdown',
-			(e) => {
-				const target = e.target as Node | null;
-				if (ref?.contains(target ?? null)) return;
-				if (contentState.root.triggerNode?.contains(target ?? null)) return;
-				contentState.onInteractOutside(e);
-			},
-			{ capture: true },
-		);
-		return () => {
-			offKey();
-			offPointer();
-		};
+	useNativePopoverLifecycle({
+		anchor: () => contentState.root.triggerNode,
+		open: () => contentState.root.opts.open.current,
+		ref: () => ref,
+		triggerNode: () => contentState.root.triggerNode,
+		onEscapeKeydown: () => contentState.onEscapeKeydown,
+		onInteractOutside: () => contentState.onInteractOutside,
+		onOpenChangeComplete: () => contentState.root.opts.onOpenChangeComplete.current,
 	});
 
 	const mergedProps = $derived(
@@ -112,7 +66,7 @@
 {#if child}
 	{@render child({ props: mergeProps(mergedProps, { popover: 'manual' }), wrapperProps: {}, ...contentState.snippetProps })}
 {:else}
-	<div {...mergedProps} bind:this={ref} popover="manual" data-side={side} data-align={align} style:position-anchor={anchorName}>
+	<div {...mergedProps} bind:this={ref} popover="manual" data-side={side} data-align={align}>
 		{@render children?.()}
 		<div class={join('native-tooltip-arrow bg-foreground size-2.5 rotate-45 rounded-xs', arrowClasses)}></div>
 	</div>

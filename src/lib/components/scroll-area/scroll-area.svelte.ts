@@ -7,7 +7,7 @@
 
 import { useDebounce } from '$lib/internal/tools/index.js';
 import { createContext, untrack } from 'svelte';
-import { simpleBox, executeCallbacks, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
+import { simpleBox, mergeDisposers, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
 import type { ScrollAreaType } from './types.js';
 import type { BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { type Direction, type Orientation, mergeProps, useId } from '$lib/internal/index.js';
@@ -208,7 +208,7 @@ export class ScrollAreaScrollbarHoverState {
 				}, hideDelay);
 			};
 
-			const unsubListeners = executeCallbacks(
+			const unsubListeners = mergeDisposers(
 				on(scrollAreaNode, 'pointerenter', handlePointerEnter),
 				on(scrollAreaNode, 'pointerleave', handlePointerLeave),
 			);

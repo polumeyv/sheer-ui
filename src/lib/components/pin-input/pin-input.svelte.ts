@@ -93,10 +93,11 @@ export class PinInputRootState {
 			return this.opts.pattern.current;
 		}
 	});
-	#prevInputMetadata = $state<PrevInputMetadata>({
+	// only read/written inside event handlers — needs no reactivity
+	#prevInputMetadata: PrevInputMetadata = {
 		prev: [null, null, 'none'],
 		willSyntheticBlur: false,
-	});
+	};
 	#pwmb: ReturnType<typeof usePasswordManagerBadge>;
 	#initialLoad: InitialLoad;
 	domContext: DOMContext;

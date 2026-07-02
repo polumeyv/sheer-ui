@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { box } from '$lib/internal/tools/index.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import { noop } from '@polumeyv/utilities';
 	import type { PaneGroupProps } from './types.js';
@@ -21,16 +21,16 @@
 	}: PaneGroupProps = $props();
 
 	const paneGroupState = PaneGroupState.create({
-		id: box.with(() => id ?? uid),
-		ref: box.with(
+		id: boxWith(() => id ?? uid),
+		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),
 		),
-		autoSaveId: box.with(() => autoSaveId),
-		direction: box.with(() => direction),
-		keyboardResizeBy: box.with(() => keyboardResizeBy),
-		onLayout: box.with(() => onLayoutChange),
-		storage: box.with(() => storage),
+		autoSaveId: boxWith(() => autoSaveId),
+		direction: boxWith(() => direction),
+		keyboardResizeBy: boxWith(() => keyboardResizeBy),
+		onLayout: boxWith(() => onLayoutChange),
+		storage: boxWith(() => storage),
 	});
 
 	export const getLayout = () => paneGroupState.layout;

@@ -36,14 +36,28 @@ import {
 } from '$lib/internal/attrs.js';
 import type { Direction } from '$lib/internal/index.js';
 import { useGlobalInputModality } from '$lib/components/utilities/input-modality/input-modality.svelte.js';
-import { getTabbableFrom } from '$lib/internal/tabbable.js';
-import { isTabbable } from 'tabbable';
+import { getTabbableFrom, isTabbable } from '$lib/internal/tabbable.js';
 import type { KeyboardEventHandler, PointerEventHandler, MouseEventHandler } from 'svelte/elements';
 import { DOMTypeahead } from '$lib/internal/dom-typeahead.svelte.js';
 import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
 import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
 import { arraysAreEqual } from '$lib/internal/arrays.js';
 import { on } from 'svelte/events';
+import {
+	AXIS_VERTICAL,
+	DIR_POS,
+	type Point,
+	type SideBits,
+	TARGET_CONTENT,
+	TARGET_NONE,
+	TARGET_TRIGGER,
+	type TargetBits,
+	flipSide,
+	getCorridorPolygon,
+	getSide,
+	isInsideRect,
+	isPointInPolygon,
+} from '$lib/internal/hover-intent-geometry.js';
 
 export const CONTEXT_MENU_TRIGGER_ATTR = 'data-context-menu-trigger';
 export const CONTEXT_MENU_CONTENT_ATTR = 'data-context-menu-content';
@@ -80,7 +94,6 @@ type MenuVariant = 'context-menu' | 'dropdown-menu' | 'menubar';
 export interface MenuRootStateOpts extends ReadableBoxedValues<{
 	dir: Direction;
 	variant: MenuVariant;
-	// debugMode: boolean;
 }> {
 	onClose: AnyFn;
 	/** When closing, if this returns true, exit animations are skipped (instant unmount). */
@@ -111,178 +124,32 @@ export const menuAttrs = createBitsAttrs({
 	],
 });
 
-type PolygonSide = 'top' | 'bottom' | 'left' | 'right';
-type IntentTarget = 'trigger' | 'content';
-type Point = { x: number; y: number };
 type Polygon = Point[];
 
 // const SVG_NS = "http://www.w3.org/2000/svg";
 
-interface MenuSubmenuIntentOptions {
+export interface MenuSubmenuIntentOptions {
 	enabled: () => boolean;
 	triggerNode: () => HTMLElement | null;
 	contentNode: () => HTMLElement | null;
 	parentContentNode: () => HTMLElement | null;
 	subContentSelector: () => string;
-	// debugMode: () => boolean;
 	onIntentExit: (pointerPoint: Point | null) => void;
 	setIsPointerInTransit: (value: boolean) => void;
 }
 
-/*
-interface MenuIntentDebugSnapshot {
-	active: boolean;
-	target: IntentTarget | null;
-	exitPoint: Point | null;
-	pointerPoint: Point | null;
-	corridor: Polygon | null;
-	intentPolygon: Polygon | null;
-}
-
-class MenuIntentDebugOverlay {
-	readonly #enabled: () => boolean;
-	readonly #getDocument: () => Document | null;
-	#root: HTMLDivElement | null = null;
-	#corridorPolygon: SVGPolygonElement | null = null;
-	#intentPolygon: SVGPolygonElement | null = null;
-	#exitPoint: SVGCircleElement | null = null;
-	#pointerPoint: SVGCircleElement | null = null;
-
-	constructor(opts: { enabled: () => boolean; getDocument: () => Document | null }) {
-		this.#enabled = opts.enabled;
-		this.#getDocument = opts.getDocument;
-	}
-
-	update(state: MenuIntentDebugSnapshot) {
-		if (!this.#enabled()) {
-			this.#detach();
-			return;
-		}
-		this.#ensureRoot();
-		if (!this.#root) return;
-
-		if (!state.active || !state.corridor || !state.intentPolygon || !state.exitPoint) {
-			this.#root.style.display = "none";
-			return;
-		}
-
-		const color = state.target === "trigger" ? "16 185 129" : "59 130 246";
-		const strokeColor = `rgb(${color})`;
-		const fillColor = `rgb(${color} / 0.18)`;
-		const corridorFill = `rgb(${color} / 0.1)`;
-
-		this.#root.style.display = "block";
-		this.#setPolygon(this.#corridorPolygon, state.corridor, corridorFill, strokeColor, 1.5);
-		this.#setPolygon(this.#intentPolygon, state.intentPolygon, fillColor, strokeColor, 2);
-		this.#setPoint(this.#exitPoint, state.exitPoint, strokeColor, 5);
-		this.#setPoint(
-			this.#pointerPoint,
-			state.pointerPoint,
-			"rgb(15 23 42 / 0.9)",
-			4,
-			"rgb(255 255 255 / 0.95)"
-		);
-	}
-
-	destroy() {
-		this.#detach();
-	}
-
-	#setPolygon(
-		node: SVGPolygonElement | null,
-		points: Polygon | null,
-		fill: string,
-		stroke: string,
-		strokeWidth: number
-	) {
-		if (!node || !points || points.length === 0) return;
-		node.setAttribute("points", polygonToSvgPoints(points));
-		node.setAttribute("fill", fill);
-		node.setAttribute("stroke", stroke);
-		node.setAttribute("stroke-width", `${strokeWidth}`);
-		node.setAttribute("stroke-dasharray", "6 4");
-	}
-
-	#setPoint(
-		node: SVGCircleElement | null,
-		point: Point | null,
-		fill: string,
-		radius: number,
-		stroke = "transparent"
-	) {
-		if (!node || !point) return;
-		node.setAttribute("cx", `${point.x}`);
-		node.setAttribute("cy", `${point.y}`);
-		node.setAttribute("r", `${radius}`);
-		node.setAttribute("fill", fill);
-		node.setAttribute("stroke", stroke);
-		node.setAttribute("stroke-width", "1.5");
-	}
-
-	#ensureRoot() {
-		if (this.#root) return;
-		const doc = this.#getDocument();
-		if (!doc?.body) return;
-
-		const root = doc.createElement("div");
-		root.setAttribute("aria-hidden", "true");
-		root.style.position = "fixed";
-		root.style.inset = "0";
-		root.style.pointerEvents = "none";
-		root.style.zIndex = "2147483647";
-		root.style.display = "none";
-
-		const svg = doc.createElementNS(SVG_NS, "svg");
-		svg.setAttribute("width", "100%");
-		svg.setAttribute("height", "100%");
-		svg.style.overflow = "visible";
-
-		const corridorPolygon = doc.createElementNS(SVG_NS, "polygon");
-		const intentPolygon = doc.createElementNS(SVG_NS, "polygon");
-		const exitPoint = doc.createElementNS(SVG_NS, "circle");
-		const pointerPoint = doc.createElementNS(SVG_NS, "circle");
-
-		svg.append(corridorPolygon, intentPolygon, exitPoint, pointerPoint);
-		root.append(svg);
-		doc.body.append(root);
-
-		this.#root = root;
-		this.#corridorPolygon = corridorPolygon;
-		this.#intentPolygon = intentPolygon;
-		this.#exitPoint = exitPoint;
-		this.#pointerPoint = pointerPoint;
-	}
-
-	#detach() {
-		this.#root?.remove();
-		this.#root = null;
-		this.#corridorPolygon = null;
-		this.#intentPolygon = null;
-		this.#exitPoint = null;
-		this.#pointerPoint = null;
-	}
-}
-*/
-
-class MenuSubmenuIntent {
+export class MenuSubmenuIntent {
 	readonly #opts: MenuSubmenuIntentOptions;
-	// readonly #debugOverlay: MenuIntentDebugOverlay;
 	#cleanupDocMove: AnyFn | null = null;
 	#fallbackTimer: ReturnType<typeof setTimeout> | null = null;
 	#active = false;
-	#target: IntentTarget | null = null;
+	#target: TargetBits = TARGET_NONE;
 	#apex: Point | null = null;
 	#pointerPoint: Point | null = null;
-	// #corridor: Polygon | null = null;
-	// #intentPolygon: Polygon | null = null;
 	#launchPoint: Point | null = null;
 
 	constructor(opts: MenuSubmenuIntentOptions) {
 		this.#opts = opts;
-		// this.#debugOverlay = new MenuIntentDebugOverlay({
-		// 	enabled: () => this.#opts.debugMode(),
-		// 	getDocument: () => getDocument(this.#opts.triggerNode() ?? this.#opts.contentNode()),
-		// });
 
 		$effect(() => {
 			const triggerNode = opts.triggerNode();
@@ -294,18 +161,18 @@ class MenuSubmenuIntent {
 
 				const onTriggerMove = (e: PointerEvent) => {
 					if (!isMouseEvent(e)) return;
-					this.#launchPoint = { x: e.clientX, y: e.clientY };
-					if (!this.#active) this.#preview(e, 'content');
+					this.#launchPoint = [e.clientX, e.clientY];
+					if (!this.#active) this.#preview(e, TARGET_CONTENT);
 				};
 
 				const onTriggerLeave = (e: PointerEvent) => {
 					if (!isMouseEvent(e)) return;
-					this.#engage(e, 'content');
+					this.#engage(e, TARGET_CONTENT);
 				};
 
 				const onContentMove = (e: PointerEvent) => {
 					if (!isMouseEvent(e)) return;
-					if (!this.#active) this.#preview(e, 'trigger');
+					if (!this.#active) this.#preview(e, TARGET_TRIGGER);
 				};
 
 				const onContentLeave = (e: PointerEvent) => {
@@ -320,7 +187,7 @@ class MenuSubmenuIntent {
 							}
 						}
 					}
-					this.#engage(e, 'trigger');
+					this.#engage(e, TARGET_TRIGGER);
 				};
 
 				const onTriggerEnter = (e: PointerEvent) => {
@@ -351,7 +218,6 @@ class MenuSubmenuIntent {
 
 		onDestroy(() => {
 			this.#reset();
-			// this.#debugOverlay.destroy();
 		});
 	}
 
@@ -363,12 +229,12 @@ class MenuSubmenuIntent {
 
 	#computePolygons(
 		pointerPt: Point,
-		target: IntentTarget,
+		target: TargetBits,
 	): {
 		corridor: Polygon;
 		intent: Polygon;
 		targetRect: DOMRect;
-		side: PolygonSide;
+		side: SideBits;
 	} | null {
 		const triggerNode = this.#opts.triggerNode();
 		const contentNode = this.#opts.contentNode();
@@ -383,7 +249,7 @@ class MenuSubmenuIntent {
 
 		let sourceRect: DOMRect | undefined;
 
-		if (target === 'content') {
+		if (target & TARGET_CONTENT) {
 			apex = this.#active ? (this.#apex ?? pointerPt) : pointerPt;
 			targetRect = contentRect;
 		} else {
@@ -395,7 +261,9 @@ class MenuSubmenuIntent {
 		this.#apex = apex;
 
 		return {
-			corridor: getCorridorPolygon(triggerRect, contentRect, side),
+			// this file's corridor has always used a fixed buffer of 2 (distinct from
+			// SafePolygon's configurable buffer), preserved explicitly here
+			corridor: getCorridorPolygon(triggerRect, contentRect, side, 2),
 			intent: getIntentPolygon(apex, targetRect, side, target, sourceRect),
 			targetRect,
 			side,
@@ -406,19 +274,16 @@ class MenuSubmenuIntent {
 		return isPointInPolygon(pt, corridor) || isPointInPolygon(pt, intent);
 	}
 
-	#preview(e: PointerEvent, target: IntentTarget) {
-		const pt = { x: e.clientX, y: e.clientY };
+	#preview(e: PointerEvent, target: TargetBits) {
+		const pt: Point = [e.clientX, e.clientY];
 		const geo = this.#computePolygons(pt, target);
 		if (!geo) return;
 
 		this.#target = target;
 		this.#pointerPoint = pt;
-		// this.#corridor = geo.corridor;
-		// this.#intentPolygon = geo.intent;
-		// this.#syncDebug();
 	}
 
-	#engage(e: PointerEvent, target: IntentTarget) {
+	#engage(e: PointerEvent, target: TargetBits) {
 		if (!this.#opts.enabled()) return;
 
 		const triggerNode = this.#opts.triggerNode();
@@ -427,11 +292,11 @@ class MenuSubmenuIntent {
 
 		const related = e.relatedTarget;
 		if (isElement(related)) {
-			if (target === 'content' && contentNode.contains(related)) return;
-			if (target === 'trigger' && triggerNode.contains(related)) return;
+			if (target & TARGET_CONTENT && contentNode.contains(related)) return;
+			if (target & TARGET_TRIGGER && triggerNode.contains(related)) return;
 		}
 
-		const pt = { x: e.clientX, y: e.clientY };
+		const pt: Point = [e.clientX, e.clientY];
 
 		const geo = this.#computePolygons(pt, target);
 		if (!geo) return;
@@ -444,20 +309,17 @@ class MenuSubmenuIntent {
 		this.#active = true;
 		this.#target = target;
 		this.#pointerPoint = pt;
-		// this.#corridor = geo.corridor;
-		// this.#intentPolygon = geo.intent;
 
 		this.#opts.setIsPointerInTransit(true);
 		this.#attachDocMove();
 		this.#startFallback();
-		// this.#syncDebug();
 	}
 
 	#disengageTimer: ReturnType<typeof setTimeout> | null = null;
 
 	#disengage() {
 		if (!this.#active) return;
-		const wasReturning = this.#target === 'trigger';
+		const wasReturning = (this.#target & TARGET_TRIGGER) !== 0;
 		this.#detachDocMove();
 		this.#clearFallback();
 		this.#active = false;
@@ -497,20 +359,17 @@ class MenuSubmenuIntent {
 		this.#clearDisengageTimer();
 		if (this.#active) this.#opts.setIsPointerInTransit(false);
 		this.#active = false;
-		this.#target = null;
+		this.#target = TARGET_NONE;
 		this.#apex = null;
 		this.#pointerPoint = null;
-		// this.#corridor = null;
-		// this.#intentPolygon = null;
 		this.#launchPoint = null;
-		// this.#syncDebug();
 	}
 
 	#isPointerInDescendantSubContent(pt: Point): boolean {
 		const contentNode = this.#opts.contentNode();
 		if (!contentNode) return false;
 		const doc = contentNode.ownerDocument;
-		const el = doc.elementFromPoint(pt.x, pt.y);
+		const el = doc.elementFromPoint(pt[0], pt[1]);
 		if (!el) return false;
 		const selector = this.#opts.subContentSelector();
 		const subContent = el.closest(selector);
@@ -531,16 +390,16 @@ class MenuSubmenuIntent {
 		}
 
 		this.#clearFallback();
-		const pt = { x: e.clientX, y: e.clientY };
+		const pt: Point = [e.clientX, e.clientY];
 		this.#pointerPoint = pt;
 
 		const triggerRect = triggerNode.getBoundingClientRect();
 		const contentRect = contentNode.getBoundingClientRect();
-		if (this.#target === 'content' && isInsideRect(pt, contentRect)) {
+		if (this.#target & TARGET_CONTENT && isInsideRect(pt, contentRect)) {
 			this.#disengage();
 			return;
 		}
-		if (this.#target === 'trigger' && isInsideInsetRect(pt, triggerRect, 4)) {
+		if (this.#target & TARGET_TRIGGER && isInsideInsetRect(pt, triggerRect, 4)) {
 			this.#disengage();
 			return;
 		}
@@ -555,10 +414,6 @@ class MenuSubmenuIntent {
 			this.#intentExit();
 			return;
 		}
-
-		// this.#corridor = geo.corridor;
-		// this.#intentPolygon = geo.intent;
-		// this.#syncDebug();
 
 		if (this.#isInSafeZone(pt, geo.corridor, geo.intent)) {
 			this.#startFallback();
@@ -598,155 +453,42 @@ class MenuSubmenuIntent {
 	}
 
 	#clearVisuals() {
-		this.#target = null;
+		this.#target = TARGET_NONE;
 		this.#apex = null;
 		this.#pointerPoint = null;
-		// this.#corridor = null;
-		// this.#intentPolygon = null;
-		// this.#syncDebug();
 	}
 
-	/*
-	#syncDebug() {
-		this.#debugOverlay.update({
-			active: this.#active || this.#corridor !== null,
-			target: this.#target,
-			exitPoint: this.#apex,
-			pointerPoint: this.#pointerPoint,
-			corridor: this.#corridor,
-			intentPolygon: this.#intentPolygon,
-		});
-	}
-	*/
-}
-
-/*
-function polygonToSvgPoints(points: Polygon): string {
-	return points.map((point) => `${point.x},${point.y}`).join(" ");
-}
-*/
-
-function isPointInPolygon(point: Point, polygon: Polygon): boolean {
-	const { x, y } = point;
-	let inside = false;
-	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-		const xi = polygon[i]!.x;
-		const yi = polygon[i]!.y;
-		const xj = polygon[j]!.x;
-		const yj = polygon[j]!.y;
-		// prettier-ignore
-		const intersect = ((yi > y) !== (yj > y)) && (x < ((xj - xi) * (y - yi)) / (yj - yi) + xi);
-		if (intersect) inside = !inside;
-	}
-	return inside;
-}
-
-function isInsideRect(point: Point, rect: DOMRect): boolean {
-	return point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom;
 }
 
 function isInsideInsetRect(point: Point, rect: DOMRect, inset: number): boolean {
-	return point.x >= rect.left + inset && point.x <= rect.right - inset && point.y >= rect.top + inset && point.y <= rect.bottom - inset;
+	return point[0] >= rect.left + inset && point[0] <= rect.right - inset && point[1] >= rect.top + inset && point[1] <= rect.bottom - inset;
 }
 
-function getSide(triggerRect: DOMRect, contentRect: DOMRect): PolygonSide {
-	const triggerCenterX = triggerRect.left + triggerRect.width / 2;
-	const triggerCenterY = triggerRect.top + triggerRect.height / 2;
-	const contentCenterX = contentRect.left + contentRect.width / 2;
-	const contentCenterY = contentRect.top + contentRect.height / 2;
-
-	const deltaX = contentCenterX - triggerCenterX;
-	const deltaY = contentCenterY - triggerCenterY;
-	if (Math.abs(deltaX) > Math.abs(deltaY)) {
-		return deltaX > 0 ? 'right' : 'left';
-	}
-	return deltaY > 0 ? 'bottom' : 'top';
-}
-
-function getCorridorPolygon(triggerRect: DOMRect, contentRect: DOMRect, side: PolygonSide): Polygon {
-	const buffer = 2;
-	switch (side) {
-		case 'top':
-			return [
-				{ x: Math.min(triggerRect.left, contentRect.left) - buffer, y: triggerRect.top },
-				{ x: Math.min(triggerRect.left, contentRect.left) - buffer, y: contentRect.bottom },
-				{
-					x: Math.max(triggerRect.right, contentRect.right) + buffer,
-					y: contentRect.bottom,
-				},
-				{ x: Math.max(triggerRect.right, contentRect.right) + buffer, y: triggerRect.top },
-			];
-		case 'bottom':
-			return [
-				{ x: Math.min(triggerRect.left, contentRect.left) - buffer, y: triggerRect.bottom },
-				{ x: Math.min(triggerRect.left, contentRect.left) - buffer, y: contentRect.top },
-				{ x: Math.max(triggerRect.right, contentRect.right) + buffer, y: contentRect.top },
-				{
-					x: Math.max(triggerRect.right, contentRect.right) + buffer,
-					y: triggerRect.bottom,
-				},
-			];
-		case 'left':
-			return [
-				{ x: triggerRect.left, y: Math.min(triggerRect.top, contentRect.top) - buffer },
-				{ x: contentRect.right, y: Math.min(triggerRect.top, contentRect.top) - buffer },
-				{
-					x: contentRect.right,
-					y: Math.max(triggerRect.bottom, contentRect.bottom) + buffer,
-				},
-				{
-					x: triggerRect.left,
-					y: Math.max(triggerRect.bottom, contentRect.bottom) + buffer,
-				},
-			];
-		case 'right':
-			return [
-				{ x: triggerRect.right, y: Math.min(triggerRect.top, contentRect.top) - buffer },
-				{ x: contentRect.left, y: Math.min(triggerRect.top, contentRect.top) - buffer },
-				{
-					x: contentRect.left,
-					y: Math.max(triggerRect.bottom, contentRect.bottom) + buffer,
-				},
-				{
-					x: triggerRect.right,
-					y: Math.max(triggerRect.bottom, contentRect.bottom) + buffer,
-				},
-			];
-	}
-}
-
-function getIntentPolygon(exitPoint: Point, targetRect: DOMRect, side: PolygonSide, target: IntentTarget, sourceRect?: DOMRect): Polygon {
+/**
+ * The submenu-chain "intent" safe zone: a precise triangular cone from the exit point to the
+ * target's near edge (optionally widened to also cover `sourceRect`, e.g. the content rect when
+ * aiming back at a parent trigger). Deliberately narrower than SafePolygon's hexagonal safe zone —
+ * densely-packed sibling menu items need more precision than a single floating trigger/content pair.
+ */
+function getIntentPolygon(exitPoint: Point, targetRect: DOMRect, side: SideBits, target: TargetBits, sourceRect?: DOMRect): Polygon {
 	const edgeBuffer = 8;
-	const effectiveSide = target === 'trigger' ? flipSide(side) : side;
+	const effectiveSide = target & TARGET_TRIGGER ? flipSide(side) : side;
 
 	const top = sourceRect ? Math.min(targetRect.top, sourceRect.top) - edgeBuffer : targetRect.top - edgeBuffer;
 	const bottom = sourceRect ? Math.max(targetRect.bottom, sourceRect.bottom) + edgeBuffer : targetRect.bottom + edgeBuffer;
 	const left = sourceRect ? Math.min(targetRect.left, sourceRect.left) - edgeBuffer : targetRect.left - edgeBuffer;
 	const right = sourceRect ? Math.max(targetRect.right, sourceRect.right) + edgeBuffer : targetRect.right + edgeBuffer;
 
-	switch (effectiveSide) {
-		case 'right':
-			return [exitPoint, { x: targetRect.left, y: top }, { x: targetRect.left, y: bottom }];
-		case 'left':
-			return [exitPoint, { x: targetRect.right, y: top }, { x: targetRect.right, y: bottom }];
-		case 'bottom':
-			return [exitPoint, { x: left, y: targetRect.top }, { x: right, y: targetRect.top }];
-		case 'top':
-			return [exitPoint, { x: left, y: targetRect.bottom }, { x: right, y: targetRect.bottom }];
-	}
-}
+	const dir = effectiveSide & DIR_POS;
 
-function flipSide(side: PolygonSide): PolygonSide {
-	switch (side) {
-		case 'top':
-			return 'bottom';
-		case 'bottom':
-			return 'top';
-		case 'left':
-			return 'right';
-		case 'right':
-			return 'left';
+	if (effectiveSide & AXIS_VERTICAL) {
+		// dir 0 = top (target is below the apex; cone opens toward targetRect.bottom), 1 = bottom
+		const edgeY = dir === 0 ? targetRect.bottom : targetRect.top;
+		return [exitPoint, [left, edgeY], [right, edgeY]];
 	}
+	// dir 0 = left (target is to the right; cone opens toward targetRect.right), 1 = right
+	const edgeX = dir === 0 ? targetRect.right : targetRect.left;
+	return [exitPoint, [edgeX, top], [edgeX, bottom]];
 }
 
 export class MenuRootState {
@@ -882,7 +624,6 @@ export class MenuContentState {
 			triggerNode: () => this.parentMenu.triggerNode,
 			parentContentNode: () => this.parentMenu.parentMenu?.contentNode ?? null,
 			subContentSelector: () => `[${this.parentMenu.root.getBitsAttr('sub-content')}]`,
-			// debugMode: () => this.parentMenu.root.opts.debugMode.current,
 			enabled: () =>
 				this.parentMenu.opts.open.current &&
 				Boolean(this.parentMenu.triggerNode?.hasAttribute(this.parentMenu.root.getBitsAttr('sub-trigger'))),
@@ -942,7 +683,7 @@ export class MenuContentState {
 		if (!pointerPoint) return;
 		const parentContentNode = this.parentMenu.parentMenu?.contentNode;
 		if (!parentContentNode) return;
-		const hoveredNode = this.domContext.getDocument().elementFromPoint(pointerPoint.x, pointerPoint.y);
+		const hoveredNode = this.domContext.getDocument().elementFromPoint(pointerPoint[0], pointerPoint[1]);
 		if (!isElement(hoveredNode)) return;
 		const hoveredSubTrigger = hoveredNode.closest<HTMLElement>(`[${this.parentMenu.root.getBitsAttr('sub-trigger')}]`);
 		if (!hoveredSubTrigger || !parentContentNode.contains(hoveredSubTrigger)) return;
@@ -952,8 +693,8 @@ export class MenuContentState {
 				bubbles: true,
 				cancelable: true,
 				pointerType: 'mouse',
-				clientX: pointerPoint.x,
-				clientY: pointerPoint.y,
+				clientX: pointerPoint[0],
+				clientY: pointerPoint[1],
 			}),
 		);
 	}

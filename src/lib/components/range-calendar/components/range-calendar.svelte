@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith, repairBindable } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import { type DateValue } from '@internationalized/date';
 	import type { RangeCalendarRootProps } from '../types.js';
@@ -60,26 +60,15 @@
 		if (placeholder === undefined) placeholder = defaultPlaceholder;
 	}
 
-	// SSR/initial setup: RangeCalendar needs a writable placeholder for view navigation.
-	repairUndefinedControlledPlaceholder();
-
-	$effect.pre(() => {
-		placeholder;
-		untrack(() => repairUndefinedControlledPlaceholder());
-	});
+	// RangeCalendar needs a writable placeholder for view navigation.
+	repairBindable(() => placeholder, repairUndefinedControlledPlaceholder);
 
 	function repairUndefinedControlledValue() {
 		if (value === undefined) value = { start: undefined, end: undefined };
 	}
 
-	// SSR/initial setup: range state owns a DateRange object, even when empty.
-	repairUndefinedControlledValue();
-
-	$effect.pre(() => {
-		value;
-
-		untrack(() => repairUndefinedControlledValue());
-	});
+	// Range state owns a DateRange object, even when empty.
+	repairBindable(() => value, repairUndefinedControlledValue);
 
 	const rootState = RangeCalendarRootState.create({
 		id: boxWith(() => id),

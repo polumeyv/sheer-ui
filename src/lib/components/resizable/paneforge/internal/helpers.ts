@@ -176,7 +176,13 @@ export function getUnsafeDefaultLayout({ panesArray }: { panesArray: PaneState[]
 }
 
 // All units must be in percentages
-export function validatePaneGroupLayout({ layout: prevLayout, paneConstraints }: { layout: number[]; paneConstraints: PaneConstraints[] }): number[] {
+export function validatePaneGroupLayout({
+	layout: prevLayout,
+	paneConstraints,
+}: {
+	layout: number[];
+	paneConstraints: PaneConstraints[];
+}): number[] {
 	const nextLayout = [...prevLayout];
 	const nextLayoutTotalSize = nextLayout.reduce((accumulated, current) => accumulated + current, 0);
 
@@ -297,7 +303,14 @@ interface GetDeltaPercentageOpts {
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/movementX
-export function getDeltaPercentage({ event, dragHandleId, dir, initialDragState, keyboardResizeBy, domContext }: GetDeltaPercentageOpts): number {
+export function getDeltaPercentage({
+	event,
+	dragHandleId,
+	dir,
+	initialDragState,
+	keyboardResizeBy,
+	domContext,
+}: GetDeltaPercentageOpts): number {
 	if (isKeyDown(event)) {
 		const isHorizontal = dir === 'horizontal';
 
@@ -367,7 +380,12 @@ interface GetResizeHandlePaneIdsOpts {
 	domContext: DOMContext;
 }
 
-export function getResizeHandlePaneIds({ groupId, handleId, panesArray, domContext }: GetResizeHandlePaneIdsOpts): [idBefore: string | null, idAfter: string | null] {
+export function getResizeHandlePaneIds({
+	groupId,
+	handleId,
+	panesArray,
+	domContext,
+}: GetResizeHandlePaneIdsOpts): [idBefore: string | null, idAfter: string | null] {
 	const handle = getResizeHandleElement(handleId, domContext);
 	const handles = getResizeHandleElementsForGroup(groupId, domContext);
 	const index = handle ? handles.indexOf(handle) : -1;

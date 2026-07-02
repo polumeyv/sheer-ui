@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as DialogPrimitive from '$lib/components/dialog/index.js';
-	import { box } from '$lib/internal/tools/index.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
 	import type { RootProps } from './util/components/drawer/index.js';
 	import { noop } from '@polumeyv/utilities';
 	import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT } from './util/internal/constants.js';
@@ -44,43 +44,43 @@
 	}
 
 	const rootState = useDrawerRoot({
-		open: box.with(
+		open: boxWith(
 			() => open,
 			(o) => {
 				open = o;
 			},
 		),
-		closeThreshold: box.with(() => closeThreshold),
-		scrollLockTimeout: box.with(() => scrollLockTimeout),
-		snapPoints: box.with(() => snapPoints),
-		fadeFromIndex: box.with(() => fadeFromIndex),
-		nested: box.with(() => nested),
-		shouldScaleBackground: box.with(() => shouldScaleBackground),
-		activeSnapPoint: box.with(
+		closeThreshold: boxWith(() => closeThreshold),
+		scrollLockTimeout: boxWith(() => scrollLockTimeout),
+		snapPoints: boxWith(() => snapPoints),
+		fadeFromIndex: boxWith(() => fadeFromIndex),
+		nested: boxWith(() => nested),
+		shouldScaleBackground: boxWith(() => shouldScaleBackground),
+		activeSnapPoint: boxWith(
 			() => activeSnapPoint,
 			(v) => {
 				activeSnapPoint = v;
 				onActiveSnapPointChange(v);
 			},
 		),
-		onRelease: box.with(() => onRelease),
-		onDrag: box.with(() => onDrag),
-		onClose: box.with(() => onClose),
-		dismissible: box.with(() => dismissible),
-		direction: box.with(() => direction),
-		fixed: box.with(() => fixed),
-		modal: box.with(() => modal),
-		handleOnly: box.with(() => handleOnly),
-		noBodyStyles: box.with(() => noBodyStyles),
-		preventScrollRestoration: box.with(() => preventScrollRestoration),
-		setBackgroundColorOnScale: box.with(() => setBackgroundColorOnScale),
-		repositionInputs: box.with(() => repositionInputs),
-		autoFocus: box.with(() => autoFocus),
-		snapToSequentialPoint: box.with(() => snapToSequentialPoint),
-		container: box.with(() => container),
-		disablePreventScroll: box.with(() => disablePreventScroll),
-		onOpenChange: box.with(() => onOpenChange),
-		onAnimationEnd: box.with(() => onAnimationEnd),
+		onRelease: boxWith(() => onRelease),
+		onDrag: boxWith(() => onDrag),
+		onClose: boxWith(() => onClose),
+		dismissible: boxWith(() => dismissible),
+		direction: boxWith(() => direction),
+		fixed: boxWith(() => fixed),
+		modal: boxWith(() => modal),
+		handleOnly: boxWith(() => handleOnly),
+		noBodyStyles: boxWith(() => noBodyStyles),
+		preventScrollRestoration: boxWith(() => preventScrollRestoration),
+		setBackgroundColorOnScale: boxWith(() => setBackgroundColorOnScale),
+		repositionInputs: boxWith(() => repositionInputs),
+		autoFocus: boxWith(() => autoFocus),
+		snapToSequentialPoint: boxWith(() => snapToSequentialPoint),
+		container: boxWith(() => container),
+		disablePreventScroll: boxWith(() => disablePreventScroll),
+		onOpenChange: boxWith(() => onOpenChange),
+		onAnimationEnd: boxWith(() => onAnimationEnd),
 	});
 </script>
 

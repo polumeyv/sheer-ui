@@ -10,11 +10,10 @@ import type {
 } from '$lib/internal/date-time/types.js';
 import { CalendarDateTime, Time, ZonedDateTime } from '@internationalized/date';
 import type { TimeFormatter } from '../formatter.js';
-import { ALL_TIME_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';
+import { EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';
 import { getTimeSegments } from './segments.js';
 import type { TimeSegmentPart } from './types.js';
 import { styleToString } from '$lib/internal/tools/index.js';
-import { useId } from '$lib/internal/use-id.js';
 import { getPlaceholder } from '../placeholders.js';
 import { isZonedDateTime } from '../utils.js';
 import { getDefaultHourCycle } from './helpers.js';
@@ -192,20 +191,8 @@ export function initTimeSegmentStates() {
 	}, {} as TimeSegmentStateMap);
 }
 
-export function initTimeSegmentIds() {
-	return Object.fromEntries(
-		ALL_TIME_SEGMENT_PARTS.map((part) => {
-			return [part, useId()];
-		}).filter(([key]) => key !== 'literal'),
-	);
-}
-
 export function isEditableTimeSegmentPart(part: unknown): part is EditableTimeSegmentPart {
 	return EDITABLE_TIME_SEGMENT_PARTS.includes(part as EditableTimeSegmentPart);
-}
-
-export function isAnyTimeSegmentPart(part: unknown): part is TimeSegmentPart {
-	return ALL_TIME_SEGMENT_PARTS.includes(part as TimeSegmentPart);
 }
 
 /**
@@ -257,15 +244,6 @@ export function areAllTimeSegmentsFilled(segmentValues: TimeSegmentValueObj, fie
 		if (segmentValues[part] === null) return false;
 	}
 	return true;
-}
-
-/**
- * Infer the granularity to use based on the
- * value and granularity props.
- */
-export function inferTimeGranularity(granularity: TimeGranularity | undefined): TimeGranularity {
-	if (granularity) return granularity;
-	return 'minute';
 }
 
 /**
@@ -339,10 +317,6 @@ export function convertTimeValueToTime(time: TimeValue): Time {
 
 export function isTimeBefore(timeToCompare: Time, referenceTime: Time) {
 	return timeToCompare.compare(referenceTime) < 0;
-}
-
-export function isTimeAfter(timeToCompare: Time, referenceTime: Time) {
-	return timeToCompare.compare(referenceTime) > 0;
 }
 
 export function getISOTimeValue(time: TimeValue): string {

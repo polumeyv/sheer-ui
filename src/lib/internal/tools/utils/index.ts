@@ -1,8 +1,6 @@
-export { afterTick } from './after-tick.js';
 export { attachRef, mountedAttachment, type RefAttachment, type RefSetter, type WritableRef } from './attach-ref.js';
-export { composeHandlers } from './compose-handlers.js';
-export { cssToStyleObj } from './css-to-style-obj.js';
+export { composeHandlers, mergeHandlers } from './compose-handlers.js';
 export { contains, getDocument, getWindow } from './dom.js';
 export { DOMContext } from './dom-context.svelte.js';
-export { executeCallbacks } from './execute-callbacks.js';
+export { mergeDisposers } from './merge-disposers.js';
 export * from './strings.js';

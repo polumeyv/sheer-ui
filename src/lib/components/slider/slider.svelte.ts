@@ -4,7 +4,7 @@
  */
 import { createContext, onMount, untrack } from 'svelte';
 import {
-	executeCallbacks,
+	mergeDisposers,
 	attachRef,
 	type Box,
 	type ReadableBox,
@@ -74,10 +74,23 @@ abstract class SliderBaseRootState {
 	});
 	domContext: DOMContext;
 
+	abstract handlePointerDown: (e: PointerEvent) => void;
+	abstract handlePointerUp: () => void;
+	abstract handlePointerMove: (e: PointerEvent) => void;
+
 	constructor(opts: SliderBaseRootStateOpts) {
 		this.opts = opts;
 		this.attachment = attachRef(opts.ref);
 		this.domContext = new DOMContext(this.opts.ref);
+
+		onMount(() => {
+			return mergeDisposers(
+				on(this.domContext.getDocument(), 'pointerdown', this.handlePointerDown),
+				on(this.domContext.getDocument(), 'pointerup', this.handlePointerUp),
+				on(this.domContext.getDocument(), 'pointermove', this.handlePointerMove),
+				on(this.domContext.getDocument(), 'pointerleave', this.handlePointerUp),
+			);
+		});
 	}
 
 	#handleLayoutChange = (): void => {
@@ -179,15 +192,6 @@ class SliderSingleRootState extends SliderBaseRootState {
 	constructor(opts: SliderSingleRootStateOpts) {
 		super(opts);
 		this.opts = opts;
-
-		onMount(() => {
-			return executeCallbacks(
-				on(this.domContext.getDocument(), 'pointerdown', this.handlePointerDown),
-				on(this.domContext.getDocument(), 'pointerup', this.handlePointerUp),
-				on(this.domContext.getDocument(), 'pointermove', this.handlePointerMove),
-				on(this.domContext.getDocument(), 'pointerleave', this.handlePointerUp),
-			);
-		});
 
 		/**
 		 * Controlled value normalization: external bind:value/min/max/step changes
@@ -404,21 +408,12 @@ interface SliderMultiRootStateOpts
 class SliderMultiRootState extends SliderBaseRootState {
 	readonly opts: SliderMultiRootStateOpts;
 	isMulti = true as const;
-	activeThumb = $state<{ node: HTMLElement; idx: number } | null>(null);
+	activeThumb = $state.raw<{ node: HTMLElement; idx: number } | null>(null);
 	currentThumbIdx = $state(0);
 
 	constructor(opts: SliderMultiRootStateOpts) {
 		super(opts);
 		this.opts = opts;
-
-		onMount(() => {
-			return executeCallbacks(
-				on(this.domContext.getDocument(), 'pointerdown', this.handlePointerDown),
-				on(this.domContext.getDocument(), 'pointerup', this.handlePointerUp),
-				on(this.domContext.getDocument(), 'pointermove', this.handlePointerMove),
-				on(this.domContext.getDocument(), 'pointerleave', this.handlePointerUp),
-			);
-		});
 
 		/**
 		 * Controlled value normalization: external bind:value/min/max/step changes

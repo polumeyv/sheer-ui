@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
-	import { DateFieldSegmentState } from '../time-field.svelte.js';
+	import { TimeFieldSegmentState } from '../time-field.svelte.js';
 	import type { TimeFieldSegmentProps } from '../types.js';
 	import { createId } from '$lib/internal/create-id.js';
 
@@ -9,7 +9,7 @@
 
 	let { id = createId(uid), ref = $bindable(null), children, child, part, ...restProps }: TimeFieldSegmentProps = $props();
 
-	const segmentState = DateFieldSegmentState.create(part, {
+	const segmentState = TimeFieldSegmentState.create(part, {
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,

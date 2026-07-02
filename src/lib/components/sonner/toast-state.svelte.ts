@@ -28,9 +28,7 @@ class ToastState {
 		return idx;
 	};
 
-	get activeToasts() {
-		return this.toasts.filter((toast) => !toast.dismiss);
-	}
+	readonly activeToasts = $derived.by(() => this.toasts.filter((toast) => !toast.dismiss));
 
 	addToast = (data: ToastT): void => {
 		if (!BROWSER) return;

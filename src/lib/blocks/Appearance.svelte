@@ -2,7 +2,7 @@
 	import * as Field from '$lib/components/field';
 	import * as Item from '$lib/components/item';
 	import { Separator } from '$lib/components/separator';
-	import { RadioGroup } from '$lib/components/radio-group';
+	import * as RadioGroup from '$lib/components/radio-group-native';
 	import { getTheme, type Mode } from '../components/theme-toggle/index.js';
 	import type { Snippet } from 'svelte';
 
@@ -46,7 +46,11 @@
 {/snippet}
 
 {#snippet tile(value: string, label: string, border: string, interior: Snippet)}
-	<Field.Label for={value} class="cursor-pointer">
+	<!-- The label wraps the whole card, so the native radio nested inside drives the
+	     selected outline + tint via :has(:checked) — no JS selection state. -->
+	<Field.Label
+		for={value}
+		class="cursor-pointer rounded-xl border-2 border-transparent p-2 transition-colors hover:bg-accent/20 has-checked:border-ring has-checked:bg-accent/30">
 		<Field.Field class="space-y-2">
 			<svg viewBox="0 0 163 88" fill="none" xmlns="http://www.w3.org/2000/svg">
 				<g clip-path="url(#clip-{value})">
@@ -63,6 +67,14 @@
 	</Field.Label>
 {/snippet}
 
+
+{#snippet lightInterior()}
+	{@render themeElements(LIGHT, 'light')}
+{/snippet}
+
+{#snippet darkInterior()}
+	{@render themeElements(DARK, 'dark')}
+{/snippet}
 
 {#snippet systemInterior()}
 	{@render themeElements(DARK, 'system')}
@@ -85,8 +97,8 @@
 				bind:value={selectedMode}
 				onValueChange={(v) => (theme.pref = v === 'system' ? null : (v as Mode))}
 				class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-				{@render tile('light', 'Light', LIGHT.border, () => themeElements(LIGHT, 'light'))}
-				{@render tile('dark', 'Dark', DARK.border, () => themeElements(DARK, 'dark'))}
+				{@render tile('light', 'Light', LIGHT.border, lightInterior)}
+				{@render tile('dark', 'Dark', DARK.border, darkInterior)}
 				{@render tile('system', 'System', DARK.border, systemInterior)}
 			</RadioGroup.Root>
 		</Field.Field>

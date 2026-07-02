@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith, repairBindable } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import { type DateValue } from '@internationalized/date';
 	import { CalendarRootState } from '../calendar.svelte.js';
@@ -54,26 +54,16 @@
 		placeholder = defaultPlaceholder;
 	}
 
-	// SSR/initial setup: Calendar needs a writable placeholder for view navigation.
-	repairUndefinedControlledPlaceholder();
-
-	$effect.pre(() => {
-		placeholder;
-		untrack(() => repairUndefinedControlledPlaceholder());
-	});
+	// Calendar needs a writable placeholder for view navigation.
+	repairBindable(() => placeholder, repairUndefinedControlledPlaceholder);
 
 	const repairUndefinedControlledValue = () => {
 		if (value !== undefined) return;
 		value = type === 'single' ? undefined : [];
 	};
 
-	// SSR/initial setup: multiple mode owns an empty selection array, not undefined.
-	repairUndefinedControlledValue();
-
-	$effect.pre(() => {
-		value;
-		untrack(() => repairUndefinedControlledValue());
-	});
+	// Multiple mode owns an empty selection array, not undefined.
+	repairBindable(() => value, repairUndefinedControlledValue);
 
 	const rootState = CalendarRootState.create({
 		id: boxWith(() => id),

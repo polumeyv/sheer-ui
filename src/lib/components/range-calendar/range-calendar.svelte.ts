@@ -9,6 +9,7 @@ import { type Announcer, getAnnouncer } from '$lib/internal/date-time/announcer.
 import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
 import {
 	calendarAttrs,
+	createAccessibleHeading,
 	createMonths,
 	getCalendarElementProps,
 	getCalendarHeadingValue,
@@ -24,6 +25,7 @@ import {
 	useMonthViewOptionsSync,
 	useMonthViewPlaceholderSync,
 } from '$lib/internal/date-time/calendar-helpers.svelte.js';
+import { useRangeCursorSync } from '$lib/internal/date-time/range-state.svelte.js';
 import { areAllDaysBetweenValid, getDateValueType, isAfter, isBefore, isBetweenInclusive, toDate } from '$lib/internal/date-time/utils.js';
 import type { WeekStartsOn } from '$lib/internal/date-time/types.js';
 import { createContext, onMount, untrack } from 'svelte';
@@ -77,7 +79,7 @@ export class RangeCalendarRootState {
 	readonly opts: RangeCalendarRootStateOpts;
 	readonly attachment: RefAttachment;
 	readonly visibleMonths = $derived.by(() => this.months.map((month) => month.value));
-	months: Month<DateValue>[] = $state([]);
+	months: Month<DateValue>[] = $state.raw([]);
 	announcer: Announcer;
 	formatter: Formatter;
 	accessibleHeadingId = useId();
@@ -195,6 +197,8 @@ export class RangeCalendarRootState {
 			numberOfMonths: this.opts.numberOfMonths.current,
 		});
 
+		this.#setupAccessibleHeadingEffect();
+
 		onMount(() => {
 			this.announcer = getAnnouncer(this.domContext.getDocument());
 		});
@@ -236,38 +240,11 @@ export class RangeCalendarRootState {
 			node.textContent = this.fullCalendarLabel;
 		});
 
-		/**
-		 * External bind:value updates replace the range object. startValue/endValue
-		 * are internal selection cursor state, so they must be repaired from value.
-		 */
-		$effect(() => {
-			const value = this.opts.value.current;
-			untrack(() => {
-				if (value.start && value.end) {
-					this.opts.startValue.current = value.start;
-					this.opts.endValue.current = value.end;
-				} else if (value.start) {
-					this.opts.startValue.current = value.start;
-					this.opts.endValue.current = undefined;
-				} else if (value.start === undefined && value.end === undefined) {
-					this.opts.startValue.current = undefined;
-					this.opts.endValue.current = undefined;
-				}
-			});
-		});
-
-		/**
-		 * The selected start date controls the visible month, and parents using
-		 * bind:placeholder should observe that navigation-state update.
-		 */
-		$effect(() => {
-			const value = this.opts.value.current;
-			untrack(() => {
-				const startValue = value.start;
-				if (startValue && this.opts.placeholder.current !== startValue) {
-					this.opts.placeholder.current = startValue;
-				}
-			});
+		useRangeCursorSync({
+			value: this.opts.value,
+			startValue: this.opts.startValue,
+			endValue: this.opts.endValue,
+			placeholder: this.opts.placeholder,
 		});
 
 		/**
@@ -356,6 +333,18 @@ export class RangeCalendarRootState {
 			maxValue: opts.maxValue,
 			minValue: opts.minValue,
 			ref: opts.ref,
+		});
+	}
+
+	#setupAccessibleHeadingEffect() {
+		$effect(() => {
+			if (!this.opts.ref.current) return;
+			const removeHeading = createAccessibleHeading({
+				calendarNode: this.opts.ref.current,
+				label: untrack(() => this.fullCalendarLabel),
+				accessibleHeadingId: this.accessibleHeadingId,
+			});
+			return removeHeading;
 		});
 	}
 

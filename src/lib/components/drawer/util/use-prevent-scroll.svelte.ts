@@ -3,7 +3,11 @@
 
 import { isIOS } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
+import { mergeDisposers } from '$lib/internal/tools/index.js';
+import { SharedState } from '$lib/internal/shared-state.svelte.js';
+import { BodyScrollLock } from '$lib/internal/body-scroll-lock.svelte.js';
 import { on } from 'svelte/events';
+import { untrack } from 'svelte';
 
 const KEYBOARD_BUFFER = 24;
 
@@ -12,11 +16,6 @@ interface PreventScrollOptions {
 	isDisabled: () => boolean;
 	focusCallback?: () => void;
 }
-
-const chain =
-	(...callbacks: any[]): ((...args: any[]) => void) =>
-	(...args: any[]) =>
-		callbacks.forEach((callback) => typeof callback === 'function' && callback(...args));
 
 const visualViewport = BROWSER && window.visualViewport;
 
@@ -31,21 +30,40 @@ export const getScrollParent = (node: Element): Element => {
 // HTML input types that do not cause the software keyboard to appear.
 const nonTextInputTypes = new Set(['checkbox', 'radio', 'range', 'color', 'file', 'image', 'button', 'submit', 'reset']);
 
-// The number of active usePreventScroll calls. Used to determine whether to revert back to the original page style/scroll position
-let preventScrollCount = 0;
-let restore: () => void;
+// Shared across every usePreventScroll consumer: the iOS Safari touch/focus/scroll workaround
+// attaches on the first active caller and tears down when the last one releases. This is separate
+// from body-lock coordination below — it's Drawer-specific (dragging a sheet on iOS Safari), not
+// something Dialog/Popover/Select need.
+const preventScroll = new SharedState(() => {
+	const restore = isIOS ? preventScrollMobileSafari() : undefined;
+	$effect(() => restore);
+});
 
 /**
  * Prevents scrolling on the document body on mount, and
  * restores it on unmount. Also ensures that content does not
  * shift due to the scrollbars disappearing.
+ *
+ * The actual body-style lock (overflow/scrollbar-compensation/pointer-events) is delegated to
+ * `BodyScrollLock` — the same shared, refcounted lock Dialog/Sheet/Select/Popover use — so a
+ * Drawer opened over (or under) one of those doesn't run two uncoordinated scroll-lock strategies
+ * at once. `onMount` (which `BodyScrollLock`'s constructor uses) is just `$effect` under the hood
+ * in runes mode, so constructing it fresh inside this effect ties its register/unregister to
+ * *this* effect's re-run/teardown, not to the whole component's mount/unmount — exactly "acquire
+ * while enabled, release the moment it's disabled" without needing to expose a settable lock.
+ * The iOS touch/focus/scroll workaround above stays Drawer-specific.
+ *
+ * Both are constructed inside `untrack` — their own internal reads/writes (lockMap bookkeeping,
+ * refcounting) must not become dependencies of *this* effect, or a write during construction can
+ * retrigger the very effect that's constructing it.
  */
 export const usePreventScroll = (opts: PreventScrollOptions) => {
 	$effect(() => {
-		opts.isDisabled();
 		if (opts.isDisabled()) return;
-		++preventScrollCount === 1 && isIOS && (restore = preventScrollMobileSafari());
-		return () => --preventScrollCount === 0 && restore?.();
+		untrack(() => {
+			new BodyScrollLock(true);
+			preventScroll.get();
+		});
 	});
 };
 
@@ -168,7 +186,7 @@ function preventScrollMobileSafari() {
 	let scrollX = window.pageXOffset;
 	let scrollY = window.pageYOffset;
 
-	let restoreStyles = chain(
+	let restoreStyles = mergeDisposers(
 		setStyle(document.documentElement, 'paddingRight', `${window.innerWidth - document.documentElement.clientWidth}px`),
 		// setStyle(document.documentElement, 'overflow', 'hidden'),
 		// setStyle(document.body, 'marginTop', `-${scrollY}px`),
@@ -177,7 +195,7 @@ function preventScrollMobileSafari() {
 	// Scroll to the top. The negative margin on the body will make this appear the same.
 	window.scrollTo(0, 0);
 
-	let removeEvents = chain(
+	let removeEvents = mergeDisposers(
 		on(document, 'touchstart', onTouchStart, { passive: false, capture: true }),
 		on(document, 'touchmove', onTouchMove, { passive: false, capture: true }),
 		on(document, 'touchend', onTouchEnd, { passive: false, capture: true }),

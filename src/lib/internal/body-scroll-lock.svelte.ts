@@ -22,6 +22,7 @@ let isInCleanupTransition = false;
 
 function cleanupTouchMoveListener() {
 	stopTouchMoveListener?.();
+	stopTouchMoveListener = null;
 }
 
 const anyLocked = boxWith(() => {
@@ -41,23 +42,47 @@ const anyLocked = boxWith(() => {
 let cleanupScheduledAt: number | null = null;
 
 const bodyLockStackCount = new SharedState(() => {
+	const doc = BROWSER && typeof document !== 'undefined' ? document : null;
+	const win = doc?.defaultView ?? (BROWSER && typeof window !== 'undefined' ? window : null);
+	let disposed = false;
+
+	function getDOM() {
+		if (!doc?.body || !doc.documentElement || !win) return null;
+		return {
+			body: doc.body,
+			documentElement: doc.documentElement,
+			doc,
+			win,
+		};
+	}
+
 	function resetBodyStyle() {
-		if (!BROWSER) return;
-		document.body.setAttribute('style', initialBodyStyle ?? '');
-		document.body.style.removeProperty('--scrollbar-width');
-		isIOS && stopTouchMoveListener?.();
+		const dom = getDOM();
+		if (!dom) {
+			initialBodyStyle = null;
+			return;
+		}
+		dom.body.setAttribute('style', initialBodyStyle ?? '');
+		dom.body.style.removeProperty('--scrollbar-width');
+		if (isIOS) {
+			cleanupTouchMoveListener();
+		}
 		// reset initialBodyStyle so next locker captures the correct styles
 		initialBodyStyle = null;
 	}
 
 	function cancelPendingCleanup() {
 		if (cleanupTimeoutId === null) return;
-		window.clearTimeout(cleanupTimeoutId);
+		win?.clearTimeout(cleanupTimeoutId);
 		cleanupTimeoutId = null;
 	}
 
 	function scheduleCleanupIfNoNewLocks(delay: number | null, callback: () => void) {
 		cancelPendingCleanup();
+		if (!win) {
+			isInCleanupTransition = false;
+			return;
+		}
 		isInCleanupTransition = true;
 
 		cleanupScheduledAt = Date.now();
@@ -89,13 +114,15 @@ const bodyLockStackCount = new SharedState(() => {
 		};
 
 		const actualDelay = delay === null ? 24 : delay;
-		cleanupTimeoutId = window.setTimeout(cleanupFn, actualDelay);
+		cleanupTimeoutId = win.setTimeout(cleanupFn, actualDelay);
 	}
 
 	function ensureInitialStyleCaptured() {
+		const dom = getDOM();
+		if (!dom) return;
 		// only capture initial style once, when no locks exist and no cleanup is in progress
 		if (initialBodyStyle === null && lockMap.size === 0 && !isInCleanupTransition) {
-			initialBodyStyle = document.body.getAttribute('style');
+			initialBodyStyle = dom.body.getAttribute('style');
 		}
 	}
 
@@ -103,6 +130,8 @@ const bodyLockStackCount = new SharedState(() => {
 		anyLocked.current;
 		untrack(() => {
 			if (!anyLocked.current) return;
+			const dom = getDOM();
+			if (!dom) return;
 
 			// ensure we've captured the initial style before applying any lock styles
 			ensureInitialStyleCaptured();
@@ -110,14 +139,14 @@ const bodyLockStackCount = new SharedState(() => {
 			// if we're applying lock styles, we're no longer in a cleanup transition
 			isInCleanupTransition = false;
 
-			const htmlStyle = getComputedStyle(document.documentElement);
-			const bodyStyle = getComputedStyle(document.body);
+			const htmlStyle = dom.win.getComputedStyle(dom.documentElement);
+			const bodyStyle = dom.win.getComputedStyle(dom.body);
 
 			// check if scrollbar-gutter: stable is already handling scrollbar space
 			const hasStableGutter = htmlStyle.scrollbarGutter?.includes('stable') || bodyStyle.scrollbarGutter?.includes('stable');
 
 			// TODO: account for RTL direction, etc.
-			const verticalScrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+			const verticalScrollbarWidth = dom.win.innerWidth - dom.documentElement.clientWidth;
 			const paddingRight = Number.parseInt(bodyStyle.paddingRight ?? '0', 10);
 
 			const config = {
@@ -127,19 +156,20 @@ const bodyLockStackCount = new SharedState(() => {
 
 			// only add padding compensation if stable gutter isn't handling it
 			if (verticalScrollbarWidth > 0 && !hasStableGutter) {
-				document.body.style.paddingRight = `${config.padding}px`;
-				document.body.style.marginRight = `${config.margin}px`;
-				document.body.style.setProperty('--scrollbar-width', `${verticalScrollbarWidth}px`);
+				dom.body.style.paddingRight = `${config.padding}px`;
+				dom.body.style.marginRight = `${config.margin}px`;
+				dom.body.style.setProperty('--scrollbar-width', `${verticalScrollbarWidth}px`);
 			}
-			document.body.style.overflow = 'hidden';
+			dom.body.style.overflow = 'hidden';
 
-			if (isIOS) {
-				// IOS devices are special and require a touchmove listener to prevent scrolling
+			if (isIOS && !stopTouchMoveListener) {
+				// IOS devices are special and require a touchmove listener to prevent scrolling.
+				// Guard against duplicate listeners when concurrent locks mutate lockMap.
 				stopTouchMoveListener = on(
-					document,
+					dom.doc,
 					'touchmove',
 					(e) => {
-						if (e.target !== document.documentElement) return;
+						if (e.target !== dom.documentElement) return;
 
 						if (e.touches.length > 1) return;
 						e.preventDefault();
@@ -157,13 +187,20 @@ const bodyLockStackCount = new SharedState(() => {
 			 * focus/interaction.
 			 */
 			tick().then(() => {
-				document.body.style.pointerEvents = 'none';
-				document.body.style.overflow = 'hidden';
+				const latestDOM = getDOM();
+				if (disposed || !latestDOM || !isAnyLocked(lockMap)) return;
+				latestDOM.body.style.pointerEvents = 'none';
+				latestDOM.body.style.overflow = 'hidden';
 			});
 		});
 	});
 
-	$effect(() => cleanupTouchMoveListener);
+	$effect(() => {
+		return () => {
+			disposed = true;
+			cleanupTouchMoveListener();
+		};
+	});
 
 	return {
 		get lockMap() {

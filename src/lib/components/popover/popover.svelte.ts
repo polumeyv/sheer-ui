@@ -21,7 +21,7 @@ import type {
 import { isElement } from '@polumeyv/utilities/dom';
 import type { Measurable } from '$lib/internal/floating-svelte/types.js';
 import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
-import { isTabbable } from 'tabbable';
+import { isTabbable } from '$lib/internal/tabbable.js';
 
 const popoverAttrs = createBitsAttrs({
 	component: 'popover',
@@ -377,11 +377,6 @@ export class PopoverContentState {
 		if (e.defaultPrevented) return;
 		this.root.handleClose();
 	};
-
-	// Always mounted now — the native popover toggles `display` itself (display … allow-discrete).
-	get shouldRender(): boolean {
-		return true;
-	}
 
 	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open.current }));
 

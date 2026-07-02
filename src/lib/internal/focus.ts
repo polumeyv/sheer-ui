@@ -1,6 +1,6 @@
 import { getDocument } from '$lib/internal/tools/index.js';
 import { isSelectableInput } from '@polumeyv/utilities/dom';
-import { tabbable } from 'tabbable';
+import { getTabbableCandidates as getInternalTabbableCandidates } from './tabbable.js';
 
 export type FocusableTarget = HTMLElement;
 
@@ -42,7 +42,7 @@ export function focusFirst(candidates: HTMLElement[], { select = false } = {}, g
 }
 
 export function getTabbableCandidates(container: HTMLElement) {
-	return tabbable(container) as HTMLElement[];
+	return getInternalTabbableCandidates(container);
 }
 
 export function getTabbableEdges(container: HTMLElement) {

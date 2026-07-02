@@ -139,17 +139,12 @@ export function parseAnyDateValue(value: string, type: string): DateValue {
 			throw new Error(`Unknown date type: ${type}`);
 	}
 }
-
-function isCalendarDateTime(dateValue: DateValue): dateValue is CalendarDateTime {
-	return dateValue instanceof CalendarDateTime;
-}
-
 export function isZonedDateTime(dateValue: DateValue | TimeValue): dateValue is ZonedDateTime {
 	return dateValue instanceof ZonedDateTime;
 }
 
 export function hasTime(dateValue: DateValue): dateValue is CalendarDateTime | ZonedDateTime {
-	return isCalendarDateTime(dateValue) || isZonedDateTime(dateValue);
+	return dateValue instanceof CalendarDateTime || isZonedDateTime(dateValue);
 }
 
 /**

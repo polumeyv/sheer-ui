@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import FloatingLayer from '../../utilities/floating-layer/components/floating-layer.svelte';
-	import { type WritableBox, boxWith } from '$lib/internal/tools/index.js';
+	import { type WritableBox, boxWith, repairBindable } from '$lib/internal/tools/index.js';
 	import { SelectRootState } from '../select.svelte.js';
 	import type { SelectRootProps } from '../types.js';
 	import SelectHiddenInput from './select-hidden-input.svelte';
-	import { untrack } from 'svelte';
 
 	let {
 		value = $bindable(),
@@ -29,19 +29,13 @@
 		value = type === 'single' ? '' : [];
 	}
 
-	// SSR/initial setup: Select owns a mode-specific controlled value.
-	repairUndefinedControlledValue();
-
-	$effect.pre(() => {
-		value;
-
-		untrack(() => repairUndefinedControlledValue());
-	});
+	// Select owns a mode-specific controlled value.
+	repairBindable(() => value, repairUndefinedControlledValue);
 
 	let inputValue = $state('');
 
 	const rootState = SelectRootState.create({
-		type,
+		type: untrack(() => type),
 		value: boxWith(
 			() => value!,
 			(v) => {

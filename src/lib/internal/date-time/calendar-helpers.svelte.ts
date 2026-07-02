@@ -1,5 +1,5 @@
 import { type DateValue, endOfMonth, isSameDay, isSameMonth, startOfMonth } from '@internationalized/date';
-import { type ReadableBox, type WritableBox, getDocument, styleToString } from '$lib/internal/tools/index.js';
+import { type ReadableBox, type WritableBox, getDocument, srOnlyStylesString } from '$lib/internal/tools/index.js';
 import { tick, untrack } from 'svelte';
 import {
 	getDaysInMonth,
@@ -20,85 +20,38 @@ import { BROWSER } from '@polumeyv/utilities/env';
 import { kbd } from '$lib/internal/kbd.js';
 import type { DateMatcher, Month } from '$lib/internal/index.js';
 
-/**
- * Checks if a given node is a calendar cell element.
- *
- * @param node - The node to check.
- */
-export function isCalendarDayNode(node: unknown): node is HTMLElement {
-	if (!isHTMLElement(node)) return false;
-	if (!node.hasAttribute('data-bits-day')) return false;
-	return true;
-}
+/** Is `node` a calendar cell? */
+export const isCalendarDayNode = (node: unknown): node is HTMLElement => isHTMLElement(node) && node.hasAttribute('data-bits-day');
 
-/**
- * Retrieves an array of date values representing the days between
- * the provided start and end dates.
- */
-export function getDaysBetween(start: DateValue, end: DateValue) {
+/** Date values strictly between `start` and `end` (exclusive of both). */
+export const getDaysBetween = (start: DateValue, end: DateValue) => {
 	const days: DateValue[] = [];
-	let dCurrent = start.add({ days: 1 });
-	const dEnd = end;
-	while (dCurrent.compare(dEnd) < 0) {
-		days.push(dCurrent);
-		dCurrent = dCurrent.add({ days: 1 });
-	}
+	for (let d = start.add({ days: 1 }); d.compare(end) < 0; d = d.add({ days: 1 })) days.push(d);
 	return days;
-}
+};
 
 export type CreateMonthProps = {
-	/**
-	 * The date object representing the month's date (usually the first day of the month).
-	 */
 	dateObj: DateValue;
-
-	/**
-	 * The day of the week to start the calendar on (0 for Sunday, 1 for Monday, etc.).
-	 */
+	/** 0 = Sunday, 1 = Monday, etc. */
 	weekStartsOn: number | undefined;
-
-	/**
-	 * Whether to always render 6 weeks in the calendar, even if the month doesn't
-	 * span 6 weeks.
-	 */
+	/** Always render 6 weeks, even if the month doesn't span that many. */
 	fixedWeeks: boolean;
-
-	/**
-	 * The locale to use when creating the calendar month.
-	 */
 	locale: string;
 };
 
 /**
- * Creates a calendar month object.
- *
- * @remarks
- * Given a date, this function returns an object containing
- * the necessary values to render a calendar month, including
- * the month's date (the first day of that month), which can be
- * used to render the name of the month, an array of all dates
- * in that month, and an array of weeks. Each week is an array
- * of dates, useful for rendering an accessible calendar grid
- * using a loop and table elements.
- *
+ * Builds a `{ value, dates, weeks }` calendar-month object: `value` is the month's
+ * date, `dates` is every day shown (including lead/trail days from neighboring
+ * months), `weeks` chunks those into rows of 7 for grid rendering.
  */
-function createMonth(props: CreateMonthProps): Month<DateValue> {
-	const { dateObj, weekStartsOn, fixedWeeks, locale } = props;
-	const daysInMonth = getDaysInMonth(dateObj);
-
-	const datesArray = Array.from({ length: daysInMonth }, (_, i) => dateObj.set({ day: i + 1 }));
-
+function createMonth({ dateObj, weekStartsOn, fixedWeeks, locale }: CreateMonthProps): Month<DateValue> {
+	const datesArray = Array.from({ length: getDaysInMonth(dateObj) }, (_, i) => dateObj.set({ day: i + 1 }));
 	const firstDayOfMonth = startOfMonth(dateObj);
 	const lastDayOfMonth = endOfMonth(dateObj);
 
-	const lastSunday =
-		weekStartsOn !== undefined
-			? getLastFirstDayOfWeek(firstDayOfMonth, weekStartsOn, 'en-US')
-			: getLastFirstDayOfWeek(firstDayOfMonth, 0, locale);
-	const nextSaturday =
-		weekStartsOn !== undefined
-			? getNextLastDayOfWeek(lastDayOfMonth, weekStartsOn, 'en-US')
-			: getNextLastDayOfWeek(lastDayOfMonth, 0, locale);
+	const [weekStart, weekLocale] = weekStartsOn !== undefined ? [weekStartsOn, 'en-US'] : [0, locale];
+	const lastSunday = getLastFirstDayOfWeek(firstDayOfMonth, weekStart, weekLocale);
+	const nextSaturday = getNextLastDayOfWeek(lastDayOfMonth, weekStart, weekLocale);
 
 	const lastMonthDays = getDaysBetween(lastSunday.subtract({ days: 1 }), firstDayOfMonth);
 	const nextMonthDays = getDaysBetween(lastDayOfMonth, nextSaturday.add({ days: 1 }));
@@ -107,146 +60,49 @@ function createMonth(props: CreateMonthProps): Month<DateValue> {
 
 	if (fixedWeeks && totalDays < 42) {
 		const extraDays = 42 - totalDays;
-
-		let startFrom = nextMonthDays[nextMonthDays.length - 1];
-
-		if (!startFrom) {
-			startFrom = dateObj.add({ months: 1 }).set({ day: 1 });
-		}
-
-		let length = extraDays;
-		if (nextMonthDays.length === 0) {
-			length = extraDays - 1;
-			nextMonthDays.push(startFrom);
-		}
-
-		const extraDaysArray = Array.from({ length }, (_, i) => {
-			const incr = i + 1;
-			return startFrom.add({ days: incr });
-		});
-		nextMonthDays.push(...extraDaysArray);
+		const startFrom = nextMonthDays.at(-1) ?? dateObj.add({ months: 1 }).set({ day: 1 });
+		const wasEmpty = nextMonthDays.length === 0;
+		if (wasEmpty) nextMonthDays.push(startFrom);
+		nextMonthDays.push(...Array.from({ length: wasEmpty ? extraDays - 1 : extraDays }, (_, i) => startFrom.add({ days: i + 1 })));
 	}
 
 	const allDays = lastMonthDays.concat(datesArray, nextMonthDays);
-
-	const weeks = chunk(allDays, 7);
-
-	return {
-		value: dateObj,
-		dates: allDays,
-		weeks,
-	};
+	return { value: dateObj, dates: allDays, weeks: chunk(allDays, 7) };
 }
 
-type SetMonthProps = CreateMonthProps & {
-	numberOfMonths: number | undefined;
-	currentMonths?: Month<DateValue>[];
+type SetMonthProps = CreateMonthProps & { numberOfMonths: number | undefined; currentMonths?: Month<DateValue>[] };
+
+export const createMonths = ({ numberOfMonths = 1, dateObj, ...monthProps }: SetMonthProps) => {
+	const months = [createMonth({ ...monthProps, dateObj })];
+	for (let i = 1; i < numberOfMonths; i++) months.push(createMonth({ ...monthProps, dateObj: dateObj.add({ months: i }) }));
+	return months;
 };
 
-export function createMonths(props: SetMonthProps) {
-	const { numberOfMonths, dateObj, ...monthProps } = props;
+export const getSelectableCells = (calendarNode: HTMLElement | null) =>
+	calendarNode
+		? Array.from(calendarNode.querySelectorAll('[data-bits-day]:not([data-disabled]):not([data-outside-visible-months])')).filter(
+				isHTMLElement,
+			)
+		: [];
 
-	const months: Month<DateValue>[] = [];
-
-	if (!numberOfMonths || numberOfMonths === 1) {
-		months.push(
-			createMonth({
-				...monthProps,
-				dateObj,
-			}),
-		);
-		return months;
-	}
-
-	months.push(
-		createMonth({
-			...monthProps,
-			dateObj,
-		}),
-	);
-
-	// Create all the months, starting with the current month
-	for (let i = 1; i < numberOfMonths; i++) {
-		const nextMonth = dateObj.add({ months: i });
-		months.push(
-			createMonth({
-				...monthProps,
-				dateObj: nextMonth,
-			}),
-		);
-	}
-
-	return months;
-}
-
-export function getSelectableCells(calendarNode: HTMLElement | null) {
-	if (!calendarNode) return [];
-	const selectableSelector = `[data-bits-day]:not([data-disabled]):not([data-outside-visible-months])`;
-
-	return Array.from(calendarNode.querySelectorAll(selectableSelector)).filter((el): el is HTMLElement => isHTMLElement(el));
-}
-
-/**
- * A helper function to extract the date from the `data-value`
- * attribute of a date cell and set it as the placeholder value.
- *
- * Shared between the calendar and range calendar builders.
- *
- * @param node - The node to extract the date from.
- * @param placeholder - The placeholder value store which will be set to the extracted date.
- */
-export function setPlaceholderToNodeValue(node: HTMLElement, placeholder: WritableBox<DateValue>) {
+/** Reads `data-value` off `node` and writes it into `placeholder`. Shared by calendar + range calendar. */
+export const setPlaceholderToNodeValue = (node: HTMLElement, placeholder: WritableBox<DateValue>) => {
 	const cellValue = node.getAttribute('data-value');
-	if (!cellValue) return;
-	placeholder.current = parseStringToDateValue(cellValue, placeholder.current);
-}
+	if (cellValue) placeholder.current = parseStringToDateValue(cellValue, placeholder.current);
+};
 
 type ShiftCalendarFocusProps = {
-	/**
-	 * The day node with current focus.
-	 */
 	node: HTMLElement;
-
-	/**
-	 * The number of days to shift the focus by.
-	 */
 	add: number;
-
-	/**
-	 * The `placeholder` value box
-	 */
 	placeholder: WritableBox<DateValue>;
-
-	/**
-	 * The calendar node.
-	 */
 	calendarNode: HTMLElement | null;
-
-	/**
-	 * Whether the previous button is disabled.
-	 */
 	isPrevButtonDisabled: boolean;
-
-	/**
-	 * Whether the next button is disabled.
-	 */
 	isNextButtonDisabled: boolean;
-
-	/**
-	 * The months array of the calendar.
-	 */
 	months: Month<DateValue>[];
-
-	/**
-	 * The number of months being displayed in the calendar.
-	 */
 	numberOfMonths: number;
 };
 
-/**
- * Shared logic for shifting focus between cells in the
- * calendar and range calendar.
- */
+/** Shared logic for shifting focus between cells in the calendar and range calendar. */
 export function shiftCalendarFocus({
 	node,
 	add,
@@ -260,92 +116,37 @@ export function shiftCalendarFocus({
 	const candidateCells = getSelectableCells(calendarNode);
 	if (!candidateCells.length) return;
 
-	const index = candidateCells.indexOf(node);
-	const nextIndex = index + add;
+	const nextIndex = candidateCells.indexOf(node) + add;
 
-	/**
-	 * If the next cell is within the bounds of the displayed cells,
-	 * easy day, we just focus it.
-	 */
+	// Easy case: next cell is within the displayed range.
 	if (isValidIndex(nextIndex, candidateCells)) {
 		const nextCell = candidateCells[nextIndex]!;
 		setPlaceholderToNodeValue(nextCell, placeholder);
 		return nextCell.focus();
 	}
 
-	/**
-	 * When the next cell falls outside the displayed cells range,
-	 * we update the focus to the previous or next month based on the
-	 * direction, and then focus on the relevant cell.
-	 */
+	// Overflowed the displayed cells — shift a month and refetch.
+	const goingBack = nextIndex < 0;
+	if (goingBack ? isPrevButtonDisabled : isNextButtonDisabled) return;
 
-	if (nextIndex < 0) {
-		/**
-		 * To handle negative indices, we rewind by one month,
-		 * retrieve candidate cells for that month, and shift focus
-		 * by the difference between the nextIndex starting from the end
-		 * of the array.
-		 */
+	const firstMonth = months[0]?.value;
+	if (!firstMonth) return;
 
-		// shift the calendar back a month unless prev month is disabled
-		if (isPrevButtonDisabled) return;
+	placeholder.current = goingBack ? firstMonth.subtract({ months: numberOfMonths }) : firstMonth.add({ months: numberOfMonths });
 
-		const firstMonth = months[0]?.value;
-		if (!firstMonth) return;
-		placeholder.current = firstMonth.subtract({ months: numberOfMonths });
+	// Without a tick here, it seems to be too quick for the DOM to update
+	tick().then(() => {
+		const newCandidateCells = getSelectableCells(calendarNode);
+		if (!newCandidateCells.length) return;
 
-		// Without a tick here, it seems to be too quick for the DOM to update
+		const newIndex = goingBack ? newCandidateCells.length - Math.abs(nextIndex) : nextIndex - candidateCells.length;
+		if (!isValidIndex(newIndex, newCandidateCells)) return;
 
-		tick().then(() => {
-			const newCandidateCells = getSelectableCells(calendarNode);
-			if (!newCandidateCells.length) return;
-
-			/**
-			 * Starting at the end of the array, shift focus by the diff
-			 * between the nextIndex and the length of the array, since the
-			 * nextIndex is negative.
-			 */
-			const newIndex = newCandidateCells.length - Math.abs(nextIndex);
-			if (isValidIndex(newIndex, newCandidateCells)) {
-				const newCell = newCandidateCells[newIndex]!;
-				setPlaceholderToNodeValue(newCell, placeholder);
-				return newCell.focus();
-			}
-		});
-	}
-
-	if (nextIndex >= candidateCells.length) {
-		/**
-		 * Since we're in the positive index range, we need to go forward
-		 * a month, refetch the candidate cells within that month, and then
-		 * starting at the beginning of the array, shift focus by the nextIndex
-		 * amount.
-		 */
-
-		// shift the calendar forward a month unless next month is disabled
-		if (isNextButtonDisabled) return;
-
-		const firstMonth = months[0]?.value;
-		if (!firstMonth) return;
-		placeholder.current = firstMonth.add({ months: numberOfMonths });
-
-		tick().then(() => {
-			const newCandidateCells = getSelectableCells(calendarNode);
-			if (!newCandidateCells.length) return;
-
-			/**
-			 * We need to determine how far into the next month we need to go
-			 * to get the next index. So if we only went over the previous month
-			 * by one, we need to go into the next month by 1 to get the right index.
-			 */
-			const newIndex = nextIndex - candidateCells.length;
-
-			if (isValidIndex(newIndex, newCandidateCells)) {
-				const nextCell = newCandidateCells[newIndex]!;
-				return nextCell.focus();
-			}
-		});
-	}
+		const newCell = newCandidateCells[newIndex]!;
+		// NOTE: original only synced placeholder on the "going back" path — preserved as-is.
+		if (goingBack) setPlaceholderToNodeValue(newCell, placeholder);
+		return newCell.focus();
+	});
 }
 
 type HandleCalendarKeydownProps = {
@@ -356,38 +157,31 @@ type HandleCalendarKeydownProps = {
 };
 const ARROW_KEYS = [kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT] as const;
 const SELECT_KEYS: string[] = [kbd.ENTER, kbd.SPACE];
+const kbdFocusMap: Record<(typeof ARROW_KEYS)[number], number> = {
+	[kbd.ARROW_DOWN]: 7,
+	[kbd.ARROW_UP]: -7,
+	[kbd.ARROW_LEFT]: -1,
+	[kbd.ARROW_RIGHT]: 1,
+};
 
-/**
- * Shared keyboard event handler for the calendar and range calendar.
- */
+/** Shared keyboard event handler for the calendar and range calendar. */
 export function handleCalendarKeydown({ event, handleCellClick, shiftFocus, placeholderValue }: HandleCalendarKeydownProps) {
 	const currentCell = event.target;
 	if (!isCalendarDayNode(currentCell)) return;
 	// oxlint-disable-next-line no-explicit-any
-	if (!ARROW_KEYS.includes(event.key as any) && !SELECT_KEYS.includes(event.key)) return;
+	const isArrow = ARROW_KEYS.includes(event.key as any);
+	if (!isArrow && !SELECT_KEYS.includes(event.key)) return;
 
 	event.preventDefault();
 
-	const kbdFocusMap: Record<(typeof ARROW_KEYS)[number], number> = {
-		[kbd.ARROW_DOWN]: 7,
-		[kbd.ARROW_UP]: -7,
-		[kbd.ARROW_LEFT]: -1,
-		[kbd.ARROW_RIGHT]: 1,
-	};
-
-	// oxlint-disable-next-line no-explicit-any
-	if (ARROW_KEYS.includes(event.key as any)) {
+	if (isArrow) {
 		const add = kbdFocusMap[event.key as (typeof ARROW_KEYS)[number]];
-		if (add !== undefined) {
-			shiftFocus(currentCell, add);
-		}
+		if (add !== undefined) shiftFocus(currentCell, add);
+		return;
 	}
 
-	if (SELECT_KEYS.includes(event.key)) {
-		const cellValue = currentCell.getAttribute('data-value');
-		if (!cellValue) return;
-		handleCellClick(event, parseStringToDateValue(cellValue, placeholderValue));
-	}
+	const cellValue = currentCell.getAttribute('data-value');
+	if (cellValue) handleCellClick(event, parseStringToDateValue(cellValue, placeholderValue));
 }
 
 type HandleCalendarPageProps = {
@@ -401,83 +195,32 @@ type HandleCalendarPageProps = {
 	setPlaceholder: (date: DateValue) => void;
 };
 
-export function handleCalendarNextPage({
-	months,
-	setMonths,
-	numberOfMonths,
-	pagedNavigation,
-	weekStartsOn,
-	locale,
-	fixedWeeks,
-	setPlaceholder,
-}: HandleCalendarPageProps) {
+function handleCalendarPageChange(
+	{ months, setMonths, numberOfMonths, pagedNavigation, weekStartsOn, locale, fixedWeeks, setPlaceholder }: HandleCalendarPageProps,
+	direction: 1 | -1,
+) {
 	const firstMonth = months[0]?.value;
 	if (!firstMonth) return;
+
 	if (pagedNavigation) {
-		setPlaceholder(firstMonth.add({ months: numberOfMonths }));
-	} else {
-		// Calculate the target date first, then update both months and placeholder
-		// to ensure they're synchronized and prevent useMonthViewPlaceholderSync from
-		// double-triggering
-		const targetDate = firstMonth.add({ months: 1 });
-		const newMonths = createMonths({
-			dateObj: targetDate,
-			weekStartsOn,
-			locale,
-			fixedWeeks,
-			numberOfMonths,
-		});
-
-		setPlaceholder(targetDate);
-		setMonths(newMonths);
+		setPlaceholder(direction === 1 ? firstMonth.add({ months: numberOfMonths }) : firstMonth.subtract({ months: numberOfMonths }));
+		return;
 	}
+
+	// Compute the target date once so placeholder + months update in sync
+	// (avoids double-triggering useMonthViewPlaceholderSync).
+	const targetDate = direction === 1 ? firstMonth.add({ months: 1 }) : firstMonth.subtract({ months: 1 });
+	setPlaceholder(targetDate);
+	setMonths(createMonths({ dateObj: targetDate, weekStartsOn, locale, fixedWeeks, numberOfMonths }));
 }
 
-export function handleCalendarPrevPage({
-	months,
-	setMonths,
-	numberOfMonths,
-	pagedNavigation,
-	weekStartsOn,
-	locale,
-	fixedWeeks,
-	setPlaceholder,
-}: HandleCalendarPageProps) {
-	const firstMonth = months[0]?.value;
-	if (!firstMonth) return;
-	if (pagedNavigation) {
-		setPlaceholder(firstMonth.subtract({ months: numberOfMonths }));
-	} else {
-		// Calculate the target date first, then update both months and placeholder
-		// to ensure they're synchronized and prevent useMonthViewPlaceholderSync from
-		// double-triggering
-		const targetDate = firstMonth.subtract({ months: 1 });
-		const newMonths = createMonths({
-			dateObj: targetDate,
-			weekStartsOn,
-			locale,
-			fixedWeeks,
-			numberOfMonths,
-		});
+export const handleCalendarNextPage = (props: HandleCalendarPageProps) => handleCalendarPageChange(props, 1);
+export const handleCalendarPrevPage = (props: HandleCalendarPageProps) => handleCalendarPageChange(props, -1);
 
-		setPlaceholder(targetDate);
-		setMonths(newMonths);
-	}
-}
+type GetWeekdaysProps = { months: Month<DateValue>[]; weekdayFormat: Intl.DateTimeFormatOptions['weekday']; formatter: Formatter };
 
-type GetWeekdaysProps = {
-	months: Month<DateValue>[];
-	weekdayFormat: Intl.DateTimeFormatOptions['weekday'];
-	formatter: Formatter;
-};
-
-export function getWeekdays({ months, formatter, weekdayFormat }: GetWeekdaysProps) {
-	if (!months.length) return [];
-	const firstMonth = months[0]!;
-	const firstWeek = firstMonth.weeks[0];
-	if (!firstWeek) return [];
-	return firstWeek.map((date) => formatter.dayOfWeek(toDate(date), weekdayFormat));
-}
+export const getWeekdays = ({ months, formatter, weekdayFormat }: GetWeekdaysProps) =>
+	(months[0]?.weeks[0] ?? []).map((date) => formatter.dayOfWeek(toDate(date), weekdayFormat));
 
 type UseMonthViewSyncProps = {
 	weekStartsOn: ReadableBox<number | undefined>;
@@ -488,10 +231,7 @@ type UseMonthViewSyncProps = {
 	setMonths: (months: Month<DateValue>[]) => void;
 };
 
-/**
- * Updates the displayed months based on changes in the options values,
- * which determines the month to show in the calendar.
- */
+/** Rebuilds the displayed months whenever the option values change. */
 export function useMonthViewOptionsSync(props: UseMonthViewSyncProps) {
 	$effect(() => {
 		const weekStartsOn = props.weekStartsOn.current;
@@ -502,56 +242,35 @@ export function useMonthViewOptionsSync(props: UseMonthViewSyncProps) {
 		untrack(() => {
 			const placeholder = props.placeholder.current;
 			if (!placeholder) return;
-			const defaultMonthProps = {
-				weekStartsOn,
-				locale,
-				fixedWeeks,
-				numberOfMonths,
-			};
-
-			props.setMonths(createMonths({ ...defaultMonthProps, dateObj: placeholder }));
+			props.setMonths(createMonths({ weekStartsOn, locale, fixedWeeks, numberOfMonths, dateObj: placeholder }));
 		});
 	});
 }
 
-type CreateAccessibleHeadingProps = {
-	calendarNode: HTMLElement;
-	label: string;
-	accessibleHeadingId: string;
-};
+type CreateAccessibleHeadingProps = { calendarNode: HTMLElement; label: string; accessibleHeadingId: string };
 
-/**
- * Creates an accessible heading element for the calendar.
- * Returns a function that removes the heading element.
- */
+/** Creates a visually-hidden accessible heading for the calendar. Returns a cleanup fn. */
 export function createAccessibleHeading({ calendarNode, label, accessibleHeadingId }: CreateAccessibleHeadingProps) {
 	const doc = getDocument(calendarNode);
 	const div = doc.createElement('div');
-	div.style.cssText = styleToString({
-		border: '0px',
-		clip: 'rect(0px, 0px, 0px, 0px)',
-		clipPath: 'inset(50%)',
-		height: '1px',
-		margin: '-1px',
-		overflow: 'hidden',
-		padding: '0px',
-		position: 'absolute',
-		whiteSpace: 'nowrap',
-		width: '1px',
+	div.style.cssText = srOnlyStylesString;
+
+	const h2 = doc.createElement('h2');
+	Object.assign(h2, {
+		textContent: label,
+		id: accessibleHeadingId,
+		ariaLive: 'polite',
+		ariaAtomic: 'true',
 	});
-	const h2 = doc.createElement('div');
-	h2.textContent = label;
-	h2.id = accessibleHeadingId;
-	h2.role = 'heading';
-	h2.ariaLevel = '2';
+
 	calendarNode.insertBefore(div, calendarNode.firstChild);
 	div.appendChild(h2);
 
 	return () => {
-		const h2 = doc.getElementById(accessibleHeadingId);
-		if (!h2) return;
-		div.parentElement?.removeChild(div);
-		h2.remove();
+		const heading = doc.getElementById(accessibleHeadingId);
+		if (!heading) return;
+		div.remove();
+		heading.remove();
 	};
 }
 
@@ -577,69 +296,40 @@ export function useMonthViewPlaceholderSync({
 	$effect(() => {
 		placeholder.current;
 		untrack(() => {
-			/**
-			 * If the placeholder's month is already in this visible months,
-			 * we don't need to do anything.
-			 */
-			if (getVisibleMonths().some((month) => isSameMonth(month, placeholder.current))) {
-				return;
-			}
-
-			const defaultMonthProps = {
-				weekStartsOn: weekStartsOn.current,
-				locale: locale.current,
-				fixedWeeks: fixedWeeks.current,
-				numberOfMonths: numberOfMonths.current,
-			};
-
-			setMonths(createMonths({ ...defaultMonthProps, dateObj: placeholder.current }));
+			// Already showing the placeholder's month — nothing to do.
+			if (getVisibleMonths().some((month) => isSameMonth(month, placeholder.current))) return;
+			setMonths(
+				createMonths({
+					weekStartsOn: weekStartsOn.current,
+					locale: locale.current,
+					fixedWeeks: fixedWeeks.current,
+					numberOfMonths: numberOfMonths.current,
+					dateObj: placeholder.current,
+				}),
+			);
 		});
 	});
 }
 
-type GetIsNextButtonDisabledProps = {
-	maxValue: DateValue | undefined;
-	months: Month<DateValue>[];
-	disabled: boolean;
-};
+type GetIsNextButtonDisabledProps = { maxValue: DateValue | undefined; months: Month<DateValue>[]; disabled: boolean };
 
 export function getIsNextButtonDisabled({ maxValue, months, disabled }: GetIsNextButtonDisabledProps) {
 	if (!maxValue || !months.length) return false;
 	if (disabled) return true;
-	const lastMonthInView = months[months.length - 1]?.value;
-	if (!lastMonthInView) return false;
-	const firstMonthOfNextPage = lastMonthInView
-		.add({
-			months: 1,
-		})
-		.set({ day: 1 });
-	return isAfter(firstMonthOfNextPage, maxValue);
+	const lastMonth = months.at(-1)?.value;
+	return lastMonth ? isAfter(lastMonth.add({ months: 1 }).set({ day: 1 }), maxValue) : false;
 }
 
-type GetIsPrevButtonDisabledProps = {
-	minValue: DateValue | undefined;
-	months: Month<DateValue>[];
-	disabled: boolean;
-};
+type GetIsPrevButtonDisabledProps = { minValue: DateValue | undefined; months: Month<DateValue>[]; disabled: boolean };
 
 export function getIsPrevButtonDisabled({ minValue, months, disabled }: GetIsPrevButtonDisabledProps) {
 	if (!minValue || !months.length) return false;
 	if (disabled) return true;
-	const firstMonthInView = months[0]?.value;
-	if (!firstMonthInView) return false;
-	const lastMonthOfPrevPage = firstMonthInView
-		.subtract({
-			months: 1,
-		})
-		.set({ day: 35 });
-	return isBefore(lastMonthOfPrevPage, minValue);
+	const firstMonth = months[0]?.value;
+	return firstMonth ? isBefore(firstMonth.subtract({ months: 1 }).set({ day: 35 }), minValue) : false;
 }
 
-type GetCalendarHeadingValueProps = {
-	months: Month<DateValue>[];
-	formatter: Formatter;
-	locale: string;
-};
+type GetCalendarHeadingValueProps = { months: Month<DateValue>[]; formatter: Formatter; locale: string };
 
 export function getCalendarHeadingValue({ months, formatter }: GetCalendarHeadingValueProps) {
 	if (!months.length) return '';
@@ -647,7 +337,7 @@ export function getCalendarHeadingValue({ months, formatter }: GetCalendarHeadin
 	const startMonth = toDate(months[0]!.value);
 	if (months.length === 1) return formatter.fullMonthAndYear(startMonth);
 
-	const endMonth = toDate(months[months.length - 1]!.value);
+	const endMonth = toDate(months.at(-1)!.value);
 	const startMonthName = formatter.fullMonth(startMonth);
 	const endMonthName = formatter.fullMonth(endMonth);
 	const startYear = formatter.fullYear(startMonth);
@@ -658,24 +348,17 @@ export function getCalendarHeadingValue({ months, formatter }: GetCalendarHeadin
 		: `${startMonthName} ${startYear} - ${endMonthName} ${endYear}`;
 }
 
-type GetCalendarElementProps = {
-	fullCalendarLabel: string;
-	id: string;
-	isInvalid: boolean;
-	disabled: boolean;
-	readonly: boolean;
-};
+type GetCalendarElementProps = { fullCalendarLabel: string; id: string; isInvalid: boolean; disabled: boolean; readonly: boolean };
 
-export function getCalendarElementProps({ fullCalendarLabel, id, isInvalid, disabled, readonly }: GetCalendarElementProps) {
-	return {
+export const getCalendarElementProps = ({ fullCalendarLabel, id, isInvalid, disabled, readonly }: GetCalendarElementProps) =>
+	({
 		id,
 		role: 'application',
 		'aria-label': fullCalendarLabel,
 		'data-invalid': boolToEmptyStrOrUndef(isInvalid),
 		'data-disabled': boolToEmptyStrOrUndef(disabled),
 		'data-readonly': boolToEmptyStrOrUndef(readonly),
-	} as const;
-}
+	}) as const;
 
 export type CalendarParts =
 	| 'root'
@@ -696,28 +379,21 @@ export type CalendarParts =
 export function pickerOpenFocus(e: Event) {
 	const doc = getDocument(e.target as HTMLElement);
 	const nodeToFocus = doc.querySelector<HTMLElement>('[data-bits-day][data-focused]');
-	if (nodeToFocus) {
-		e.preventDefault();
-		nodeToFocus?.focus();
-	}
+	if (!nodeToFocus) return;
+	e.preventDefault();
+	nodeToFocus.focus();
 }
 
 export function getFirstNonDisabledDateInView(calendarRef: HTMLElement): DateValue | undefined {
 	if (!BROWSER) return;
-	const daysInView = Array.from(calendarRef.querySelectorAll<HTMLElement>('[data-bits-day]:not([aria-disabled=true])'));
-	if (daysInView.length === 0) return;
-	const element = daysInView[0];
-	const value = element?.getAttribute('data-value');
-	const type = element?.getAttribute('data-type');
+	const [el] = calendarRef.querySelectorAll<HTMLElement>('[data-bits-day]:not([aria-disabled=true])');
+	const value = el?.getAttribute('data-value');
+	const type = el?.getAttribute('data-type');
 	if (!value || !type) return;
 	return parseAnyDateValue(value, type);
 }
 
-/**
- * Ensures the placeholder is not set to a disabled date,
- * which would prevent the user from entering the Calendar
- * via the keyboard.
- */
+/** Keeps the placeholder off disabled dates, so keyboard users always have a focusable cell. */
 export function useEnsureNonDisabledPlaceholder({
 	ref,
 	placeholder,
@@ -733,29 +409,18 @@ export function useEnsureNonDisabledPlaceholder({
 	maxValue: ReadableBox<DateValue | undefined>;
 	defaultPlaceholder: DateValue;
 }) {
-	function isDisabled(date: DateValue) {
-		if (isDateDisabled.current(date)) return true;
-		if (minValue.current && isBefore(date, minValue.current)) return true;
-		if (maxValue.current && isBefore(maxValue.current, date)) return true;
-		return false;
-	}
+	const isDisabled = (date: DateValue) =>
+		isDateDisabled.current(date) ||
+		(!!minValue.current && isBefore(date, minValue.current)) ||
+		(!!maxValue.current && isBefore(maxValue.current, date));
 
 	$effect(() => {
 		ref.current;
 		untrack(() => {
 			if (!ref.current) return;
-			/**
-			 * If the placeholder is still the default placeholder and it's a disabled date, find
-			 * the first available date in the calendar view and set it as the placeholder.
-			 *
-			 * This prevents the placeholder from being a disabled date and no date being tabbable
-			 * preventing the user from entering the Calendar. If all dates in the view are
-			 * disabled, currently that is considered an error on the developer's part and should
-			 * be handled by them.
-			 *
-			 * Perhaps in the future we can introduce a dev-only log message to prevent this from
-			 * being a silent error.
-			 */
+			// If the placeholder is still the (disabled) default, swap it for the
+			// first available date in view so the calendar remains keyboard-reachable.
+			// If every date in view is disabled, that's a dev-side config error.
 			if (placeholder.current && isSameDay(placeholder.current, defaultPlaceholder) && isDisabled(defaultPlaceholder)) {
 				placeholder.current = getFirstNonDisabledDateInView(ref.current) ?? defaultPlaceholder;
 			}
@@ -763,20 +428,10 @@ export function useEnsureNonDisabledPlaceholder({
 	});
 }
 
-export function getDateWithPreviousTime(date: DateValue | undefined, prev: DateValue | undefined) {
-	if (!date || !prev) return date;
-
-	if (hasTime(date) && hasTime(prev)) {
-		return date.set({
-			hour: prev.hour,
-			minute: prev.minute,
-			millisecond: prev.millisecond,
-			second: prev.second,
-		});
-	}
-
-	return date;
-}
+export const getDateWithPreviousTime = (date: DateValue | undefined, prev: DateValue | undefined) =>
+	date && prev && hasTime(date) && hasTime(prev)
+		? date.set({ hour: prev.hour, minute: prev.minute, millisecond: prev.millisecond, second: prev.second })
+		: date;
 
 export const calendarAttrs = createBitsAttrs({
 	component: 'calendar',
@@ -798,19 +453,13 @@ export const calendarAttrs = createBitsAttrs({
 	],
 });
 
-type GetDefaultYearsProps = {
-	placeholderYear: number;
-	minValue: DateValue | undefined;
-	maxValue: DateValue | undefined;
-};
+type GetDefaultYearsProps = { placeholderYear: number; minValue: DateValue | undefined; maxValue: DateValue | undefined };
 
 export function getDefaultYears(opts: GetDefaultYearsProps) {
 	const latestYear = Math.max(opts.placeholderYear, new Date().getFullYear());
 	const initialMinYear = latestYear - 100;
-
 	const minYear = opts.minValue?.year ?? (opts.placeholderYear < initialMinYear ? opts.placeholderYear - 10 : initialMinYear);
 	const maxYear = opts.maxValue?.year ?? latestYear + 10;
-
 	const start = Math.min(minYear, maxYear);
 	return Array.from({ length: maxYear - start + 1 }, (_, i) => start + i);
 }

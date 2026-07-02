@@ -3,9 +3,8 @@ import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$
 import type { Page, PageItem } from './types.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
 import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { getElemDirection } from '$lib/internal/locale.js';
 import { kbd } from '$lib/internal/kbd.js';
-import { getDirectionalKeys } from '$lib/internal/get-directional-keys.js';
+import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
 import { type Orientation, useId } from '$lib/internal/index.js';
 
 const paginationAttrs = createBitsAttrs({
@@ -54,25 +53,21 @@ export class PaginationRootState {
 	readonly hasPrevPage = $derived.by(() => this.opts.page.current > 1);
 	readonly hasNextPage = $derived.by(() => this.opts.page.current < this.totalPages);
 
+	readonly rovingFocusGroup: RovingFocusGroup;
+
 	constructor(opts: PaginationRootStateOpts) {
 		this.opts = opts;
 		this.attachment = attachRef(this.opts.ref);
+		this.rovingFocusGroup = new RovingFocusGroup({
+			candidateSelector: [paginationAttrs.selector('prev'), paginationAttrs.selector('page'), paginationAttrs.selector('next')].join(', '),
+			rootNode: this.opts.ref,
+			loop: this.opts.loop,
+			orientation: this.opts.orientation,
+		});
 	}
 
 	setPage(page: number) {
 		this.opts.page.current = page;
-	}
-
-	getPageTriggerNodes() {
-		const node = this.opts.ref.current;
-		if (!node) return [];
-		return Array.from(node.querySelectorAll<HTMLElement>('[data-pagination-page]'));
-	}
-
-	getButtonNode(type: 'prev' | 'next') {
-		const node = this.opts.ref.current;
-		if (!node) return;
-		return node.querySelector<HTMLElement>(paginationAttrs.selector(type));
 	}
 
 	prevPage() {
@@ -137,7 +132,7 @@ export class PaginationPageState {
 			e.preventDefault();
 			this.root.setPage(this.opts.page.current.value);
 		} else {
-			handleTriggerKeydown(e, this.opts.ref.current, this.root);
+			this.root.rovingFocusGroup.handleKeydown(this.opts.ref.current, e);
 		}
 	}
 
@@ -209,7 +204,7 @@ export class PaginationButtonState {
 			e.preventDefault();
 			this.#action();
 		} else {
-			handleTriggerKeydown(e, this.opts.ref.current, this.root);
+			this.root.rovingFocusGroup.handleKeydown(this.opts.ref.current, e);
 		}
 	}
 
@@ -230,59 +225,6 @@ export class PaginationButtonState {
 //
 // HELPERS
 //
-
-/**
- * Shared logic for handling keyboard navigation on
- * pagination page triggers and prev/next buttons.
- *
- *
- * @param e - KeyboardEvent
- * @param node - The HTMLElement that triggered the event.
- * @param root - The root pagination state instance
- */
-function handleTriggerKeydown(e: KeyboardEvent, node: HTMLElement | null, root: PaginationRootState) {
-	if (!node || !root.opts.ref.current) return;
-	const items = root.getPageTriggerNodes();
-	const nextButton = root.getButtonNode('next');
-	const prevButton = root.getButtonNode('prev');
-
-	if (prevButton) {
-		items.unshift(prevButton);
-	}
-	if (nextButton) {
-		items.push(nextButton);
-	}
-
-	const currentIndex = items.indexOf(node);
-
-	const dir = getElemDirection(root.opts.ref.current);
-
-	const { nextKey, prevKey } = getDirectionalKeys(dir, root.opts.orientation.current);
-
-	const loop = root.opts.loop.current;
-
-	const keyToIndex = {
-		[nextKey]: currentIndex + 1,
-		[prevKey]: currentIndex - 1,
-		[kbd.HOME]: 0,
-		[kbd.END]: items.length - 1,
-	};
-
-	let itemIndex = keyToIndex[e.key];
-	if (itemIndex === undefined) return;
-	e.preventDefault();
-
-	if (itemIndex < 0 && loop) {
-		itemIndex = items.length - 1;
-	} else if (itemIndex === items.length && loop) {
-		itemIndex = 0;
-	}
-
-	const itemToFocus = items[itemIndex];
-	if (!itemToFocus) return;
-
-	itemToFocus.focus();
-}
 
 interface GetPageItemsProps {
 	page?: number;

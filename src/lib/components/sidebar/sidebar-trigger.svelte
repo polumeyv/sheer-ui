@@ -27,7 +27,7 @@
 	type="button"
 	onclick={(e) => {
 		onclick?.(e);
-		sidebar.toggleForViewport();
+		sidebar.toggle();
 	}}
 	{...restProps}>
 	<PanelLeftIcon />

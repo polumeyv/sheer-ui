@@ -12,8 +12,11 @@ import { on } from 'svelte/events';
 import { createAttachmentKey } from 'svelte/attachments';
 import type { EscapeBehaviorType, EscapeLayerImplProps } from './types.js';
 import { kbd } from '$lib/internal/kbd.js';
+import { createLayerStack } from '$lib/internal/layer-stack.js';
 
-globalThis.bitsEscapeLayers ??= new Map<EscapeLayerState, ReadableBox<EscapeBehaviorType>>();
+globalThis.bitsEscapeLayers ??= createLayerStack<EscapeLayerState, ReadableBox<EscapeBehaviorType>>(
+	(box) => box.current === 'close' || box.current === 'ignore',
+);
 
 interface EscapeLayerStateOpts extends ReadableBoxedValues<Required<Omit<EscapeLayerImplProps, 'children' | 'ref'>>> {
 	ref: Box<HTMLElement | null>;
@@ -34,19 +37,19 @@ export class EscapeLayerState {
 			if (!opts.enabled.current) return;
 
 			const unsubEvents = untrack(() => {
-				globalThis.bitsEscapeLayers.set(this, opts.escapeKeydownBehavior);
+				globalThis.bitsEscapeLayers.register(this, opts.escapeKeydownBehavior);
 				return on(this.domContext.getDocument(), 'keydown', this.#onkeydown, { passive: false });
 			});
 
 			return () => {
 				unsubEvents();
-				globalThis.bitsEscapeLayers.delete(this);
+				globalThis.bitsEscapeLayers.unregister(this);
 			};
 		});
 	}
 
 	#onkeydown = (e: KeyboardEvent) => {
-		if (e.key !== kbd.ESCAPE || !isResponsibleEscapeLayer(this)) return;
+		if (e.key !== kbd.ESCAPE || !globalThis.bitsEscapeLayers.isResponsible(this)) return;
 		const clonedEvent = new KeyboardEvent(e.type, e);
 		e.preventDefault();
 		const behaviorType = this.opts.escapeKeydownBehavior.current;
@@ -82,18 +85,4 @@ export function escapeKeydownAttachment(opts: {
 			});
 		},
 	};
-}
-
-function isResponsibleEscapeLayer(instance: EscapeLayerState) {
-	const layersArr = [...globalThis.bitsEscapeLayers];
-	/**
-	 * We first check if we can find a top layer with `close` or `ignore`.
-	 * If that top layer was found and matches the provided node, then the node is
-	 * responsible for the escape. Otherwise, we know that all layers defer so
-	 * the first layer is the responsible one.
-	 */
-	const topMostLayer = layersArr.findLast(([_, { current: behaviorType }]) => behaviorType === 'close' || behaviorType === 'ignore');
-	if (topMostLayer) return topMostLayer[0] === instance;
-	const [firstLayerNode] = layersArr[0]!;
-	return firstLayerNode === instance;
 }

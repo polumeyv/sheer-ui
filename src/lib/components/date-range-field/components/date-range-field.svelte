@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith, repairBindable } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { DateValue } from '@internationalized/date';
 	import { DateRangeFieldRootState } from '../date-range-field.svelte.js';
@@ -53,21 +52,8 @@
 		placeholder = defaultPlaceholder;
 	}
 
-	// SSR/initial setup: DateRangeField needs a writable placeholder for segment state.
-	repairUndefinedControlledPlaceholder();
-
-	$effect.pre(() => {
-		placeholder;
-
-		untrack(() => {
-			/**
-			 * Parent spread-prop resets can make the bindable placeholder undefined again.
-			 * Repairing it is intentional: this is writable segment/focus state, and
-			 * parents using bind:placeholder should observe the repaired value.
-			 */
-			repairUndefinedControlledPlaceholder();
-		});
-	});
+	// DateRangeField needs a writable placeholder for segment state.
+	repairBindable(() => placeholder, repairUndefinedControlledPlaceholder);
 
 	function repairUndefinedControlledValue() {
 		if (value !== undefined) return;
@@ -75,20 +61,8 @@
 		value = defaultValue;
 	}
 
-	// SSR/initial setup: range field state owns a DateRange object, even when empty.
-	repairUndefinedControlledValue();
-
-	$effect.pre(() => {
-		value;
-
-		untrack(() => {
-			/**
-			 * Parent spread-prop resets can make value undefined again. Repairing it
-			 * preserves the controlled range object used by the field state machine.
-			 */
-			repairUndefinedControlledValue();
-		});
-	});
+	// Range field state owns a DateRange object, even when empty.
+	repairBindable(() => value, repairUndefinedControlledValue);
 
 	const rootState = DateRangeFieldRootState.create({
 		id: boxWith(() => id),

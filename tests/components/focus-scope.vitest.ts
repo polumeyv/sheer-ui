@@ -56,7 +56,7 @@ describe("FocusScope lifecycle", () => {
 		try {
 			expect(onOpenAutoFocus).toHaveBeenCalledTimes(1);
 			runAnimationFrame();
-			expect(document.activeElement).toBe(getScope());
+			expect(document.activeElement).toBe(getInsideButton());
 		} finally {
 			unmount(component);
 		}
@@ -80,7 +80,7 @@ describe("FocusScope lifecycle", () => {
 			flushSync();
 			expect(onOpenAutoFocus).toHaveBeenCalledTimes(1);
 			runAnimationFrame();
-			expect(document.activeElement).toBe(getScope());
+			expect(document.activeElement).toBe(getInsideButton());
 
 			component.setEnabled(false);
 			flushSync();

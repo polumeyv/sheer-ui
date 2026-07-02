@@ -1,44 +1,21 @@
 import { type Getter, getDocument } from '$lib/internal/tools/index.js';
 import { on } from 'svelte/events';
 import { isElement } from '@polumeyv/utilities/dom';
-import type { Side } from '$lib/components/utilities/floating-layer/use-floating-layer.svelte.js';
-
-type Point = [number, number];
-
-function isPointInPolygon(point: Point, polygon: Point[]): boolean {
-	const [x, y] = point;
-	let isInside = false;
-	const length = polygon.length;
-	for (let i = 0, j = length - 1; i < length; j = i++) {
-		const [xi, yi] = polygon[i] ?? [0, 0];
-		const [xj, yj] = polygon[j] ?? [0, 0];
-		const intersect = yi >= y !== yj >= y && x <= ((xj - xi) * (y - yi)) / (yj - yi) + xi;
-		if (intersect) {
-			isInside = !isInside;
-		}
-	}
-	return isInside;
-}
-
-function isInsideRect(point: Point, rect: DOMRect): boolean {
-	return point[0] >= rect.left && point[0] <= rect.right && point[1] >= rect.top && point[1] <= rect.bottom;
-}
-
-function getSide(triggerRect: DOMRect, contentRect: DOMRect): Side {
-	// determine which side the content is on relative to trigger
-	const triggerCenterX = triggerRect.left + triggerRect.width / 2;
-	const triggerCenterY = triggerRect.top + triggerRect.height / 2;
-	const contentCenterX = contentRect.left + contentRect.width / 2;
-	const contentCenterY = contentRect.top + contentRect.height / 2;
-
-	const deltaX = contentCenterX - triggerCenterX;
-	const deltaY = contentCenterY - triggerCenterY;
-
-	if (Math.abs(deltaX) > Math.abs(deltaY)) {
-		return deltaX > 0 ? 'right' : 'left';
-	}
-	return deltaY > 0 ? 'bottom' : 'top';
-}
+import {
+	AXIS_VERTICAL,
+	DIR_POS,
+	type Point,
+	type SideBits,
+	TARGET_CONTENT,
+	TARGET_NONE,
+	TARGET_TRIGGER,
+	type TargetBits,
+	flipSide,
+	getCorridorPolygon,
+	getSide,
+	isInsideRect,
+	isPointInPolygon,
+} from '$lib/internal/hover-intent-geometry.js';
 
 export interface SafePolygonOptions {
 	enabled: Getter<boolean>;
@@ -62,8 +39,8 @@ export class SafePolygon {
 
 	// tracks the cursor position when leaving trigger or content
 	#exitPoint: Point | null = null;
-	// tracks what we're moving toward: "content" when leaving trigger, "trigger" when leaving content
-	#exitTarget: 'trigger' | 'content' | null = null;
+	// tracks what we're moving toward
+	#exitTarget: TargetBits = TARGET_NONE;
 	#transitTargets: HTMLElement[] = [];
 	#trackedTriggerNode: HTMLElement | null = null;
 	#leaveFallbackRafId: number | null = null;
@@ -146,7 +123,7 @@ export class SafePolygon {
 					// this allows the cursor to pass through intermediate elements on the way
 					// to content without immediately closing.
 					this.#exitPoint = [e.clientX, e.clientY];
-					this.#exitTarget = 'content';
+					this.#exitTarget = TARGET_CONTENT;
 					this.#scheduleLeaveFallback();
 				}),
 				on(triggerNode, 'pointerenter', () => {
@@ -166,7 +143,7 @@ export class SafePolygon {
 					}
 					// set up polygon tracking toward trigger — pointermove decides whether to close
 					this.#exitPoint = [e.clientX, e.clientY];
-					this.#exitTarget = 'trigger';
+					this.#exitTarget = TARGET_TRIGGER;
 					this.#scheduleLeaveFallback();
 				}),
 			].reduce(
@@ -189,28 +166,28 @@ export class SafePolygon {
 
 		const triggerRect = triggerNode.getBoundingClientRect();
 		const contentRect = contentNode.getBoundingClientRect();
-		const targetRect = exitTarget === 'content' ? contentRect : triggerRect;
+		const targetRect = exitTarget & TARGET_CONTENT ? contentRect : triggerRect;
 
 		if (isInsideRect(clientPoint, targetRect)) {
 			this.#clearTracking();
 			return;
 		}
 
-		if (exitTarget === 'content') {
+		if (exitTarget & TARGET_CONTENT) {
 			for (const transitTarget of this.#transitTargets) {
 				const transitRect = transitTarget.getBoundingClientRect();
 
 				if (isInsideRect(clientPoint, transitRect)) return;
 
 				const transitSide = getSide(triggerRect, transitRect);
-				const transitCorridor = this.#getCorridorPolygon(triggerRect, transitRect, transitSide);
+				const transitCorridor = getCorridorPolygon(triggerRect, transitRect, transitSide, this.#buffer);
 
 				if (isPointInPolygon(clientPoint, transitCorridor)) return;
 			}
 		}
 
 		const side = getSide(triggerRect, contentRect);
-		const corridor = this.#getCorridorPolygon(triggerRect, contentRect, side);
+		const corridor = getCorridorPolygon(triggerRect, contentRect, side, this.#buffer);
 
 		if (isPointInPolygon(clientPoint, corridor)) return;
 
@@ -224,121 +201,46 @@ export class SafePolygon {
 
 	#clearTracking() {
 		this.#exitPoint = null;
-		this.#exitTarget = null;
+		this.#exitTarget = TARGET_NONE;
 		this.#transitTargets = [];
 		this.#cancelLeaveFallback();
 		this.#cancelTransitIntentTimeout();
 	}
 
 	/**
-	 * Creates a rectangular corridor between trigger and content
-	 * This prevents closing when cursor is in the gap between them
-	 */
-	#getCorridorPolygon(triggerRect: DOMRect, contentRect: DOMRect, side: Side): Point[] {
-		const b = this.#buffer;
-
-		const minX = Math.min(triggerRect.left, contentRect.left) - b;
-		const maxX = Math.max(triggerRect.right, contentRect.right) + b;
-		const minY = Math.min(triggerRect.top, contentRect.top) - b;
-		const maxY = Math.max(triggerRect.bottom, contentRect.bottom) + b;
-
-		switch (side) {
-			case 'top':
-				return [
-					[minX, triggerRect.top],
-					[minX, contentRect.bottom],
-					[maxX, contentRect.bottom],
-					[maxX, triggerRect.top],
-				];
-
-			case 'bottom':
-				return [
-					[minX, triggerRect.bottom],
-					[minX, contentRect.top],
-					[maxX, contentRect.top],
-					[maxX, triggerRect.bottom],
-				];
-
-			case 'left':
-				return [
-					[triggerRect.left, minY],
-					[contentRect.right, minY],
-					[contentRect.right, maxY],
-					[triggerRect.left, maxY],
-				];
-
-			case 'right':
-				return [
-					[triggerRect.right, minY],
-					[contentRect.left, minY],
-					[contentRect.left, maxY],
-					[triggerRect.right, maxY],
-				];
-		}
-	}
-	/**
 	 * Creates a triangular/trapezoidal safe zone from the exit point to the target.
 	 */
-	#getSafePolygon(exitPoint: Point, targetRect: DOMRect, side: Side, exitTarget: 'trigger' | 'content'): Point[] {
+	#getSafePolygon(exitPoint: Point, targetRect: DOMRect, side: SideBits, exitTarget: TargetBits): Point[] {
 		const b = this.#buffer * 4;
 		const [x, y] = exitPoint;
 		const { top, right, bottom, left } = targetRect;
 
-		const effectiveSide = exitTarget === 'trigger' ? this.#flipSide(side) : side;
+		const effectiveSide = exitTarget & TARGET_TRIGGER ? flipSide(side) : side;
+		const dir = effectiveSide & DIR_POS;
+		const sign = dir === 0 ? 1 : -1;
 
-		switch (effectiveSide) {
-			case 'top':
-				return [
-					[x - b, y + b],
-					[x + b, y + b],
-					[right + b, bottom],
-					[right + b, top],
-					[left - b, top],
-					[left - b, bottom],
-				];
-
-			case 'bottom':
-				return [
-					[x - b, y - b],
-					[x + b, y - b],
-					[right + b, top],
-					[right + b, bottom],
-					[left - b, bottom],
-					[left - b, top],
-				];
-
-			case 'left':
-				return [
-					[x + b, y - b],
-					[x + b, y + b],
-					[right, bottom + b],
-					[left, bottom + b],
-					[left, top - b],
-					[right, top - b],
-				];
-
-			case 'right':
-				return [
-					[x - b, y - b],
-					[x - b, y + b],
-					[left, bottom + b],
-					[right, bottom + b],
-					[right, top - b],
-					[left, top - b],
-				];
+		if (effectiveSide & AXIS_VERTICAL) {
+			const edgeNear = dir === 0 ? bottom : top;
+			const edgeFar = dir === 0 ? top : bottom;
+			return [
+				[x - b, y + sign * b],
+				[x + b, y + sign * b],
+				[right + b, edgeNear],
+				[right + b, edgeFar],
+				[left - b, edgeFar],
+				[left - b, edgeNear],
+			];
 		}
-	}
 
-	#flipSide(side: Side): Side {
-		switch (side) {
-			case 'top':
-				return 'bottom';
-			case 'bottom':
-				return 'top';
-			case 'left':
-				return 'right';
-			case 'right':
-				return 'left';
-		}
+		const edgeNear = dir === 0 ? right : left;
+		const edgeFar = dir === 0 ? left : right;
+		return [
+			[x + sign * b, y - b],
+			[x + sign * b, y + b],
+			[edgeNear, bottom + b],
+			[edgeFar, bottom + b],
+			[edgeFar, top - b],
+			[edgeNear, top - b],
+		];
 	}
 }

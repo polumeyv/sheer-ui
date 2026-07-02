@@ -1,6 +1,6 @@
 import { BORDER_RADIUS, TRANSITIONS, WINDOW_TOP_OFFSET } from './internal/constants.js';
 import { assignStyle, isVertical } from './helpers.js';
-import { executeCallbacks } from '$lib/internal/tools/index.js';
+import { mergeDisposers } from '$lib/internal/tools/index.js';
 import { noop } from '@polumeyv/utilities';
 import { getDrawer } from './context.js';
 
@@ -23,7 +23,7 @@ export function useScaleBackground() {
 
 			if (!wrapper) return;
 
-			executeCallbacks(
+			mergeDisposers(
 				ctx.setBackgroundColorOnScale.current && !ctx.noBodyStyles.current ? assignStyle(document.body, { background: 'black' }) : noop,
 				assignStyle(wrapper, {
 					transformOrigin: isVertical(ctx.direction.current) ? 'top' : 'left',

@@ -87,9 +87,8 @@ export class CollapsibleContentState {
 		if (this.opts.hiddenUntilFound.current) return this.root.opts.open.current;
 		return this.opts.forceMount.current || this.root.opts.open.current;
 	});
-	#originalStyles: { transitionDuration: string; animationName: string } | undefined;
-	#isMountAnimationPrevented = $state(false);
-	#dimensions = $state({ width: 0, height: 0 });
+	// read only inside untracked tick callbacks, so a plain field suffices
+	#isMountAnimationPrevented = false;
 
 	constructor(opts: CollapsibleContentStateOpts, root: CollapsibleRootState) {
 		this.opts = opts;
@@ -109,6 +108,13 @@ export class CollapsibleContentState {
 			return () => cancelAnimationFrame(frame);
 		});
 
+		/**
+		 * The disclosure keyframes interpolate `height: 0 <-> auto` directly (global
+		 * `interpolate-size: allow-keywords`), so no measuring is needed. This effect only
+		 * suppresses the keyframes on an initially-open mount: the inline `animation-name: none`
+		 * is held until the first toggle, releasing it exactly then so the correct
+		 * open/close animation starts fresh.
+		 */
 		$effect(() => {
 			const node = this.opts.ref.current;
 			const present = this.present;
@@ -116,22 +122,7 @@ export class CollapsibleContentState {
 
 			tick().then(() => {
 				if (this.opts.ref.current !== node || this.present !== present) return;
-
-				this.#originalStyles ??= {
-					transitionDuration: node.style.transitionDuration,
-					animationName: node.style.animationName,
-				};
-
-				node.style.transitionDuration = '0s';
-				node.style.animationName = 'none';
-
-				const rect = node.getBoundingClientRect();
-				this.#dimensions = { width: rect.width, height: rect.height };
-
-				if (!this.#isMountAnimationPrevented) {
-					node.style.transitionDuration = this.#originalStyles.transitionDuration;
-					node.style.animationName = this.#originalStyles.animationName;
-				}
+				node.style.animationName = this.#isMountAnimationPrevented ? 'none' : '';
 			});
 		});
 	}
@@ -169,12 +160,6 @@ export class CollapsibleContentState {
 				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
 				'data-disabled': boolToEmptyStrOrUndef(this.root.opts.disabled.current),
 				[collapsibleAttrs.content]: '',
-				style: {
-					'--bits-disclosure-content-height': `${this.#dimensions.height}px`,
-					'--bits-disclosure-content-width': `${this.#dimensions.width}px`,
-					'--bits-collapsible-content-height': `${this.#dimensions.height}px`,
-					'--bits-collapsible-content-width': `${this.#dimensions.width}px`,
-				},
 				...(this.opts.hiddenUntilFound.current && !this.shouldRender
 					? {}
 					: {

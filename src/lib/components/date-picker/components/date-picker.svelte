@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Date Picker composes the DateField, Popover, and Calendar components
 	import { untrack } from 'svelte';
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith, repairBindable } from '$lib/internal/tools/index.js';
 	import type { DateValue } from '@internationalized/date';
 	import { DatePickerRootState } from '../date-picker.svelte.js';
 	import type { DatePickerRootProps } from '../types.js';
@@ -63,21 +63,12 @@
 		placeholder = defaultPlaceholder;
 	}
 
-	// SSR/initial setup. DateField and Calendar require a writable DateValue placeholder.
-	repairUndefinedControlledPlaceholder();
-
 	/**
 	 * Parent spread-prop resets can make the bindable placeholder undefined again.
 	 * Repairing it is intentional: this is writable focus/navigation state, and
 	 * parents using bind:placeholder should observe the repaired value.
 	 */
-	$effect.pre(() => {
-		placeholder;
-
-		untrack(() => {
-			repairUndefinedControlledPlaceholder();
-		});
-	});
+	repairBindable(() => placeholder, repairUndefinedControlledPlaceholder);
 
 	function onDateSelect() {
 		if (closeOnDateSelect) {

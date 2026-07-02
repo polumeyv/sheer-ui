@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { box } from '$lib/internal/tools/index.js';
+	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import { noop } from '@polumeyv/utilities';
 	import type { PaneProps } from './types.js';
@@ -25,20 +25,20 @@
 	}: PaneProps = $props();
 
 	const paneState = PaneState.create({
-		id: box.with(() => id),
-		ref: box.with(
+		id: boxWith(() => id),
+		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),
 		),
-		collapsedSize: box.with(() => collapsedSize),
-		collapsible: box.with(() => collapsible),
-		defaultSize: box.with(() => defaultSize),
-		maxSize: box.with(() => maxSize),
-		minSize: box.with(() => minSize),
-		onCollapse: box.with(() => onCollapse),
-		onExpand: box.with(() => onExpand),
-		onResize: box.with(() => onResize),
-		order: box.with(() => order),
+		collapsedSize: boxWith(() => collapsedSize),
+		collapsible: boxWith(() => collapsible),
+		defaultSize: boxWith(() => defaultSize),
+		maxSize: boxWith(() => maxSize),
+		minSize: boxWith(() => minSize),
+		onCollapse: boxWith(() => onCollapse),
+		onExpand: boxWith(() => onExpand),
+		onResize: boxWith(() => onResize),
+		order: boxWith(() => order),
 	});
 
 	export const collapse = paneState.pane.collapse;

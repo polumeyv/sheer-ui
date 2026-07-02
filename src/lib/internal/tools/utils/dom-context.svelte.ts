@@ -1,8 +1,16 @@
 import { boxWith } from '../runed/box.svelte.js';
 import type { Box } from '../types.js';
-import { getActiveElement, getDocument } from './dom.js';
+import { getDocument } from './dom.js';
 
-type ElementGetter = () => HTMLElement | null;
+function getActiveElement(rootNode: Document | ShadowRoot): HTMLElement | null {
+	let activeElement = rootNode.activeElement as HTMLElement | null;
+	while (activeElement?.shadowRoot) {
+		const next = activeElement.shadowRoot.activeElement as HTMLElement | null;
+		if (!next || next === activeElement) break;
+		activeElement = next;
+	}
+	return activeElement;
+}
 
 export class DOMContext {
 	readonly element: Box<HTMLElement | null>;
@@ -12,7 +20,7 @@ export class DOMContext {
 		return rootNode as Document | ShadowRoot;
 	});
 
-	constructor(element: Box<HTMLElement | null> | ElementGetter) {
+	constructor(element: Box<HTMLElement | null> | (() => HTMLElement | null)) {
 		if (typeof element === 'function') {
 			this.element = boxWith(element);
 		} else {
@@ -30,10 +38,6 @@ export class DOMContext {
 
 	getActiveElement = () => {
 		return getActiveElement(this.root);
-	};
-
-	isActiveElement = (node: HTMLElement | null) => {
-		return node === this.getActiveElement();
 	};
 
 	getElementById<T extends Element = HTMLElement>(id: string) {

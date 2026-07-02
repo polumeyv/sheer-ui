@@ -67,7 +67,6 @@ function boxWith<T>(getter: () => T, setter?: (v: T) => void) {
 	};
 }
 
-export const box = Object.assign(createWritableBox, { with: boxWith });
 export const simpleBox = createWritableBox;
 
 export { boxWith };

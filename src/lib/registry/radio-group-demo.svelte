@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as RadioGroup from '$lib/components/radio-group/index.js';
+	import * as RadioGroup from '$lib/components/radio-group-native/index.js';
 	import { Label } from '$lib/components/label/index.js';
 
 	let value = $state('comfortable');

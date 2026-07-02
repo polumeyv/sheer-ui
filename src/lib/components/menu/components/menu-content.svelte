@@ -49,6 +49,8 @@
 	);
 
 	function handleInteractOutside(e: PointerEvent) {
+		contentState.handleInteractOutside(e);
+		if (e.defaultPrevented) return;
 		onInteractOutside(e);
 		if (e.defaultPrevented) return;
 		// don't close if the interaction is with a submenu content or items

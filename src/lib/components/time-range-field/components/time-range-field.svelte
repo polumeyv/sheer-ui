@@ -4,8 +4,7 @@
 </script>
 
 <script lang="ts" generics="T extends TimeValue = Time">
-	import { untrack } from 'svelte';
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith, repairBindable } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import { TimeRangeFieldRootState } from '../time-range-field.svelte.js';
 	import type { TimeRangeFieldRootProps } from '../types.js';
@@ -51,13 +50,8 @@
 		placeholder = defaultPlaceholder;
 	}
 
-	// SSR/initial setup: TimeRangeField needs a writable placeholder for segment state.
-	repairUndefinedControlledPlaceholder();
-
-	$effect.pre(() => {
-		placeholder;
-		untrack(() => repairUndefinedControlledPlaceholder());
-	});
+	// TimeRangeField needs a writable placeholder for segment state.
+	repairBindable(() => placeholder, repairUndefinedControlledPlaceholder);
 
 	function repairUndefinedControlledValue() {
 		if (value !== undefined) return;
@@ -65,13 +59,8 @@
 		value = defaultValue;
 	}
 
-	// SSR/initial setup: range field state owns a TimeRange object, even when empty.
-	repairUndefinedControlledValue();
-
-	$effect.pre(() => {
-		value;
-		untrack(() => repairUndefinedControlledValue());
-	});
+	// Range field state owns a TimeRange object, even when empty.
+	repairBindable(() => value, repairUndefinedControlledValue);
 
 	const rootState = TimeRangeFieldRootState.create({
 		id: boxWith(() => id),

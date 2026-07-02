@@ -17,7 +17,6 @@ import { ALL_SEGMENT_PARTS, DATE_SEGMENT_PARTS, EDITABLE_SEGMENT_PARTS, EDITABLE
 import { getSegments } from './segments.js';
 import { isNumberString } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
-import { useId } from '$lib/internal/use-id.js';
 import { kbd } from '$lib/internal/kbd.js';
 import type { Granularity, HourCycle, TimeSegmentValueObj } from '$lib/internal/date-time/types.js';
 
@@ -248,14 +247,6 @@ export function initSegmentStates() {
 	}, {} as SegmentStateMap);
 }
 
-export function initSegmentIds() {
-	return Object.fromEntries(
-		ALL_SEGMENT_PARTS.map((part) => {
-			return [part, useId()];
-		}).filter(([key]) => key !== 'literal'),
-	);
-}
-
 export function isDateSegmentPart(part: unknown): part is DateSegmentPart {
 	return DATE_SEGMENT_PARTS.includes(part as DateSegmentPart);
 }
@@ -424,10 +415,16 @@ export function setDescription(props: SetDescriptionProps) {
 	}
 }
 
+const defaultHourCycleCache = new Map<string, 12 | 24>();
+
 export function getDefaultHourCycle(locale: string): 12 | 24 {
+	const cached = defaultHourCycleCache.get(locale);
+	if (cached) return cached;
 	const formatter = new Intl.DateTimeFormat(locale, { hour: 'numeric' });
 	const parts = formatter.formatToParts(new Date('2023-01-01T13:00:00'));
 	const hourPart = parts.find((part) => part.type === 'hour');
 
-	return hourPart?.value === '1' ? 12 : 24;
+	const hourCycle = hourPart?.value === '1' ? 12 : 24;
+	defaultHourCycleCache.set(locale, hourCycle);
+	return hourCycle;
 }

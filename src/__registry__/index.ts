@@ -66,6 +66,18 @@ export const Index = {
 		type: "registry:example",
 		files: ["../lib/registry/checkbox-group.svelte"],
 	},
+	"checkbox-native-demo": {
+		type: "registry:example",
+		files: ["../lib/registry/checkbox-native-demo.svelte"],
+	},
+	"checkbox-native-indeterminate": {
+		type: "registry:example",
+		files: ["../lib/registry/checkbox-native-indeterminate.svelte"],
+	},
+	"checkbox-native-states": {
+		type: "registry:example",
+		files: ["../lib/registry/checkbox-native-states.svelte"],
+	},
 	"collapsible-demo": {
 		type: "registry:example",
 		files: ["../lib/registry/collapsible-demo.svelte"],
@@ -190,6 +202,22 @@ export const Index = {
 		type: "registry:example",
 		files: ["../lib/registry/radio-group-demo.svelte"],
 	},
+	"radio-group-form": {
+		type: "registry:example",
+		files: ["../lib/registry/radio-group-form.svelte"],
+	},
+	"radio-group-horizontal": {
+		type: "registry:example",
+		files: ["../lib/registry/radio-group-horizontal.svelte"],
+	},
+	"radio-group-states": {
+		type: "registry:example",
+		files: ["../lib/registry/radio-group-states.svelte"],
+	},
+	"radio-group-tiles": {
+		type: "registry:example",
+		files: ["../lib/registry/radio-group-tiles.svelte"],
+	},
 	"range-calendar-demo": {
 		type: "registry:example",
 		files: ["../lib/registry/range-calendar-demo.svelte"],
@@ -246,13 +274,13 @@ export const Index = {
 		type: "registry:example",
 		files: ["../lib/registry/sonner-demo.svelte"],
 	},
-	"switch-demo": {
-		type: "registry:example",
-		files: ["../lib/registry/switch-demo.svelte"],
-	},
 	"switch-native-demo": {
 		type: "registry:example",
 		files: ["../lib/registry/switch-native-demo.svelte"],
+	},
+	"switch-native-states": {
+		type: "registry:example",
+		files: ["../lib/registry/switch-native-states.svelte"],
 	},
 	"table-demo": {
 		type: "registry:example",
