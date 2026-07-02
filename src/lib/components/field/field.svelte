@@ -1,5 +1,4 @@
 <script lang="ts" module>
-	import { join } from 'overrule';
 	import { fieldVariants, type FieldOrientation } from './variants';
 	export { fieldVariants, type FieldOrientation };
 </script>
@@ -23,7 +22,7 @@
 	role="group"
 	data-slot="field"
 	data-orientation={orientation}
-	class={join(fieldVariants({ orientation }), className)}
+	class={fieldVariants({ orientation, class: className })}
 	{...restProps}>
 	{@render children?.()}
 </div>

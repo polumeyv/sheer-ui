@@ -58,11 +58,10 @@
 	<Popover.Root>
 		<Popover.Trigger
 			{disabled}
-			class={join(
-				buttonVariants({ variant: 'outline', class: 'w-70 justify-start! text-start font-normal!' }),
-				!value?.start && 'text-muted-foreground',
-				triggerClass,
-			)}>
+			class={buttonVariants({
+				variant: 'outline',
+				class: ['w-70 justify-start! text-start font-normal!', !value?.start && 'text-muted-foreground', triggerClass],
+			})}>
 			<CalendarIcon class="size-4" />
 			{displayValue}
 		</Popover.Trigger>

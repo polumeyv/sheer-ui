@@ -1,5 +1,4 @@
 <script lang="ts" generics="TData">
-	import { join } from 'overrule';
 	import Settings2Icon from '@lucide/svelte/icons/settings-2';
 	import type { Table } from '@tanstack/table-core';
 	import * as DropdownMenu from '../dropdown-menu';
@@ -8,7 +7,7 @@
 </script>
 
 <DropdownMenu.Root>
-	<DropdownMenu.Trigger class={join(buttonVariants({ variant: 'outline', size: 'sm' }), 'ms-auto max-lg:hidden')}>
+	<DropdownMenu.Trigger class={buttonVariants({ variant: 'outline', size: 'sm', class: 'ms-auto max-lg:hidden' })}>
 		<Settings2Icon />
 		View
 	</DropdownMenu.Trigger>

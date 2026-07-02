@@ -1,5 +1,4 @@
 <script lang="ts" module>
-	import { join } from 'overrule';
 	import { emptyMediaVariants, type EmptyMediaVariant } from './variants';
 	export { emptyMediaVariants, type EmptyMediaVariant };
 </script>
@@ -17,6 +16,6 @@
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & { variant?: EmptyMediaVariant } = $props();
 </script>
 
-<div bind:this={ref} data-slot="empty-icon" data-variant={variant} class={join(emptyMediaVariants({ variant }), className)} {...restProps}>
+<div bind:this={ref} data-slot="empty-icon" data-variant={variant} class={emptyMediaVariants({ variant, class: className })} {...restProps}>
 	{@render children?.()}
 </div>
