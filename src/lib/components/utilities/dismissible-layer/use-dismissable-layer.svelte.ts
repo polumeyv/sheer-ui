@@ -13,7 +13,7 @@ import {
 import { on } from 'svelte/events';
 import { onMount, tick } from 'svelte';
 import type { DismissibleLayerImplProps, InteractOutsideBehaviorType, InteractOutsideEventHandler } from './types.js';
-import { type EventCallback } from '$lib/internal/events.js';
+import { type EventCallback } from '$lib/internal/tools/utils/events.js';
 import { createLayerStack } from '$lib/internal/layer-stack.js';
 import { isElementOrSVGElement } from '@polumeyv/utilities/dom';
 import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '$lib/components/menu/menu.svelte.js';

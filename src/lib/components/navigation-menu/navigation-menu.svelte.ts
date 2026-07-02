@@ -24,7 +24,7 @@ import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } 
 import { getTabbableCandidates } from '$lib/internal/focus.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment } from '$lib/internal/types.js';
 import { kbd } from '$lib/internal/kbd.js';
-import { CustomEventDispatcher } from '$lib/internal/events.js';
+import { on } from 'svelte/events';
 import { useArrowNavigation } from '$lib/internal/use-arrow-navigation.js';
 import { isElement } from '@polumeyv/utilities/dom';
 import type { FocusEventHandler, KeyboardEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
@@ -560,15 +560,9 @@ interface NavigationMenuLinkStateOpts
 			onSelect: (e: Event) => void;
 		}> {}
 
-const LINK_SELECT_EVENT = new CustomEventDispatcher('bitsLinkSelect', {
-	bubbles: true,
-	cancelable: true,
-});
-
-const ROOT_CONTENT_DISMISS_EVENT = new CustomEventDispatcher('bitsRootContentDismiss', {
-	cancelable: true,
-	bubbles: true,
-});
+/** Bubbles from a selected link up through the DOM to the root content containing it — a sub-menu
+ *  link must dismiss the root content, and only DOM ancestry knows which content that is. */
+const ROOT_CONTENT_DISMISS_EVENT = 'bitsRootContentDismiss';
 
 export class NavigationMenuLinkState {
 	static create(opts: NavigationMenuLinkStateOpts) {
@@ -589,13 +583,12 @@ export class NavigationMenuLinkState {
 	}
 
 	onclick = (e: BitsMouseEvent<HTMLAnchorElement>) => {
-		const currTarget = e.currentTarget;
-
-		LINK_SELECT_EVENT.listen(currTarget, (e) => this.opts.onSelect.current(e), { once: true });
-		const linkSelectEvent = LINK_SELECT_EVENT.dispatch(currTarget);
+		// Cancelable envelope: the consumer's onSelect can preventDefault() to keep the menu open.
+		const linkSelectEvent = new CustomEvent('bitsLinkSelect', { bubbles: true, cancelable: true });
+		this.opts.onSelect.current(linkSelectEvent);
 
 		if (!linkSelectEvent.defaultPrevented && !e.metaKey) {
-			ROOT_CONTENT_DISMISS_EVENT.dispatch(currTarget);
+			e.currentTarget.dispatchEvent(new CustomEvent(ROOT_CONTENT_DISMISS_EVENT, { bubbles: true, cancelable: true }));
 		}
 	};
 
@@ -872,11 +865,7 @@ export class NavigationMenuContentImplState {
 						this.itemContext.triggerNode?.focus();
 					}
 				};
-				const removeListener = ROOT_CONTENT_DISMISS_EVENT.listen(content, handleClose);
-
-				return () => {
-					removeListener();
-				};
+				return on(content, ROOT_CONTENT_DISMISS_EVENT, handleClose);
 			});
 		});
 	}

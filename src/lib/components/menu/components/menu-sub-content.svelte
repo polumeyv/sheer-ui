@@ -2,7 +2,7 @@
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { MenuSubContentProps } from '../types.js';
-	import { MenuOpenEvent, MenuContentState } from '../menu.svelte.js';
+	import { MenuContentState } from '../menu.svelte.js';
 	import { SUB_CLOSE_KEYS } from '../utils.js';
 	import { createId } from '$lib/internal/create-id.js';
 	import PopperLayer from '$lib/components/utilities/popper-layer/popper-layer.svelte';
@@ -77,7 +77,7 @@
 		if (e.defaultPrevented) return;
 		e.preventDefault();
 		if (subContentState.parentMenu.root.inputModality.isKeyboard && subContentState.parentMenu.contentNode) {
-			MenuOpenEvent.dispatch(subContentState.parentMenu.contentNode);
+			subContentState.parentMenu.focusFirstItem?.();
 		}
 	}
 
