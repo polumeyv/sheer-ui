@@ -1,6 +1,7 @@
 <script lang="ts">
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import type { DateValue } from '@internationalized/date';
+	import { formatDateDisplay } from '@polumeyv/utilities/date';
 	import { join } from 'overrule';
 	import { buttonVariants } from '$lib/components/button';
 	import Calendar from '../calendar.svelte';
@@ -52,12 +53,7 @@
 		isDateUnavailable,
 	}: Props = $props();
 
-	// UTC-pinned both sides (instant and formatter), so the rendered date always matches the selected day.
-	const displayValue = $derived(
-		value
-			? new Intl.DateTimeFormat(locale, { dateStyle: dateFormat, timeZone: 'UTC' }).format(new Date(`${value.toString()}T00:00:00Z`))
-			: placeholder,
-	);
+	const displayValue = $derived(value ? formatDateDisplay(value.toString(), { dateStyle: dateFormat }, locale) : placeholder);
 
 	function pick(next: DateValue | undefined) {
 		value = next;

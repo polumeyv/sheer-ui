@@ -4,6 +4,7 @@
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import type { DateValue } from '@internationalized/date';
 	import type { DateRange } from '$lib/internal/index.js';
+	import { formatDateDisplay } from '@polumeyv/utilities/date';
 	import { join } from 'overrule';
 	import { buttonVariants } from '$lib/components/button';
 	import { RangeCalendar } from '$lib/components/range-calendar';
@@ -47,9 +48,7 @@
 		onValueChange,
 	}: Props = $props();
 
-	const fmt = $derived(new Intl.DateTimeFormat(locale, { dateStyle: dateFormat, timeZone: 'UTC' }));
-	// UTC-pinned (instant + formatter), so the rendered day always matches the selected day.
-	const fmtDay = (d: DateValue) => fmt.format(new Date(`${d.toString()}T00:00:00Z`));
+	const fmtDay = (d: DateValue) => formatDateDisplay(d.toString(), { dateStyle: dateFormat }, locale);
 	const displayValue = $derived(
 		value?.start ? (value.end ? `${fmtDay(value.start)} – ${fmtDay(value.end)}` : fmtDay(value.start)) : placeholder,
 	);

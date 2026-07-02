@@ -2,6 +2,7 @@
 	import { join } from 'overrule';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import { today, getLocalTimeZone, type DateValue } from '@internationalized/date';
+	import { formatDateDisplay } from '@polumeyv/utilities/date';
 	import { buttonVariants } from '$lib/components/button';
 	import Calendar from '../calendar.svelte';
 	import { Popover } from '$lib/components/popover';
@@ -69,11 +70,7 @@
 		isDateUnavailable,
 	}: Props = $props();
 
-	const displayValue = $derived(
-		value
-			? new Intl.DateTimeFormat(locale, { dateStyle: dateFormat, timeZone: 'UTC' }).format(new Date(`${value.toString()}T00:00:00Z`))
-			: placeholder,
-	);
+	const displayValue = $derived(value ? formatDateDisplay(value.toString(), { dateStyle: dateFormat }, locale) : placeholder);
 
 	// The preset dropdown is a write-only action menu: each pick maps a relative-day offset to a date, then resets
 	// so the placeholder shows again (and the same preset can be re-picked). The chosen date is surfaced on the
