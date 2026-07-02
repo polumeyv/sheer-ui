@@ -1,5 +1,5 @@
 import { type AnimationsType } from './Animations';
-import { type CounterType } from './Counter';
+import { type CounterType } from './Counter.svelte';
 import { type EventHandlerType } from './EventHandler';
 import { type ScrollBodyType } from './ScrollBody';
 import { type ScrollTargetType, type TargetType } from './ScrollTarget';

@@ -10,7 +10,9 @@ export type CounterType = {
 export function Counter(max: number, start: number, loop: boolean): CounterType {
 	const { clamp } = Limit(0, max);
 	const loopEnd = max + 1;
-	let counter = normalize(start);
+	// Reactive so index reads (selectedSnap, canGoToNext/Prev) work inside deriveds.
+	// Only written on snap change (ScrollTo), never per animation frame.
+	let counter = $state(normalize(start));
 
 	function normalize(input: number): number {
 		return !loop ? clamp(input) : Math.abs((loopEnd + input) % loopEnd);

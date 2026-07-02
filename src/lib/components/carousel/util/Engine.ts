@@ -1,7 +1,7 @@
 import { Alignment } from './Alignment';
 import { Animations, type AnimationsType } from './Animations';
 import { Axis, type AxisType } from './Axis';
-import { Counter, type CounterType } from './Counter';
+import { Counter, type CounterType } from './Counter.svelte';
 import { DragHandler, type DragHandlerType } from './DragHandler';
 import { DragTracker } from './DragTracker';
 import { type EventHandlerType } from './EventHandler';

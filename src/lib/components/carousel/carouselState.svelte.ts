@@ -114,7 +114,8 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 	const { on, off, createEvent } = eventHandler;
 
 	let destroyed = false;
-	let engine: EngineType<CarouselAPI>;
+	// Swapped on every (re)activation; reactive so snap list / index reads re-derive after reInit.
+	let engine = $state.raw() as EngineType<CarouselAPI>;
 	let nodeHandler: NodeHandlerType;
 
 	let optionsBase = mergeOptions(defaultOptions, userOptions);
@@ -351,7 +352,9 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 export function useCarousel(readConfig?: GetCarouselConfig, setApi?: SetCarouselApi): Attachment<HTMLElement> {
 	return (node) => {
 		const initial = untrack(() => readCarouselConfig(readConfig));
-		const api = createCarousel(node, initial.options, initial.plugins);
+		// untrack: activation reads the reactive engine/counter state it creates; the
+		// attachment must not become a dependent of it, or a reInit would re-attach.
+		const api = untrack(() => createCarousel(node, initial.options, initial.plugins));
 
 		untrack(() => setApi?.(api));
 
@@ -361,7 +364,9 @@ export function useCarousel(readConfig?: GetCarouselConfig, setApi?: SetCarousel
 			const next = readCarouselConfig(readConfig);
 
 			if (initialized) {
-				api.reInit(next.options, next.plugins);
+				// untrack: reInit reads engine state it also swaps; this effect must only
+				// depend on the config.
+				untrack(() => api.reInit(next.options, next.plugins));
 			}
 
 			initialized = true;

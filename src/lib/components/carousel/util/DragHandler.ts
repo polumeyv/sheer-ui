@@ -1,5 +1,5 @@
 import { type AnimationsType } from './Animations';
-import { type CounterType } from './Counter';
+import { type CounterType } from './Counter.svelte';
 import { type DragTrackerType, type PointerEventType } from './DragTracker';
 import { type EventHandlerType } from './EventHandler';
 import { type AxisType } from './Axis';

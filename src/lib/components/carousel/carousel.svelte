@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import { type CarouselAPI, type CarouselContext, type CarouselProps, setCarouselContext } from './carouselState.svelte';
+	import { type CarouselAPI, type CarouselProps, setCarouselContext } from './carouselState.svelte';
 	import type { WithElementRef } from '$lib/utils.js';
 
 	let {
@@ -15,82 +15,31 @@
 	}: WithElementRef<CarouselProps> = $props();
 
 	let api = $state.raw<CarouselAPI | undefined>(undefined);
-	let scrollSnaps = $state.raw<number[]>([]);
-	let selectedIndex = $state(0);
-	let targetIndex = $state(0);
 
-	const isLoop = $derived(opts.loop === true);
-	const lastIndex = $derived(scrollSnaps.length - 1);
-
-	const canScrollPrev = $derived(scrollSnaps.length > 1 && (isLoop || targetIndex > 0));
-
-	const canScrollNext = $derived(scrollSnaps.length > 1 && (isLoop || targetIndex < lastIndex));
-
-	function clamp(index: number) {
-		return Math.min(Math.max(index, 0), lastIndex);
-	}
-
-	function wrap(index: number) {
-		return ((index % scrollSnaps.length) + scrollSnaps.length) % scrollSnaps.length;
-	}
-
-	function resolveIndex(index: number) {
-		if (scrollSnaps.length === 0) return 0;
-		return isLoop ? wrap(index) : clamp(index);
-	}
-
-	function syncState() {
-		if (!api) return;
-
-		scrollSnaps = api.snapList();
-		selectedIndex = api.selectedSnap();
-		targetIndex = selectedIndex;
-	}
+	// The engine's index counter and engine reference are reactive state, so these
+	// read live engine values; no event subscriptions or mirrored state needed.
+	const scrollSnaps = $derived(api?.snapList() ?? []);
+	const selectedIndex = $derived(api?.selectedSnap() ?? 0);
+	const canScrollPrev = $derived(api?.canGoToPrev() ?? false);
+	const canScrollNext = $derived(api?.canGoToNext() ?? false);
 
 	function registerApi(nextApi: CarouselAPI | undefined) {
 		if (api === nextApi) return;
 
-		if (api) {
-			api.off('select', syncState);
-			api.off('reinit', syncState);
-		}
-
 		api = nextApi;
 		setApi(api);
-
-		if (!api) return;
-
-		api.on('select', syncState);
-		api.on('reinit', syncState);
-
-		syncState();
-	}
-
-	function scrollBy(direction: -1 | 1) {
-		if (!api || scrollSnaps.length === 0) return;
-
-		const nextIndex = resolveIndex(targetIndex + direction);
-
-		if (!isLoop && nextIndex === targetIndex) return;
-
-		targetIndex = nextIndex;
-
-		api.goTo(targetIndex, false, direction > 0 ? 'forward' : 'backward');
 	}
 
 	function scrollPrev() {
-		scrollBy(-1);
+		api?.goToPrev();
 	}
 
 	function scrollNext() {
-		scrollBy(1);
+		api?.goToNext();
 	}
 
 	function scrollTo(index: number, instant?: boolean) {
-		if (!api || scrollSnaps.length === 0) return;
-
-		targetIndex = resolveIndex(index);
-		api.goTo(targetIndex, instant);
+		api?.goTo(index, instant);
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -119,7 +68,7 @@
 		}
 	}
 
-	const emblaCtx: CarouselContext = {
+	setCarouselContext({
 		get api() {
 			return api;
 		},
@@ -149,12 +98,6 @@
 		scrollNext,
 		scrollTo,
 		handleKeyDown,
-	};
-
-	setCarouselContext(emblaCtx);
-
-	$effect(() => {
-		return () => registerApi(undefined);
 	});
 </script>
 
