@@ -13,7 +13,6 @@ import { mergeProps } from '$lib/merge-props.js';
 import { createContext, onDestroy, tick, untrack } from 'svelte';
 import { SUB_OPEN_KEYS, getCheckedState, isMouseEvent } from './utils.js';
 import { focusFirst } from '$lib/internal/focus.js';
-import { CustomEventDispatcher } from '$lib/internal/events.js';
 import type {
 	AnyFn,
 	BitsFocusEvent,
@@ -99,11 +98,6 @@ export interface MenuRootStateOpts extends ReadableBoxedValues<{
 	/** When closing, if this returns true, exit animations are skipped (instant unmount). */
 	shouldSkipExitAnimation?: () => boolean;
 }
-
-export const MenuOpenEvent = new CustomEventDispatcher('bitsmenuopen', {
-	bubbles: false,
-	cancelable: true,
-});
 
 export const menuAttrs = createBitsAttrs({
 	component: 'menu',
@@ -532,6 +526,8 @@ export class MenuMenuState {
 	contentNode = $state<HTMLElement | null>(null);
 	contentPresence: PresenceManager;
 	triggerNode = $state<HTMLElement | null>(null);
+	/** Registered by the mounted content: keyboard-driven opens land focus on the first item. */
+	focusFirstItem: (() => void) | null = null;
 
 	constructor(opts: MenuMenuStateOpts, root: MenuRootState, parentMenu: MenuMenuState | null) {
 		this.opts = opts;
@@ -648,17 +644,15 @@ export class MenuContentState {
 		});
 
 		$effect(() => {
-			const contentNode = this.parentMenu.contentNode;
-			return untrack(() => {
-				if (!contentNode) return;
-				const handler = () => {
-					tick().then(() => {
-						if (!this.parentMenu.root.inputModality.isKeyboard) return;
-						this.rovingFocusGroup.focusFirstCandidate();
-					});
-				};
-				return MenuOpenEvent.listen(contentNode, handler);
-			});
+			this.parentMenu.focusFirstItem = () => {
+				tick().then(() => {
+					if (!this.parentMenu.root.inputModality.isKeyboard) return;
+					this.rovingFocusGroup.focusFirstCandidate();
+				});
+			};
+			return () => {
+				this.parentMenu.focusFirstItem = null;
+			};
 		});
 
 		$effect(() => {
@@ -1136,9 +1130,8 @@ export class MenuSubTriggerState {
 		if (!this.submenu.opts.open.current) {
 			this.submenu.onOpen();
 			tick().then(() => {
-				const contentNode = this.submenu.contentNode;
-				if (!contentNode) return;
-				MenuOpenEvent.dispatch(contentNode);
+				if (!this.submenu.contentNode) return;
+				this.submenu.focusFirstItem?.();
 			});
 		}
 	}
