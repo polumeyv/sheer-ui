@@ -11,19 +11,19 @@
 		compareTime,
 		getTimeDuration,
 		type TimeSlot,
-		type TimeRange,
+		type SlotRange,
 		b_HOURS,
 		EXTENDED_HOURS,
 	} from './time-slots';
 
-	// The internal TimeRange keeps plain strings ('' = unset end); every set value comes from a TimeSlot,
+	// The internal SlotRange keeps plain strings ('' = unset end); every set value comes from a TimeSlot,
 	// so casting at the guarded display seam is sound.
 	const fmt = (t: string) => formatTimeDisplay(t);
 
 	type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';
 
 	interface Props {
-		value?: TimeRange;
+		value?: SlotRange;
 		placeholder?: string;
 		disabled?: boolean;
 		class?: string;
@@ -31,7 +31,7 @@
 		contentClass?: string;
 		align?: 'start' | 'center' | 'end';
 		side?: 'top' | 'right' | 'bottom' | 'left';
-		onValueChange?: (value: TimeRange | undefined) => void;
+		onValueChange?: (value: SlotRange | undefined) => void;
 		// Time slot configuration
 		preset?: TimeSlotPreset;
 		slots?: TimeSlot[];
@@ -136,7 +136,7 @@
 		}
 
 		// If end time is now invalid, clear it
-		const newValue: TimeRange = { start: newStart, end: value?.end || '' };
+		const newValue: SlotRange = { start: newStart, end: value?.end || '' };
 		if (value?.end && compareTime(newStart, value.end) >= 0) {
 			newValue.end = '';
 		}
@@ -148,7 +148,7 @@
 	function handleEndChange(newEnd: string | undefined) {
 		if (!newEnd || !value?.start) return;
 
-		const newValue: TimeRange = { start: value.start, end: newEnd };
+		const newValue: SlotRange = { start: value.start, end: newEnd };
 		value = newValue;
 		onValueChange?.(newValue);
 	}

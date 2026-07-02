@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { TimeRange, TimeValue } from '$lib/internal/date-time/types.js';
+	import type { TimeEndpoints, TimeValue } from '$lib/internal/date-time/types.js';
 	import type { Time } from '@internationalized/date';
 </script>
 
@@ -35,14 +35,9 @@
 		readonlySegments = [],
 		children,
 		child,
-		onStartValueChange = () => {},
-		onEndValueChange = () => {},
 		errorMessageId,
 		...restProps
 	}: TimeRangeFieldRootProps<T> = $props();
-
-	let startValue = $state<T | undefined>(value?.start);
-	let endValue = $state<T | undefined>(value?.end);
 
 	function repairUndefinedControlledPlaceholder() {
 		if (placeholder !== undefined) return;
@@ -59,7 +54,7 @@
 		value = defaultValue;
 	}
 
-	// Range field state owns a TimeRange object, even when empty.
+	// Range field state owns a TimeEndpoints object, even when empty.
 	repairBindable(() => value, repairUndefinedControlledValue);
 
 	const rootState = TimeRangeFieldRootState.create({
@@ -87,24 +82,10 @@
 		),
 		readonlySegments: boxWith(() => readonlySegments),
 		value: boxWith(
-			() => value as TimeRange<T>,
+			() => value as TimeEndpoints<T>,
 			(v) => {
 				value = v;
 				onValueChange(v);
-			},
-		),
-		startValue: boxWith(
-			() => startValue,
-			(v) => {
-				startValue = v;
-				onStartValueChange(v);
-			},
-		),
-		endValue: boxWith(
-			() => endValue,
-			(v) => {
-				endValue = v;
-				onEndValueChange(v);
 			},
 		),
 		onInvalid: boxWith(() => onInvalid),

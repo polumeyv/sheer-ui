@@ -6,7 +6,7 @@
 import { timeToMinutes, minutesToTime, formatTimeDisplay } from '@polumeyv/utilities';
 
 export type TimeSlot = { value: string; label: string };
-export type TimeRange = { start: string; end: string };
+export type SlotRange = { start: string; end: string };
 
 /** Non-throwing parse of an ISO 8601 "HH:MM" wall-clock string → minutes since midnight, or null if malformed.
  *  The regex IS the brand's validation, so the cast is sound — this is the lenient seam for free-form props. */

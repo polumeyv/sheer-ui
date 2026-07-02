@@ -13,7 +13,7 @@ import type {
 	EditableTimeSegmentPart,
 	TimeGranularity,
 	TimeOnInvalid,
-	TimeRange,
+	TimeEndpoints,
 	TimeRangeValidator,
 	TimeValue,
 } from "$lib/internal/date-time/types.js";
@@ -24,12 +24,12 @@ export type TimeRangeFieldRootPropsWithoutHTML<T extends TimeValue = Time> = Wit
 	 *
 	 * @bindable
 	 */
-	value?: TimeRange<T>;
+	value?: TimeEndpoints<T>;
 
 	/**
 	 * A callback that is called when the value of the date range field changes.
 	 */
-	onValueChange?: OnChangeFn<TimeRange<T> | undefined>;
+	onValueChange?: OnChangeFn<TimeEndpoints<T> | undefined>;
 
 	/**
 	 * The placeholder value of the time field. This determines the format
@@ -136,20 +136,6 @@ export type TimeRangeFieldRootPropsWithoutHTML<T extends TimeValue = Time> = Wit
 	 * @defaultValue false;
 	 */
 	hideTimeZone?: boolean;
-
-	/**
-	 * A callback function called when the start value changes. This doesn't necessarily mean
-	 * the `value` has updated and should be used to apply cosmetic changes to the field when
-	 * only part of the value is changed/completed.
-	 */
-	onStartValueChange?: OnChangeFn<T | undefined>;
-
-	/**
-	 * A callback function called when the end value changes. This doesn't necessarily mean
-	 * the `value` has updated and should be used to apply cosmetic changes to the field when
-	 * only part of the value is changed/completed.
-	 */
-	onEndValueChange?: OnChangeFn<T | undefined>;
 
 	/**
 	 * The `id` of the element which contains the error messages for the time field when the

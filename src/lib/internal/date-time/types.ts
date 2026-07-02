@@ -48,7 +48,7 @@ export type DateRange = {
 	end: DateValue | undefined;
 };
 
-export type TimeRange<T extends TimeValue = Time> = {
+export type TimeEndpoints<T extends TimeValue = Time> = {
 	start: T | undefined;
 	end: T | undefined;
 };
