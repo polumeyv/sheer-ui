@@ -184,68 +184,10 @@ export function handleCalendarKeydown({ event, handleCellClick, shiftFocus, plac
 	if (cellValue) handleCellClick(event, parseStringToDateValue(cellValue, placeholderValue));
 }
 
-type HandleCalendarPageProps = {
-	months: Month<DateValue>[];
-	setMonths: (months: Month<DateValue>[]) => void;
-	numberOfMonths: number;
-	pagedNavigation: boolean;
-	weekStartsOn: number | undefined;
-	locale: string;
-	fixedWeeks: boolean;
-	setPlaceholder: (date: DateValue) => void;
-};
-
-function handleCalendarPageChange(
-	{ months, setMonths, numberOfMonths, pagedNavigation, weekStartsOn, locale, fixedWeeks, setPlaceholder }: HandleCalendarPageProps,
-	direction: 1 | -1,
-) {
-	const firstMonth = months[0]?.value;
-	if (!firstMonth) return;
-
-	if (pagedNavigation) {
-		setPlaceholder(direction === 1 ? firstMonth.add({ months: numberOfMonths }) : firstMonth.subtract({ months: numberOfMonths }));
-		return;
-	}
-
-	// Compute the target date once so placeholder + months update in sync
-	// (avoids double-triggering useMonthViewPlaceholderSync).
-	const targetDate = direction === 1 ? firstMonth.add({ months: 1 }) : firstMonth.subtract({ months: 1 });
-	setPlaceholder(targetDate);
-	setMonths(createMonths({ dateObj: targetDate, weekStartsOn, locale, fixedWeeks, numberOfMonths }));
-}
-
-export const handleCalendarNextPage = (props: HandleCalendarPageProps) => handleCalendarPageChange(props, 1);
-export const handleCalendarPrevPage = (props: HandleCalendarPageProps) => handleCalendarPageChange(props, -1);
-
 type GetWeekdaysProps = { months: Month<DateValue>[]; weekdayFormat: Intl.DateTimeFormatOptions['weekday']; formatter: Formatter };
 
 export const getWeekdays = ({ months, formatter, weekdayFormat }: GetWeekdaysProps) =>
 	(months[0]?.weeks[0] ?? []).map((date) => formatter.dayOfWeek(toDate(date), weekdayFormat));
-
-type UseMonthViewSyncProps = {
-	weekStartsOn: ReadableBox<number | undefined>;
-	locale: ReadableBox<string>;
-	fixedWeeks: ReadableBox<boolean>;
-	numberOfMonths: ReadableBox<number>;
-	placeholder: WritableBox<DateValue>;
-	setMonths: (months: Month<DateValue>[]) => void;
-};
-
-/** Rebuilds the displayed months whenever the option values change. */
-export function useMonthViewOptionsSync(props: UseMonthViewSyncProps) {
-	$effect(() => {
-		const weekStartsOn = props.weekStartsOn.current;
-		const locale = props.locale.current;
-		const fixedWeeks = props.fixedWeeks.current;
-		const numberOfMonths = props.numberOfMonths.current;
-
-		untrack(() => {
-			const placeholder = props.placeholder.current;
-			if (!placeholder) return;
-			props.setMonths(createMonths({ weekStartsOn, locale, fixedWeeks, numberOfMonths, dateObj: placeholder }));
-		});
-	});
-}
 
 type CreateAccessibleHeadingProps = { calendarNode: HTMLElement; label: string; accessibleHeadingId: string };
 
@@ -272,43 +214,6 @@ export function createAccessibleHeading({ calendarNode, label, accessibleHeading
 		div.remove();
 		heading.remove();
 	};
-}
-
-type UseMonthViewPlaceholderSyncProps = {
-	placeholder: WritableBox<DateValue>;
-	getVisibleMonths: () => DateValue[];
-	weekStartsOn: ReadableBox<number | undefined>;
-	locale: ReadableBox<string>;
-	fixedWeeks: ReadableBox<boolean>;
-	numberOfMonths: ReadableBox<number>;
-	setMonths: (months: Month<DateValue>[]) => void;
-};
-
-export function useMonthViewPlaceholderSync({
-	placeholder,
-	getVisibleMonths,
-	weekStartsOn,
-	locale,
-	fixedWeeks,
-	numberOfMonths,
-	setMonths,
-}: UseMonthViewPlaceholderSyncProps) {
-	$effect(() => {
-		placeholder.current;
-		untrack(() => {
-			// Already showing the placeholder's month — nothing to do.
-			if (getVisibleMonths().some((month) => isSameMonth(month, placeholder.current))) return;
-			setMonths(
-				createMonths({
-					weekStartsOn: weekStartsOn.current,
-					locale: locale.current,
-					fixedWeeks: fixedWeeks.current,
-					numberOfMonths: numberOfMonths.current,
-					dateObj: placeholder.current,
-				}),
-			);
-		});
-	});
 }
 
 type GetIsNextButtonDisabledProps = { maxValue: DateValue | undefined; months: Month<DateValue>[]; disabled: boolean };
