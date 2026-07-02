@@ -12,14 +12,14 @@ export type ScrollBodyType = {
 	useDuration: (input: number) => ScrollBodyType;
 };
 
-export function ScrollBody(
+export const ScrollBody = (
 	location: NumberStoreType,
 	offsetLocation: NumberStoreType,
 	previousLocation: NumberStoreType,
 	target: NumberStoreType,
 	baseDuration: number,
 	baseFriction: number,
-): ScrollBodyType {
+): ScrollBodyType => {
 	let scrollVelocity = 0;
 	let scrollDirection = 0;
 	let scrollDuration = baseDuration;
@@ -27,7 +27,7 @@ export function ScrollBody(
 	let rawLocation = location.get();
 	let rawLocationPrevious = 0;
 
-	function seek(): ScrollBodyType {
+	const seek = (): ScrollBodyType => {
 		const displacement = target.minus(location);
 		const isInstant = !scrollDuration;
 		let scrollDistance = 0;
@@ -52,42 +52,32 @@ export function ScrollBody(
 		scrollDirection = Math.sign(scrollDistance);
 		rawLocationPrevious = rawLocation;
 		return self;
-	}
+	};
 
-	function settled(): boolean {
+	const settled = (): boolean => {
 		const displacement = target.minus(offsetLocation);
 		return Math.abs(displacement) < 0.001;
-	}
+	};
 
-	function duration(): number {
-		return scrollDuration;
-	}
+	const duration = (): number => scrollDuration;
 
-	function direction(): number {
-		return scrollDirection;
-	}
+	const direction = (): number => scrollDirection;
 
-	function velocity(): number {
-		return scrollVelocity;
-	}
+	const velocity = (): number => scrollVelocity;
 
-	function useBaseDuration(): ScrollBodyType {
-		return useDuration(baseDuration);
-	}
+	const useBaseDuration = (): ScrollBodyType => useDuration(baseDuration);
 
-	function useBaseFriction(): ScrollBodyType {
-		return useFriction(baseFriction);
-	}
+	const useBaseFriction = (): ScrollBodyType => useFriction(baseFriction);
 
-	function useDuration(input: number): ScrollBodyType {
+	const useDuration = (input: number): ScrollBodyType => {
 		scrollDuration = input;
 		return self;
-	}
+	};
 
-	function useFriction(input: number): ScrollBodyType {
+	const useFriction = (input: number): ScrollBodyType => {
 		scrollFriction = input;
 		return self;
-	}
+	};
 
 	const self: ScrollBodyType = {
 		direction,
@@ -101,4 +91,4 @@ export function ScrollBody(
 		useDuration,
 	};
 	return self;
-}
+};

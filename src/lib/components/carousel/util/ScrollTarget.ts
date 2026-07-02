@@ -1,7 +1,6 @@
 import { type LimitType } from './Limit'
 import { type DirectionType } from './ScrollTo'
 import { type NumberStoreType } from './NumberStore'
-import { arrayLast } from './utils'
 
 export type TargetType = {
   distance: number
@@ -14,20 +13,19 @@ export type ScrollTargetType = {
   shortcut: (target: number, direction: DirectionType) => number
 }
 
-export function ScrollTarget(
+export const ScrollTarget = (
   loop: boolean,
   scrollSnaps: number[],
   contentSize: number,
   limit: LimitType,
   targetVector: NumberStoreType
-): ScrollTargetType {
+): ScrollTargetType => {
   const { pastAnyBound, removeOffset, clamp } = limit
 
-  function minDistance(distances: number[]): number {
-    return distances.sort((a, b) => Math.abs(a) - Math.abs(b))[0]
-  }
+  const minDistance = (distances: number[]): number =>
+    distances.sort((a, b) => Math.abs(a) - Math.abs(b))[0]
 
-  function getClosestSnap(target: number): TargetType {
+  const getClosestSnap = (target: number): TargetType => {
     const distance = loop ? removeOffset(target) : clamp(target)
     const { index } = scrollSnaps.reduce(
       (result, snap, snapIndex) => {
@@ -41,7 +39,7 @@ export function ScrollTarget(
     return { index, distance }
   }
 
-  function shortcut(target: number, direction: DirectionType): number {
+  const shortcut = (target: number, direction: DirectionType): number => {
     if (!loop) return target
 
     const targets = [target, target + contentSize, target - contentSize]
@@ -49,16 +47,16 @@ export function ScrollTarget(
 
     const validTargets = targets.filter((t) => Math.sign(t) === direction)
     if (validTargets.length) return minDistance(validTargets)
-    return arrayLast(targets) - contentSize
+    return targets.at(-1)! - contentSize
   }
 
-  function byIndex(index: number, direction: DirectionType): TargetType {
+  const byIndex = (index: number, direction: DirectionType): TargetType => {
     const diffToSnap = scrollSnaps[index] - targetVector.get()
     const distance = shortcut(diffToSnap, direction)
     return { index, distance }
   }
 
-  function byDistance(distance: number, snapToClosest: boolean): TargetType {
+  const byDistance = (distance: number, snapToClosest: boolean): TargetType => {
     const target = targetVector.plus(distance)
     const { index, distance: targetSnapDistance } = getClosestSnap(target)
     const isPastAnyBound = !loop && pastAnyBound(target)

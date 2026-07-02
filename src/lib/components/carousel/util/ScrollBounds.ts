@@ -9,27 +9,27 @@ export type ScrollBoundsType = {
 	toggleActive: (active: boolean) => void;
 };
 
-export function ScrollBounds(
+export const ScrollBounds = (
 	limit: LimitType,
 	location: NumberStoreType,
 	target: NumberStoreType,
 	scrollBody: ScrollBodyType,
 	percentOfView: PercentOfViewType,
-): ScrollBoundsType {
+): ScrollBoundsType => {
 	const { pastAnyBound, pastMinBound, clamp } = limit;
 	const pullBackThreshold = percentOfView.measure(10);
 	const edgeOffsetTolerance = percentOfView.measure(50);
 	const frictionLimit = Limit(0.1, 0.99);
 	let disabled = false;
 
-	function shouldConstrain(): boolean {
+	const shouldConstrain = (): boolean => {
 		if (disabled) return false;
 		if (!pastAnyBound(target)) return false;
 		if (!pastAnyBound(location)) return false;
 		return true;
-	}
+	};
 
-	function constrain(pointerDown: boolean): void {
+	const constrain = (pointerDown: boolean): void => {
 		if (!shouldConstrain()) return;
 		const edge = pastMinBound(location) ? 'min' : 'max';
 		const diffToEdge = Math.abs(limit[edge] - location.get());
@@ -42,11 +42,11 @@ export function ScrollBounds(
 			target.set(clamp(target));
 			scrollBody.useDuration(25).useBaseFriction();
 		}
-	}
+	};
 
-	function toggleActive(active: boolean): void {
+	const toggleActive = (active: boolean): void => {
 		disabled = !active;
-	}
+	};
 
 	const self: ScrollBoundsType = {
 		shouldConstrain,
@@ -54,4 +54,4 @@ export function ScrollBounds(
 		toggleActive,
 	};
 	return self;
-}
+};

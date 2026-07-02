@@ -12,25 +12,23 @@ export type ResizeHandlerType = {
 	destroy: () => void;
 };
 
-export function ResizeHandler<API extends ReInitApi>(
+export const ResizeHandler = <API extends ReInitApi>(
 	active: boolean,
 	container: HTMLElement,
 	eventHandler: EventHandlerType<API>,
 	slides: HTMLElement[],
 	axis: AxisType,
 	nodeHandler: NodeHandlerType,
-): ResizeHandlerType {
+): ResizeHandlerType => {
 	const observeNodes = [container, ...slides];
 	let resizeObserver: ResizeObserver;
 	let containerSize: number;
 	let slideSizes: number[] = [];
 	let destroyed = false;
 
-	function readSize(node: HTMLElement): number {
-		return axis.getSize(nodeHandler.getRect(node));
-	}
+	const readSize = (node: HTMLElement): number => axis.getSize(nodeHandler.getRect(node));
 
-	function init(ownerWindow: WindowType): void {
+	const init = (ownerWindow: WindowType): void => {
 		if (!active) return;
 
 		containerSize = readSize(container);
@@ -41,14 +39,14 @@ export function ResizeHandler<API extends ReInitApi>(
 		ownerWindow.requestAnimationFrame(() => {
 			observeNodes.forEach((node) => resizeObserver.observe(node));
 		});
-	}
+	};
 
-	function destroy(): void {
+	const destroy = (): void => {
 		destroyed = true;
 		if (resizeObserver) resizeObserver.disconnect();
-	}
+	};
 
-	function onResize(entries: ResizeObserverEntry[]): void {
+	const onResize = (entries: ResizeObserverEntry[]): void => {
 		const event = eventHandler.createEvent('resize', entries);
 		const preventDefault = !event.emit();
 
@@ -69,7 +67,7 @@ export function ResizeHandler<API extends ReInitApi>(
 				break;
 			}
 		}
-	}
+	};
 
 	const self: ResizeHandlerType = {
 		init,
@@ -77,4 +75,4 @@ export function ResizeHandler<API extends ReInitApi>(
 	};
 
 	return self;
-}
+};

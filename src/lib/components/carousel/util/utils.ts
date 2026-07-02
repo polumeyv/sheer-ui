@@ -5,70 +5,35 @@ export type WindowType = Window & typeof globalThis;
 
 export type NumberStoreInputType = NumberStoreType | number;
 
-export function mapStoreToNumber<ReturnType>(callback: (input: number) => ReturnType): (input: NumberStoreInputType) => ReturnType {
-	return (input: NumberStoreInputType): ReturnType => {
-		return callback(isNumber(input) ? input : input.get());
-	};
-}
+export const isNumber = (subject: unknown): subject is number => typeof subject === 'number';
 
-export function isNumber(subject: unknown): subject is number {
-	return typeof subject === 'number';
-}
+export const isObject = (subject: unknown): subject is Record<string, unknown> =>
+	Object.prototype.toString.call(subject) === '[object Object]';
 
-export function isBoolean(subject: unknown): subject is boolean {
-	return typeof subject === 'boolean';
-}
+export const mapStoreToNumber =
+	<ReturnType>(callback: (input: number) => ReturnType): ((input: NumberStoreInputType) => ReturnType) =>
+	(input) =>
+		callback(isNumber(input) ? input : input.get());
 
-export function isObject(subject: unknown): subject is Record<string, unknown> {
-	return Object.prototype.toString.call(subject) === '[object Object]';
-}
+// Clamped to 0 so empty arrays index to slot 0 rather than -1 (Counter max, start locations).
+export const arrayLastIndex = (array: unknown[]): number => Math.max(0, array.length - 1);
 
-export function deltaAbs(inputB: number, inputA: number): number {
-	return Math.abs(inputB - inputA);
-}
+export const arrayIsLastIndex = (array: unknown[], index: number): boolean => index === arrayLastIndex(array);
 
-export function factorAbs(inputB: number, inputA: number): number {
-	if (inputB === 0 || inputA === 0) return 0;
-	if (Math.abs(inputB) <= Math.abs(inputA)) return 0;
-	const diff = deltaAbs(Math.abs(inputB), Math.abs(inputA));
-	return Math.abs(diff / inputB);
-}
+export const arrayFromRange = (end: number, start: number = 0): number[] =>
+	Array.from({ length: end - start + 1 }, (_, index) => start + index);
 
-export function roundToTwoDecimals(input: number): number {
-	return Math.round(input * 100) / 100;
-}
+export const objectsMergeDeep = (objectA: Record<string, unknown>, objectB: Record<string, unknown>): Record<string, unknown> => {
+	const merged: Record<string, unknown> = { ...objectA };
 
-export function arrayLast<Type>(array: Type[]): Type {
-	return array[arrayLastIndex(array)];
-}
+	for (const [key, valueB] of Object.entries(objectB)) {
+		const valueA = merged[key];
 
-export function arrayLastIndex<Type>(array: Type[]): number {
-	return Math.max(0, array.length - 1);
-}
+		merged[key] = isObject(valueA) && isObject(valueB) ? objectsMergeDeep(valueA, valueB) : valueB;
+	}
 
-export function arrayIsLastIndex<Type>(array: Type[], index: number): boolean {
-	return index === arrayLastIndex(array);
-}
+	return merged;
+};
 
-export function arrayFromRange(end: number, start: number = 0): number[] {
-	return Array.from(Array(end - start + 1), (_, index) => start + index);
-}
-
-
-
-export function objectsMergeDeep(objectA: Record<string, unknown>, objectB: Record<string, unknown>): Record<string, unknown> {
-	return [objectA, objectB].reduce((mergedObjects, currentObject) => {
-		Object.keys(currentObject).forEach((key) => {
-			const valueA = mergedObjects[key];
-			const valueB = currentObject[key];
-			const areObjects = isObject(valueA) && isObject(valueB);
-
-			mergedObjects[key] = areObjects ? objectsMergeDeep(valueA, valueB) : valueB;
-		});
-		return mergedObjects;
-	}, {});
-}
-
-export function isMouseEvent(evt: PointerEventType, ownerWindow: WindowType): evt is MouseEvent {
-	return typeof ownerWindow.MouseEvent !== 'undefined' && evt instanceof ownerWindow.MouseEvent;
-}
+export const isMouseEvent = (evt: PointerEventType, ownerWindow: WindowType): evt is MouseEvent =>
+	typeof ownerWindow.MouseEvent !== 'undefined' && evt instanceof ownerWindow.MouseEvent;

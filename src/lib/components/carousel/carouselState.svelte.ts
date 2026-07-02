@@ -92,16 +92,16 @@ type SetCarouselApi = (api: CarouselAPI | undefined) => void;
 const fallbackOptions: CarouselOptions = {};
 const fallbackPlugins: CarouselPlugins = [];
 
-function readCarouselConfig(readConfig?: GetCarouselConfig) {
+const readCarouselConfig = (readConfig?: GetCarouselConfig) => {
 	const config = readConfig?.();
 
 	return {
 		options: config?.options ?? fallbackOptions,
 		plugins: config?.plugins ?? fallbackPlugins,
 	};
-}
+};
 
-function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}, userPlugins: CarouselPlugins = []): CarouselAPI {
+const createCarousel = (userRoot: HTMLElement, userOptions: CarouselOptions = {}, userPlugins: CarouselPlugins = []): CarouselAPI => {
 	const optionsHandler = OptionsHandler();
 	let activePlugins: CarouselPlugins = [];
 	let pluginList = userPlugins;
@@ -123,17 +123,17 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 	let container: HTMLElement;
 	let slides: HTMLElement[];
 
-	function cloneEngine(userOptions?: CarouselOptions): EngineType<CarouselAPI> {
+	const cloneEngine = (userOptions?: CarouselOptions): EngineType<CarouselAPI> => {
 		const engineOptions = mergeOptions(options, userOptions);
 		return createEngine(engineOptions, container, slides, true);
-	}
+	};
 
-	function createEngine(
+	const createEngine = (
 		options: OptionsType,
 		container: HTMLElement,
 		slides: HTMLElement[],
 		useCachedRects?: boolean,
-	): EngineType<CarouselAPI> {
+	): EngineType<CarouselAPI> => {
 		const rects = nodeHandler.getRects(container, slides, useCachedRects);
 
 		const nextEngine = Engine<CarouselAPI>(root, container, slides, options, nodeHandler, eventHandler, rects, false);
@@ -143,9 +143,9 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 		}
 
 		return nextEngine;
-	}
+	};
 
-	function initPlugins(api: CarouselAPI, plugins: CarouselPlugins): CarouselPluginsType {
+	const initPlugins = (api: CarouselAPI, plugins: CarouselPlugins): CarouselPluginsType => {
 		activePlugins = plugins;
 
 		return plugins.reduce<CarouselPluginsType>((pluginList, plugin) => {
@@ -153,17 +153,17 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 			pluginList[plugin.name] = plugin;
 			return pluginList;
 		}, {});
-	}
+	};
 
-	function destroyPlugins(): void {
+	const destroyPlugins = (): void => {
 		activePlugins.forEach((plugin) => {
 			plugin.destroy();
 		});
 
 		activePlugins = [];
-	}
+	};
 
-	function activate(withOptions?: CarouselOptions, withPlugins?: CarouselPlugins): void {
+	const activate = (withOptions?: CarouselOptions, withPlugins?: CarouselPlugins): void => {
 		if (destroyed) return;
 
 		nodeHandler = NodeHandler(userRoot);
@@ -203,9 +203,9 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 		}
 
 		pluginApis = initPlugins(self, pluginList);
-	}
+	};
 
-	function reActivate(withOptions?: CarouselOptions, withPlugins?: CarouselPlugins): void {
+	const reActivate = (withOptions?: CarouselOptions, withPlugins?: CarouselPlugins): void => {
 		const event = eventHandler.createEvent('reinit', null);
 		const startSnap = selectedSnap();
 
@@ -213,9 +213,9 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 		activate(mergeOptions({ startSnap }, withOptions), withPlugins);
 
 		event.emit();
-	}
+	};
 
-	function deActivate(): void {
+	const deActivate = (): void => {
 		engine.dragHandler.destroy();
 		engine.resizeHandler.destroy();
 		engine.slidesHandler.destroy();
@@ -227,9 +227,9 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 		engine.eventStore.clear();
 		engine.translate.clear();
 		engine.slideTranslates.forEach((translate) => translate.clear());
-	}
+	};
 
-	function destroy(): void {
+	const destroy = (): void => {
 		if (destroyed) return;
 
 		const event = eventHandler.createEvent('destroy', null);
@@ -239,75 +239,75 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 		deActivate();
 		event.emit();
 		eventHandler.clear();
-	}
+	};
 
-	function goTo(index: number, instant?: boolean, direction?: ScrollToDirectionType): void {
+	const goTo = (index: number, instant?: boolean, direction?: ScrollToDirectionType): void => {
 		if (destroyed) return;
 		if (!options.active) return;
 
 		engine.scrollBody.useBaseFriction().useDuration(instant === true ? 0 : options.duration);
 		engine.scrollTo.index(index, direction);
-	}
+	};
 
-	function goToNext(instant?: boolean): void {
+	const goToNext = (instant?: boolean): void => {
 		goTo(snapIndex(1), instant, -1);
-	}
+	};
 
-	function goToPrev(instant?: boolean): void {
+	const goToPrev = (instant?: boolean): void => {
 		goTo(snapIndex(-1), instant, 1);
-	}
+	};
 
-	function canGoToNext(): boolean {
+	const canGoToNext = (): boolean => {
 		return snapIndex(1) !== selectedSnap();
-	}
+	};
 
-	function canGoToPrev(): boolean {
+	const canGoToPrev = (): boolean => {
 		return snapIndex(-1) !== selectedSnap();
-	}
+	};
 
-	function scrollProgress(): number {
+	const scrollProgress = (): number => {
 		return engine.scrollProgress.get(engine.offsetLocation);
-	}
+	};
 
-	function snapIndex(offset: number): number {
+	const snapIndex = (offset: number): number => {
 		return engine.indexCurrent.add(offset).get();
-	}
+	};
 
-	function snapList(): number[] {
+	const snapList = (): number[] => {
 		return engine.scrollSnapList.progressBySnap;
-	}
+	};
 
-	function selectedSnap(): number {
+	const selectedSnap = (): number => {
 		return snapIndex(0);
-	}
+	};
 
-	function previousSnap(): number {
+	const previousSnap = (): number => {
 		return engine.indexPrevious.get();
-	}
+	};
 
-	function slidesInView(): number[] {
+	const slidesInView = (): number[] => {
 		return engine.slidesInView.get();
-	}
+	};
 
-	function plugins(): CarouselPluginsType {
+	const plugins = (): CarouselPluginsType => {
 		return pluginApis;
-	}
+	};
 
-	function internalEngine(): EngineType<CarouselAPI> {
+	const internalEngine = (): EngineType<CarouselAPI> => {
 		return engine;
-	}
+	};
 
-	function rootNode(): HTMLElement {
+	const rootNode = (): HTMLElement => {
 		return root;
-	}
+	};
 
-	function containerNode(): HTMLElement {
+	const containerNode = (): HTMLElement => {
 		return container;
-	}
+	};
 
-	function slideNodes(): HTMLElement[] {
+	const slideNodes = (): HTMLElement[] => {
 		return slides;
-	}
+	};
 
 	const self: CarouselAPI = {
 		canGoToNext,
@@ -337,9 +337,9 @@ function createCarousel(userRoot: HTMLElement, userOptions: CarouselOptions = {}
 	activate(userOptions, userPlugins);
 
 	return self;
-}
+};
 
-export function useCarousel(readConfig?: GetCarouselConfig, setApi?: SetCarouselApi): Attachment<HTMLElement> {
+export const useCarousel = (readConfig?: GetCarouselConfig, setApi?: SetCarouselApi): Attachment<HTMLElement> => {
 	return (node) => {
 		const initial = untrack(() => readCarouselConfig(readConfig));
 		// untrack: activation reads the reactive engine/counter state it creates; the
@@ -374,4 +374,4 @@ export function useCarousel(readConfig?: GetCarouselConfig, setApi?: SetCarousel
 			api.destroy();
 		};
 	};
-}
+};

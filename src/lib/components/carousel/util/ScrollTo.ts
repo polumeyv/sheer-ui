@@ -15,7 +15,7 @@ export type ScrollToType = {
 	index: (input: number, direction?: ScrollToDirectionType) => void;
 };
 
-export function ScrollTo<API>(
+export const ScrollTo = <API>(
 	animation: AnimationsType,
 	indexCurrent: CounterType,
 	indexPrevious: CounterType,
@@ -23,8 +23,8 @@ export function ScrollTo<API>(
 	scrollTarget: ScrollTargetType,
 	targetVector: NumberStoreType,
 	eventHandler: EventHandlerType<API>,
-): ScrollToType {
-	function scrollTo(target: TargetType): void {
+): ScrollToType => {
+	const scrollTo = (target: TargetType): void => {
 		const { index: targetSnap, distance: targetDisplacement } = target;
 		const sourceSnap = indexCurrent.get();
 		const hasIndexChanged = targetSnap !== sourceSnap;
@@ -51,28 +51,28 @@ export function ScrollTo<API>(
 			});
 			event.emit();
 		}
-	}
+	};
 
-	function distance(input: number, snapToClosest: boolean): void {
+	const distance = (input: number, snapToClosest: boolean): void => {
 		const target = scrollTarget.byDistance(input, snapToClosest);
 		scrollTo(target);
-	}
+	};
 
-	function index(input: number, direction?: ScrollToDirectionType): void {
+	const index = (input: number, direction?: ScrollToDirectionType): void => {
 		const targetIndex = indexCurrent.clone().set(input).get();
 		const target = scrollTarget.byIndex(targetIndex, getDirection(direction));
 		scrollTo(target);
-	}
+	};
 
-	function getDirection(direction?: ScrollToDirectionType): DirectionType {
+	const getDirection = (direction?: ScrollToDirectionType): DirectionType => {
 		if (!direction) return 0;
 		if (isNumber(direction)) return direction;
 		return direction === 'forward' ? -1 : 1;
-	}
+	};
 
 	const self: ScrollToType = {
 		distance,
 		index,
 	};
 	return self;
-}
+};

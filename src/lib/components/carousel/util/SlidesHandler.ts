@@ -10,27 +10,27 @@ export type SlidesHandlerType = {
 	destroy: () => void;
 };
 
-export function SlidesHandler<API extends ReInitApi>(
+export const SlidesHandler = <API extends ReInitApi>(
 	active: boolean,
 	container: HTMLElement,
 	eventHandler: EventHandlerType<API>,
-): SlidesHandlerType {
+): SlidesHandlerType => {
 	let mutationObserver: MutationObserver;
 	let destroyed = false;
 
-	function init(ownerWindow: WindowType): void {
+	const init = (ownerWindow: WindowType): void => {
 		if (!active) return;
 
 		mutationObserver = new ownerWindow.MutationObserver(onSlidesChange);
 		mutationObserver.observe(container, { childList: true });
-	}
+	};
 
-	function destroy(): void {
+	const destroy = (): void => {
 		if (mutationObserver) mutationObserver.disconnect();
 		destroyed = true;
-	}
+	};
 
-	function onSlidesChange(mutations: MutationRecord[]): void {
+	const onSlidesChange = (mutations: MutationRecord[]): void => {
 		const event = eventHandler.createEvent('slideschanged', mutations);
 		const preventDefault = !event.emit();
 
@@ -44,7 +44,7 @@ export function SlidesHandler<API extends ReInitApi>(
 				break;
 			}
 		}
-	}
+	};
 
 	const self: SlidesHandlerType = {
 		init,
@@ -52,4 +52,4 @@ export function SlidesHandler<API extends ReInitApi>(
 	};
 
 	return self;
-}
+};

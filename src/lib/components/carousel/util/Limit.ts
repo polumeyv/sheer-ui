@@ -11,30 +11,24 @@ export type LimitType = {
 	removeOffset: (input: NumberStoreInputType) => number;
 };
 
-export function Limit(min: number = 0, max: number = 0): LimitType {
+export const Limit = (min: number = 0, max: number = 0): LimitType => {
 	const length = Math.abs(min - max);
 
-	function pastMinBound(input: number): boolean {
-		return input < min;
-	}
+	const pastMinBound = (input: number): boolean => input < min;
 
-	function pastMaxBound(input: number): boolean {
-		return input > max;
-	}
+	const pastMaxBound = (input: number): boolean => input > max;
 
-	function pastAnyBound(input: number): boolean {
-		return pastMinBound(input) || pastMaxBound(input);
-	}
+	const pastAnyBound = (input: number): boolean => pastMinBound(input) || pastMaxBound(input);
 
-	function clamp(input: number): number {
+	const clamp = (input: number): number => {
 		if (!pastAnyBound(input)) return input;
 		return pastMinBound(input) ? min : max;
-	}
+	};
 
-	function removeOffset(input: number): number {
+	const removeOffset = (input: number): number => {
 		if (!length) return input;
 		return input - length * Math.ceil((input - max) / length);
-	}
+	};
 
 	const self: LimitType = {
 		length,
@@ -47,4 +41,4 @@ export function Limit(min: number = 0, max: number = 0): LimitType {
 		removeOffset: mapStoreToNumber(removeOffset),
 	};
 	return self;
-}
+};

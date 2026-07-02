@@ -1,6 +1,5 @@
 import { type AxisType } from './Axis'
 import {
-  roundToTwoDecimals,
   type NumberStoreInputType,
   mapStoreToNumber
 } from './utils'
@@ -11,35 +10,31 @@ export type TranslateType = {
   clear: () => void
 }
 
-export function Translate(axis: AxisType, node: HTMLElement): TranslateType {
+export const Translate = (axis: AxisType, node: HTMLElement): TranslateType => {
+  const x = (input: number): string => `translate3d(${input}px,0px,0px)`
+
+  const y = (input: number): string => `translate3d(0px,${input}px,0px)`
+
   const getTranslate = axis.scroll === 'x' ? x : y
   const nodeStyle = node.style
 
   let previousTarget: number | null
   let disabled = false
 
-  function x(input: number): string {
-    return `translate3d(${input}px,0px,0px)`
-  }
-
-  function y(input: number): string {
-    return `translate3d(0px,${input}px,0px)`
-  }
-
-  function to(input: number): void {
+  const to = (input: number): void => {
     if (disabled) return
 
-    const newTarget = roundToTwoDecimals(axis.direction(input))
+    const newTarget = Math.round(axis.direction(input) * 100) / 100
     if (newTarget === previousTarget) return
     nodeStyle.transform = getTranslate(newTarget)
     previousTarget = newTarget
   }
 
-  function toggleActive(active: boolean): void {
+  const toggleActive = (active: boolean): void => {
     disabled = !active
   }
 
-  function clear(): void {
+  const clear = (): void => {
     nodeStyle.transform = ''
     if (!node.getAttribute('style')) node.removeAttribute('style')
   }

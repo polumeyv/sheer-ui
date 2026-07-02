@@ -29,7 +29,7 @@ import { SlidesInView, type SlidesInViewType } from './SlidesInView.svelte';
 import { SlideSizes } from './SlideSizes';
 import { SlidesToScroll, type SlidesToScrollType } from './SlidesToScroll';
 import { Translate, type TranslateType } from './Translate';
-import { arrayLast, arrayLastIndex } from './utils';
+import { arrayLastIndex } from './utils';
 import { NumberStore, type NumberStoreType } from './NumberStore';
 
 export type ReInitApi = {
@@ -76,7 +76,7 @@ export type EngineType<API extends ReInitApi = ReInitApi> = {
 	slideRects: NodeRectType[];
 };
 
-export function Engine<API extends ReInitApi>(
+export const Engine = <API extends ReInitApi>(
 	root: HTMLElement,
 	container: HTMLElement,
 	slides: HTMLElement[],
@@ -85,7 +85,7 @@ export function Engine<API extends ReInitApi>(
 	eventHandler: EventHandlerType<API>,
 	rects: NodeRectsType,
 	isSsr: boolean,
-): EngineType<API> {
+): EngineType<API> => {
 	const {
 		align,
 		axis: scrollAxis,
@@ -128,7 +128,7 @@ export function Engine<API extends ReInitApi>(
 
 	const { snaps, snapsAligned } = ScrollSnaps(axis, alignment, containerRect, slideRects, slidesToScroll);
 
-	const contentSize = -arrayLast(snaps) + arrayLast(slideSizesWithGaps);
+	const contentSize = -snaps.at(-1)! + slideSizesWithGaps.at(-1)!;
 
 	const { snapsContained, scrollContainLimit } = ScrollContain(viewSize, contentSize, snapsAligned, containScroll, pixelTolerance);
 
@@ -137,7 +137,7 @@ export function Engine<API extends ReInitApi>(
 
 	const indexCurrent = Counter(arrayLastIndex(scrollSnaps), startSnap, loop);
 	const indexPrevious = indexCurrent.clone();
-	const slideIndexes = Object.keys(slides).map(Number);
+	const slideIndexes = [...slides.keys()];
 
 	const scrollAnimator = ScrollAnimator<API>();
 	const animation = Animations(
@@ -248,4 +248,4 @@ export function Engine<API extends ReInitApi>(
 	};
 
 	return engine;
-}
+};

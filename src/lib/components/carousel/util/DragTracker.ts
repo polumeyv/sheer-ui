@@ -12,43 +12,41 @@ export type DragTrackerType = {
 	readPoint: (evt: PointerEventType, evtAxis?: AxisOptionType) => number;
 };
 
-export function DragTracker(axis: AxisType): DragTrackerType {
+export const DragTracker = (axis: AxisType): DragTrackerType => {
 	const logInterval = 170;
 
 	let windowInstance: WindowType;
 	let startEvent: PointerEventType;
 	let lastEvent: PointerEventType;
 
-	function init(ownerWindow: WindowType): void {
+	const init = (ownerWindow: WindowType): void => {
 		windowInstance = ownerWindow;
-	}
+	};
 
-	function readTime(evt: PointerEventType): number {
-		return evt.timeStamp;
-	}
+	const readTime = (evt: PointerEventType): number => evt.timeStamp;
 
-	function readPoint(evt: PointerEventType, evtAxis?: AxisOptionType): number {
+	const readPoint = (evt: PointerEventType, evtAxis?: AxisOptionType): number => {
 		const property = evtAxis || axis.scroll;
 		const coord: PointerCoordType = `client${property === 'x' ? 'X' : 'Y'}`;
 		return (isMouseEvent(evt, windowInstance) ? evt : evt.touches[0])[coord];
-	}
+	};
 
-	function pointerDown(evt: PointerEventType): number {
+	const pointerDown = (evt: PointerEventType): number => {
 		startEvent = evt;
 		lastEvent = evt;
 		return readPoint(evt);
-	}
+	};
 
-	function pointerMove(evt: PointerEventType): number {
+	const pointerMove = (evt: PointerEventType): number => {
 		const diff = readPoint(evt) - readPoint(lastEvent);
 		const expired = readTime(evt) - readTime(startEvent) > logInterval;
 
 		lastEvent = evt;
 		if (expired) startEvent = evt;
 		return diff;
-	}
+	};
 
-	function pointerUp(evt: PointerEventType): number {
+	const pointerUp = (evt: PointerEventType): number => {
 		if (!startEvent || !lastEvent) return 0;
 		const diffDrag = readPoint(lastEvent) - readPoint(startEvent);
 		const diffTime = readTime(evt) - readTime(startEvent);
@@ -57,7 +55,7 @@ export function DragTracker(axis: AxisType): DragTrackerType {
 		const isFlick = diffTime && !expired && Math.abs(force) > 0.1;
 
 		return isFlick ? force : 0;
-	}
+	};
 
 	const self: DragTrackerType = {
 		init,
@@ -67,4 +65,4 @@ export function DragTracker(axis: AxisType): DragTrackerType {
 		readPoint,
 	};
 	return self;
-}
+};

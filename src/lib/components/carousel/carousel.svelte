@@ -23,26 +23,26 @@
 	const canScrollPrev = $derived(api?.canGoToPrev() ?? false);
 	const canScrollNext = $derived(api?.canGoToNext() ?? false);
 
-	function registerApi(nextApi: CarouselAPI | undefined) {
+	const registerApi = (nextApi: CarouselAPI | undefined) => {
 		if (api === nextApi) return;
 
 		api = nextApi;
 		setApi(api);
-	}
+	};
 
-	function scrollPrev() {
+	const scrollPrev = () => {
 		api?.goToPrev();
-	}
+	};
 
-	function scrollNext() {
+	const scrollNext = () => {
 		api?.goToNext();
-	}
+	};
 
-	function scrollTo(index: number, instant?: boolean) {
+	const scrollTo = (index: number, instant?: boolean) => {
 		api?.goTo(index, instant);
-	}
+	};
 
-	function handleKeyDown(event: KeyboardEvent) {
+	const handleKeyDown = (event: KeyboardEvent) => {
 		if (orientation === 'horizontal') {
 			if (event.key === 'ArrowLeft') {
 				event.preventDefault();
@@ -66,7 +66,7 @@
 			event.preventDefault();
 			scrollNext();
 		}
-	}
+	};
 
 	setCarouselContext({
 		get api() {

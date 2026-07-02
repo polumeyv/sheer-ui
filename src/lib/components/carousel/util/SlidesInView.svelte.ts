@@ -17,13 +17,13 @@ export type SlidesInViewType = {
 	get: () => number[];
 };
 
-export function SlidesInView<API>(
+export const SlidesInView = <API>(
 	container: HTMLElement,
 	slides: HTMLElement[],
 	eventHandler: EventHandlerType<API>,
 	threshold: SlidesInViewThresholdOptionsType,
 	rootMargin: SlidesInViewMarginOptionsType,
-): SlidesInViewType {
+): SlidesInViewType => {
 	const slidesInView = new Set<number>();
 	// Reactive snapshot so get() composes into deriveds; written once per
 	// IntersectionObserver callback, never per animation frame.
@@ -31,7 +31,7 @@ export function SlidesInView<API>(
 	let intersectionObserver: IntersectionObserver;
 	let destroyed = false;
 
-	function init(ownerWindow: WindowType): void {
+	const init = (ownerWindow: WindowType): void => {
 		intersectionObserver = new ownerWindow.IntersectionObserver(onIntersection, {
 			root: container.parentElement,
 			threshold,
@@ -39,14 +39,14 @@ export function SlidesInView<API>(
 		});
 
 		slides.forEach((slide) => intersectionObserver.observe(slide));
-	}
+	};
 
-	function destroy(): void {
+	const destroy = (): void => {
 		if (intersectionObserver) intersectionObserver.disconnect();
 		destroyed = true;
-	}
+	};
 
-	function onIntersection(entries: IntersectionObserverEntry[]): void {
+	const onIntersection = (entries: IntersectionObserverEntry[]): void => {
 		const slidesEnterView: number[] = [];
 		const slidesLeftView: number[] = [];
 
@@ -73,11 +73,9 @@ export function SlidesInView<API>(
 				slidesEnterView,
 			})
 			.emit();
-	}
+	};
 
-	function get(): number[] {
-		return inView;
-	}
+	const get = (): number[] => inView;
 
 	const self: SlidesInViewType = {
 		init,
@@ -86,4 +84,4 @@ export function SlidesInView<API>(
 	};
 
 	return self;
-}
+};

@@ -10,7 +10,7 @@ export type SlideFocusType = {
 	init: (ownerWindow: WindowType) => void
 }
 
-export function SlideFocus<API>(
+export const SlideFocus = <API>(
 	axis: AxisType,
 	active: boolean,
 	root: HTMLElement,
@@ -20,11 +20,11 @@ export function SlideFocus<API>(
 	scrollBody: ScrollBodyType,
 	eventStore: EventStoreType,
 	eventHandler: EventHandlerType<API>
-): SlideFocusType {
+): SlideFocusType => {
 	const focusListenerOptions = { passive: true, capture: true }
 	let lastTabPressTime = 0
 
-	function init(ownerWindow: WindowType): void {
+	const init = (ownerWindow: WindowType): void => {
 		if (!active) return
 
 		eventStore.add(ownerWindow.document, 'keydown', onKeyDown, false)
@@ -39,7 +39,7 @@ export function SlideFocus<API>(
 		})
 	}
 
-	function onFocus(evt: FocusEvent, slideIndex: number): void {
+	const onFocus = (evt: FocusEvent, slideIndex: number): void => {
 		const nowTime = new Date().getTime()
 		const diffTime = nowTime - lastTabPressTime
 
@@ -59,7 +59,7 @@ export function SlideFocus<API>(
 		scrollTo.index(snapIndex, 0)
 	}
 
-	function onKeyDown(event: KeyboardEvent): void {
+	const onKeyDown = (event: KeyboardEvent): void => {
 		if (event.code === 'Tab') lastTabPressTime = new Date().getTime()
 	}
 

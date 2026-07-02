@@ -57,73 +57,68 @@ export type EventHandlerType<API> = {
 	): EventHandlerType<API>;
 };
 
-export function EventHandler<API>(): EventHandlerType<API> {
+export const EventHandler = <API>(): EventHandlerType<API> => {
 	let eventStore: EventStoreType<API> = {};
 	let api: API;
 
-	function init(carouselApi: API): void {
+	const init = (carouselApi: API): void => {
 		api = carouselApi;
-	}
+	};
 
-	function getStore<EventType extends keyof CarouselEventListType>(type: EventType): CarouselEventCallbackType<API, EventType>[] {
-		return eventStore[type] || [];
-	}
+	const getStore = <EventType extends keyof CarouselEventListType>(type: EventType): CarouselEventCallbackType<API, EventType>[] =>
+		eventStore[type] || [];
 
-	function setStore<EventType extends keyof CarouselEventListType>(
+	const setStore = <EventType extends keyof CarouselEventListType>(
 		type: EventType,
 		update: (handlers: CarouselEventCallbackType<API, EventType>[]) => CarouselEventCallbackType<API, EventType>[],
-	): EventHandlerType<API> {
+	): EventHandlerType<API> => {
 		eventStore = { ...eventStore, [type]: update(getStore(type)) };
 		return self;
-	}
+	};
 
-	function createEventModel<EventType extends keyof CarouselEventListType>(
+	const createEventModel = <EventType extends keyof CarouselEventListType>(
 		type: EventType,
 		detail: CarouselEventListType[EventType],
-	): CarouselEventModelType<API, EventType> {
-		return { api, type, detail };
-	}
+	): CarouselEventModelType<API, EventType> => ({ api, type, detail });
 
-	function createEvent<EventType extends keyof CarouselEventListType>(
+	const createEvent = <EventType extends keyof CarouselEventListType>(
 		type: EventType,
 		detail: CarouselEventListType[EventType],
-	): CarouselCreatedEventType<API> {
-		return {
-			api,
-			emit: () => emit(type, detail),
-		};
-	}
+	): CarouselCreatedEventType<API> => ({
+		api,
+		emit: () => emit(type, detail),
+	});
 
-	function emit<EventType extends keyof CarouselEventListType>(type: EventType, detail: CarouselEventListType[EventType]): boolean {
+	const emit = <EventType extends keyof CarouselEventListType>(type: EventType, detail: CarouselEventListType[EventType]): boolean => {
 		const event = createEventModel(type, detail);
 		return getStore(type).every((handler) => handler(api, event) !== false);
-	}
+	};
 
-	function on<EventType extends keyof CarouselEventListType>(
+	const on = <EventType extends keyof CarouselEventListType>(
 		type: EventType,
 		callback: CarouselEventCallbackType<API, EventType>,
-	): EventHandlerType<API> {
+	): EventHandlerType<API> => {
 		setStore(type, (handlers) => {
 			return handlers.includes(callback) ? handlers : [...handlers, callback];
 		});
 
 		return self;
-	}
+	};
 
-	function off<EventType extends keyof CarouselEventListType>(
+	const off = <EventType extends keyof CarouselEventListType>(
 		type: EventType,
 		callback: CarouselEventCallbackType<API, EventType>,
-	): EventHandlerType<API> {
+	): EventHandlerType<API> => {
 		setStore(type, (handlers) => {
 			return handlers.filter((handler) => handler !== callback);
 		});
 
 		return self;
-	}
+	};
 
-	function clear(): void {
+	const clear = (): void => {
 		eventStore = {};
-	}
+	};
 
 	const self: EventHandlerType<API> = {
 		init,
@@ -134,4 +129,4 @@ export function EventHandler<API>(): EventHandlerType<API> {
 	};
 
 	return self;
-}
+};

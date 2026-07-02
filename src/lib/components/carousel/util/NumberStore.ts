@@ -9,32 +9,26 @@ export type NumberStoreType = {
 	minus: (input: NumberStoreInputType) => number;
 };
 
-export function NumberStore(initialValue: number): NumberStoreType {
+export const NumberStore = (initialValue: number): NumberStoreType => {
 	let value = initialValue || 0;
 
-	function get(): number {
-		return value;
-	}
+	const get = (): number => value;
 
-	function set(input: number): void {
+	const set = (input: number): void => {
 		value = input;
-	}
+	};
 
-	function add(input: number): void {
+	const add = (input: number): void => {
 		value += input;
-	}
+	};
 
-	function subtract(input: number): void {
+	const subtract = (input: number): void => {
 		add(-input);
-	}
+	};
 
-	function plus(input: number): number {
-		return value + input;
-	}
+	const plus = (input: number): number => value + input;
 
-	function minus(input: number): number {
-		return plus(-input);
-	}
+	const minus = (input: number): number => plus(-input);
 
 	const self: NumberStoreType = {
 		get,
@@ -45,4 +39,4 @@ export function NumberStore(initialValue: number): NumberStoreType {
 		minus: mapStoreToNumber(minus),
 	};
 	return self;
-}
+};

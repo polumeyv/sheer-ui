@@ -5,10 +5,10 @@ export type ScrollProgressType = {
   get: (input: NumberStoreInputType) => number
 }
 
-export function ScrollProgress(limit: LimitType): ScrollProgressType {
+export const ScrollProgress = (limit: LimitType): ScrollProgressType => {
   const { max, length } = limit
 
-  function get(input: number): number {
+  const get = (input: number): number => {
     const currentLocation = input - max
     return length ? currentLocation / -length : 0
   }

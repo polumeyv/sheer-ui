@@ -10,20 +10,20 @@ export type EventStoreType = {
 	clear: () => void;
 };
 
-export function EventStore(): EventStoreType {
+export const EventStore = (): EventStoreType => {
 	let listeners: EventRemoverType[] = [];
 
-	function normalizeEventOptions(options: EventOptionsType): AddEventListenerOptions | undefined {
+	const normalizeEventOptions = (options: EventOptionsType): AddEventListenerOptions | undefined => {
 		if (typeof options === 'boolean') return { capture: options };
 		return options;
-	}
+	};
 
-	function add(
+	const add = (
 		node: EventTarget,
 		type: EventNameType,
 		handler: EventHandlerType,
 		options: EventOptionsType = { passive: true },
-	): EventStoreType {
+	): EventStoreType => {
 		let removeListener: EventRemoverType;
 
 		if ('addEventListener' in node) {
@@ -36,15 +36,15 @@ export function EventStore(): EventStoreType {
 
 		listeners.push(removeListener);
 		return self;
-	}
+	};
 
-	function clear(): void {
+	const clear = (): void => {
 		listeners = listeners.filter((remove) => remove());
-	}
+	};
 
 	const self: EventStoreType = {
 		add,
 		clear,
 	};
 	return self;
-}
+};

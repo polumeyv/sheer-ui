@@ -17,7 +17,7 @@ export type OptionsHandlerType = {
 // inside an effect subscribes it; reads outside reactive contexts are plain.
 const mediaQueries = new Map<string, MediaQuery>()
 
-function matchesMedia(query: string): boolean {
+const matchesMedia = (query: string): boolean => {
   if (!BROWSER) return false
 
   let mediaQuery = mediaQueries.get(query)
@@ -33,7 +33,7 @@ function matchesMedia(query: string): boolean {
 // Reads every declared breakpoint so a tracked caller (the carousel config
 // effect) re-runs when any of them flips. Replaces embla's matchMedia
 // 'change' listeners.
-export function observeOptionsBreakpoints(optionsList: OptionsType[]): void {
+export const observeOptionsBreakpoints = (optionsList: OptionsType[]): void => {
   for (const options of optionsList) {
     for (const query of Object.keys(options.breakpoints || {})) {
       matchesMedia(query)
@@ -41,15 +41,13 @@ export function observeOptionsBreakpoints(optionsList: OptionsType[]): void {
   }
 }
 
-export function OptionsHandler(): OptionsHandlerType {
-  function mergeOptions<TypeA extends OptionsType, TypeB extends OptionsType>(
+export const OptionsHandler = (): OptionsHandlerType => {
+  const mergeOptions = <TypeA extends OptionsType, TypeB extends OptionsType>(
     optionsA: TypeA,
     optionsB?: TypeB
-  ): TypeA {
-    return <TypeA>objectsMergeDeep(optionsA, optionsB || {})
-  }
+  ): TypeA => <TypeA>objectsMergeDeep(optionsA, optionsB || {})
 
-  function optionsAtMedia<Type extends OptionsType>(options: Type): Type {
+  const optionsAtMedia = <Type extends OptionsType>(options: Type): Type => {
     const optionsAtMedia = options.breakpoints || {}
     const matchedMediaOptions = Object.keys(optionsAtMedia)
       .filter((media) => matchesMedia(media))
