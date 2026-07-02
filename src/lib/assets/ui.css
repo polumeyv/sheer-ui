@@ -806,3 +806,87 @@
 	left: auto;
 	right: anchor(right);
 }
+
+/* LayerChart defaults for [data-slot=chart] — the static .lc-* overrides that shadcn-svelte
+   ships as ~30 arbitrary-variant classes on every chart-container instance. Kept here once
+   instead; new overrides from upstream chart pulls land in this block, not the container. */
+[data-slot='chart'] .lc-root-container {
+	@apply w-full;
+}
+
+/* Stroke around dots/marks when hovering */
+[data-slot='chart'] .lc-highlight-point {
+	@apply stroke-transparent opacity-100;
+}
+
+/* Default stroke color of lines */
+[data-slot='chart'] .lc-line {
+	@apply stroke-border/50;
+}
+
+/* Hide the line intersecting the point when hovering */
+[data-slot='chart'] .lc-highlight-line {
+	@apply stroke-0 opacity-100;
+}
+
+/* Hovering a point on a stacked series chart drops the opacity of the other series;
+   keep them fully visible */
+[data-slot='chart'] .lc-area-path {
+	@apply opacity-100;
+}
+
+[data-slot='chart'] .lc-text {
+	@apply text-xs;
+}
+[data-slot='chart'] .lc-text-svg {
+	@apply overflow-visible;
+}
+
+/* No tick lines between the axis labels and the chart (saves disabling `tickMarks`
+   on the x/y axis of every chart) */
+[data-slot='chart'] .lc-axis-tick {
+	@apply stroke-0;
+}
+
+/* No rule on the x/y axis: a grid line is already there and the rule renders after
+   the marks, overlapping them */
+[data-slot='chart'] .lc-rule-x-line:not(.lc-grid-x-rule),
+[data-slot='chart'] .lc-rule-y-line:not(.lc-grid-y-rule) {
+	@apply stroke-0;
+}
+
+[data-slot='chart'] .lc-grid-x-radial-line,
+[data-slot='chart'] .lc-grid-x-radial-circle,
+[data-slot='chart'] .lc-grid-y-radial-line,
+[data-slot='chart'] .lc-grid-y-radial-circle {
+	@apply stroke-border;
+}
+
+/* Legend */
+[data-slot='chart'] .lc-legend-swatch-button {
+	@apply items-center gap-1.5;
+}
+[data-slot='chart'] .lc-legend-swatch-group {
+	@apply items-center gap-4;
+}
+[data-slot='chart'] .lc-legend-swatch {
+	@apply size-2.5 rounded-xs;
+}
+
+/* Labels */
+[data-slot='chart'] .lc-labels-text:not([fill]) {
+	@apply fill-foreground;
+}
+[data-slot='chart'] text {
+	@apply stroke-transparent;
+}
+
+/* Tick labels on the x/y axes */
+[data-slot='chart'] .lc-axis-tick-label {
+	@apply fill-muted-foreground font-normal;
+}
+
+[data-slot='chart'] .lc-tooltip-rects-g,
+[data-slot='chart'] .lc-layout-svg-g {
+	@apply fill-transparent;
+}
