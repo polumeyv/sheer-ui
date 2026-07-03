@@ -27,6 +27,7 @@ export const components: ComponentMeta[] = [
 	{ slug: 'calendar', name: 'Calendar', description: 'A calendar component that allows users to select a date.' },
 	{ slug: 'card', name: 'Card', description: 'Displays a card with header, content, and footer.' },
 	{ slug: 'carousel', name: 'Carousel', description: 'A carousel with motion and swipe built using Embla.' },
+	{ slug: 'carousel-native', name: 'Carousel (Native)', description: 'A carousel on native scroll snap: the browser owns physics and snapping, selection is read from scrollend.' },
 	{ slug: 'chart', name: 'Chart', description: 'Visualize data with composable charts built on LayerChart.' },
 	{ slug: 'checkbox', name: 'Checkbox', description: 'A control that allows the user to toggle between checked and not checked.' },
 	{

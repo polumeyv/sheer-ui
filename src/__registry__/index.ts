@@ -50,6 +50,10 @@ export const Index = {
 		type: "registry:example",
 		files: ["../lib/registry/carousel-demo.svelte"],
 	},
+	"carousel-native-demo": {
+		type: "registry:example",
+		files: ["../lib/registry/carousel-native-demo.svelte"],
+	},
 	"chart-demo": {
 		type: "registry:example",
 		files: ["../lib/registry/chart-demo.svelte"],

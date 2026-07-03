@@ -116,6 +116,10 @@
 			"types": "./dist/components/carousel/index.d.ts",
 			"svelte": "./dist/components/carousel/index.js"
 		},
+		"./components/carousel-native": {
+			"types": "./dist/components/carousel-native/index.d.ts",
+			"svelte": "./dist/components/carousel-native/index.js"
+		},
 		"./components/chart": {
 			"types": "./dist/components/chart/index.d.ts",
 			"svelte": "./dist/components/chart/index.js"
