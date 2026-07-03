@@ -1,5 +1,5 @@
 import type { Tooltip } from 'layerchart';
-import { getContext, setContext, type Component } from 'svelte';
+import { createContext, type Component } from 'svelte';
 
 export const THEMES = { light: '', dark: '.dark' } as const;
 
@@ -45,12 +45,6 @@ type ChartContextValue = {
 	config: ChartConfig;
 };
 
-const chartContextKey = Symbol('chart-context');
-
-export function setChartContext(value: ChartContextValue) {
-	return setContext(chartContextKey, value);
-}
-
-export function useChart() {
-	return getContext<ChartContextValue>(chartContextKey);
-}
+// The getter throws missing_context when no Chart.Container is above, instead of
+// returning undefined and failing later on `.config`.
+export const [useChart, setChartContext] = createContext<ChartContextValue>();
