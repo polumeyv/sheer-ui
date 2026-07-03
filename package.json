@@ -28,7 +28,7 @@
 		"package:watch": "bun run registry:build && bunx svelte-kit sync && bunx svelte-package -w -p",
 		"check": "bun run registry:build && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"test": "bun test",
+		"test": "bun test && bun run test:components",
 		"test:components": "bun run registry:build && svelte-kit sync && bunx vitest run --config vitest.config.ts"
 	},
 	"files": [

@@ -17,6 +17,7 @@ import { type EventCallback } from '$lib/internal/tools/utils/events.js';
 import { createLayerStack } from '$lib/internal/layer-stack.js';
 import { isElementOrSVGElement } from '@polumeyv/utilities/dom';
 import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '$lib/components/menu/menu.svelte.js';
+import { realScheduler, type Scheduler, type Debounced } from './scheduler.js';
 
 const isPointerOutsideRect = ({ clientX: x, clientY: y }: PointerEvent, node: HTMLElement) =>
 	(({ left, right, top, bottom }) => x < left || x > right || y < top || y > bottom)(node.getBoundingClientRect());
@@ -27,19 +28,8 @@ globalThis.bitsDismissableLayers ??= createLayerStack<DismissibleLayerState, Rea
 
 interface DismissibleLayerStateOpts extends ReadableBoxedValues<Required<Omit<DismissibleLayerImplProps, 'children' | 'ref'>>> {
 	ref: WritableBox<HTMLElement | null>;
-}
-
-function debounce<T extends (...args: any[]) => any>(fn: T, wait = 500) {
-	let timeout: ReturnType<typeof setTimeout> | undefined;
-
-	const debounced = (...args: Parameters<T>) => {
-		clearTimeout(timeout);
-		timeout = setTimeout(() => fn(...args), wait);
-	};
-
-	debounced.destroy = () => clearTimeout(timeout);
-
-	return debounced;
+	/** Timer seam; defaults to {@link realScheduler} (the real global timers). Tests inject a fake clock. */
+	scheduler?: Scheduler;
 }
 
 export class DismissibleLayerState {
@@ -56,13 +46,59 @@ export class DismissibleLayerState {
 	#isFocusInsideDOMTree = false;
 	#onFocusOutside: DismissibleLayerStateOpts['onFocusOutside'];
 	#unsubClickListener = () => {};
+	#scheduler: Scheduler;
+	#handleInteractOutside: Debounced<(e: PointerEvent) => void>;
+	#resetState: Debounced<() => void>;
 
 	constructor(opts: DismissibleLayerStateOpts) {
 		this.opts = opts;
+		this.#scheduler = opts.scheduler ?? realScheduler;
 
 		this.#behaviorType = opts.interactOutsideBehavior;
 		this.#interactOutsideProp = opts.onInteractOutside;
 		this.#onFocusOutside = opts.onFocusOutside;
+
+		this.#handleInteractOutside = this.#scheduler.debounce((e: PointerEvent) => {
+			if (!this.opts.ref.current) {
+				this.#unsubClickListener();
+				return;
+			}
+			const isEventValid = this.opts.isValidEvent.current(e, this.opts.ref.current) || isValidEvent(e, this.opts.ref.current);
+
+			if (!this.#isResponsibleLayer || this.#isAnyEventIntercepted() || !isEventValid) {
+				this.#unsubClickListener();
+				return;
+			}
+
+			let event = e;
+			if (event.defaultPrevented) {
+				event = createWrappedEvent(event);
+			}
+
+			if (this.#behaviorType.current !== 'close' && this.#behaviorType.current !== 'defer-otherwise-close') {
+				this.#unsubClickListener();
+				return;
+			}
+
+			if (e.pointerType === 'touch') {
+				this.#unsubClickListener();
+
+				const doc = this.opts.ref.current?.ownerDocument ?? document;
+
+				this.#unsubClickListener = on(doc, 'click', this.#handleDismiss, {
+					once: true,
+				});
+			} else {
+				this.#interactOutsideProp.current(event);
+			}
+		}, 10);
+
+		this.#resetState = this.#scheduler.debounce(() => {
+			for (const eventType in this.#interceptedEvents) {
+				this.#interceptedEvents[eventType] = false;
+			}
+			this.#isResponsibleLayer = false;
+		}, 20);
 
 		let unsubEvents = () => {};
 
@@ -77,7 +113,7 @@ export class DismissibleLayerState {
 			this.opts.enabled.current;
 			this.opts.ref.current;
 			if (!this.opts.enabled.current || !this.opts.ref.current) return;
-			setTimeout(() => {
+			this.#scheduler.setTimeout(() => {
 				if (!this.opts.ref.current) return;
 				globalThis.bitsDismissableLayers.register(this, this.#behaviorType);
 
@@ -126,41 +162,6 @@ export class DismissibleLayerState {
 		this.#interactOutsideProp.current(e as PointerEvent);
 	};
 
-	#handleInteractOutside = debounce((e: PointerEvent) => {
-		if (!this.opts.ref.current) {
-			this.#unsubClickListener();
-			return;
-		}
-		const isEventValid = this.opts.isValidEvent.current(e, this.opts.ref.current) || isValidEvent(e, this.opts.ref.current);
-
-		if (!this.#isResponsibleLayer || this.#isAnyEventIntercepted() || !isEventValid) {
-			this.#unsubClickListener();
-			return;
-		}
-
-		let event = e;
-		if (event.defaultPrevented) {
-			event = createWrappedEvent(event);
-		}
-
-		if (this.#behaviorType.current !== 'close' && this.#behaviorType.current !== 'defer-otherwise-close') {
-			this.#unsubClickListener();
-			return;
-		}
-
-		if (e.pointerType === 'touch') {
-			this.#unsubClickListener();
-
-			const doc = this.opts.ref.current?.ownerDocument ?? document;
-
-			this.#unsubClickListener = on(doc, 'click', this.#handleDismiss, {
-				once: true,
-			});
-		} else {
-			this.#interactOutsideProp.current(event);
-		}
-	}, 10);
-
 	#markInterceptedEvent = (e: PointerEvent) => {
 		this.#interceptedEvents[e.type] = true;
 	};
@@ -176,13 +177,6 @@ export class DismissibleLayerState {
 	#isTargetWithinLayer = (target: HTMLElement) => {
 		return this.opts.ref.current?.contains(target) ?? false;
 	};
-
-	#resetState = debounce(() => {
-		for (const eventType in this.#interceptedEvents) {
-			this.#interceptedEvents[eventType] = false;
-		}
-		this.#isResponsibleLayer = false;
-	}, 20);
 
 	#isAnyEventIntercepted() {
 		const i = Object.values(this.#interceptedEvents).some(Boolean);
