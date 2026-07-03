@@ -221,7 +221,9 @@
 		offsetBeforeRemove = offset;
 
 		toastState.removeHeight(toast.id);
-		exitAnimations.run(() => toastState.remove(toast.id));
+		exitAnimations.run(() => {
+			toastState.remove(toast.id);
+		});
 	}
 
 	let timeoutId: ReturnType<typeof setTimeout>;

@@ -56,8 +56,8 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 	labelNode = $state<HTMLElement | null>(null);
 	descriptionNode = $state<HTMLElement | null>(null);
 	/** Per-side values derive from the bound range; a child-field write overrides until the range recommits. */
-	startValue = $derived(this.opts.value.current?.start);
-	endValue = $derived(this.opts.value.current?.end);
+	startValue = $derived.by(() => this.opts.value.current?.start);
+	endValue = $derived.by(() => this.opts.value.current?.end);
 	readonly startValueComplete = $derived.by(() => this.startValue !== undefined);
 	readonly endValueComplete = $derived.by(() => this.endValue !== undefined);
 	readonly rangeComplete = $derived(this.startValueComplete && this.endValueComplete);

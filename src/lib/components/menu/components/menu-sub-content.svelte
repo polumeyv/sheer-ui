@@ -122,6 +122,7 @@
 
 <PopperLayer
 	{...mergedProps}
+	{id}
 	ref={subContentState.opts.ref}
 	{interactOutsideBehavior}
 	{escapeKeydownBehavior}
