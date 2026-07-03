@@ -13,7 +13,7 @@
 	bind:this={ref}
 	data-slot="carousel-native-content"
 	class={join(
-		'flex snap-mandatory [scrollbar-width:none]',
+		'flex snap-mandatory scrollbar-none',
 		ctx.orientation === 'horizontal' ? 'snap-x gap-4 overflow-x-auto overscroll-x-contain' : 'snap-y flex-col gap-4 overflow-y-auto overscroll-y-contain',
 		className,
 	)}

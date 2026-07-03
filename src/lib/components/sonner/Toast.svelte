@@ -448,9 +448,9 @@
 				toast.onDismiss?.(toast);
 			}}
 			class={join(
-				'absolute start-0 top-0 z-[1] flex size-5 items-center justify-center rounded-full border p-0 outline-none',
+				'absolute inset-s-0 top-0 z-1 flex size-5 items-center justify-center rounded-full border p-0 outline-none',
 				'cursor-pointer border-[hsl(0,0%,93%)] bg-(--normal-bg) text-[hsl(0,0%,9%)]',
-				'[transform:translate(-35%,-35%)] rtl:[transform:translate(35%,-35%)]',
+				'transform-[translate(-35%,-35%)] rtl:transform-[translate(35%,-35%)]',
 				'[transition:opacity_100ms,background_200ms,border-color_200ms]',
 				'hover:border-[hsl(0,0%,90.9%)] hover:bg-[hsl(0,0%,97.3%)]',
 				'focus-visible:shadow-[0px_4px_12px_rgba(0,0,0,0.1),0_0_0_2px_rgba(0,0,0,0.2)]',
