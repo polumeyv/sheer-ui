@@ -1,10 +1,13 @@
+import { chain } from 'overrule/props';
+
 import type { EventCallback } from './events.js';
 import type { ReadableBox } from '../runed/box.svelte.js';
 
 /**
  * Composes event handlers into a single function that can be called with an event.
  * If the previous handler cancels the event using `event.preventDefault()`, the handlers
- * that follow will not be called.
+ * that follow will not be called. Stays local rather than overrule's
+ * composeEventHandlers because handlers may arrive boxed.
  */
 export function composeHandlers<E extends Event = Event, T extends Element = Element>(
 	...handlers: Array<EventCallback<E> | ReadableBox<EventCallback<E>> | undefined>
@@ -29,9 +32,5 @@ export function composeHandlers<E extends Event = Event, T extends Element = Ele
  * has to stay correct even if some unrelated code already prevented default on the event.
  */
 export function mergeHandlers<E extends Event = Event>(...handlers: Array<EventCallback<E> | null | undefined | false>): (e: E) => void {
-	return (e: E) => {
-		for (const handler of handlers) {
-			if (typeof handler === 'function') handler(e);
-		}
-	};
+	return chain(...handlers.filter((handler): handler is EventCallback<E> => typeof handler === 'function'));
 }
