@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import type { WithElementRef } from '$lib/utils.js';
-	import type { HTMLSelectAttributes } from 'svelte/elements';
+	import type { ClassValue, HTMLSelectAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 
@@ -27,9 +27,9 @@
 		/** Text shown in the trigger when no option is selected. */
 		placeholder?: string;
 		/** Classes applied to the inner trigger `<button>` (layout/alignment). */
-		triggerClass?: string;
+		triggerClass?: ClassValue;
 		/** Classes applied to the root select width. Defaults to `w-fit`. */
-		widthClass?: string;
+		widthClass?: ClassValue;
 		/** Leading content rendered inside the trigger, before the selected value. */
 		icon?: Snippet;
 		/** Side the dropdown opens toward. */

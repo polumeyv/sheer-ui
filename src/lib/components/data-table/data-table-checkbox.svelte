@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Checkbox } from '../checkbox';
+	import type { ClassValue } from 'svelte/elements';
 
 	type CheckedState = boolean | 'indeterminate';
 
@@ -18,7 +19,7 @@
 		indeterminate?: boolean;
 		onCheckedChange?: (checked: CheckedState) => void;
 		'aria-label'?: string;
-		class?: string;
+		class?: ClassValue;
 	} = $props();
 </script>
 

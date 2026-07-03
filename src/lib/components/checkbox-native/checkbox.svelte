@@ -3,14 +3,14 @@
 	// (name/value) and supports bind:checked / bind:indeterminate. For controlled,
 	// headless, or grouped use (table select-all, Checkbox.Group) use `../checkbox`.
 	import { join } from 'overrule';
-	import type { HTMLAttributes } from 'svelte/elements';
+	import type { ClassValue, HTMLAttributes } from 'svelte/elements';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 
 	export type CheckboxProps = Omit<HTMLAttributes<HTMLSpanElement>, 'class'> & {
 		ref?: HTMLInputElement | null;
 		id?: string;
-		class?: string | null;
+		class?: ClassValue | null;
 		checked?: boolean;
 		indeterminate?: boolean;
 		disabled?: boolean | null;

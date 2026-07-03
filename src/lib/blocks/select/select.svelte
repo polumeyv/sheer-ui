@@ -4,6 +4,7 @@
 
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import type { ClassValue } from 'svelte/elements';
 	import * as Select from '$lib/components/select/index.js';
 	import { join } from 'overrule';
 	import Check from '@lucide/svelte/icons/check';
@@ -25,9 +26,9 @@
 		/** Leading content rendered inside the trigger before the value (e.g. an icon). */
 		leading?: Snippet;
 		/** Per-instance class overrides, merged onto the base styling. */
-		triggerClass?: string;
-		contentClass?: string;
-		itemClass?: string;
+		triggerClass?: ClassValue;
+		contentClass?: ClassValue;
+		itemClass?: ClassValue;
 		/** Gap between the trigger and the dropdown. */
 		sideOffset?: number;
 		onValueChange?: (value: string) => void;

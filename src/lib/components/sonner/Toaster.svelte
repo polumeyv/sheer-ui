@@ -66,6 +66,7 @@
 </script>
 
 <script lang="ts">
+	import { join } from 'overrule';
 	import { getTheme } from '../theme-toggle/index.js';
 	import { onMount, untrack } from 'svelte';
 	import { toastState } from './toast-state.svelte.js';
@@ -123,7 +124,7 @@
 	const toasterClass = $derived(
 		[
 			'toaster group',
-			className,
+			join(className),
 			'fixed box-border m-0 list-none p-0 outline-none w-(--width) z-[999999999]',
 			'font-sans transition-transform duration-[400ms] ease-[ease]',
 			'data-[x-position=right]:right-(--offset-right)',

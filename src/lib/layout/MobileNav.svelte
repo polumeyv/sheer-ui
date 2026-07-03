@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
+	import type { ClassValue } from 'svelte/elements';
 	import { Button } from '$lib/components/button';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import Plus from '@lucide/svelte/icons/plus';
@@ -9,7 +10,7 @@
 		/** Action buttons rendered at the bottom of the panel (e.g. login / book). */
 		actions?: { href: string; label: string; variant?: 'default' | 'outline' | 'ghost' | 'card' | 'secondary' }[];
 		/** Optional extra classes on the trigger button. */
-		class?: string;
+		class?: ClassValue;
 		/** Unique id for the popover. Defaults to a stable value; override if mounting multiple instances. */
 		id?: string;
 	}

@@ -7,6 +7,7 @@
 </script>
 
 <script lang="ts">
+	import type { ClassValue } from 'svelte/elements';
 	import { boxWith, mountedAttachment } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
@@ -28,7 +29,7 @@
 		tabindex = 0,
 		...restProps
 	}: NavigationMenuTriggerProps & {
-		class?: string;
+		class?: ClassValue;
 	} = $props();
 
 	const triggerState = NavigationMenuTriggerState.create({

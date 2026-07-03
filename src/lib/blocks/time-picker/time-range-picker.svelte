@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Clock from '@lucide/svelte/icons/clock';
 	import { join } from 'overrule';
+	import type { ClassValue } from 'svelte/elements';
 	import { buttonVariants } from '$lib/components/button';
 	import * as NativeSelect from '$lib/components/native-select';
 	import { Popover } from '$lib/components/popover';
@@ -26,9 +27,9 @@
 		value?: SlotRange;
 		placeholder?: string;
 		disabled?: boolean;
-		class?: string;
-		triggerClass?: string;
-		contentClass?: string;
+		class?: ClassValue;
+		triggerClass?: ClassValue;
+		contentClass?: ClassValue;
 		align?: 'start' | 'center' | 'end';
 		side?: 'top' | 'right' | 'bottom' | 'left';
 		onValueChange?: (value: SlotRange | undefined) => void;

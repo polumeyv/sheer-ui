@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
+	import type { ClassValue } from 'svelte/elements';
 	import { Button } from '$lib/components/button';
 	import ArrowUpRight from '@lucide/svelte/icons/arrow-up-right';
 
@@ -13,7 +14,7 @@
 		}[];
 		open?: boolean;
 		id?: string;
-		class?: string;
+		class?: ClassValue;
 	}
 
 	let { navLinks, actions = [], open = $bindable(false), id = 'mobile-dropdown', class: className }: Props = $props();

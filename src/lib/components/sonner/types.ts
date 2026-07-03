@@ -1,5 +1,5 @@
 import type { Component, ComponentProps, Snippet } from 'svelte';
-import type { HTMLAttributes, HTMLOlAttributes, MouseEventHandler } from 'svelte/elements';
+import type { ClassValue, HTMLAttributes, HTMLOlAttributes, MouseEventHandler } from 'svelte/elements';
 
 export type FixMe = unknown;
 
@@ -72,9 +72,9 @@ export type ToastT<T extends AnyComponent = AnyComponent> = {
 	actionButtonStyle?: string;
 	style?: string;
 	unstyled?: boolean;
-	class?: string;
+	class?: ClassValue;
 	classes?: ToastClasses;
-	descriptionClass?: string;
+	descriptionClass?: ClassValue;
 	position?: Position;
 	dismiss?: boolean;
 	/**
@@ -293,12 +293,12 @@ export type ToastOptions = {
 	/**
 	 * The classes applied to the toast element.
 	 */
-	class?: string;
+	class?: ClassValue;
 
 	/**
 	 * The classes applied to the toast description element.
 	 */
-	descriptionClass?: string;
+	descriptionClass?: ClassValue;
 
 	/**
 	 * The CSS styles applied to the toast element.
@@ -345,18 +345,18 @@ export type ToastOptions = {
  * The classes applied to the various elements of the toast.
  */
 export type ToastClasses = {
-	toast?: string;
-	title?: string;
-	description?: string;
-	loader?: string;
-	closeButton?: string;
-	cancelButton?: string;
-	actionButton?: string;
-	icon?: string;
-	content?: string;
+	toast?: ClassValue;
+	title?: ClassValue;
+	description?: ClassValue;
+	loader?: ClassValue;
+	closeButton?: ClassValue;
+	cancelButton?: ClassValue;
+	actionButton?: ClassValue;
+	icon?: ClassValue;
+	content?: ClassValue;
 } & ToastTypeClasses;
 
-type ToastTypeClasses = Partial<Record<ToastTypes, string>>;
+type ToastTypeClasses = Partial<Record<ToastTypes, ClassValue>>;
 
 export type SwipeDirection = 'top' | 'right' | 'bottom' | 'left';
 
@@ -374,8 +374,8 @@ export type ToastProps = {
 	cancelButtonStyle: string;
 	actionButtonStyle: string;
 	duration: number;
-	class: string;
-	descriptionClass: string;
+	class: ClassValue;
+	descriptionClass: ClassValue;
 	classes: ToastClasses;
 	unstyled: boolean;
 	closeButtonAriaLabel: string;

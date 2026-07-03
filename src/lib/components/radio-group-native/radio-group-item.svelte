@@ -1,12 +1,12 @@
 <script lang="ts" module>
 	import { join } from 'overrule';
-	import type { HTMLAttributes } from 'svelte/elements';
+	import type { ClassValue, HTMLAttributes } from 'svelte/elements';
 	import CircleIcon from '@lucide/svelte/icons/circle';
 
 	export type RadioGroupItemProps = Omit<HTMLAttributes<HTMLSpanElement>, 'class'> & {
 		ref?: HTMLInputElement | null;
 		id?: string;
-		class?: string | null;
+		class?: ClassValue | null;
 		value: string;
 		disabled?: boolean | null;
 	};

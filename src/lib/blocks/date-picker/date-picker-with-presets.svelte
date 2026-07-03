@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
+	import type { ClassValue } from 'svelte/elements';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import { today, getLocalTimeZone, type DateValue } from '@internationalized/date';
 	import { formatDateDisplay } from '@polumeyv/utilities/date';
@@ -20,9 +21,9 @@
 		dateFormat?: Intl.DateTimeFormatOptions['dateStyle'];
 		locale?: string;
 		disabled?: boolean;
-		class?: string;
-		triggerClass?: string;
-		contentClass?: string;
+		class?: ClassValue;
+		triggerClass?: ClassValue;
+		contentClass?: ClassValue;
 		align?: 'start' | 'center' | 'end';
 		side?: 'top' | 'right' | 'bottom' | 'left';
 		presets?: PresetItem[];

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
+	import type { ClassValue } from 'svelte/elements';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 
@@ -25,7 +26,7 @@
 		forceMount = false,
 		...restProps
 	}: NavigationMenuContentProps & {
-		class?: string;
+		class?: ClassValue;
 	} = $props();
 
 	const contentState = NavigationMenuContentState.create({

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
+	import type { ClassValue } from 'svelte/elements';
 	import CheckIcon from '@lucide/svelte/icons/check';
 
 	import { boxWith, mountedAttachment } from '$lib/internal/tools/index.js';
@@ -24,7 +25,7 @@
 		onUnhighlight = () => {},
 		...restProps
 	}: SelectItemProps & {
-		class?: string;
+		class?: ClassValue;
 	} = $props();
 
 	const itemState = SelectItemState.create({

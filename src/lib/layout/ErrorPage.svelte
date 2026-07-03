@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Component } from 'svelte';
+	import type { ClassValue } from 'svelte/elements';
 	import * as Empty from "$lib/components/empty";
 	import { Button } from "$lib/components/button";
 	import AlertCircle from '@lucide/svelte/icons/alert-circle';
@@ -34,7 +35,7 @@
 	}: {
 		status: number;
 		message?: string | null;
-		class?: string;
+		class?: ClassValue;
 		homeHref?: string;
 		homeLabel?: string;
 		showBack?: boolean;

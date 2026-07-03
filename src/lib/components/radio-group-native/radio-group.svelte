@@ -1,14 +1,14 @@
 <script lang="ts" module>
 	import { join } from 'overrule';
 	import type { Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
+	import type { ClassValue, HTMLAttributes } from 'svelte/elements';
 
 	export type RadioGroupOrientation = 'horizontal' | 'vertical';
 
 	export type RadioGroupProps = Omit<HTMLAttributes<HTMLDivElement>, 'class'> & {
 		ref?: HTMLDivElement | null;
 		id?: string;
-		class?: string | null;
+		class?: ClassValue | null;
 		value?: string;
 		name?: string;
 		disabled?: boolean;

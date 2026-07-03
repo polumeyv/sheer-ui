@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Clock from '@lucide/svelte/icons/clock';
 	import { join } from 'overrule';
+	import type { ClassValue } from 'svelte/elements';
 	import { buttonVariants } from '$lib/components/button';
 	import * as NativeSelect from '$lib/components/native-select';
 	import { compareTime, generateTimeSlots, isTimeInRange, type TimeSlot, b_HOURS, EXTENDED_HOURS } from './time-slots';
@@ -11,8 +12,8 @@
 		value?: string;
 		placeholder?: string;
 		disabled?: boolean;
-		class?: string;
-		triggerClass?: string;
+		class?: ClassValue;
+		triggerClass?: ClassValue;
 		align?: 'start' | 'center' | 'end';
 		side?: 'top' | 'right' | 'bottom' | 'left';
 		onValueChange?: (value: string | undefined) => void;

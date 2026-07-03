@@ -6,6 +6,7 @@
 	import type { DateRange } from '$lib/internal/index.js';
 	import { formatDateDisplay } from '@polumeyv/utilities/date';
 	import { join } from 'overrule';
+	import type { ClassValue } from 'svelte/elements';
 	import { buttonVariants } from '$lib/components/button';
 	import { RangeCalendar } from '$lib/components/range-calendar';
 	import { Popover } from '$lib/components/popover';
@@ -18,9 +19,9 @@
 		dateFormat?: Intl.DateTimeFormatOptions['dateStyle'];
 		locale?: string;
 		disabled?: boolean;
-		class?: string;
-		triggerClass?: string;
-		contentClass?: string;
+		class?: ClassValue;
+		triggerClass?: ClassValue;
+		contentClass?: ClassValue;
 		align?: 'start' | 'center' | 'end';
 		side?: 'top' | 'right' | 'bottom' | 'left';
 		numberOfMonths?: number;

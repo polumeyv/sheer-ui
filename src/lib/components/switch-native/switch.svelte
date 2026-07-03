@@ -1,11 +1,11 @@
 <script lang="ts" module>
 	import { join } from 'overrule';
-	import type { HTMLAttributes } from 'svelte/elements';
+	import type { ClassValue, HTMLAttributes } from 'svelte/elements';
 
 	export type SwitchProps = Omit<HTMLAttributes<HTMLSpanElement>, 'class'> & {
 		ref?: HTMLInputElement | null;
 		id?: string;
-		class?: string | null;
+		class?: ClassValue | null;
 		checked?: boolean;
 		disabled?: boolean | null;
 		required?: boolean;

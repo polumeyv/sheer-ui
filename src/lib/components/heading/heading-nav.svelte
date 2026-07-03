@@ -1,5 +1,6 @@
 <script lang="ts" generics="T extends string">
 	import type { Component } from 'svelte';
+	import type { ClassValue } from 'svelte/elements';
 	import { join } from 'overrule';
 
 	type Tab<T extends string> = {
@@ -16,7 +17,7 @@
 	}: {
 		tabs: readonly Tab<T>[];
 		activeTab: T;
-		class?: string;
+		class?: ClassValue;
 	} = $props();
 
 	let tabEls = $state<Partial<Record<T, HTMLElement>>>({});

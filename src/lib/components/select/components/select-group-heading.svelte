@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
+	import type { ClassValue } from 'svelte/elements';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 
@@ -18,7 +19,7 @@
 		children,
 		...restProps
 	}: SelectGroupHeadingProps & {
-		class?: string;
+		class?: ClassValue;
 	} = $props();
 
 	const groupHeadingState = SelectGroupHeadingState.create({

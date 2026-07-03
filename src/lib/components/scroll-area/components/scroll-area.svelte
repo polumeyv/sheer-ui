@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { ClassValue } from 'svelte/elements';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { ScrollAreaRootProps } from '../types.js';
@@ -23,8 +24,8 @@
 		...restProps
 	}: ScrollAreaRootProps & {
 		orientation?: 'vertical' | 'horizontal' | 'both' | undefined;
-		scrollbarXClasses?: string | undefined;
-		scrollbarYClasses?: string | undefined;
+		scrollbarXClasses?: ClassValue | undefined;
+		scrollbarYClasses?: ClassValue | undefined;
 		viewportRef?: HTMLElement | null;
 	} = $props();
 

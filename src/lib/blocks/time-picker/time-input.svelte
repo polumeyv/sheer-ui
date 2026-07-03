@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
+	import type { ClassValue } from 'svelte/elements';
 	import * as NativeSelect from '$lib/components/native-select';
 	import { Button } from '$lib/components/button';
 
@@ -7,8 +8,8 @@
 		value?: string;
 		placeholder?: string;
 		disabled?: boolean;
-		class?: string;
-		triggerClass?: string;
+		class?: ClassValue;
+		triggerClass?: ClassValue;
 		onValueChange?: (value: string) => void;
 		interval?: 15 | 30 | 60;
 		use24Hour?: boolean;

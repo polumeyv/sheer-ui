@@ -1,13 +1,14 @@
 <script lang="ts">
 	import Clock from '@lucide/svelte/icons/clock';
 	import { join } from 'overrule';
+	import type { ClassValue } from 'svelte/elements';
 	import TimeInput from './time-input.svelte';
 
 	interface Props {
 		value?: { start: string; end: string };
 		disabled?: boolean;
-		class?: string;
-		triggerClass?: string;
+		class?: ClassValue;
+		triggerClass?: ClassValue;
 		onValueChange?: (value: { start: string; end: string }) => void;
 		interval?: 15 | 30 | 60;
 		use24Hour?: boolean;

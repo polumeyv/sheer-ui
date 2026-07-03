@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
+	import type { ClassValue } from 'svelte/elements';
 	type Tab = { id: string; label: string; href: string };
 	let {
 		tabs,
@@ -8,7 +9,7 @@
 	}: {
 		tabs: Tab[];
 		activeTab: string;
-		class?: string;
+		class?: ClassValue;
 	} = $props();
 </script>
 
