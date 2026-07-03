@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { join } from 'overrule';
 	import { boxWith } from '$lib/internal/tools/index.js';
 	import { mergeProps } from '$lib/merge-props.js';
 	import type { ToggleGroupItemProps } from '../types.js';
@@ -45,13 +44,12 @@
 				'data-variant': ctx.variant || variant,
 				'data-size': ctx.size || size,
 				'data-spacing': ctx.spacing,
-				class: join(
-					toggleVariants({
-						variant: ctx.variant || variant,
-						size: ctx.size || size,
-					}),
-					'w-auto min-w-0 shrink-0 px-3 focus:z-10 focus-visible:z-10 data-[spacing=0]:rounded-none data-[spacing=0]:shadow-none data-[spacing=0]:first:rounded-l-md data-[spacing=0]:last:rounded-r-md data-[spacing=0]:data-[variant=outline]:border-l-0 data-[spacing=0]:data-[variant=outline]:first:border-l',
-				),
+				class: toggleVariants({
+					variant: ctx.variant || variant,
+					size: ctx.size || size,
+					class:
+						'w-auto min-w-0 shrink-0 px-3 focus:z-10 focus-visible:z-10 data-[spacing=0]:rounded-none data-[spacing=0]:shadow-none data-[spacing=0]:first:rounded-l-md data-[spacing=0]:last:rounded-r-md data-[spacing=0]:data-[variant=outline]:border-l-0 data-[spacing=0]:data-[variant=outline]:first:border-l',
+				}),
 			},
 			restProps,
 			itemState.props,

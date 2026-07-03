@@ -1,5 +1,4 @@
 <script lang="ts" module>
-	import { join } from 'overrule';
 	import { declareVariants, type VariantProps } from 'overrule';
 
 	export const sidebarMenuButtonVariants = declareVariants({
@@ -57,7 +56,7 @@
 	const sidebar = useSidebar();
 
 	const buttonProps = $derived({
-		class: join(sidebarMenuButtonVariants({ variant, size }), className),
+		class: sidebarMenuButtonVariants({ variant, size, class: className }),
 		'data-slot': 'sidebar-menu-button',
 		'data-sidebar': 'menu-button',
 		'data-size': size,

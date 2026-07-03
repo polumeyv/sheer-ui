@@ -1,5 +1,4 @@
 <script lang="ts" module>
-	import { join } from 'overrule';
 	import { declareVariants } from 'overrule';
 
 	export const navigationMenuTriggerStyle = declareVariants({
@@ -41,7 +40,7 @@
 		),
 	});
 
-	const triggerClass = $derived(join(navigationMenuTriggerStyle(), 'group', className));
+	const triggerClass = $derived(navigationMenuTriggerStyle({ class: ['group', className] }));
 
 	const mergedProps = $derived(
 		mergeProps(

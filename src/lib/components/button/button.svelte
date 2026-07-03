@@ -1,5 +1,4 @@
 <script lang="ts" module>
-	import { join } from 'overrule';
 	import type { WithElementRef } from '$lib/utils.js';
 	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
 	import { buttonVariants, type ButtonVariant, type ButtonSize } from './variants';
@@ -29,7 +28,7 @@
 	<a
 		bind:this={ref}
 		data-slot="button"
-		class={join(buttonVariants({ variant, size }), className)}
+		class={buttonVariants({ variant, size, class: className })}
 		href={disabled ? undefined : href}
 		aria-disabled={disabled}
 		role={disabled ? 'link' : undefined}
@@ -38,7 +37,7 @@
 		{@render children?.()}
 	</a>
 {:else}
-	<button bind:this={ref} data-slot="button" class={join(buttonVariants({ variant, size }), className)} {type} {disabled} {...restProps}>
+	<button bind:this={ref} data-slot="button" class={buttonVariants({ variant, size, class: className })} {type} {disabled} {...restProps}>
 		{@render children?.()}
 	</button>
 {/if}

@@ -1,5 +1,4 @@
 <script lang="ts" module>
-	import { join } from 'overrule';
 	import { declareVariants, type VariantProps } from 'overrule';
 
 	export const alertVariants = declareVariants({
@@ -33,6 +32,6 @@
 	} = $props();
 </script>
 
-<div bind:this={ref} data-slot="alert" role="alert" class={join(alertVariants({ variant }), className)} {...restProps}>
+<div bind:this={ref} data-slot="alert" role="alert" class={alertVariants({ variant, class: className })} {...restProps}>
 	{@render children?.()}
 </div>

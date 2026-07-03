@@ -1,5 +1,4 @@
 <script lang="ts" module>
-	import { join } from 'overrule';
 	import { declareVariants, type VariantProps } from 'overrule';
 
 	export const itemMediaVariants = declareVariants({
@@ -33,6 +32,6 @@
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & { variant?: ItemMediaVariant } = $props();
 </script>
 
-<div bind:this={ref} data-slot="item-media" data-variant={variant} class={join(itemMediaVariants({ variant }), className)} {...restProps}>
+<div bind:this={ref} data-slot="item-media" data-variant={variant} class={itemMediaVariants({ variant, class: className })} {...restProps}>
 	{@render children?.()}
 </div>

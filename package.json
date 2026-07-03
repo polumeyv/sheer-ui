@@ -116,6 +116,10 @@
 			"types": "./dist/components/carousel/index.d.ts",
 			"svelte": "./dist/components/carousel/index.js"
 		},
+		"./components/carousel-native": {
+			"types": "./dist/components/carousel-native/index.d.ts",
+			"svelte": "./dist/components/carousel-native/index.js"
+		},
 		"./components/chart": {
 			"types": "./dist/components/chart/index.d.ts",
 			"svelte": "./dist/components/chart/index.js"
@@ -306,7 +310,7 @@
 		"@tanstack/table-core": "^8.21.3",
 		"d3-scale": "^4.0.2",
 		"layerchart": "^2.0.1",
-		"overrule": "^0.5.0"
+		"overrule": "^0.6.0"
 	},
 	"devDependencies": {
 		"@fontsource-variable/inter": "^5.2.8",

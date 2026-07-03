@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
-	import { join } from 'overrule';
 	import type { WithElementRef } from '$lib/utils.js';
 	import { inputVariants, inputVariantSlots, type InputVariant } from './variants';
 
@@ -17,11 +16,10 @@
 <input
 	bind:this={ref}
 	data-slot={inputVariantSlots[variant!]}
-	class={join(
-		inputVariants({ variant }),
-		'file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground',
-		className,
-	)}
+	class={inputVariants({
+		variant,
+		class: ['file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground', className],
+	})}
 	type="file"
 	bind:files
 	bind:value

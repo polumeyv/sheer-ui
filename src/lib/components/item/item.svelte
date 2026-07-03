@@ -1,5 +1,4 @@
 <script lang="ts" module>
-	import { join } from 'overrule';
 	import { declareVariants, type VariantProps } from 'overrule';
 
 	export const itemVariants = declareVariants({
@@ -45,7 +44,7 @@
 	} = $props();
 
 	const mergedProps = $derived({
-		class: join(itemVariants({ variant, size }), className),
+		class: itemVariants({ variant, size, class: className }),
 		'data-slot': 'item',
 		'data-variant': variant,
 		'data-size': size,

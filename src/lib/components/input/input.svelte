@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { join } from 'overrule';
 	import { inputVariants, inputVariantSlots, type InputVariant } from './variants';
 	import type { HTMLInputAttributes, HTMLInputTypeAttribute } from 'svelte/elements';
 	import type { WithElementRef } from '$lib/utils.js';
@@ -19,7 +18,7 @@
 <input
 	bind:this={ref}
 	data-slot={inputVariantSlots[variant!]}
-	class={join(inputVariants({ variant }), className)}
+	class={inputVariants({ variant, class: className })}
 	{type}
 	bind:value
 	{...restProps} />

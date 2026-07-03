@@ -11,6 +11,7 @@ export const components = [
 	{"slug":"calendar","name":"Calendar","description":"A calendar component that allows users to select a date."},
 	{"slug":"card","name":"Card","description":"Displays a card with header, content, and footer."},
 	{"slug":"carousel","name":"Carousel","description":"A carousel with motion and swipe built using Embla."},
+	{"slug":"carousel-native","name":"Carousel (Native)","description":"A carousel on native scroll snap: the browser owns physics and snapping, selection is read from scrollend."},
 	{"slug":"chart","name":"Chart","description":"Visualize data with composable charts built on LayerChart."},
 	{"slug":"checkbox","name":"Checkbox","description":"A control that allows the user to toggle between checked and not checked."},
 	{"slug":"checkbox-native","name":"Checkbox (Native)","description":"A native form checkbox that submits name/value and supports indeterminate."},
@@ -96,6 +97,9 @@ export const componentDemos = {
 	],
 	"carousel": [
 		{ key: "demo", name: "carousel-demo", path: "/src/lib/registry/carousel-demo.svelte", sourcePath: "../lib/registry/carousel-demo.svelte" },
+	],
+	"carousel-native": [
+		{ key: "demo", name: "carousel-native-demo", path: "/src/lib/registry/carousel-native-demo.svelte", sourcePath: "../lib/registry/carousel-native-demo.svelte" },
 	],
 	"chart": [
 		{ key: "demo", name: "chart-demo", path: "/src/lib/registry/chart-demo.svelte", sourcePath: "../lib/registry/chart-demo.svelte" },

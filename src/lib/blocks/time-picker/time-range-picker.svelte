@@ -158,14 +158,10 @@
 	<Popover.Root>
 		<Popover.Trigger
 			{disabled}
-			class={join(
-				buttonVariants({
-					variant: 'outline',
-					class: 'w-auto min-w-[220px] justify-start! text-start font-normal!',
-				}),
-				!value?.start && 'text-muted-foreground',
-				triggerClass,
-			)}>
+			class={buttonVariants({
+				variant: 'outline',
+				class: ['w-auto min-w-[220px] justify-start! text-start font-normal!', !value?.start && 'text-muted-foreground', triggerClass],
+			})}>
 			<Clock class="me-2 size-4" />
 			{displayValue}
 		</Popover.Trigger>
