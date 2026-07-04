@@ -1,6 +1,6 @@
 import { flushSync, mount, tick, unmount } from 'svelte';
 import { afterEach, describe, expect, test, vi } from 'vitest';
-import ScrollLock from '../../src/lib/internal/scroll-lock/scroll-lock.svelte';
+import ScrollLockFixture from './body-scroll-lock-late-cleanup.fixture.svelte';
 
 afterEach(() => {
 	vi.unstubAllGlobals();
@@ -15,7 +15,7 @@ describe('BodyScrollLock delayed cleanup', () => {
 		const originalDocument = document;
 		const target = originalDocument.createElement('div');
 		originalDocument.body.append(target);
-		const component = mount(ScrollLock, { target });
+		const component = mount(ScrollLockFixture, { target });
 		flushSync();
 
 		unmount(component);

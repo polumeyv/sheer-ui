@@ -3,7 +3,7 @@ import type { DismissibleLayerProps } from "../../internal/dismissible-layer/typ
 import type { PresenceLayerProps } from "../../internal/presence-layer/types.js";
 import type { FocusScopeProps } from "../../internal/focus-scope/types.js";
 import type { TextSelectionLayerProps } from "../../internal/text-selection-layer/types.js";
-import type { ScrollLockProps } from "../../internal/scroll-lock/index.js";
+import type { ScrollLockProps } from "../../internal/body-scroll-lock.svelte.js";
 import type { Snippet } from "svelte";
 import type {
 	OnChangeFn,

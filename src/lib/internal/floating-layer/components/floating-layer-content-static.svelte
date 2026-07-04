@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { type Snippet, onMount } from 'svelte';
+	import type { Snippet } from 'svelte';
+	import { createAttachmentKey } from 'svelte/attachments';
 
 	let {
 		content,
@@ -9,9 +10,10 @@
 		onPlaced?: () => void;
 	} = $props();
 
-	onMount(() => {
-		onPlaced?.();
-	});
+	// Static content needs no positioning pass — it is "placed" as soon as the consumer's
+	// element (which receives these props) hits the DOM. Hoisted so the attachment identity
+	// is stable across renders.
+	const placed = { [createAttachmentKey()]: () => onPlaced?.() };
 </script>
 
-{@render content?.({ props: {}, wrapperProps: {} })}
+{@render content?.({ props: placed, wrapperProps: {} })}

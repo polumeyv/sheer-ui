@@ -3,7 +3,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLDialogAttributes } from 'svelte/elements';
 	import { on } from 'svelte/events';
-	import ScrollLock from '../scroll-lock/scroll-lock.svelte';
+	import { scrollLockAttachment } from '../body-scroll-lock.svelte.js';
 	import { getTabbableCandidates } from '../tabbable.js';
 
 	/**
@@ -32,7 +32,7 @@
 	 *                                          stop scrolling, and `overflow: hidden` leaks touch-scroll
 	 *                                          on iOS Safari — so `lockScroll` below is the one piece of
 	 *                                          BodyScrollLock that genuinely stays in JS.
-	 * Surviving JS: the `controller` attachment (open↔showModal + dismissal sync + tab-wrap) and <ScrollLock>.
+	 * Surviving JS: the `controller` + `scrollLockAttachment` attachments (open↔showModal + dismissal sync + tab-wrap + body lock).
 	 *
 	 * Two Tailwind gotchas this layout works around:
 	 *   1. NO `display` utility on the <dialog> itself — a `grid`/`flex` class overrides the UA
@@ -67,6 +67,9 @@
 
 	const uid = $props.id();
 	const dialogId = $derived(id ?? `native-dialog-${uid}`);
+
+	// The <dialog> persists across open/close, so the lock gates on `open`, not element lifecycle.
+	const scrollLock = scrollLockAttachment({ enabled: () => open });
 
 	// Bridge `open` to the imperative top-layer API + mirror native dismissal back, in one attachment.
 	// Guards keep showModal()/close() idempotent; `open` is read only in the nested effect and the
@@ -117,13 +120,10 @@
 
 </script>
 
-{#if open}
-	<ScrollLock />
-{/if}
-
 <dialog
 	{@attach controller}
 	{...restProps}
+	{...scrollLock}
 	id={dialogId}
 	data-slot="native-dialog"
 	class={join(

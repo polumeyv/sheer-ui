@@ -4,7 +4,7 @@ import type { FloatingLayerContentProps } from '../../internal/floating-layer/ty
 import type { TextSelectionLayerProps } from '../../internal/text-selection-layer/types.js';
 import type { PresenceLayerProps } from '../../internal/presence-layer/types.js';
 import type { FocusScopeProps } from '../../internal/focus-scope/types.js';
-import type { ScrollLockProps } from '../../internal/scroll-lock/index.js';
+import type { ScrollLockProps } from '../../internal/body-scroll-lock.svelte.js';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../internal/types.js';
 import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attribute-types.js';
 import type { FloatingContentSnippetProps } from '../../internal/types.js';

@@ -10,7 +10,7 @@
 	import { createAttachmentKey } from 'svelte/attachments';
 	import { getTabbableCandidates } from '../../../internal/tabbable.js';
 	import type { WithoutChildrenOrChild } from '../../../internal/utils.js';
-	import ScrollLock from '../../../internal/scroll-lock/scroll-lock.svelte';
+	import { scrollLockAttachment } from '../../../internal/body-scroll-lock.svelte.js';
 
 	/**
 	 * Modal dialog rendered as a native `<dialog>` (showModal()/close()), mirroring sheet-content.svelte
@@ -61,7 +61,7 @@
 		onFocusOutside = () => {},
 		// no-op: showModal() traps focus.
 		trapFocus = true,
-		// still honored — passed to <ScrollLock> below.
+		// still honored — passed to the scrollLockAttachment below.
 		preventScroll = true,
 		restoreScrollDelay = null,
 		// honored in the `cancel` / backdrop-click handlers below.
@@ -151,6 +151,13 @@
 		};
 	}
 
+
+	// The <dialog> persists across open/close, so the lock gates on the cell's open, not element lifecycle.
+	const scrollLock = scrollLockAttachment({
+		enabled: () => contentState.root.cell.open && preventScroll,
+		restoreScrollDelay: () => restoreScrollDelay,
+	});
+
 	const mergedProps = $derived(
 		mergeProps(
 			{
@@ -164,6 +171,7 @@
 			},
 			restProps,
 			contentState.props,
+			scrollLock,
 		),
 	);
 
@@ -172,9 +180,6 @@
 	const controllerAttachment = { [createAttachmentKey()]: controller };
 </script>
 
-{#if contentState.root.cell.open}
-	<ScrollLock {preventScroll} {restoreScrollDelay} />
-{/if}
 {#if child}
 	{@render child({ props: mergeProps(mergedProps, controllerAttachment), ...contentState.snippetProps })}
 {:else}

@@ -14,7 +14,7 @@
 	import { on } from 'svelte/events';
 	import { createAttachmentKey } from 'svelte/attachments';
 	import type { WithoutChildrenOrChild } from '../../../internal/utils.js';
-	import ScrollLock from '../../../internal/scroll-lock/scroll-lock.svelte';
+	import { scrollLockAttachment } from '../../../internal/body-scroll-lock.svelte.js';
 	import SheetClose from './sheet-close.svelte';
 	import XIcon from '@lucide/svelte/icons/x';
 
@@ -58,7 +58,7 @@
 		onFocusOutside = () => {},
 		// no-op: showModal() traps focus.
 		trapFocus = true,
-		// still honored — passed to <ScrollLock> below.
+		// still honored — passed to the scrollLockAttachment below.
 		preventScroll = true,
 		restoreScrollDelay = null,
 		// honored in the `cancel` / backdrop-click handlers below.
@@ -127,8 +127,15 @@
 		};
 	}
 
+
+	// The <dialog> persists across open/close, so the lock gates on the cell's open, not element lifecycle.
+	const scrollLock = scrollLockAttachment({
+		enabled: () => contentState.root.cell.open && preventScroll,
+		restoreScrollDelay: () => restoreScrollDelay,
+	});
+
 	const mergedProps = $derived(
-		mergeProps({ 'data-slot': 'sheet-content', class: join('sheet-dialog', sheetVariants({ side })) }, restProps, contentState.props),
+		mergeProps({ 'data-slot': 'sheet-content', class: join('sheet-dialog', sheetVariants({ side })) }, restProps, contentState.props, scrollLock),
 	);
 
 	// For the (currently unused) `child` path the controller rides along as an attachment, so a
@@ -136,9 +143,6 @@
 	const controllerAttachment = { [createAttachmentKey()]: controller };
 </script>
 
-{#if contentState.root.cell.open}
-	<ScrollLock {preventScroll} {restoreScrollDelay} />
-{/if}
 {#if child}
 	{@render child({ props: mergeProps(mergedProps, controllerAttachment), ...contentState.snippetProps })}
 {:else}

@@ -8,7 +8,7 @@
 	import { createFocusScopeProps } from '../../../internal/focus-scope/focus-scope.svelte.js';
 	import { textSelectionAttachment } from '../../../internal/text-selection-layer/use-text-selection-layer.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
-	import ScrollLock from '../../../internal/scroll-lock/scroll-lock.svelte';
+	import { scrollLockAttachment } from '../../../internal/body-scroll-lock.svelte.js';
 
 	/**
 	 * Headless JS-overlay dialog content — a presence-gated <div> with the FocusScope / EscapeLayer /
@@ -77,6 +77,13 @@
 		enabled: () => contentState.root.cell.open && (restProps.preventOverflowTextSelection ?? true),
 	});
 
+	// Rides the content element, so the lock spans the presence window (mount through exit
+	// animation) on both render paths — restoreScrollDelay covers the scrollbar restore.
+	const scrollLock = scrollLockAttachment({
+		enabled: () => preventScroll,
+		restoreScrollDelay: () => restoreScrollDelay,
+	});
+
 	const focusScope = createFocusScopeProps({
 		enabled: () => contentState.root.cell.open,
 		trap: () => trapFocus,
@@ -88,16 +95,12 @@
 
 {#if contentState.shouldRender || forceMount}
 	{#if child}
-		{#if contentState.root.cell.open}
-			<ScrollLock {preventScroll} {restoreScrollDelay} />
-		{/if}
 		{@render child({
-			props: mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection),
+			props: mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection, scrollLock),
 			...contentState.snippetProps,
 		})}
 	{:else}
-		<ScrollLock {preventScroll} />
-		<div {...mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection)}>
+		<div {...mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection, scrollLock)}>
 			{@render children?.()}
 		</div>
 	{/if}

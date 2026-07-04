@@ -1,4 +1,5 @@
 import { SvelteMap } from 'svelte/reactivity';
+import { type Attachment, createAttachmentKey } from 'svelte/attachments';
 import { type Getter, type ReadableBox, boxWith } from './tools/index.js';
 import type { Fn } from './types.js';
 import { isIOS } from '@polumeyv/utilities/dom';
@@ -272,4 +273,51 @@ function isAnyLocked(map: Map<string, boolean>) {
 		if (value) return true;
 	}
 	return false;
+}
+
+/** Surface props shared by every scroll-locking overlay (moved from the retired internal/scroll-lock). */
+export type ScrollLockProps = {
+	/**
+	 * Whether to prevent body scrolling when the content is open.
+	 *
+	 * @default true
+	 */
+	preventScroll?: boolean;
+
+	/**
+	 * The delay in milliseconds before the scrollbar is restored after closing the
+	 * dialog. This is only applicable when using the `child` snippet for custom
+	 * transitions and `preventScroll` is `true`. You should set this to a value
+	 * greater than the transition duration to prevent content from shifting during
+	 * the transition.
+	 *
+	 * @default null
+	 */
+	restoreScrollDelay?: number | null;
+};
+
+/**
+ * Attachment form of the body lock — replaces the renderless `<ScrollLock>` component.
+ * Locks while the host element is connected AND `enabled()` is true; `enabled` is a tracked
+ * read, so surfaces whose element persists across open/close (the native `<dialog>`s) re-run
+ * the attachment as their open state flips. Constructing `BodyScrollLock` inside the
+ * attachment effect is the vaul `use-prevent-scroll` precedent: its `onMount` cleanup
+ * registers as a child user effect and releases the lock on re-run or teardown.
+ *
+ * Spreadable (`{...lock}` / a `mergeProps` argument); create it ONCE in the script so the
+ * attachment's identity is stable across renders.
+ */
+export function scrollLockAttachment(opts: {
+	enabled?: Getter<boolean>;
+	restoreScrollDelay?: Getter<number | null>;
+} = {}): Record<symbol, Attachment> {
+	const { enabled = () => true, restoreScrollDelay = () => null } = opts;
+	return {
+		[createAttachmentKey()]: () => {
+			if (!enabled()) return;
+			// untracked: registering in the shared lockMap is a deliberate write from a tracked
+			// context (the attach effect) — the component form did the same write during init.
+			untrack(() => new BodyScrollLock(true, restoreScrollDelay));
+		},
+	};
 }

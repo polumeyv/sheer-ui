@@ -14,7 +14,7 @@ import type {
 } from "../text-selection-layer/types.js";
 import type { PresenceLayerImplProps, PresenceLayerProps } from "../presence-layer/types.js";
 import type { FocusScopeImplProps, FocusScopeProps } from "../focus-scope/types.js";
-import type { ScrollLockProps } from "../scroll-lock/index.js";
+import type { ScrollLockProps } from "../body-scroll-lock.svelte.js";
 import type { Direction } from "../index.js";
 
 export type PopperLayerProps = EscapeLayerProps &

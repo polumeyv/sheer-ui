@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { mergeProps } from '../merge-props.js';
-	import ScrollLock from '../scroll-lock/scroll-lock.svelte';
+	import { scrollLockAttachment } from '../body-scroll-lock.svelte.js';
 	import type { PopperLayerImplProps } from './types.js';
 	import PopperContent from './popper-content.svelte';
 	import { escapeKeydownAttachment } from '../escape-layer/use-escape-layer.svelte.js';
@@ -78,6 +78,12 @@
 		enabled: () => enabled && (preventOverflowTextSelection ?? true),
 	});
 
+	// Under forceMount the content element persists, so the lock additionally gates on `enabled`;
+	// otherwise element lifecycle (the presence window) is the gate, as the old <ScrollLock> mount was.
+	const scrollLock = scrollLockAttachment({
+		enabled: () => resolvedPreventScroll && (restProps.forceMount ? enabled : true),
+	});
+
 	const focusScope = createFocusScopeProps({
 		enabled: () => enabled,
 		trap: () => trapFocus,
@@ -110,11 +116,6 @@
 	{enabled}
 	{tooltip}>
 	{#snippet content({ props: floatingProps, wrapperProps })}
-		{#if restProps.forceMount && enabled}
-			<ScrollLock preventScroll={resolvedPreventScroll} />
-		{:else if !restProps.forceMount}
-			<ScrollLock preventScroll={resolvedPreventScroll} />
-		{/if}
 		{@render popper?.({
 			props: mergeProps(
 				restProps,
@@ -124,6 +125,7 @@
 				focusScope.props,
 				escapeAttachment,
 				textSelection,
+				scrollLock,
 				{
 					style: {
 						pointerEvents: contentPointerEvents,
