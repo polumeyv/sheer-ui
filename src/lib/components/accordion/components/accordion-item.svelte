@@ -1,42 +1,21 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../internal/merge-props.js';
+	import { join } from 'overrule';
+	import { useAccordion } from '../accordion.svelte.js';
 	import type { AccordionItemProps } from '../types.js';
-	import { AccordionItemState } from '../accordion.svelte.js';
-	import { createId } from '../../../internal/create-id.js';
 
-	const uid = $props.id();
-	const defaultId = createId(uid);
+	let { value, disabled = false, class: className, ref = $bindable(null), children, ...restProps }: AccordionItemProps = $props();
 
-	let {
-		id = defaultId,
-		disabled = false,
-		value = defaultId,
-		children,
-		child,
-		ref = $bindable(null),
-		...restProps
-	}: AccordionItemProps = $props();
-
-	const itemState = AccordionItemState.create({
-		value: boxWith(() => value),
-		disabled: boxWith(() => disabled),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-	});
-
-	const mergedProps = $derived(
-		mergeProps({ 'data-slot': 'accordion-item', class: 'border-b last:border-b-0' }, restProps, itemState.props),
-	);
+	const accordion = useAccordion();
 </script>
 
-{#if child}
-	{@render child({ props: mergedProps })}
-{:else}
-	<div {...mergedProps}>
-		{@render children?.()}
-	</div>
-{/if}
+<details
+	{...restProps}
+	data-slot="accordion-item"
+	class={join('border-b last:border-b-0', disabled && 'pointer-events-none opacity-50', className)}
+	name={accordion.name}
+	open={accordion.includes(value)}
+	inert={disabled || undefined}
+	ontoggle={(e) => accordion.report(value, e.currentTarget.open)}
+	bind:this={ref}>
+	{@render children?.()}
+</details>

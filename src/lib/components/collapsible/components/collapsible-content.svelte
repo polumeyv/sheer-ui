@@ -1,51 +1,9 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../internal/merge-props.js';
-	import { CollapsibleContentState } from '../collapsible.svelte.js';
 	import type { CollapsibleContentProps } from '../types.js';
-	import { createId } from '../../../internal/create-id.js';
 
-	const uid = $props.id();
-
-	let {
-		child,
-		ref = $bindable(null),
-		forceMount = false,
-		hiddenUntilFound = false,
-		children,
-		id = createId(uid),
-		...restProps
-	}: CollapsibleContentProps = $props();
-
-	const contentState = CollapsibleContentState.create({
-		id: boxWith(() => id),
-		forceMount: boxWith(() => forceMount),
-		hiddenUntilFound: boxWith(() => hiddenUntilFound),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-	});
-
-	const mergedProps = $derived(
-		mergeProps(
-			{
-				'data-slot': 'collapsible-content',
-				class: 'data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden',
-			},
-			restProps,
-			contentState.props,
-		),
-	);
+	let { ref = $bindable(null), children, ...restProps }: CollapsibleContentProps = $props();
 </script>
 
-{#if child}
-	{@render child({
-		...contentState.snippetProps,
-		props: mergedProps,
-	})}
-{:else}
-	<div {...mergedProps}>
-		{@render children?.()}
-	</div>
-{/if}
+<div {...restProps} data-slot="collapsible-content" bind:this={ref}>
+	{@render children?.()}
+</div>

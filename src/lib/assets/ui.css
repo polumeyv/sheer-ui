@@ -107,6 +107,25 @@
 	}
 }
 
+/* Native <details> disclosures (accordion + collapsible): height 0↔auto
+   interpolates via the interpolate-size opt-in above (browsers without it snap,
+   same degradation as the old keyframes); the content-visibility leg keeps
+   content painted through the close so both directions animate — including an
+   accordion sibling force-closed by name-grouping. */
+[data-slot='accordion-item']::details-content,
+[data-slot='collapsible']::details-content {
+	height: 0;
+	overflow: clip;
+	transition:
+		height var(--tw-duration, 200ms) var(--tw-ease, ease-out),
+		content-visibility var(--tw-duration, 200ms) allow-discrete;
+}
+
+[data-slot='accordion-item'][open]::details-content,
+[data-slot='collapsible'][open]::details-content {
+	height: auto;
+}
+
 @theme inline {
 	/* Predefined values */
 
@@ -179,37 +198,6 @@
 			transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0)
 				scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
 			filter: blur(var(--tw-exit-blur, 0));
-		}
-	}
-
-	--animate-accordion-down: disclosure-down var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out)
-		var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
-		var(--tw-animation-fill-mode, none);
-	--animate-accordion-up: disclosure-up var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out)
-		var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
-		var(--tw-animation-fill-mode, none);
-	--animate-collapsible-down: disclosure-down var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out)
-		var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
-		var(--tw-animation-fill-mode, none);
-	--animate-collapsible-up: disclosure-up var(--tw-animation-duration, var(--tw-duration, 200ms)) var(--tw-ease, ease-out)
-		var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
-		var(--tw-animation-fill-mode, none);
-
-	@keyframes disclosure-down {
-		from {
-			height: 0;
-		}
-		to {
-			height: auto;
-		}
-	}
-
-	@keyframes disclosure-up {
-		from {
-			height: auto;
-		}
-		to {
-			height: 0;
 		}
 	}
 

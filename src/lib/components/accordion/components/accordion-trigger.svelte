@@ -1,55 +1,38 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../internal/merge-props.js';
-	import type { AccordionTriggerProps } from '../types.js';
-	import { AccordionTriggerState } from '../accordion.svelte.js';
-	import { createId } from '../../../internal/create-id.js';
-	import AccordionHeader from './accordion-header.svelte';
+	import { join } from 'overrule';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+	import type { AccordionTriggerProps } from '../types.js';
 
-	const uid = $props.id();
+	let { class: className, ref = $bindable(null), children, ...restProps }: AccordionTriggerProps = $props();
 
-	let {
-		disabled = false,
-		ref = $bindable(null),
-		id = createId(uid),
-		tabindex = 0,
-		children,
-		child,
-		...restProps
-	}: AccordionTriggerProps = $props();
-
-	const triggerState = AccordionTriggerState.create({
-		disabled: boxWith(() => disabled),
-		id: boxWith(() => id),
-		tabindex: boxWith(() => tabindex ?? 0),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-	});
-
-	const mergedProps = $derived(
-		mergeProps(
-			{
-				'data-slot': 'accordion-trigger',
-				class:
-					'focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180',
-			},
-			restProps,
-			triggerState.props,
-		),
-	);
+	// The one behavior <summary> lacks natively: APG arrow-key navigation between headers.
+	function onkeydown(e: KeyboardEvent) {
+		if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
+		const summary = e.currentTarget as HTMLElement;
+		const root = summary.closest('[data-slot="accordion"]');
+		if (!root) return;
+		const triggers = [...root.querySelectorAll<HTMLElement>('summary[data-slot="accordion-trigger"]')];
+		const index = triggers.indexOf(summary);
+		if (index === -1) return;
+		e.preventDefault();
+		const next =
+			e.key === 'Home' ? 0
+			: e.key === 'End' ? triggers.length - 1
+			: (index + (e.key === 'ArrowDown' ? 1 : -1) + triggers.length) % triggers.length;
+		triggers[next]?.focus();
+	}
 </script>
 
-{#if child}
-	{@render child({ props: mergedProps })}
-{:else}
-	<AccordionHeader class="flex">
-		<button type="button" {...mergedProps}>
-			{@render children?.()}
-			<ChevronDownIcon
-				class="text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200" />
-		</button>
-	</AccordionHeader>
-{/if}
+<summary
+	{...restProps}
+	data-slot="accordion-trigger"
+	class={join(
+		'focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 cursor-pointer list-none items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] [&::-webkit-details-marker]:hidden',
+		className,
+	)}
+	{onkeydown}
+	bind:this={ref}>
+	{@render children?.()}
+	<ChevronDownIcon
+		class="text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200 [[open]>&]:rotate-180" />
+</summary>
