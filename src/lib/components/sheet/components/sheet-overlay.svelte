@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
-	import { DialogOverlayState } from '../../../components/dialog/dialog.svelte.js';
-	import type { DialogOverlayProps } from '../../../components/dialog/types.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
+	import { DialogOverlayState } from '../../dialog/dialog.svelte.js';
+	import type { DialogOverlayProps } from '../../dialog/types.js';
 	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();

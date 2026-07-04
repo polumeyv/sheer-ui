@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Close, type CloseProps } from '../../components/dialog/index.js';
+import { Close, type CloseProps } from '../dialog/index.js';
 
 let { ref = $bindable(null), ...restProps }: CloseProps = $props();
 </script>

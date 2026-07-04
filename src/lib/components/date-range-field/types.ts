@@ -1,8 +1,8 @@
 import type { DateValue } from '@internationalized/date';
 import type { OnChangeFn, WithChild, Without } from '../../internal/types.js';
-import type { BitsPrimitiveDivAttributes, BitsPrimitiveSpanAttributes } from '../../internal/attributes.js';
+import type { BitsPrimitiveDivAttributes, BitsPrimitiveSpanAttributes } from '../../internal/attribute-types.js';
 import type { DateOnInvalid, DateRange, DateRangeValidator, EditableSegmentPart, SegmentPart } from '../../internal/index.js';
-import type { DateFieldSegmentProps, DateFieldSegmentPropsWithoutHTML } from '../../components/date-field/types.js';
+import type { DateFieldSegmentProps, DateFieldSegmentPropsWithoutHTML } from '../date-field/types.js';
 import type { Granularity } from '../../internal/date-time/types.js';
 
 export type DateRangeFieldRootPropsWithoutHTML = WithChild<{

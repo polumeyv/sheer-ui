@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ContextMenuContentStaticProps } from '../types.js';
-	import { CONTEXT_MENU_TRIGGER_ATTR, MenuContentState } from '../../../components/menu/menu.svelte.js';
+	import { CONTEXT_MENU_TRIGGER_ATTR, MenuContentState } from '../../menu/menu.svelte.js';
 	import { useId } from '../../../internal/use-id.js';
-	import PopperLayer from '../../../components/utilities/popper-layer/popper-layer.svelte';
+	import PopperLayer from '../../../internal/popper-layer/popper-layer.svelte';
 	import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
 
 	let {

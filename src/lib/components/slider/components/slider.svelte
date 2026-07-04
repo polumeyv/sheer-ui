@@ -2,7 +2,7 @@
 	import { join } from 'overrule';
 	import { untrack } from 'svelte';
 	import { boxWith, type WritableBox } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { SliderRootProps } from '../types.js';
 	import { SliderRootState } from '../slider.svelte.js';
 	import SliderRange from './slider-range.svelte';

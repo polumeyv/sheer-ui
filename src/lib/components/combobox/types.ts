@@ -1,4 +1,4 @@
-import type { BitsPrimitiveInputAttributes } from '../../internal/attributes.js';
+import type { BitsPrimitiveInputAttributes } from '../../internal/attribute-types.js';
 import type { LucideProps } from '@lucide/svelte';
 import type {
 	SelectBaseRootPropsWithoutHTML,

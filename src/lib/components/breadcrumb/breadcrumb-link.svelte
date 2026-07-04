@@ -2,7 +2,7 @@
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 	import { join } from 'overrule';
-	import type { WithElementRef } from '../../utils.js';
+	import type { WithElementRef } from '../../internal/utils.js';
 
 	let {
 		ref = $bindable(null),

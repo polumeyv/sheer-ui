@@ -1,5 +1,5 @@
 import { computePosition } from '@floating-ui/dom';
-import { simpleBox } from '../../internal/tools/index.js';
+import { simpleBox } from '../tools/index.js';
 import type { UseFloatingOptions, UseFloatingReturn } from './types.js';
 import { get } from './floating-utils.svelte.js';
 

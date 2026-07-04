@@ -1,4 +1,4 @@
-import { type Getter, getDocument } from '../internal/tools/index.js';
+import { type Getter, getDocument } from './tools/index.js';
 import { on } from 'svelte/events';
 import { isElement } from '@polumeyv/utilities/dom';
 import {
@@ -15,7 +15,7 @@ import {
 	getSide,
 	isInsideRect,
 	isPointInPolygon,
-} from '../internal/hover-intent-geometry.js';
+} from './hover-intent-geometry.js';
 
 export interface SafePolygonOptions {
 	enabled: Getter<boolean>;

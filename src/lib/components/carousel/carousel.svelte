@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import { type CarouselAPI, type CarouselProps, setCarouselContext } from './carouselState.svelte';
-	import type { WithElementRef } from '../../utils.js';
+	import type { WithElementRef } from '../../internal/utils.js';
 
 	let {
 		ref = $bindable(null),

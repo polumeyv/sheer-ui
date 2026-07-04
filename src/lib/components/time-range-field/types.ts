@@ -3,12 +3,12 @@ import type { OnChangeFn, WithChild, Without } from "../../internal/types.js";
 import type {
 	BitsPrimitiveDivAttributes,
 	BitsPrimitiveSpanAttributes,
-} from "../../internal/attributes.js";
+} from "../../internal/attribute-types.js";
 import type { TimeSegmentPart } from "../../internal/index.js";
 import type {
 	TimeFieldSegmentProps,
 	TimeFieldSegmentPropsWithoutHTML,
-} from "../../components/time-field/types.js";
+} from "../time-field/types.js";
 import type {
 	EditableTimeSegmentPart,
 	TimeGranularity,

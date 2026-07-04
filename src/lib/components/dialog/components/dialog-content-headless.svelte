@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import { DialogContentState } from '../dialog.svelte.js';
 	import type { DialogContentProps } from '../types.js';
-	import { interactOutsideAttachment } from '../../utilities/dismissible-layer/use-dismissable-layer.svelte.js';
-	import { escapeKeydownAttachment } from '../../utilities/escape-layer/use-escape-layer.svelte.js';
-	import { createFocusScopeProps } from '../../utilities/focus-scope/focus-scope.svelte.js';
-	import { textSelectionAttachment } from '../../utilities/text-selection-layer/use-text-selection-layer.svelte.js';
+	import { interactOutsideAttachment } from '../../../internal/dismissible-layer/use-dismissable-layer.svelte.js';
+	import { escapeKeydownAttachment } from '../../../internal/escape-layer/use-escape-layer.svelte.js';
+	import { createFocusScopeProps } from '../../../internal/focus-scope/focus-scope.svelte.js';
+	import { textSelectionAttachment } from '../../../internal/text-selection-layer/use-text-selection-layer.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
-	import ScrollLock from '../../utilities/scroll-lock/scroll-lock.svelte';
+	import ScrollLock from '../../../internal/scroll-lock/scroll-lock.svelte';
 
 	/**
 	 * Headless JS-overlay dialog content — a presence-gated <div> with the FocusScope / EscapeLayer /

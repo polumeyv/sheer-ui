@@ -5,7 +5,7 @@ import { components } from "../src/routes/components/_registry.js";
 const ROOT = process.cwd();
 const SRC_DIR = path.join(ROOT, "src");
 const GENERATED_DIR = path.join(SRC_DIR, "__registry__");
-const REGISTRY_DIR = path.join(SRC_DIR, "lib", "registry");
+const REGISTRY_DIR = path.join(SRC_DIR, "docs", "registry");
 const BLOCKS_DIR = path.join(SRC_DIR, "lib", "blocks");
 
 type DemoEntry = {
@@ -54,8 +54,8 @@ function readDemoEntries() {
 		demos.push({
 			key,
 			name,
-			path: `/src/lib/registry/${entry.name}`,
-			sourcePath: `../lib/registry/${entry.name}`,
+			path: `/src/docs/registry/${entry.name}`,
+			sourcePath: `../docs/registry/${entry.name}`,
 		});
 		demosBySlug.set(slug, demos);
 	}

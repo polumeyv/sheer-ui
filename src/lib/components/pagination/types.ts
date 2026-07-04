@@ -2,7 +2,7 @@ import type { OnChangeFn, WithChild, Without } from "../../internal/types.js";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "../../internal/attributes.js";
+} from "../../internal/attribute-types.js";
 
 type PaginationSnippetProps = {
 	pages: PageItem[];

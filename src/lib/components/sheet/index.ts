@@ -1,11 +1,11 @@
-import Root from '../../components/sheet/components/sheet.svelte';
-import Close from '../../components/sheet/components/sheet-close.svelte';
-import Content from '../../components/sheet/components/sheet-content.svelte';
-import Description from '../../components/sheet/components/sheet-description.svelte';
-import Overlay from '../../components/sheet/components/sheet-overlay.svelte';
-import Title from '../../components/sheet/components/sheet-title.svelte';
-import Trigger from '../../components/sheet/components/sheet-trigger.svelte';
-import Portal from '../../components/utilities/portal/portal.svelte';
+import Root from './components/sheet.svelte';
+import Close from './components/sheet-close.svelte';
+import Content from './components/sheet-content.svelte';
+import Description from './components/sheet-description.svelte';
+import Overlay from './components/sheet-overlay.svelte';
+import Title from './components/sheet-title.svelte';
+import Trigger from './components/sheet-trigger.svelte';
+import Portal from '../../internal/portal/portal.svelte';
 import Footer from './components/sheet-footer.svelte';
 import Header from './components/sheet-header.svelte';
 
@@ -44,4 +44,4 @@ export type {
 	DialogOverlayProps as SheetOverlayProps,
 	DialogContentProps as SheetContentProps,
 	DialogDescriptionProps as SheetDescriptionProps,
-} from '../../components/dialog/types.js';
+} from '../dialog/types.js';

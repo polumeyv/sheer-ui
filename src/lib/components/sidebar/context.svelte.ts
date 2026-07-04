@@ -1,5 +1,5 @@
 import { createContext } from "svelte";
-import { isMobile } from '../../hooks/is-mobile.svelte.js';
+import { isMobile as viewportIsMobile } from '../../hooks/is-mobile.svelte.js';
 import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants';
 
 function isEditableTarget(target: EventTarget | null) {
@@ -28,7 +28,10 @@ export class SidebarState {
 	open = $derived.by(() => this.props.open());
 	#openMobile = $state(false);
 	state = $derived.by(() => (this.open ? 'expanded' : 'collapsed'));
-	openForViewport = $derived.by(() => (isMobile.current ? this.#openMobile : this.open));
+	/** The single interpretation of the viewport for the whole sidebar — surfaces and
+	 * write-routing must both read this so mode can never desync between them. */
+	isMobile = $derived.by(() => viewportIsMobile.current);
+	openForViewport = $derived.by(() => (this.isMobile ? this.#openMobile : this.open));
 
 	constructor(props: SidebarStateProps) {
 		this.props = props;
@@ -44,7 +47,7 @@ export class SidebarState {
 	};
 
 	setOpen = (value: boolean) => {
-		if (isMobile.current) {
+		if (this.isMobile) {
 			this.#openMobile = value;
 			return;
 		}

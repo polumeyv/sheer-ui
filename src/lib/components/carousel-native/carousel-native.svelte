@@ -4,7 +4,7 @@
 	import { on } from 'svelte/events';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Attachment } from 'svelte/attachments';
-	import type { WithElementRef } from '../../utils.js';
+	import type { WithElementRef } from '../../internal/utils.js';
 	import { setCarouselContext, type CarouselOrientation } from '../carousel/carouselState.svelte';
 	import { setCarouselNativeContext, type CarouselAlign } from './carouselNativeState.svelte';
 

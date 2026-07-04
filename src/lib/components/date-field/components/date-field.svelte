@@ -4,7 +4,7 @@
 	import { DateFieldRootState } from '../date-field.svelte.js';
 	import type { DateFieldRootProps } from '../types.js';
 	import { getDefaultDate } from '../../../internal/date-time/utils.js';
-	import { resolveLocaleProp } from '../../../components/utilities/config/prop-resolvers.js';
+	import { resolveLocaleProp } from '../../../internal/prop-resolvers.js';
 
 	let {
 		disabled = false,

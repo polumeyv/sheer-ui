@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import type { WithElementRef } from '../../utils.js';
+	import type { WithElementRef } from '../../internal/utils.js';
 	import { getCarouselNativeContext } from './carouselNativeState.svelte';
 
 	let { ref = $bindable(null), class: className, children, ...restProps }: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();

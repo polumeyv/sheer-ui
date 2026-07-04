@@ -2,7 +2,7 @@
 	import { boxWith } from '../../../internal/tools/index.js';
 	import type { MenubarMenuProps } from '../types.js';
 	import { MenubarMenuState } from '../menubar.svelte.js';
-	import Menu from '../../../components/menu/components/menu.svelte';
+	import Menu from '../../menu/components/menu.svelte';
 	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();

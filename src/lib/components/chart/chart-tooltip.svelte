@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import type { WithElementRef, WithoutChildren } from '../../utils.js';
+	import type { WithElementRef, WithoutChildren } from '../../internal/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { getPayloadConfigFromPayload, useChart, type TooltipPayload } from './chart-utils.js';
 	import { getChartContext, Tooltip as TooltipPrimitive } from 'layerchart';

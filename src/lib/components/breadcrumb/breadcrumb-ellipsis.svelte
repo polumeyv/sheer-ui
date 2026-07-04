@@ -2,7 +2,7 @@
 	import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { join } from 'overrule';
-	import type { WithElementRef, WithoutChildren } from '../../utils.js';
+	import type { WithElementRef, WithoutChildren } from '../../internal/utils.js';
 
 	let {
 		ref = $bindable(null),

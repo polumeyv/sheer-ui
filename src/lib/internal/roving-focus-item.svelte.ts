@@ -1,4 +1,4 @@
-import { type ReadableBox, type RefAttachment, type WritableBox, attachRef } from '../internal/tools/index.js';
+import { type ReadableBox, type RefAttachment, type WritableBox, attachRef } from './tools/index.js';
 import type { RovingFocusGroup } from './roving-focus-group.js';
 
 type MaybeReadableBoolean = boolean | ReadableBox<boolean>;

@@ -5,12 +5,12 @@
 
 <script lang="ts" generics="T extends TimeValue = Time">
 	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import { TimeRangeFieldRootState } from '../time-range-field.svelte.js';
 	import type { TimeRangeFieldRootProps } from '../types.js';
 	import { createId } from '../../../internal/create-id.js';
 	import { getDefaultTime } from '../../../internal/date-time/utils.js';
-	import { resolveLocaleProp } from '../../../components/utilities/config/prop-resolvers.js';
+	import { resolveLocaleProp } from '../../../internal/prop-resolvers.js';
 
 	const uid = $props.id();
 

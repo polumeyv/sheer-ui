@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { bindableWith, boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { CheckboxGroupProps } from '../types.js';
 	import { CheckboxGroupState } from '../checkbox.svelte.js';
 	import { createId } from '../../../internal/create-id.js';

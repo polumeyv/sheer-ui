@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import { type DateValue } from '@internationalized/date';
 	import type { RangeCalendarRootProps } from '../types.js';
 	import { RangeCalendarRootState } from '../range-calendar.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
 	import { getDefaultDate } from '../../../internal/date-time/utils.js';
-	import { resolveLocaleProp } from '../../utilities/config/prop-resolvers.js';
+	import { resolveLocaleProp } from '../../../internal/prop-resolvers.js';
 
 	const uid = $props.id();
 

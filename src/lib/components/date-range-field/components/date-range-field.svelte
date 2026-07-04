@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { DateValue } from '@internationalized/date';
 	import { DateRangeFieldRootState } from '../date-range-field.svelte.js';
 	import type { DateRangeFieldRootProps } from '../types.js';
 	import { createId } from '../../../internal/create-id.js';
 	import type { DateRange } from '../../../internal/index.js';
 	import { getDefaultDate } from '../../../internal/date-time/utils.js';
-	import { resolveLocaleProp } from '../../../components/utilities/config/prop-resolvers.js';
+	import { resolveLocaleProp } from '../../../internal/prop-resolvers.js';
 
 	const uid = $props.id();
 

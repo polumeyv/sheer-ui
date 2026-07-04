@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { escapeKeydownAttachment } from '$lib/components/utilities/escape-layer/use-escape-layer.svelte.js';
-	import type { EscapeBehaviorType } from '$lib/components/utilities/escape-layer/types.js';
+	import { escapeKeydownAttachment } from '$lib/internal/escape-layer/use-escape-layer.svelte.js';
+	import type { EscapeBehaviorType } from '$lib/internal/escape-layer/types.js';
 
 	let {
 		aBehavior = 'close',

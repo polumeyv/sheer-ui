@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Portal, type PortalProps } from '../../components/dialog/index.js';
-	import { getDrawer } from './util/context.js';
+	import { Portal, type PortalProps } from '../dialog/index.js';
+	import { getDrawer } from '../../internal/vendor/vaul/context.js';
 
 	const ctx = getDrawer();
 

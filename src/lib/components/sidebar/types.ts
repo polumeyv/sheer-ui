@@ -1,6 +1,6 @@
 import type { Snippet } from 'svelte';
 import type { HTMLAttributes } from 'svelte/elements';
-import type { WithElementRef } from '../../utils.js';
+import type { WithElementRef } from '../../internal/utils.js';
 
 export type SidebarSide = 'left' | 'right';
 export type SidebarVariant = 'sidebar' | 'floating' | 'inset';

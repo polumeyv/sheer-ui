@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import { AccordionContentState } from '../accordion.svelte.js';
 	import type { AccordionContentProps } from '../types.js';
 	import { createId } from '../../../internal/create-id.js';

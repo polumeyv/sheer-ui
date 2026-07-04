@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToolbarGroupItemProps } from '../types.js';
 	import { ToolbarGroupItemState } from '../toolbar.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
-	import { toggleVariants, type ToggleSize, type ToggleVariant } from '../../../components/toggle/variants.js';
+	import { toggleVariants, type ToggleSize, type ToggleVariant } from '../../toggle/variants.js';
 
 	const uid = $props.id();
 

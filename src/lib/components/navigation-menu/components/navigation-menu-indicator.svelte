@@ -2,14 +2,14 @@
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 
 	import type { NavigationMenuIndicatorProps } from '../types.js';
 	import { NavigationMenuIndicatorState } from '../navigation-menu.svelte.js';
 	import NavigationMenuIndicatorImpl from './navigation-menu-indicator-impl.svelte';
 
-	import Portal from '../../utilities/portal/portal.svelte';
-	import PresenceLayer from '../../utilities/presence-layer/presence-layer.svelte';
+	import Portal from '../../../internal/portal/portal.svelte';
+	import PresenceLayer from '../../../internal/presence-layer/presence-layer.svelte';
 
 	import { createId } from '../../../internal/create-id.js';
 	import { getDataTransitionAttrs } from '../../../internal/attrs.js';

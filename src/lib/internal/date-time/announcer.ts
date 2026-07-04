@@ -1,4 +1,4 @@
-import { srOnlyStylesString } from '../../internal/tools/index.js';
+import { srOnlyStylesString } from '../tools/index.js';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
 

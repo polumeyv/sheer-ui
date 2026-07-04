@@ -2,7 +2,7 @@
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
 	import { boxWith, mountedAttachment } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 
 	import type { NavigationMenuListProps } from '../types.js';
 	import { NavigationMenuListState } from '../navigation-menu.svelte.js';

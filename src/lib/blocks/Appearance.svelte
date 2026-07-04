@@ -2,7 +2,7 @@
 	import * as Field from '../components/field';
 	import * as Item from '../components/item';
 	import { Separator } from '../components/separator';
-	import * as RadioGroup from '../components/radio-group-native';
+	import * as RadioGroup from '../components/radio-group';
 	import { getTheme, type Mode } from '../components/theme-toggle/index.js';
 	import type { Snippet } from 'svelte';
 

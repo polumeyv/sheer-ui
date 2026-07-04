@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import { Title, type TitleProps } from '../../components/dialog/index.js';
+	import { Title, type TitleProps } from '../dialog/index.js';
 
 	let { ref = $bindable(null), class: className, ...restProps }: TitleProps = $props();
 </script>

@@ -1,9 +1,9 @@
-import type { EscapeLayerProps } from "../utilities/escape-layer/types.js";
-import type { DismissibleLayerProps } from "../utilities/dismissible-layer/types.js";
-import type { PresenceLayerProps } from "../utilities/presence-layer/types.js";
-import type { FocusScopeProps } from "../utilities/focus-scope/types.js";
-import type { TextSelectionLayerProps } from "../utilities/text-selection-layer/types.js";
-import type { ScrollLockProps } from "../utilities/scroll-lock/index.js";
+import type { EscapeLayerProps } from "../../internal/escape-layer/types.js";
+import type { DismissibleLayerProps } from "../../internal/dismissible-layer/types.js";
+import type { PresenceLayerProps } from "../../internal/presence-layer/types.js";
+import type { FocusScopeProps } from "../../internal/focus-scope/types.js";
+import type { TextSelectionLayerProps } from "../../internal/text-selection-layer/types.js";
+import type { ScrollLockProps } from "../../internal/scroll-lock/index.js";
 import type { Snippet } from "svelte";
 import type {
 	OnChangeFn,
@@ -14,8 +14,8 @@ import type {
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "../../internal/attributes.js";
-import type { PortalProps } from "../../components/utilities/portal/index.js";
+} from "../../internal/attribute-types.js";
+import type { PortalProps } from "../../internal/portal/index.js";
 import type { DialogState } from "./dialog.svelte.js";
 
 export type DialogRootPropsWithoutHTML = {

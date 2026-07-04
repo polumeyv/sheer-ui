@@ -2,7 +2,7 @@
 	import { untrack } from 'svelte';
 	import { type WritableBox, boxWith, repairBindable } from '../../../internal/tools/index.js';
 	import type { ComboboxRootProps } from '../types.js';
-	import FloatingLayer from '../../../components/utilities/floating-layer/components/floating-layer.svelte';
+	import FloatingLayer from '../../../internal/floating-layer/components/floating-layer.svelte';
 	import { SelectRootState } from '../select/select.svelte.js';
 	import ListboxHiddenInput from '../select/components/select-hidden-input.svelte';
 

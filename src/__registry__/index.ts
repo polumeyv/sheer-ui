@@ -4,334 +4,334 @@
 export const Index = {
 	"accordion-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/accordion-demo.svelte"],
+		files: ["../docs/registry/accordion-demo.svelte"],
 	},
 	"alert-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/alert-demo.svelte"],
+		files: ["../docs/registry/alert-demo.svelte"],
 	},
 	"avatar-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/avatar-demo.svelte"],
+		files: ["../docs/registry/avatar-demo.svelte"],
 	},
 	"avatar-group": {
 		type: "registry:example",
-		files: ["../lib/registry/avatar-group.svelte"],
+		files: ["../docs/registry/avatar-group.svelte"],
 	},
 	"badge-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/badge-demo.svelte"],
+		files: ["../docs/registry/badge-demo.svelte"],
 	},
 	"breadcrumb-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/breadcrumb-demo.svelte"],
+		files: ["../docs/registry/breadcrumb-demo.svelte"],
 	},
 	"button-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/button-demo.svelte"],
+		files: ["../docs/registry/button-demo.svelte"],
 	},
 	"button-sizes": {
 		type: "registry:example",
-		files: ["../lib/registry/button-sizes.svelte"],
+		files: ["../docs/registry/button-sizes.svelte"],
 	},
 	"button-with-icon": {
 		type: "registry:example",
-		files: ["../lib/registry/button-with-icon.svelte"],
+		files: ["../docs/registry/button-with-icon.svelte"],
 	},
 	"calendar-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/calendar-demo.svelte"],
+		files: ["../docs/registry/calendar-demo.svelte"],
 	},
 	"card-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/card-demo.svelte"],
+		files: ["../docs/registry/card-demo.svelte"],
 	},
 	"carousel-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/carousel-demo.svelte"],
+		files: ["../docs/registry/carousel-demo.svelte"],
 	},
 	"carousel-native-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/carousel-native-demo.svelte"],
+		files: ["../docs/registry/carousel-native-demo.svelte"],
 	},
 	"chart-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/chart-demo.svelte"],
+		files: ["../docs/registry/chart-demo.svelte"],
 	},
 	"checkbox-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/checkbox-demo.svelte"],
+		files: ["../docs/registry/checkbox-demo.svelte"],
 	},
 	"checkbox-disabled": {
 		type: "registry:example",
-		files: ["../lib/registry/checkbox-disabled.svelte"],
+		files: ["../docs/registry/checkbox-disabled.svelte"],
 	},
 	"checkbox-group": {
 		type: "registry:example",
-		files: ["../lib/registry/checkbox-group.svelte"],
+		files: ["../docs/registry/checkbox-group.svelte"],
 	},
 	"checkbox-native-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/checkbox-native-demo.svelte"],
+		files: ["../docs/registry/checkbox-native-demo.svelte"],
 	},
 	"checkbox-native-indeterminate": {
 		type: "registry:example",
-		files: ["../lib/registry/checkbox-native-indeterminate.svelte"],
+		files: ["../docs/registry/checkbox-native-indeterminate.svelte"],
 	},
 	"checkbox-native-states": {
 		type: "registry:example",
-		files: ["../lib/registry/checkbox-native-states.svelte"],
+		files: ["../docs/registry/checkbox-native-states.svelte"],
 	},
 	"collapsible-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/collapsible-demo.svelte"],
+		files: ["../docs/registry/collapsible-demo.svelte"],
 	},
 	"combobox-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/combobox-demo.svelte"],
+		files: ["../docs/registry/combobox-demo.svelte"],
 	},
 	"command-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/command-demo.svelte"],
+		files: ["../docs/registry/command-demo.svelte"],
 	},
 	"context-menu-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/context-menu-demo.svelte"],
+		files: ["../docs/registry/context-menu-demo.svelte"],
 	},
 	"data-table-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/data-table-demo.svelte"],
+		files: ["../docs/registry/data-table-demo.svelte"],
 	},
 	"date-field-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/date-field-demo.svelte"],
+		files: ["../docs/registry/date-field-demo.svelte"],
 	},
 	"date-picker-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/date-picker-demo.svelte"],
+		files: ["../docs/registry/date-picker-demo.svelte"],
 	},
 	"date-picker-presets": {
 		type: "registry:example",
-		files: ["../lib/registry/date-picker-presets.svelte"],
+		files: ["../docs/registry/date-picker-presets.svelte"],
 	},
 	"date-picker-range": {
 		type: "registry:example",
-		files: ["../lib/registry/date-picker-range.svelte"],
+		files: ["../docs/registry/date-picker-range.svelte"],
 	},
 	"date-range-field-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/date-range-field-demo.svelte"],
+		files: ["../docs/registry/date-range-field-demo.svelte"],
 	},
 	"dialog-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/dialog-demo.svelte"],
+		files: ["../docs/registry/dialog-demo.svelte"],
 	},
 	"drawer-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/drawer-demo.svelte"],
+		files: ["../docs/registry/drawer-demo.svelte"],
 	},
 	"dropdown-menu-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/dropdown-menu-demo.svelte"],
+		files: ["../docs/registry/dropdown-menu-demo.svelte"],
 	},
 	"empty-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/empty-demo.svelte"],
+		files: ["../docs/registry/empty-demo.svelte"],
 	},
 	"field-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/field-demo.svelte"],
+		files: ["../docs/registry/field-demo.svelte"],
 	},
 	"heading-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/heading-demo.svelte"],
+		files: ["../docs/registry/heading-demo.svelte"],
 	},
 	"input-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/input-demo.svelte"],
+		files: ["../docs/registry/input-demo.svelte"],
 	},
 	"item-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/item-demo.svelte"],
+		files: ["../docs/registry/item-demo.svelte"],
 	},
 	"kbd-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/kbd-demo.svelte"],
+		files: ["../docs/registry/kbd-demo.svelte"],
 	},
 	"label-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/label-demo.svelte"],
+		files: ["../docs/registry/label-demo.svelte"],
 	},
 	"link-preview-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/link-preview-demo.svelte"],
+		files: ["../docs/registry/link-preview-demo.svelte"],
 	},
 	"menubar-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/menubar-demo.svelte"],
+		files: ["../docs/registry/menubar-demo.svelte"],
 	},
 	"meter-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/meter-demo.svelte"],
+		files: ["../docs/registry/meter-demo.svelte"],
 	},
 	"native-dialog-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/native-dialog-demo.svelte"],
+		files: ["../docs/registry/native-dialog-demo.svelte"],
 	},
 	"navigation-menu-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/navigation-menu-demo.svelte"],
+		files: ["../docs/registry/navigation-menu-demo.svelte"],
 	},
 	"pagination-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/pagination-demo.svelte"],
+		files: ["../docs/registry/pagination-demo.svelte"],
 	},
 	"pin-input-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/pin-input-demo.svelte"],
+		files: ["../docs/registry/pin-input-demo.svelte"],
 	},
 	"popover-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/popover-demo.svelte"],
+		files: ["../docs/registry/popover-demo.svelte"],
 	},
 	"progress-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/progress-demo.svelte"],
+		files: ["../docs/registry/progress-demo.svelte"],
 	},
 	"radio-group-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/radio-group-demo.svelte"],
+		files: ["../docs/registry/radio-group-demo.svelte"],
 	},
 	"radio-group-form": {
 		type: "registry:example",
-		files: ["../lib/registry/radio-group-form.svelte"],
+		files: ["../docs/registry/radio-group-form.svelte"],
 	},
 	"radio-group-horizontal": {
 		type: "registry:example",
-		files: ["../lib/registry/radio-group-horizontal.svelte"],
+		files: ["../docs/registry/radio-group-horizontal.svelte"],
 	},
 	"radio-group-states": {
 		type: "registry:example",
-		files: ["../lib/registry/radio-group-states.svelte"],
+		files: ["../docs/registry/radio-group-states.svelte"],
 	},
 	"radio-group-tiles": {
 		type: "registry:example",
-		files: ["../lib/registry/radio-group-tiles.svelte"],
+		files: ["../docs/registry/radio-group-tiles.svelte"],
 	},
 	"range-calendar-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/range-calendar-demo.svelte"],
+		files: ["../docs/registry/range-calendar-demo.svelte"],
 	},
 	"resizable-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/resizable-demo.svelte"],
+		files: ["../docs/registry/resizable-demo.svelte"],
 	},
 	"scroll-area-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/scroll-area-demo.svelte"],
+		files: ["../docs/registry/scroll-area-demo.svelte"],
 	},
 	"select-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/select-demo.svelte"],
+		files: ["../docs/registry/select-demo.svelte"],
 	},
 	"separator-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/separator-demo.svelte"],
+		files: ["../docs/registry/separator-demo.svelte"],
 	},
 	"sheet-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/sheet-demo.svelte"],
+		files: ["../docs/registry/sheet-demo.svelte"],
 	},
 	"sheet-side": {
 		type: "registry:example",
-		files: ["../lib/registry/sheet-side.svelte"],
+		files: ["../docs/registry/sheet-side.svelte"],
 	},
 	"sidebar-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/sidebar-demo.svelte"],
+		files: ["../docs/registry/sidebar-demo.svelte"],
 	},
 	"sidebar-floating": {
 		type: "registry:example",
-		files: ["../lib/registry/sidebar-floating.svelte"],
+		files: ["../docs/registry/sidebar-floating.svelte"],
 	},
 	"sidebar-right": {
 		type: "registry:example",
-		files: ["../lib/registry/sidebar-right.svelte"],
+		files: ["../docs/registry/sidebar-right.svelte"],
 	},
 	"skeleton-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/skeleton-demo.svelte"],
+		files: ["../docs/registry/skeleton-demo.svelte"],
 	},
 	"slider-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/slider-demo.svelte"],
+		files: ["../docs/registry/slider-demo.svelte"],
 	},
 	"slider-range": {
 		type: "registry:example",
-		files: ["../lib/registry/slider-range.svelte"],
+		files: ["../docs/registry/slider-range.svelte"],
 	},
 	"sonner-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/sonner-demo.svelte"],
+		files: ["../docs/registry/sonner-demo.svelte"],
 	},
-	"switch-native-demo": {
+	"switch-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/switch-native-demo.svelte"],
+		files: ["../docs/registry/switch-demo.svelte"],
 	},
-	"switch-native-states": {
+	"switch-states": {
 		type: "registry:example",
-		files: ["../lib/registry/switch-native-states.svelte"],
+		files: ["../docs/registry/switch-states.svelte"],
 	},
 	"table-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/table-demo.svelte"],
+		files: ["../docs/registry/table-demo.svelte"],
 	},
 	"tabs-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/tabs-demo.svelte"],
+		files: ["../docs/registry/tabs-demo.svelte"],
 	},
 	"textarea-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/textarea-demo.svelte"],
+		files: ["../docs/registry/textarea-demo.svelte"],
 	},
 	"theme-toggle-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/theme-toggle-demo.svelte"],
+		files: ["../docs/registry/theme-toggle-demo.svelte"],
 	},
 	"time-field-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/time-field-demo.svelte"],
+		files: ["../docs/registry/time-field-demo.svelte"],
 	},
 	"time-range-field-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/time-range-field-demo.svelte"],
+		files: ["../docs/registry/time-range-field-demo.svelte"],
 	},
 	"toggle-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/toggle-demo.svelte"],
+		files: ["../docs/registry/toggle-demo.svelte"],
 	},
 	"toggle-disabled": {
 		type: "registry:example",
-		files: ["../lib/registry/toggle-disabled.svelte"],
+		files: ["../docs/registry/toggle-disabled.svelte"],
 	},
 	"toggle-group-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/toggle-group-demo.svelte"],
+		files: ["../docs/registry/toggle-group-demo.svelte"],
 	},
 	"toggle-group-multiple": {
 		type: "registry:example",
-		files: ["../lib/registry/toggle-group-multiple.svelte"],
+		files: ["../docs/registry/toggle-group-multiple.svelte"],
 	},
 	"toggle-outline": {
 		type: "registry:example",
-		files: ["../lib/registry/toggle-outline.svelte"],
+		files: ["../docs/registry/toggle-outline.svelte"],
 	},
 	"toolbar-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/toolbar-demo.svelte"],
+		files: ["../docs/registry/toolbar-demo.svelte"],
 	},
 	"tooltip-demo": {
 		type: "registry:example",
-		files: ["../lib/registry/tooltip-demo.svelte"],
+		files: ["../docs/registry/tooltip-demo.svelte"],
 	},
 } as const;

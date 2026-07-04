@@ -1,14 +1,14 @@
-import type { EscapeLayerProps } from '../../components/utilities/escape-layer/types.js';
-import type { DismissibleLayerProps } from '../../components/utilities/dismissible-layer/types.js';
-import type { FloatingLayerContentProps } from '../../components/utilities/floating-layer/types.js';
-import type { TextSelectionLayerProps } from '../../components/utilities/text-selection-layer/types.js';
-import type { PresenceLayerProps } from '../../components/utilities/presence-layer/types.js';
-import type { FocusScopeProps } from '../../components/utilities/focus-scope/types.js';
-import type { ScrollLockProps } from '../../components/utilities/scroll-lock/index.js';
+import type { EscapeLayerProps } from '../../internal/escape-layer/types.js';
+import type { DismissibleLayerProps } from '../../internal/dismissible-layer/types.js';
+import type { FloatingLayerContentProps } from '../../internal/floating-layer/types.js';
+import type { TextSelectionLayerProps } from '../../internal/text-selection-layer/types.js';
+import type { PresenceLayerProps } from '../../internal/presence-layer/types.js';
+import type { FocusScopeProps } from '../../internal/focus-scope/types.js';
+import type { ScrollLockProps } from '../../internal/scroll-lock/index.js';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../internal/types.js';
-import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attributes.js';
+import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attribute-types.js';
 import type { FloatingContentSnippetProps } from '../../internal/types.js';
-import type { PortalProps } from '../../components/utilities/portal/index.js';
+import type { PortalProps } from '../../internal/portal/index.js';
 
 /**
  * Content prop surface, composed from the same layer building blocks the (now-removed) Floating-UI

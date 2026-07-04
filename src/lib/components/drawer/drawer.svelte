@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { DialogRootState, DialogState } from '../../components/dialog/dialog.svelte.js';
+	import { DialogRootState, DialogState } from '../dialog/dialog.svelte.js';
 	import { boxWith } from '../../internal/tools/index.js';
-	import type { RootProps } from './util/components/drawer/index.js';
+	import type { RootProps } from '../../internal/vendor/vaul/components/drawer/index.js';
 	import { noop } from '@polumeyv/utilities';
-	import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT } from './util/internal/constants.js';
-	import { useDrawerRoot } from './util/use-drawer-root.svelte.js';
+	import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT } from '../../internal/vendor/vaul/internal/constants.js';
+	import { useDrawerRoot } from '../../internal/vendor/vaul/use-drawer-root.svelte.js';
 
 	let {
 		open = $bindable(false),

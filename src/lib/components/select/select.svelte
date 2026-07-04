@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import type { WithElementRef } from '../../utils.js';
+	import type { WithElementRef } from '../../internal/utils.js';
 	import type { ClassValue, HTMLSelectAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';

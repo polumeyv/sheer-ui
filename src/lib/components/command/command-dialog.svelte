@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { DialogRootProps, DialogPortalProps } from "../../components/dialog/types.js";
-	import type { CommandRootProps } from "../../components/command/types.js";
+	import type { DialogRootProps, DialogPortalProps } from "../dialog/types.js";
+	import type { CommandRootProps } from "./types.js";
 	import type { Snippet } from "svelte";
-	import Command from "../../components/command/components/command.svelte";
+	import Command from "./components/command.svelte";
 	import * as Dialog from "../dialog/index.js";
-	import type { WithoutChildrenOrChild } from "../../utils.js";
+	import type { WithoutChildrenOrChild } from "../../internal/utils.js";
 
 	let {
 		open = false,

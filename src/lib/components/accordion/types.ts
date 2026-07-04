@@ -1,5 +1,5 @@
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, Without } from '../../internal/types.js';
-import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attributes.js';
+import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attribute-types.js';
 import type { Orientation } from '../../internal/index.js';
 
 export type BaseAccordionRootPropsWithoutHTML = {

@@ -7,7 +7,7 @@ import type {
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "../../internal/attributes.js";
+} from "../../internal/attribute-types.js";
 
 export type CollapsibleRootPropsWithoutHTML = WithChild<{
 	/**

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import { untrack, type Snippet } from 'svelte';
 	import type { NavigationMenuContentProps } from '../types.js';
 	import { setNavigationMenuItem, NavigationMenuItemState, NavigationMenuContentImplState } from '../navigation-menu.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
-	import { interactOutsideAttachment } from '../../utilities/dismissible-layer/use-dismissable-layer.svelte.js';
-	import { escapeKeydownAttachment } from '../../utilities/escape-layer/use-escape-layer.svelte.js';
+	import { interactOutsideAttachment } from '../../../internal/dismissible-layer/use-dismissable-layer.svelte.js';
+	import { escapeKeydownAttachment } from '../../../internal/escape-layer/use-escape-layer.svelte.js';
 
 	const uid = $props.id();
 

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import { tick } from 'svelte';
 	import type { MenuSubContentStaticProps } from '../types.js';
 	import { MenuContentState } from '../menu.svelte.js';
 	import { SUB_CLOSE_KEYS } from '../utils.js';
 	import { createId } from '../../../internal/create-id.js';
-	import PopperLayer from '../../../components/utilities/popper-layer/popper-layer.svelte';
+	import PopperLayer from '../../../internal/popper-layer/popper-layer.svelte';
 	import { isHTMLElement } from '@polumeyv/utilities/dom';
 	import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
 

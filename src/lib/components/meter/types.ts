@@ -1,5 +1,5 @@
 import type { WithChild, Without } from "../../internal/types.js";
-import type { BitsPrimitiveDivAttributes } from "../../internal/attributes.js";
+import type { BitsPrimitiveDivAttributes } from "../../internal/attribute-types.js";
 
 export type MeterRootPropsWithoutHTML = WithChild<{
 	/**

@@ -2,7 +2,7 @@
 	import { boxWith } from '../../../internal/tools/index.js';
 	import type { MenuSubProps } from '../types.js';
 	import { MenuSubmenuState } from '../menu.svelte.js';
-	import FloatingLayer from '../../../components/utilities/floating-layer/components/floating-layer.svelte';
+	import FloatingLayer from '../../../internal/floating-layer/components/floating-layer.svelte';
 
 	let { open = $bindable(false), onOpenChange = () => {}, onOpenChangeComplete = () => {}, children }: MenuSubProps = $props();
 

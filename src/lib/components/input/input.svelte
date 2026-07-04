@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { inputVariants, inputVariantSlots, type InputVariant } from './variants';
 	import type { HTMLInputAttributes, HTMLInputTypeAttribute } from 'svelte/elements';
-	import type { WithElementRef } from '../../utils.js';
+	import type { WithElementRef } from '../../internal/utils.js';
 
 	type InputType = Exclude<HTMLInputTypeAttribute, 'file'>;
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import FloatingLayer from '../../../utilities/floating-layer/components/floating-layer.svelte';
+	import FloatingLayer from '../../../../internal/floating-layer/components/floating-layer.svelte';
 	import { type WritableBox, boxWith, repairBindable } from '../../../../internal/tools/index.js';
 	import { SelectRootState } from '../select.svelte.js';
 	import type { SelectRootProps } from '../types.js';

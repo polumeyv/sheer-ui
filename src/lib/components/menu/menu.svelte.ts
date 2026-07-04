@@ -9,7 +9,7 @@ import {
 	boxWith,
 	type ReadableBox,
 } from '../../internal/tools/index.js';
-import { mergeProps } from '../../merge-props.js';
+import { mergeProps } from '../../internal/merge-props.js';
 import { createContext, onDestroy, tick, untrack } from 'svelte';
 import { SUB_OPEN_KEYS, getCheckedState, isMouseEvent } from './utils.js';
 import { focusFirst } from '../../internal/focus.js';
@@ -34,7 +34,7 @@ import {
 	getDataTransitionAttrs,
 } from '../../internal/attrs.js';
 import type { Direction } from '../../internal/index.js';
-import { useGlobalInputModality } from '../../components/utilities/input-modality/input-modality.svelte.js';
+import { useGlobalInputModality } from '../../internal/input-modality/input-modality.svelte.js';
 import { getTabbableFrom, isTabbable } from '../../internal/tabbable.js';
 import type { KeyboardEventHandler, PointerEventHandler, MouseEventHandler } from 'svelte/elements';
 import { DOMTypeahead } from '../../internal/dom-typeahead.svelte.js';

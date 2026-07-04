@@ -1,8 +1,8 @@
 import type { Time } from '@internationalized/date';
 import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import { createContext, onMount, untrack } from 'svelte';
-import { TimeFieldRootState } from '../../components/time-field/time-field.svelte.js';
-import { TimeFieldInputState } from '../../components/time-field/time-field.svelte.js';
+import { TimeFieldRootState } from '../time-field/time-field.svelte.js';
+import { TimeFieldInputState } from '../time-field/time-field.svelte.js';
 import { useId } from '../../internal/use-id.js';
 import type { TimeSegmentPart } from '../../internal/index.js';
 import type { RefAttachment, WithRefOpts } from '../../internal/types.js';

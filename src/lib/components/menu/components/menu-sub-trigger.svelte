@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { MenuSubTriggerProps } from '../types.js';
 	import { MenuSubTriggerState } from '../menu.svelte.js';
-	import { floatingAnchor } from '../../../components/utilities/floating-layer/index.js';
+	import { floatingAnchor } from '../../../internal/floating-layer/index.js';
 	import { createId } from '../../../internal/create-id.js';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { boxWith } from '../../../../internal/tools/index.js';
-	import { mergeProps } from '../../../../merge-props.js';
+	import { mergeProps } from '../../../../internal/merge-props.js';
 	import { SelectTriggerState } from '../select.svelte.js';
 	import type { SelectTriggerProps } from '../types.js';
 	import { createId } from '../../../../internal/create-id.js';
-	import { floatingAnchor } from '../../../utilities/floating-layer/index.js';
+	import { floatingAnchor } from '../../../../internal/floating-layer/index.js';
 
 	const uid = $props.id();
 

@@ -2,7 +2,7 @@
 	import { Calendar } from '../components/calendar';
 	import { fade } from 'svelte/transition';
 	import type { CalendarRootProps, CalendarMonthSelectProps, CalendarYearSelectProps } from '../components/calendar/types.js';
-	import type { WithoutChildrenOrChild } from '../utils.js';
+	import type { WithoutChildrenOrChild } from '../internal/utils.js';
 	import type { ButtonVariant } from '../components/button';
 	import type { DateValue } from '@internationalized/date';
 	import type { Snippet } from 'svelte';

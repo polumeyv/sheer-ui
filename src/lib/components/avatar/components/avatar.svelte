@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { AvatarRootProps } from '../types.js';
 	import { AvatarRootState } from '../avatar.svelte.js';
 	import { createId } from '../../../internal/create-id.js';

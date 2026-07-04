@@ -18,7 +18,7 @@ export type ResolvedDemo = {
 // `import.meta.glob('/content/**/*.md')`. With the previous `eager: true` a single
 // broken demo crashed this module and 500'd every component page — now a failure
 // is scoped to its own slug.
-const modules = import.meta.glob<DemoModule>('/src/lib/registry/*.svelte');
+const modules = import.meta.glob<DemoModule>('/src/docs/registry/*.svelte');
 
 /**
  * Resolve the demo set for a component slug — our analogue of bits-ui's

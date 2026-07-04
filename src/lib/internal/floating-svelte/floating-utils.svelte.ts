@@ -1,4 +1,4 @@
-export { get } from '../../internal/tools/index.js';
+export { get } from '../tools/index.js';
 
 export const getFloatingContentCSSVars = (name: string): Record<string, string> => {
 	const prefix = `--bits-${name}`;

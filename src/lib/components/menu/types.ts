@@ -1,10 +1,10 @@
 import type { Expand } from '../../internal/tools/index.js';
-import type { PopperLayerProps, PopperLayerStaticProps } from '../utilities/popper-layer/types.js';
-import type { FloatingLayerArrowProps, FloatingLayerArrowPropsWithoutHTML } from '../utilities/floating-layer/types.js';
+import type { PopperLayerProps, PopperLayerStaticProps } from '../../internal/popper-layer/types.js';
+import type { FloatingLayerArrowProps, FloatingLayerArrowPropsWithoutHTML } from '../../internal/floating-layer/types.js';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../internal/types.js';
-import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attributes.js';
+import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attribute-types.js';
 import type { Direction } from '../../internal/index.js';
-import type { PortalProps } from '../../components/utilities/portal/index.js';
+import type { PortalProps } from '../../internal/portal/index.js';
 import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '../../internal/types.js';
 
 export type MenuRootPropsWithoutHTML = WithChildren<{

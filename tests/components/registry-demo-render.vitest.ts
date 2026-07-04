@@ -4,22 +4,22 @@ import { afterEach, beforeEach, describe, expect, test } from "vitest";
 const cases = [
 	{
 		name: "progress",
-		load: () => import("../../src/lib/registry/progress-demo.svelte"),
+		load: () => import("../../src/docs/registry/progress-demo.svelte"),
 		selector: '[data-slot="progress"]',
 	},
 	{
 		name: "radio group",
-		load: () => import("../../src/lib/registry/radio-group-demo.svelte"),
+		load: () => import("../../src/docs/registry/radio-group-demo.svelte"),
 		selector: '[data-slot="radio-group"]',
 	},
 	{
 		name: "scroll area",
-		load: () => import("../../src/lib/registry/scroll-area-demo.svelte"),
+		load: () => import("../../src/docs/registry/scroll-area-demo.svelte"),
 		selector: '[data-slot="scroll-area"]',
 	},
 	{
 		name: "sidebar",
-		load: () => import("../../src/lib/registry/sidebar-demo.svelte"),
+		load: () => import("../../src/docs/registry/sidebar-demo.svelte"),
 		selector: '[data-slot="sidebar-wrapper"]',
 	},
 ] as const;

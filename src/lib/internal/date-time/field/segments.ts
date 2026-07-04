@@ -1,6 +1,6 @@
 import { isAnySegmentPart } from './helpers.js';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
-import { kbd } from '../../../internal/kbd.js';
+import { kbd } from '../../kbd.js';
 
 const navigate = (e: KeyboardEvent, neighbors: { prev: HTMLElement | null; next: HTMLElement | null }) => {
 	if (e.key === kbd.ARROW_LEFT) neighbors.prev?.focus();

@@ -1,8 +1,8 @@
 // oxlint-disable no-explicit-any
 import type { Snippet } from 'svelte';
 
-import type { Box, ReadableBoxedValues, WritableBoxedValues, RefAttachment as InternalRefAttachment } from '../internal/tools/index.js';
-import type { StyleProperties } from '../internal/tools/types.js';
+import type { Box, ReadableBoxedValues, WritableBoxedValues, RefAttachment as InternalRefAttachment } from './tools/index.js';
+import type { StyleProperties } from './tools/types.js';
 
 export type OnChangeFn<T> = (value: T) => void;
 

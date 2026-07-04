@@ -2,7 +2,7 @@
 	import { untrack } from 'svelte';
 	import * as Sheet from '../sheet/index.js';
 	import { boxWith } from '../../internal/tools/index.js';
-	import { DialogRootState, DialogState } from '../../components/dialog/dialog.svelte.js';
+	import { DialogRootState, DialogState } from '../dialog/dialog.svelte.js';
 	import { join } from 'overrule';
 	import { SIDEBAR_WIDTH_MOBILE } from './constants.js';
 	import { useSidebar } from './context.svelte.js';

@@ -1,8 +1,8 @@
-import { type Box, type ReadableBox, simpleBox } from '../internal/tools/index.js';
+import { type Box, type ReadableBox, simpleBox } from './tools/index.js';
 import { getElemDirection } from './locale.js';
 import { getDirectionalKeys } from './get-directional-keys.js';
 import { kbd } from './kbd.js';
-import type { Orientation } from '../internal/index.js';
+import type { Orientation } from './index.js';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
 

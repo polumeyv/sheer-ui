@@ -9,7 +9,7 @@
 <script lang="ts">
 	import type { ClassValue } from 'svelte/elements';
 	import { boxWith, mountedAttachment } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
 	import type { NavigationMenuTriggerProps } from '../types.js';

@@ -2,7 +2,7 @@
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
 	import { boxWith } from '../../../../internal/tools/index.js';
-	import { mergeProps } from '../../../../merge-props.js';
+	import { mergeProps } from '../../../../internal/merge-props.js';
 
 	import type { SelectGroupHeadingProps } from '../types.js';
 	import { SelectGroupHeadingState } from '../select.svelte.js';

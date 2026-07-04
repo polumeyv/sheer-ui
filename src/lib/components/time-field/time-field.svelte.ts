@@ -50,7 +50,7 @@ import {
 	moveToPrevSegment,
 } from '../../internal/date-time/field/segments.js';
 import { getDefaultHourCycle, isAcceptableSegmentKey } from '../../internal/date-time/field/helpers.js';
-import type { TimeRangeFieldRootState } from '../../components/time-range-field/time-range-field.svelte.js';
+import type { TimeRangeFieldRootState } from '../time-range-field/time-range-field.svelte.js';
 
 export const timeFieldAttrs = createBitsAttrs({
 	component: 'time-field',

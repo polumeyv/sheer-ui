@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ComboboxTriggerProps } from '../types.js';
 	import { useId } from '../../../internal/use-id.js';
 	import { SelectComboTriggerState } from '../select/select.svelte.js';

@@ -9,7 +9,7 @@ import type {
 	BitsPrimitiveAnchorAttributes,
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "../../internal/attributes.js";
+} from "../../internal/attribute-types.js";
 
 export type ToolbarRootPropsWithoutHTML = WithChild<{
 	/**

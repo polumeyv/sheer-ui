@@ -2,17 +2,17 @@
 	import { join } from 'overrule';
 	// Vaul's drag physics need an in-flow, draggable <div>, not a top-layer native <dialog> — so the
 	// drawer keeps the headless JS-overlay content (the public Dialog.Content is now a native <dialog>).
-	import DialogContentHeadless from '../../components/dialog/components/dialog-content-headless.svelte';
+	import DialogContentHeadless from '../dialog/components/dialog-content-headless.svelte';
 	import { type WithChildren, boxWith } from '../../internal/tools/index.js';
-	import { mergeProps } from '../../merge-props.js';
+	import { mergeProps } from '../../internal/merge-props.js';
 	import type { ComponentProps } from 'svelte';
-	import type { WithoutChildrenOrChild } from '../../utils.js';
+	import type { WithoutChildrenOrChild } from '../../internal/utils.js';
 	import { useId } from '../../internal/use-id.js';
 	import DrawerPortal from './drawer-portal.svelte';
 	import DrawerOverlay from './drawer-overlay.svelte';
 	import { noop } from '@polumeyv/utilities';
-	import { useDrawerContent } from './util/use-drawer-content.svelte.js';
-	import type { ContentProps } from './util/components/drawer/index.js';
+	import { useDrawerContent } from '../../internal/vendor/vaul/use-drawer-content.svelte.js';
+	import type { ContentProps } from '../../internal/vendor/vaul/components/drawer/index.js';
 
 	let {
 		id = useId(),

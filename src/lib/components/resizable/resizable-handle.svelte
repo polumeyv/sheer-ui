@@ -1,8 +1,8 @@
 <script lang="ts">
 	import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
-	import * as ResizablePrimitive from './paneforge/index.js';
+	import * as ResizablePrimitive from '../../internal/vendor/paneforge/index.js';
 	import { join } from 'overrule';
-	import type { WithoutChildrenOrChild } from '../../utils.js';
+	import type { WithoutChildrenOrChild } from '../../internal/utils.js';
 
 	let {
 		ref = $bindable(null),

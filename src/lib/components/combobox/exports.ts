@@ -3,7 +3,7 @@ export { default as Input } from "./components/combobox-input.svelte";
 export { default as Separator } from "../separator/components/separator.svelte";
 export { default as Arrow } from "./components/combobox-arrow.svelte";
 export { default as Trigger } from "./components/combobox-trigger.svelte";
-export { default as Portal } from "../../components/utilities/portal/portal.svelte";
+export { default as Portal } from "../../internal/portal/portal.svelte";
 export { default as Content } from "./select/components/select-content.svelte";
 export { default as ContentStatic } from "./select/components/select-content-static.svelte";
 export { default as Item } from "./select/components/select-item.svelte";

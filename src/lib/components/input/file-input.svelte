@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
-	import type { WithElementRef } from '../../utils.js';
+	import type { WithElementRef } from '../../internal/utils.js';
 	import { inputVariants, inputVariantSlots, type InputVariant } from './variants';
 
 	let {

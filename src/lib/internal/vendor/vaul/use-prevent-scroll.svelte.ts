@@ -1,0 +1,255 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// This code comes from https://github.com/adobe/react-spectrum/blob/main/packages/%40react-aria/overlays/src/usePreventScroll.ts
+
+import { isIOS } from '@polumeyv/utilities/dom';
+import { BROWSER } from '@polumeyv/utilities/env';
+import { mergeDisposers } from '../../tools/index.js';
+import { SharedState } from '../../shared-state.svelte.js';
+import { BodyScrollLock } from '../../body-scroll-lock.svelte.js';
+import { on } from 'svelte/events';
+import { untrack } from 'svelte';
+
+const KEYBOARD_BUFFER = 24;
+
+interface PreventScrollOptions {
+	/** Whether the scroll lock is disabled. */
+	isDisabled: () => boolean;
+	focusCallback?: () => void;
+}
+
+const visualViewport = BROWSER && window.visualViewport;
+
+export const isScrollable = (node: Element): boolean =>
+	((style) => /(auto|scroll)/.test(style.overflow + style.overflowX + style.overflowY))(window.getComputedStyle(node));
+
+export const getScrollParent = (node: Element): Element => {
+	if (isScrollable(node)) node = node.parentElement as Element;
+	while (node && !isScrollable(node)) node = node.parentElement as Element;
+	return node || document.scrollingElement || document.documentElement;
+};
+// HTML input types that do not cause the software keyboard to appear.
+const nonTextInputTypes = new Set(['checkbox', 'radio', 'range', 'color', 'file', 'image', 'button', 'submit', 'reset']);
+
+// Shared across every usePreventScroll consumer: the iOS Safari touch/focus/scroll workaround
+// attaches on the first active caller and tears down when the last one releases. This is separate
+// from body-lock coordination below — it's Drawer-specific (dragging a sheet on iOS Safari), not
+// something Dialog/Popover/Select need.
+const preventScroll = new SharedState(() => {
+	const restore = isIOS ? preventScrollMobileSafari() : undefined;
+	$effect(() => restore);
+});
+
+/**
+ * Prevents scrolling on the document body on mount, and
+ * restores it on unmount. Also ensures that content does not
+ * shift due to the scrollbars disappearing.
+ *
+ * The actual body-style lock (overflow/scrollbar-compensation/pointer-events) is delegated to
+ * `BodyScrollLock` — the same shared, refcounted lock Dialog/Sheet/Select/Popover use — so a
+ * Drawer opened over (or under) one of those doesn't run two uncoordinated scroll-lock strategies
+ * at once. `onMount` (which `BodyScrollLock`'s constructor uses) is just `$effect` under the hood
+ * in runes mode, so constructing it fresh inside this effect ties its register/unregister to
+ * *this* effect's re-run/teardown, not to the whole component's mount/unmount — exactly "acquire
+ * while enabled, release the moment it's disabled" without needing to expose a settable lock.
+ * The iOS touch/focus/scroll workaround above stays Drawer-specific.
+ *
+ * Both are constructed inside `untrack` — their own internal reads/writes (lockMap bookkeeping,
+ * refcounting) must not become dependencies of *this* effect, or a write during construction can
+ * retrigger the very effect that's constructing it.
+ */
+export const usePreventScroll = (opts: PreventScrollOptions) => {
+	$effect(() => {
+		if (opts.isDisabled()) return;
+		untrack(() => {
+			new BodyScrollLock(true);
+			preventScroll.get();
+		});
+	});
+};
+
+// Mobile Safari is a whole different beast. Even with overflow: hidden,
+// it still scrolls the page in many situations:
+//
+// 1. When the bottom toolbar and address bar are collapsed, page scrolling is always allowed.
+// 2. When the keyboard is visible, the viewport does not resize. Instead, the keyboard covers part of
+//    it, so it becomes scrollable.
+// 3. When tapping on an input, the page always scrolls so that the input is centered in the visual viewport.
+//    This may cause even fixed position elements to scroll off the screen.
+// 4. When using the next/previous buttons in the keyboard to navigate between inputs, the whole page always
+//    scrolls, even if the input is inside a nested scrollable element that could be scrolled instead.
+//
+// In order to work around these cases, and prevent scrolling without jankiness, we do a few things:
+//
+// 1. Prevent default on `touchmove` events that are not in a scrollable element. This prevents touch scrolling
+//    on the window.
+// 2. Prevent default on `touchmove` events inside a scrollable element when the scroll position is at the
+//    top or bottom. This avoids the whole page scrolling instead, but does prevent overscrolling.
+// 3. Prevent default on `touchend` events on input elements and handle focusing the element ourselves.
+// 4. When focusing an input, apply a transform to trick Safari into thinking the input is at the top
+//    of the page, which prevents it from scrolling the page. After the input is focused, scroll the element
+//    into view ourselves, without scrolling the whole page.
+// 5. Offset the body by the scroll position using a negative margin and scroll to the top. This should appear the
+//    same visually, but makes the actual scroll position always zero. This is required to make all of the
+//    above work or Safari will still try to scroll the page when focusing an input.
+// 6. As a last resort, handle window scroll events, and scroll back to the top. This can happen when attempting
+//    to navigate to an input with the next/previous buttons that's outside a modal.
+function preventScrollMobileSafari() {
+	let scrollable: Element;
+	let lastY = 0;
+	const onTouchStart = (e: TouchEvent) => {
+		// Store the nearest scrollable parent element from the element that the user touched.
+		scrollable = getScrollParent(e.target as Element);
+		if (scrollable === document.documentElement || scrollable === document.body) {
+			return;
+		}
+
+		lastY = e.changedTouches[0]!.pageY;
+	};
+
+	const onTouchMove = (e: TouchEvent) => {
+		// Prevent scrolling the window.
+		if (!scrollable || scrollable === document.documentElement || scrollable === document.body) {
+			e.preventDefault();
+			return;
+		}
+
+		// Prevent scrolling up when at the top and scrolling down when at the bottom
+		// of a nested scrollable area, otherwise mobile Safari will start scrolling
+		// the window instead. Unfortunately, this disables bounce scrolling when at
+		// the top but it's the best we can do.
+		const y = e.changedTouches[0]!.pageY;
+		const scrollTop = scrollable.scrollTop;
+		const bottom = scrollable.scrollHeight - scrollable.clientHeight;
+
+		if (bottom === 0) return;
+
+		if ((scrollTop <= 0 && y > lastY) || (scrollTop >= bottom && y < lastY)) e.preventDefault();
+
+		lastY = y;
+	};
+
+	let onTouchEnd = (e: TouchEvent) => {
+		let target = e.target as HTMLElement;
+
+		// Apply this change if we're not already focused on the target element
+		if (isInput(target) && target !== document.activeElement) {
+			e.preventDefault();
+
+			// Apply a transform to trick Safari into thinking the input is at the top of the page
+			// so it doesn't try to scroll it into view. When tapping on an input, this needs to
+			// be done before the "focus" event, so we have to focus the element ourselves.
+			target.style.transform = 'translateY(-2000px)';
+			target.focus();
+			requestAnimationFrame(() => {
+				target.style.transform = '';
+			});
+		}
+	};
+
+	const onFocus = (e: FocusEvent) => {
+		let target = e.target as HTMLElement;
+		if (isInput(target)) {
+			// Transform also needs to be applied in the focus event in cases where focus moves
+			// other than tapping on an input directly, e.g. the next/previous buttons in the
+			// software keyboard. In these cases, it seems applying the transform in the focus event
+			// is good enough, whereas when tapping an input, it must be done before the focus event. 🤷‍♂️
+			target.style.transform = 'translateY(-2000px)';
+			requestAnimationFrame(() => {
+				target.style.transform = '';
+
+				// This will have prevented the browser from scrolling the focused element into view,
+				// so we need to do this ourselves in a way that doesn't cause the whole page to scroll.
+				if (visualViewport) {
+					if (visualViewport.height < window.innerHeight) {
+						// If the keyboard is already visible, do this after one additional frame
+						// to wait for the transform to be removed.
+						requestAnimationFrame(() => {
+							scrollIntoView(target);
+						});
+					} else {
+						// Otherwise, wait for the visual viewport to resize before scrolling so we can
+						// measure the correct position to scroll to.
+						visualViewport.addEventListener('resize', () => scrollIntoView(target), {
+							once: true,
+						});
+					}
+				}
+			});
+		}
+	};
+
+	const onWindowScroll = () => window.scrollTo(0, 0);
+
+	// Record the original scroll position so we can restore it.
+	// Then apply a negative margin to the body to offset it by the scroll position. This will
+	// enable us to scroll the window to the top, which is required for the rest of this to work.
+	let scrollX = window.pageXOffset;
+	let scrollY = window.pageYOffset;
+
+	let restoreStyles = mergeDisposers(
+		setStyle(document.documentElement, 'paddingRight', `${window.innerWidth - document.documentElement.clientWidth}px`),
+		// setStyle(document.documentElement, 'overflow', 'hidden'),
+		// setStyle(document.body, 'marginTop', `-${scrollY}px`),
+	);
+
+	// Scroll to the top. The negative margin on the body will make this appear the same.
+	window.scrollTo(0, 0);
+
+	let removeEvents = mergeDisposers(
+		on(document, 'touchstart', onTouchStart, { passive: false, capture: true }),
+		on(document, 'touchmove', onTouchMove, { passive: false, capture: true }),
+		on(document, 'touchend', onTouchEnd, { passive: false, capture: true }),
+		on(document, 'focus', onFocus, { capture: true }),
+		on(window, 'scroll', onWindowScroll),
+	);
+
+	return () => {
+		// Restore styles and scroll the page back to where it was.
+		restoreStyles();
+		removeEvents();
+		window.scrollTo(scrollX, scrollY);
+	};
+}
+
+// Sets a CSS property on an element, and returns a function to revert it to the previous value.
+function setStyle(element: HTMLElement, style: keyof HTMLElement['style'], value: string) {
+	// https://github.com/microsoft/TypeScript/issues/17827#issuecomment-391663310
+	let cur = element.style[style];
+	// @ts-expect-error - TS doesn't like dynamic keys on CSSStyleDeclaration
+	element.style[style] = value;
+
+	return () => {
+		// @ts-expect-error - TS doesn't like dynamic keys on CSSStyleDeclaration
+		element.style[style] = cur;
+	};
+}
+
+function scrollIntoView(target: Element) {
+	let root = document.scrollingElement || document.documentElement;
+	while (target && target !== root) {
+		// Find the parent scrollable element and adjust the scroll position if the target is not already in view.
+		let scrollable = getScrollParent(target);
+		if (scrollable !== document.documentElement && scrollable !== document.body && scrollable !== target) {
+			let scrollableTop = scrollable.getBoundingClientRect().top;
+			let targetTop = target.getBoundingClientRect().top;
+			let targetBottom = target.getBoundingClientRect().bottom;
+			// Buffer is needed for some edge cases
+			const keyboardHeight = scrollable.getBoundingClientRect().bottom + KEYBOARD_BUFFER;
+
+			if (targetBottom > keyboardHeight) {
+				scrollable.scrollTop += targetTop - scrollableTop;
+			}
+		}
+
+		// @ts-expect-error - sh
+		target = scrollable.parentElement;
+	}
+}
+
+export function isInput(target: Element) {
+	return (
+		(target instanceof HTMLInputElement && !nonTextInputTypes.has(target.type)) ||
+		target instanceof HTMLTextAreaElement ||
+		(target instanceof HTMLElement && target.isContentEditable)
+	);
+}

@@ -26,11 +26,6 @@
 		"test:components": "bun run registry:build && svelte-kit sync && bunx vitest run --config vitest.config.ts"
 	},
 	"exports": {
-		"./alert-modal": {
-			"types": "./src/lib/blocks/alert-modal/index.ts",
-			"svelte": "./src/lib/blocks/alert-modal/index.ts",
-			"default": "./src/lib/blocks/alert-modal/index.ts"
-		},
 		"./blocks": {
 			"types": "./src/lib/blocks/index.ts",
 			"svelte": "./src/lib/blocks/index.ts",
@@ -40,30 +35,15 @@
 			"svelte": "./src/lib/blocks/*/index.ts",
 			"default": "./src/lib/blocks/*/index.ts"
 		},
-		"./stripe": {
-			"types": "./src/lib/stripe/index.ts",
-			"svelte": "./src/lib/stripe/index.ts",
-			"default": "./src/lib/stripe/index.ts"
-		},
-		"./mockups": {
-			"types": "./src/lib/mockups/index.ts",
-			"svelte": "./src/lib/mockups/index.ts",
-			"default": "./src/lib/mockups/index.ts"
-		},
 		"./hooks": {
 			"types": "./src/lib/hooks/index.ts",
 			"svelte": "./src/lib/hooks/index.ts",
 			"default": "./src/lib/hooks/index.ts"
 		},
-		"./layout": {
-			"types": "./src/lib/layout/index.ts",
-			"svelte": "./src/lib/layout/index.ts",
-			"default": "./src/lib/layout/index.ts"
-		},
 		"./utils": {
-			"types": "./src/lib/utils.ts",
-			"svelte": "./src/lib/utils.ts",
-			"default": "./src/lib/utils.ts"
+			"types": "./src/lib/internal/utils.ts",
+			"svelte": "./src/lib/internal/utils.ts",
+			"default": "./src/lib/internal/utils.ts"
 		},
 		"./icons/*": {
 			"svelte": "./src/lib/icons/*",
@@ -245,10 +225,10 @@
 			"svelte": "./src/lib/components/progress/index.ts",
 			"default": "./src/lib/components/progress/index.ts"
 		},
-		"./components/radio-group-native": {
-			"types": "./src/lib/components/radio-group-native/index.ts",
-			"svelte": "./src/lib/components/radio-group-native/index.ts",
-			"default": "./src/lib/components/radio-group-native/index.ts"
+		"./components/radio-group": {
+			"types": "./src/lib/components/radio-group/index.ts",
+			"svelte": "./src/lib/components/radio-group/index.ts",
+			"default": "./src/lib/components/radio-group/index.ts"
 		},
 		"./components/resizable": {
 			"types": "./src/lib/components/resizable/index.ts",
@@ -295,10 +275,10 @@
 			"svelte": "./src/lib/components/sonner/index.ts",
 			"default": "./src/lib/components/sonner/index.ts"
 		},
-		"./components/switch-native": {
-			"types": "./src/lib/components/switch-native/index.ts",
-			"svelte": "./src/lib/components/switch-native/index.ts",
-			"default": "./src/lib/components/switch-native/index.ts"
+		"./components/switch": {
+			"types": "./src/lib/components/switch/index.ts",
+			"svelte": "./src/lib/components/switch/index.ts",
+			"default": "./src/lib/components/switch/index.ts"
 		},
 		"./components/table": {
 			"types": "./src/lib/components/table/index.ts",

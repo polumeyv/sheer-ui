@@ -1,14 +1,14 @@
 import { createContext, untrack } from "svelte";
 import type { Attachment } from 'svelte/attachments';
 import type { HTMLAttributes } from 'svelte/elements';
-import { EventHandler, type EventHandlerType } from './util/EventHandler';
-import { Engine, type EngineType } from './util/Engine';
-import { defaultOptions, type CarouselOptionsType, type CreateOptionsType, type LooseOptionsType, type OptionsType } from './util/Options';
-import { NodeHandler, type NodeHandlerType } from './util/NodeHandler';
-import { observeOptionsBreakpoints, OptionsHandler, type OptionsHandlerType } from './util/OptionsHandler';
-import { type ScrollToDirectionType } from './util/ScrollTo';
+import { EventHandler, type EventHandlerType } from '../../internal/vendor/embla/EventHandler';
+import { Engine, type EngineType } from '../../internal/vendor/embla/Engine';
+import { defaultOptions, type CarouselOptionsType, type CreateOptionsType, type LooseOptionsType, type OptionsType } from '../../internal/vendor/embla/Options';
+import { NodeHandler, type NodeHandlerType } from '../../internal/vendor/embla/NodeHandler';
+import { observeOptionsBreakpoints, OptionsHandler, type OptionsHandlerType } from '../../internal/vendor/embla/OptionsHandler';
+import { type ScrollToDirectionType } from '../../internal/vendor/embla/ScrollTo';
 
-import type { WithElementRef } from "../../utils.js";
+import type { WithElementRef } from "../../internal/utils.js";
 
 export type LoosePluginType = {
 	[key: string]: unknown;

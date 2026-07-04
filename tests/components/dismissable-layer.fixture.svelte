@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { flushSync } from 'svelte';
 	import { simpleBox, boxWith, attachRef } from '$lib/internal/tools/index.js';
-	import { DismissibleLayerState } from '$lib/components/utilities/dismissible-layer/use-dismissable-layer.svelte.js';
-	import { makeDebounce, type Scheduler, type TimerHandle } from '$lib/components/utilities/dismissible-layer/scheduler.js';
-	import type { InteractOutsideBehaviorType } from '$lib/components/utilities/dismissible-layer/types.js';
+	import { DismissibleLayerState } from '$lib/internal/dismissible-layer/use-dismissable-layer.svelte.js';
+	import { makeDebounce, type Scheduler, type TimerHandle } from '$lib/internal/dismissible-layer/scheduler.js';
+	import type { InteractOutsideBehaviorType } from '$lib/internal/dismissible-layer/types.js';
 
 	let {
 		withB = false,

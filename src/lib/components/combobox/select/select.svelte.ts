@@ -27,7 +27,7 @@ import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/flo
 import { DataTypeahead } from '../../../internal/data-typeahead.svelte.js';
 import { DOMTypeahead } from '../../../internal/dom-typeahead.svelte.js';
 import { PresenceManager } from '../../../internal/presence-manager.svelte.js';
-import { createInputModality } from '../../../components/utilities/input-modality/input-modality.svelte.js';
+import { createInputModality } from '../../../internal/input-modality/input-modality.svelte.js';
 import { DEV } from '@polumeyv/utilities/env';
 import type { SelectValueSnippetProps } from './types.js';
 

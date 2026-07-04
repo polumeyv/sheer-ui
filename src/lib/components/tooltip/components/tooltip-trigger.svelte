@@ -4,7 +4,7 @@
 
 <script lang="ts" generics="T = never">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { TooltipTriggerProps } from '../types.js';
 	import { TooltipTriggerState } from '../tooltip.svelte.js';
 	import { createId } from '../../../internal/create-id.js';

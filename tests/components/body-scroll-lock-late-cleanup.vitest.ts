@@ -1,6 +1,6 @@
 import { flushSync, mount, tick, unmount } from 'svelte';
 import { afterEach, describe, expect, test, vi } from 'vitest';
-import ScrollLock from '../../src/lib/components/utilities/scroll-lock/scroll-lock.svelte';
+import ScrollLock from '../../src/lib/internal/scroll-lock/scroll-lock.svelte';
 
 afterEach(() => {
 	vi.unstubAllGlobals();

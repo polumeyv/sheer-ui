@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { type WritableBox, boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToolbarGroupProps } from '../types.js';
 	import { ToolbarGroupState } from '../toolbar.svelte.js';
 	import { createId } from '../../../internal/create-id.js';

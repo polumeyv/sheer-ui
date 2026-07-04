@@ -4,7 +4,7 @@
 
 	import type { WithChildren } from '../../../internal/types.js';
 	import { createId } from '../../../internal/create-id.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { BitsPrimitiveLabelAttributes, WithElementRef } from '../../../internal/index.js';
 
 	const uid = $props.id();

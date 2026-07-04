@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	import { createContext } from 'svelte';
 	import type { VariantProps } from 'overrule';
-	import { toggleVariants } from '../../../components/toggle/variants.js';
+	import { toggleVariants } from '../../toggle/variants.js';
 
 	type ToggleVariants = VariantProps<typeof toggleVariants>;
 
@@ -15,7 +15,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { type WritableBox, boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToggleGroupRootProps } from '../types.js';
 	import { ToggleGroupRootState } from '../toggle-group.svelte.js';
 	import { createId } from '../../../internal/create-id.js';

@@ -2,7 +2,7 @@ export { default as Root } from "./components/tooltip.svelte";
 export { default as Content } from "./components/tooltip-content.svelte";
 export { default as Trigger } from "./components/tooltip-trigger.svelte";
 export { default as Provider } from "./components/tooltip-provider.svelte";
-export { default as Portal } from "../../components/utilities/portal/portal.svelte";
+export { default as Portal } from "../../internal/portal/portal.svelte";
 export { createTooltipTether as createTether } from "./tooltip.svelte.js";
 
 export type {
@@ -14,4 +14,4 @@ export type {
 	TooltipRootSnippetProps as RootSnippetProps,
 } from "./types.js";
 
-export type { PortalProps } from "../../components/utilities/portal/index.js";
+export type { PortalProps } from "../../internal/portal/index.js";

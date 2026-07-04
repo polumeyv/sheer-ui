@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createFocusScopeProps } from "../../src/lib/components/utilities/focus-scope/focus-scope.svelte.js";
+	import { createFocusScopeProps } from "../../src/lib/internal/focus-scope/focus-scope.svelte.js";
 
 	let {
 		enabled = $bindable(true),

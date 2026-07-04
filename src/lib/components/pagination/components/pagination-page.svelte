@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { PaginationPageProps } from '../types.js';
 	import { PaginationPageState } from '../pagination.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
-	import { type ButtonProps, buttonVariants } from '../../../components/button';
+	import { type ButtonProps, buttonVariants } from '../../button';
 
 	const uid = $props.id();
 

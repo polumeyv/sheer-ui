@@ -1,5 +1,5 @@
 import type { DateValue } from '@internationalized/date';
-import { styleToString } from '../../../internal/tools/index.js';
+import { styleToString } from '../../tools/index.js';
 import type { Formatter } from '../formatter.js';
 import { getPlaceholder } from '../placeholders.js';
 import { hasTime, isZonedDateTime } from '../utils.js';
@@ -17,8 +17,8 @@ import { ALL_SEGMENT_PARTS, DATE_SEGMENT_PARTS, EDITABLE_SEGMENT_PARTS, EDITABLE
 import { getSegments } from './segments.js';
 import { isNumberString } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
-import { kbd } from '../../../internal/kbd.js';
-import type { Granularity, HourCycle, TimeSegmentValueObj } from '../../../internal/date-time/types.js';
+import { kbd } from '../../kbd.js';
+import type { Granularity, HourCycle, TimeSegmentValueObj } from '../types.js';
 
 export function initializeSegmentValues(): TimeSegmentValueObj;
 export function initializeSegmentValues(granularity: Granularity): SegmentValueObj;

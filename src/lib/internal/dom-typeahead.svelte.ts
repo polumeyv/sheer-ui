@@ -1,4 +1,4 @@
-import { boxAutoReset, type WritableBox } from '../internal/tools/index.js';
+import { boxAutoReset, type WritableBox } from './tools/index.js';
 import { getNextMatch } from './arrays.js';
 
 type DOMTypeaheadOptions = {

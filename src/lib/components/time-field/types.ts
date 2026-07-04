@@ -4,7 +4,7 @@ import type { OnChangeFn, WithChild, Without } from "../../internal/types.js";
 import type {
 	BitsPrimitiveDivAttributes,
 	BitsPrimitiveSpanAttributes,
-} from "../../internal/attributes.js";
+} from "../../internal/attribute-types.js";
 import type {
 	TimeGranularity,
 	TimeOnInvalid,

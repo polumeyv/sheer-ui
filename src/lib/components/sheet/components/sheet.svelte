@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { DialogRootState, DialogState } from '../../../components/dialog/dialog.svelte.js';
-	import type { DialogRootProps } from '../../../components/dialog/types.js';
+	import { DialogRootState, DialogState } from '../../dialog/dialog.svelte.js';
+	import type { DialogRootProps } from '../../dialog/types.js';
 
 	let { open = false, onOpenChangeComplete = () => {}, children }: DialogRootProps = $props();
 

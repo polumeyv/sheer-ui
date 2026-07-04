@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
-	import { DialogTitleState } from '../../../components/dialog/dialog.svelte.js';
-	import type { DialogTitleProps } from '../../../components/dialog/types.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
+	import { DialogTitleState } from '../../dialog/dialog.svelte.js';
+	import type { DialogTitleProps } from '../../dialog/types.js';
 	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();

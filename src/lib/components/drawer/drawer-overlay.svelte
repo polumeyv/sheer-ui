@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import * as DialogPrimitive from '../../components/dialog/index.js';
+	import * as DialogPrimitive from '../dialog/index.js';
 	import { type WithChildren, boxWith, attachRef } from '../../internal/tools/index.js';
-	import { mergeProps } from '../../merge-props.js';
-	import type { WithoutChildrenOrChild } from '../../utils.js';
+	import { mergeProps } from '../../internal/merge-props.js';
+	import type { WithoutChildrenOrChild } from '../../internal/utils.js';
 	import { useId } from '../../internal/use-id.js';
-	import { getDrawer } from './util/context.js';
-	import type { OverlayProps } from './util/components/drawer/index.js';
+	import { getDrawer } from '../../internal/vendor/vaul/context.js';
+	import type { OverlayProps } from '../../internal/vendor/vaul/components/drawer/index.js';
 
 	let {
 		id = useId(),

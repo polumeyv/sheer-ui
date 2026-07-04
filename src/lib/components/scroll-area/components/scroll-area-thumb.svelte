@@ -3,7 +3,7 @@
 	import { getScrollAreaScrollbarVisible } from "../scroll-area.svelte.js";
 	import ScrollAreaThumbImpl from "./scroll-area-thumb-impl.svelte";
 	import { createId } from "../../../internal/create-id.js";
-	import PresenceLayer from "../../../components/utilities/presence-layer/presence-layer.svelte";
+	import PresenceLayer from "../../../internal/presence-layer/presence-layer.svelte";
 
 	const uid = $props.id();
 

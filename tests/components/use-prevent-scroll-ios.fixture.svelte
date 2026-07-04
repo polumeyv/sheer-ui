@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { usePreventScroll } from '$lib/components/drawer/util/use-prevent-scroll.svelte.js';
+	import { usePreventScroll } from '$lib/internal/vendor/vaul/use-prevent-scroll.svelte.js';
 
 	let { disabled: initialDisabled = false }: { disabled?: boolean } = $props();
 	let disabled = $state(initialDisabled);

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import { CalendarCellState } from '../calendar.svelte.js';
 	import type { CalendarCellProps } from '../types.js';
 	import { createId } from '../../../internal/create-id.js';

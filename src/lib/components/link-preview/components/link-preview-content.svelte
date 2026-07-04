@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith, mountedAttachment } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { LinkPreviewContentProps } from '../types.js';
 	import { LinkPreviewContentState } from '../link-preview.svelte.js';
 	import { createId } from '../../../internal/create-id.js';

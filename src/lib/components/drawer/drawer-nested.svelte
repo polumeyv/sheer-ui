@@ -1,7 +1,7 @@
 <script lang="ts">
 import DrawerRoot from './drawer.svelte';
-import type { RootProps } from './util/components/drawer/index.js';
-import { getDrawer } from './util/context.js';
+import type { RootProps } from '../../internal/vendor/vaul/components/drawer/index.js';
+import { getDrawer } from '../../internal/vendor/vaul/context.js';
 import { noop } from '@polumeyv/utilities';
 
 let {

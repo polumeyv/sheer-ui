@@ -10,7 +10,7 @@
 	import { TimeFieldRootState } from '../time-field.svelte.js';
 	import type { TimeFieldRootProps } from '../types.js';
 	import { getDefaultTime } from '../../../internal/date-time/utils.js';
-	import { resolveLocaleProp } from '../../../components/utilities/config/prop-resolvers.js';
+	import { resolveLocaleProp } from '../../../internal/prop-resolvers.js';
 
 	let {
 		disabled = false,

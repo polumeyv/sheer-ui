@@ -11,7 +11,7 @@ import type {
 	BitsPrimitiveThAttributes,
 	BitsPrimitiveTheadAttributes,
 	BitsPrimitiveTrAttributes,
-} from '../../internal/attributes.js';
+} from '../../internal/attribute-types.js';
 import type { DateMatcher, Month, WeekStartsOn } from '../../internal/date-time/types.js';
 
 export type CalendarRootSnippetProps = {

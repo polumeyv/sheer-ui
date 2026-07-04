@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ScrollAreaScrollbarProps } from '../types.js';
 	import { ScrollAreaScrollbarState } from '../scroll-area.svelte.js';
 	import ScrollAreaScrollbarAuto from './scroll-area-scrollbar-auto.svelte';

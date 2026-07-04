@@ -2,12 +2,12 @@
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
 	import { boxWith, mountedAttachment } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 
 	import type { NavigationMenuViewportProps } from '../types.js';
 	import { NavigationMenuViewportState } from '../navigation-menu.svelte.js';
 
-	import PresenceLayer from '../../../components/utilities/presence-layer/presence-layer.svelte';
+	import PresenceLayer from '../../../internal/presence-layer/presence-layer.svelte';
 
 	import { createId } from '../../../internal/create-id.js';
 	import { getDataTransitionAttrs } from '../../../internal/attrs.js';

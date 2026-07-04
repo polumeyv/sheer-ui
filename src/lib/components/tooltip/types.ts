@@ -1,10 +1,10 @@
-import type { FloatingLayerContentProps } from '../../components/utilities/floating-layer/types.js';
-import type { DismissibleLayerProps } from '../../components/utilities/dismissible-layer/types.js';
-import type { EscapeLayerProps } from '../../components/utilities/escape-layer/types.js';
+import type { FloatingLayerContentProps } from '../../internal/floating-layer/types.js';
+import type { DismissibleLayerProps } from '../../internal/dismissible-layer/types.js';
+import type { EscapeLayerProps } from '../../internal/escape-layer/types.js';
 import type { Snippet } from 'svelte';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../internal/types.js';
-import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attributes.js';
-import type { PortalProps } from '../../components/utilities/portal/index.js';
+import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attribute-types.js';
+import type { PortalProps } from '../../internal/portal/index.js';
 import type { FloatingContentSnippetProps } from '../../internal/types.js';
 import type { TooltipTether as TooltipTetherImpl } from './tooltip.svelte.js';
 

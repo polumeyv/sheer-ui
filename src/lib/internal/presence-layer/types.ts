@@ -1,0 +1,28 @@
+import type { Snippet } from 'svelte';
+import type { ReadableBox } from '../tools/index.js';
+import type { TransitionState } from '../attrs.js';
+
+export type PresenceLayerProps = {
+	/**
+	 * Whether to force mount the component.
+	 */
+	forceMount?: boolean;
+};
+
+export type PresenceLayerImplProps = PresenceLayerProps & {
+	/**
+	 * The open state of the component.
+	 */
+	open: boolean;
+
+	presence?: Snippet<
+		[
+			{
+				present: boolean;
+				transitionStatus: TransitionState;
+			},
+		]
+	>;
+
+	ref: ReadableBox<HTMLElement | null>;
+};

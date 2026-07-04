@@ -3,7 +3,7 @@
 	// / Portal / Overlay / Content / Title / Description / Cancel / Action — and with them the
 	// PresenceManager, FocusScope, escape + dismissible layers, BodyScrollLock and the JS overlay div.
 	// Same `open` / `onOpenChange` contract, so the alertModal store is untouched.
-	import NativeDialog from '../../components/native-dialog/native-dialog.svelte';
+	import NativeDialog from '../../internal/native-dialog/native-dialog.svelte';
 	import { Button } from '../../components/button/index.js';
 	import * as Field from '../../components/field';
 	import { Root as Input } from '../../components/input';

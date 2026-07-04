@@ -3,7 +3,7 @@ import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
 	BitsPrimitiveSpanAttributes,
-} from "../../internal/attributes.js";
+} from "../../internal/attribute-types.js";
 
 export type CheckboxRootSnippetProps = { checked: boolean; indeterminate: boolean };
 

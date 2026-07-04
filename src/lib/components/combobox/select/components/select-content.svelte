@@ -2,12 +2,12 @@
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
 	import { boxWith } from '../../../../internal/tools/index.js';
-	import { mergeProps } from '../../../../merge-props.js';
+	import { mergeProps } from '../../../../internal/merge-props.js';
 
 	import type { SelectContentProps } from '../types.js';
 	import { SelectContentState } from '../select.svelte.js';
 
-	import PopperLayer from '../../../../components/utilities/popper-layer/popper-layer.svelte';
+	import PopperLayer from '../../../../internal/popper-layer/popper-layer.svelte';
 
 	import SelectScrollUpButton from './select-scroll-up-button.svelte';
 	import SelectScrollDownButton from './select-scroll-down-button.svelte';

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { boxWith } from '../../../../internal/tools/index.js';
-	import { mergeProps } from '../../../../merge-props.js';
+	import { mergeProps } from '../../../../internal/merge-props.js';
 	import type { SelectContentStaticProps } from '../types.js';
 	import { SelectContentState } from '../select.svelte.js';
-	import PopperLayer from '../../../utilities/popper-layer/popper-layer.svelte';
+	import PopperLayer from '../../../../internal/popper-layer/popper-layer.svelte';
 	import { createId } from '../../../../internal/create-id.js';
 
 	const uid = $props.id();

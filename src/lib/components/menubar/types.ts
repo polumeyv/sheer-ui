@@ -1,10 +1,10 @@
-import type { FloatingLayerArrowPropsWithoutHTML } from "../utilities/floating-layer/types.js";
+import type { FloatingLayerArrowPropsWithoutHTML } from "../../internal/floating-layer/types.js";
 import type { MenuArrowProps } from "../menu/types.js";
 import type { OnChangeFn, WithChild, WithChildren, Without } from "../../internal/types.js";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "../../internal/attributes.js";
+} from "../../internal/attribute-types.js";
 import type { Direction } from "../../internal/index.js";
 
 export type MenubarRootPropsWithoutHTML = WithChild<{

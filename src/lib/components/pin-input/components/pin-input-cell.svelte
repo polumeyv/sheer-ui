@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { PinInputCellProps } from '../types.js';
 	import { PinInputCellState } from '../pin-input.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
