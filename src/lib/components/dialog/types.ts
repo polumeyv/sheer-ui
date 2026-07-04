@@ -4,11 +4,11 @@ import type { PresenceLayerProps } from "../utilities/presence-layer/types.js";
 import type { FocusScopeProps } from "../utilities/focus-scope/types.js";
 import type { TextSelectionLayerProps } from "../utilities/text-selection-layer/types.js";
 import type { ScrollLockProps } from "../utilities/scroll-lock/index.js";
+import type { Snippet } from "svelte";
 import type {
 	OnChangeFn,
 	WithChild,
 	WithChildNoChildrenSnippetProps,
-	WithChildren,
 	Without,
 } from "../../internal/types.js";
 import type {
@@ -16,23 +16,28 @@ import type {
 	BitsPrimitiveDivAttributes,
 } from "../../internal/attributes.js";
 import type { PortalProps } from "../../components/utilities/portal/index.js";
+import type { DialogState } from "./dialog.svelte.js";
 
-export type DialogRootPropsWithoutHTML = WithChildren<{
+export type DialogRootPropsWithoutHTML = {
 	/**
-	 * The open state of the dialog.
+	 * The derivation source for the dialog's open state: the internal cell
+	 * re-derives whenever this prop changes, and interactions (trigger, Escape,
+	 * a snippet-cell write) override it until the next change. Reconcile
+	 * dismissals via onOpenChangeComplete. Plain value — not bindable.
 	 */
 	open?: boolean;
 
 	/**
-	 * A callback that is called when the popover's open state changes.
-	 */
-	onOpenChange?: OnChangeFn<boolean>;
-
-	/**
 	 * A callback called when the dialog finishes opening/closing animations.
+	 * This is an occurrence (animation settled), not a state mirror — use it
+	 * for dismissal-is-navigation flows, not to track `open` (depend on the
+	 * cell instead).
 	 */
 	onOpenChangeComplete?: OnChangeFn<boolean>;
-}>;
+
+	/** Children receive the state cell, typed and guaranteed within the tree. */
+	children?: Snippet<[DialogState]>;
+};
 
 export type DialogRootProps = DialogRootPropsWithoutHTML;
 

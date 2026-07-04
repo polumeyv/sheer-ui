@@ -1,5 +1,6 @@
 <script lang="ts">
-	import * as DialogPrimitive from '../../components/dialog/index.js';
+	import { untrack } from 'svelte';
+	import { DialogRootState, DialogState } from '../../components/dialog/dialog.svelte.js';
 	import { boxWith } from '../../internal/tools/index.js';
 	import type { RootProps } from './util/components/drawer/index.js';
 	import { noop } from '@polumeyv/utilities';
@@ -82,17 +83,29 @@
 		onOpenChange: boxWith(() => onOpenChange),
 		onAnimationEnd: boxWith(() => onAnimationEnd),
 	});
+
+	// The drawer (vendored vaul) is an external state machine that owns `open`;
+	// the dialog cell derives from it. Dialog-initiated closes (a Close button,
+	// the dialog layers) write the cell, and this adapter routes them through
+	// the drawer's own animated close instead of just flipping the signal.
+	// The drawer acts as its own dialog root (the sheet.svelte pattern) so the
+	// cell stays internal — no consumer-facing state surface exists.
+	const dialogCell = new DialogState(() => rootState.open.current);
+	$effect(() => {
+		const o = dialogCell.open;
+		untrack(() => {
+			if (o !== rootState.open.current) rootState.onDialogOpenChange(o);
+		});
+	});
+
+	DialogRootState.create({
+		variant: boxWith(() => 'dialog'),
+		cell: dialogCell,
+		onOpenChangeComplete: boxWith(() => handleOpenChangeComplete),
+	});
 </script>
 
-<DialogPrimitive.Root
-	bind:open={
-		() => rootState.open.current,
-		(o) => {
-			rootState.onDialogOpenChange(o);
-		}
-	}
-	{...restProps}
-	onOpenChangeComplete={handleOpenChangeComplete} />
+{@render restProps.children?.()}
 
 <style global>
 	:global([data-vaul-drawer]) {

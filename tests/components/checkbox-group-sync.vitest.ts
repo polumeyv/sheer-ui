@@ -103,6 +103,8 @@ describe("Checkbox group synchronization", () => {
 			expect(readOutput("group-value")).toBe("[beta]");
 			expect(readOutput("dynamic-checked")).toBe("false");
 			expect(readOutput("beta-checked")).toBe("true");
+			// onValueChange reports child-initiated changes only; parent writes must not echo.
+			expect(readOutput("group-change-count")).toBe("0");
 		} finally {
 			cleanup(component);
 		}

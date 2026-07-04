@@ -93,7 +93,7 @@
 	// adding a transitionend listener would double-fire it.
 	function controller(node: HTMLDialogElement) {
 		$effect(() => {
-			const open = contentState.root.opts.open.current;
+			const open = contentState.root.cell.open;
 			if (open && !node.open) node.showModal();
 			else if (!open && node.open) node.close();
 		});
@@ -136,7 +136,7 @@
 	const controllerAttachment = { [createAttachmentKey()]: controller };
 </script>
 
-{#if contentState.root.opts.open.current}
+{#if contentState.root.cell.open}
 	<ScrollLock {preventScroll} {restoreScrollDelay} />
 {/if}
 {#if child}

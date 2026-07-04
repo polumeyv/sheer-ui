@@ -1,10 +1,9 @@
 import { createContext, untrack } from 'svelte';
 import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import type { HTMLButtonAttributes } from 'svelte/elements';
-import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { boolToStr, createBitsAttrs, getAriaChecked, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import { kbd } from '../../internal/kbd.js';
-import { arraysAreEqual } from '../../internal/arrays.js';
 
 const checkboxAttrs = createBitsAttrs({
 	component: 'checkbox',
@@ -18,7 +17,6 @@ interface CheckboxGroupStateOpts
 			disabled: boolean;
 			required: boolean;
 			readonly: boolean;
-			onValueChange: OnChangeFn<string[]>;
 		}>,
 		WritableBoxedValues<{
 			value: string[];
@@ -54,22 +52,14 @@ export class CheckboxGroupState {
 
 	addValue(checkboxValue: string | undefined) {
 		if (!checkboxValue) return;
-		if (!this.opts.value.current.includes(checkboxValue)) {
-			const newValue = [...$state.snapshot(this.opts.value.current), checkboxValue];
-			this.opts.value.current = newValue;
-			if (arraysAreEqual(this.opts.value.current, newValue)) return;
-			this.opts.onValueChange.current(newValue);
-		}
+		if (this.opts.value.current.includes(checkboxValue)) return;
+		this.opts.value.current = [...$state.snapshot(this.opts.value.current), checkboxValue];
 	}
 
 	removeValue(checkboxValue: string | undefined) {
 		if (!checkboxValue) return;
-		const index = this.opts.value.current.indexOf(checkboxValue);
-		if (index === -1) return;
-		const newValue = this.opts.value.current.filter((v) => v !== checkboxValue);
-		this.opts.value.current = newValue;
-		if (arraysAreEqual(this.opts.value.current, newValue)) return;
-		this.opts.onValueChange.current(newValue);
+		if (!this.opts.value.current.includes(checkboxValue)) return;
+		this.opts.value.current = this.opts.value.current.filter((v) => v !== checkboxValue);
 	}
 
 	readonly props = $derived.by(

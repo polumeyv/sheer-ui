@@ -67,6 +67,25 @@ function boxWith<T>(getter: () => T, setter?: (v: T) => void) {
 	};
 }
 
+/**
+ * The one bridge for a stateful `$bindable` prop: write the prop, then notify.
+ *
+ * `set` must write unconditionally — equality/idempotence guards belong to the
+ * caller (the *State class), so a write through this box always means a real
+ * change and `notify` fires exactly once per change. Pass `notify` as a closure
+ * (`(v) => onValueChange?.(v)`) so the latest callback prop is read at call
+ * time; a bare reference freezes the prop's value at bundle creation.
+ *
+ * Convention: writable bridges (value/open/checked/ref/...) use `bindableWith`;
+ * `boxWith` is for read-only views. A two-argument `boxWith` is legacy.
+ */
+export function bindableWith<T>(get: () => T, set: (v: T) => void, notify?: (v: T) => void): WritableBox<T> {
+	return boxWith(get, (v) => {
+		set(v);
+		notify?.(v);
+	});
+}
+
 export const simpleBox = createWritableBox;
 
 export { boxWith };

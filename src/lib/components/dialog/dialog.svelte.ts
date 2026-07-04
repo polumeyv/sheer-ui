@@ -1,4 +1,4 @@
-import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
+import { attachRef, boxWith, type ReadableBoxedValues } from '../../internal/tools/index.js';
 import { createContext, onDestroy, untrack } from 'svelte';
 import { createBitsAttrs, boolToStr, getDataOpenClosed, boolToEmptyStrOrUndef, getDataTransitionAttrs } from '../../internal/attrs.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
@@ -25,15 +25,35 @@ function getDialogRootOr<TFallback>(fallback: TFallback): DialogRootState | TFal
 	}
 }
 
+/**
+ * The dialog's public state cell: pure signals, no effects — safe to construct
+ * anywhere (component init, app state classes) and hand to `Dialog.Root` /
+ * `Sheet.Root` via the `state` prop. Reading and writing `open` is the whole
+ * API: the dialog's trigger/close/dismiss machinery and any consumer markup,
+ * deriveds, or effects are all dependents of the same signal — there is no
+ * change callback and nothing to wire.
+ *
+ * An optional `source` makes `open` a writable derived: it re-derives whenever
+ * the source changes (a route param, `editing !== null`, an external machine's
+ * open), and direct writes — Escape, a Close button, `cell.open = false` —
+ * override it until the next source change.
+ */
+export class DialogState {
+	readonly #source?: () => boolean;
+	open: boolean = $derived.by(() => this.#source?.() ?? false);
+
+	constructor(source?: () => boolean) {
+		this.#source = source;
+	}
+}
+
 interface DialogRootStateOpts
-	extends
-		WritableBoxedValues<{
-			open: boolean;
-		}>,
-		ReadableBoxedValues<{
-			variant: DialogVariant;
-			onOpenChangeComplete: OnChangeFn<boolean>;
-		}> {}
+	extends ReadableBoxedValues<{
+		variant: DialogVariant;
+		onOpenChangeComplete: OnChangeFn<boolean>;
+	}> {
+	cell: DialogState;
+}
 
 export class DialogRootState {
 	static create(opts: DialogRootStateOpts) {
@@ -42,6 +62,7 @@ export class DialogRootState {
 	}
 
 	readonly opts: DialogRootStateOpts;
+	readonly cell: DialogState;
 	triggerNode = $state<HTMLElement | null>(null);
 	contentNode = $state<HTMLElement | null>(null);
 	overlayNode = $state<HTMLElement | null>(null);
@@ -61,6 +82,7 @@ export class DialogRootState {
 
 	constructor(opts: DialogRootStateOpts, parent: DialogRootState | null) {
 		this.opts = opts;
+		this.cell = opts.cell;
 		this.parent = parent;
 		this.depth = parent ? parent.depth + 1 : 0;
 		this.handleOpen = this.handleOpen.bind(this);
@@ -68,22 +90,22 @@ export class DialogRootState {
 
 		this.contentPresence = new PresenceManager({
 			ref: boxWith(() => this.contentNode),
-			open: this.opts.open,
+			open: boxWith(() => this.cell.open),
 			enabled: true,
 			onComplete: () => {
-				this.opts.onOpenChangeComplete.current(this.opts.open.current);
+				this.opts.onOpenChangeComplete.current(this.cell.open);
 			},
 		});
 
 		this.overlayPresence = new PresenceManager({
 			ref: boxWith(() => this.overlayNode),
-			open: this.opts.open,
+			open: boxWith(() => this.cell.open),
 			enabled: true,
 		});
 
 		let started = false;
 		$effect(() => {
-			const isOpen = this.opts.open.current;
+			const isOpen = this.cell.open;
 			if (!started) {
 				started = true;
 				return;
@@ -99,20 +121,18 @@ export class DialogRootState {
 		});
 
 		onDestroy(() => {
-			if (this.opts.open.current) {
+			if (this.cell.open) {
 				this.parent?.decrementNested();
 			}
 		});
 	}
 
 	handleOpen() {
-		if (this.opts.open.current) return;
-		this.opts.open.current = true;
+		this.cell.open = true;
 	}
 
 	handleClose() {
-		if (!this.opts.open.current) return;
-		this.opts.open.current = false;
+		this.cell.open = false;
 	}
 
 	getBitsAttr: typeof dialogAttrs.getAttr = (part) => {
@@ -133,7 +153,7 @@ export class DialogRootState {
 	readonly sharedProps = $derived.by(
 		() =>
 			({
-				'data-state': getDataOpenClosed(this.opts.open.current),
+				'data-state': getDataOpenClosed(this.cell.open),
 			}) as const,
 	);
 }
@@ -179,7 +199,7 @@ export class DialogTriggerState {
 			({
 				id: this.opts.id.current,
 				'aria-haspopup': 'dialog',
-				'aria-expanded': boolToStr(this.root.opts.open.current),
+				'aria-expanded': boolToStr(this.root.cell.open),
 				'aria-controls': this.root.contentId,
 				[this.root.getBitsAttr('trigger')]: '',
 				onkeydown: this.onkeydown,
@@ -321,7 +341,7 @@ export class DialogContentState {
 		});
 	}
 
-	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open.current }));
+	readonly snippetProps = $derived.by(() => ({ open: this.root.cell.open }));
 
 	readonly props = $derived.by(
 		() =>
@@ -372,7 +392,7 @@ export class DialogOverlayState {
 		this.attachment = attachRef(this.opts.ref, (v) => (this.root.overlayNode = v));
 	}
 
-	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open.current }));
+	readonly snippetProps = $derived.by(() => ({ open: this.root.cell.open }));
 
 	readonly props = $derived.by(
 		() =>

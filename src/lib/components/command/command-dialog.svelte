@@ -7,7 +7,7 @@
 	import type { WithoutChildrenOrChild } from "../../utils.js";
 
 	let {
-		open = $bindable(false),
+		open = false,
 		ref = $bindable(null),
 		value = $bindable(""),
 		title = "Command Palette",
@@ -24,7 +24,7 @@
 		} = $props();
 </script>
 
-<Dialog.Root bind:open {...restProps}>
+<Dialog.Root {open} {...restProps}>
 	<Dialog.Portal {...portalProps}>
 		<Dialog.Overlay />
 		<Dialog.Content class="overflow-hidden p-0!">

@@ -44,7 +44,7 @@
 			if (e.defaultPrevented) return;
 			contentState.root.handleClose();
 		},
-		enabled: () => contentState.root.opts.open.current,
+		enabled: () => contentState.root.cell.open,
 	});
 
 	// Dialog content historically dropped the dismissible focus-capture props (its default-slot
@@ -58,7 +58,7 @@
 			contentState.root.handleClose();
 		},
 		onFocusOutside: () => restProps.onFocusOutside ?? (() => {}),
-		enabled: () => contentState.root.opts.open.current,
+		enabled: () => contentState.root.cell.open,
 		isValidEvent: () => () => false,
 	});
 
@@ -66,11 +66,11 @@
 		id: () => id,
 		onPointerDown: () => () => {},
 		onPointerUp: () => () => {},
-		enabled: () => contentState.root.opts.open.current && (restProps.preventOverflowTextSelection ?? true),
+		enabled: () => contentState.root.cell.open && (restProps.preventOverflowTextSelection ?? true),
 	});
 
 	const focusScope = createFocusScopeProps({
-		enabled: () => contentState.root.opts.open.current,
+		enabled: () => contentState.root.cell.open,
 		trap: () => trapFocus,
 		loop: () => true,
 		onCloseAutoFocus: () => onCloseAutoFocus,
@@ -80,7 +80,7 @@
 
 {#if contentState.shouldRender || forceMount}
 	{#if child}
-		{#if contentState.root.opts.open.current}
+		{#if contentState.root.cell.open}
 			<ScrollLock {preventScroll} {restoreScrollDelay} />
 		{/if}
 		{@render child({
