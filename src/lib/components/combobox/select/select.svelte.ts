@@ -1,7 +1,7 @@
-import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, type Box, boxWith } from '../../internal/tools/index.js';
+import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, type Box, boxWith } from '../../../internal/tools/index.js';
 import { on } from 'svelte/events';
 import { createContext, onDestroy, tick, untrack } from 'svelte';
-import { backward, forward, next, prev } from '../../internal/arrays.js';
+import { backward, forward, next, prev } from '../../../internal/arrays.js';
 import {
 	boolToStr,
 	boolToStrTrueOrUndef,
@@ -9,8 +9,8 @@ import {
 	getDataOpenClosed,
 	boolToTrueOrUndef,
 	getDataTransitionAttrs,
-} from '../../internal/attrs.js';
-import { kbd, FIRST_LAST_KEYS } from '../../internal/kbd.js';
+} from '../../../internal/attrs.js';
+import { kbd, FIRST_LAST_KEYS } from '../../../internal/kbd.js';
 import type {
 	BitsEvent,
 	BitsFocusEvent,
@@ -20,14 +20,14 @@ import type {
 	OnChangeFn,
 	WithRefOpts,
 	RefAttachment,
-} from '../../internal/types.js';
+} from '../../../internal/types.js';
 import { isIOS } from '@polumeyv/utilities/dom';
-import { createBitsAttrs } from '../../internal/attrs.js';
-import { getFloatingContentCSSVars } from '../../internal/floating-svelte/floating-utils.svelte.js';
-import { DataTypeahead } from '../../internal/data-typeahead.svelte.js';
-import { DOMTypeahead } from '../../internal/dom-typeahead.svelte.js';
-import { PresenceManager } from '../../internal/presence-manager.svelte.js';
-import { createInputModality } from '../../components/utilities/input-modality/input-modality.svelte.js';
+import { createBitsAttrs } from '../../../internal/attrs.js';
+import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
+import { DataTypeahead } from '../../../internal/data-typeahead.svelte.js';
+import { DOMTypeahead } from '../../../internal/dom-typeahead.svelte.js';
+import { PresenceManager } from '../../../internal/presence-manager.svelte.js';
+import { createInputModality } from '../../../components/utilities/input-modality/input-modality.svelte.js';
 import { DEV } from '@polumeyv/utilities/env';
 import type { SelectValueSnippetProps } from './types.js';
 

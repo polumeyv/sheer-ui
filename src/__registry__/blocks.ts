@@ -8,7 +8,6 @@ export const blocks = [
 	"copy-button",
 	"date-picker",
 	"PhoneInput",
-	"select",
 	"tab-nav",
 	"time-picker",
 	"user-avatar",

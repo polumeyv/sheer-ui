@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as NativeSelect from '../components/native-select';
+	import * as Select from '../components/select';
 	import { Input } from '../components/input';
 
 	const COUNTRIES = { US: 1, CA: 1, MX: 52 } as const;
@@ -29,7 +29,7 @@
 </script>
 
 <div class="flex w-full gap-2">
-	<NativeSelect.Root
+	<Select.Root
 		value={country}
 		widthClass="w-26 bg-border/30"
 		onchange={(e) => {
@@ -39,9 +39,9 @@
 		}}
 		{disabled}>
 		{#each Object.keys(COUNTRIES) as code (code)}
-			<NativeSelect.Option value={code}>{code}</NativeSelect.Option>
+			<Select.Option value={code}>{code}</Select.Option>
 		{/each}
-	</NativeSelect.Root>
+	</Select.Root>
 	<div data-slot="input-group" class="wrap-input-identity group/input-group">
 		<div class="select-none text-muted-foreground h-auto pl-2 text-sm font-medium group-data-[disabled=true]/input-group:opacity-50">
 			+{COUNTRIES[country]}

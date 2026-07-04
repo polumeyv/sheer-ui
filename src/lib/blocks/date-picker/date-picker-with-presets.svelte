@@ -7,7 +7,7 @@
 	import { buttonVariants } from '../../components/button';
 	import Calendar from '../calendar.svelte';
 	import { Popover } from '../../components/popover';
-	import * as NativeSelect from '../../components/native-select';
+	import * as Select from '../../components/select';
 
 	type PresetItem = {
 		value: number;
@@ -96,7 +96,7 @@
 			{displayValue}
 		</Popover.Trigger>
 		<Popover.Content class={join('flex w-auto! flex-col space-y-2 p-2!', contentClass)} {align} {side}>
-			<NativeSelect.Root
+			<Select.Root
 				class="w-full"
 				placeholder={presetsPlaceholder}
 				bind:value={presetSelection}
@@ -107,9 +107,9 @@
 					pick(today(getLocalTimeZone()).add({ days: Number.parseInt(v) }));
 				}}>
 				{#each presets as preset (preset.value)}
-					<NativeSelect.Option value={`${preset.value}`}>{preset.label}</NativeSelect.Option>
+					<Select.Option value={`${preset.value}`}>{preset.label}</Select.Option>
 				{/each}
-			</NativeSelect.Root>
+			</Select.Root>
 			<Calendar
 				type="single"
 				{value}

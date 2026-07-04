@@ -265,11 +265,6 @@
 			"svelte": "./src/lib/components/select/index.ts",
 			"default": "./src/lib/components/select/index.ts"
 		},
-		"./components/native-select": {
-			"types": "./src/lib/components/native-select/index.ts",
-			"svelte": "./src/lib/components/native-select/index.ts",
-			"default": "./src/lib/components/native-select/index.ts"
-		},
 		"./components/separator": {
 			"types": "./src/lib/components/separator/index.ts",
 			"svelte": "./src/lib/components/separator/index.ts",

@@ -1,17 +1,14 @@
 <script lang="ts">
-	// `components/select` is the headless bits primitive; `blocks/select` is the
-	// styled, ready-to-use composition (trigger + popover content + items API).
-	import { Select } from "../blocks/select/index.js";
+	import * as Select from '../components/select/index.js';
 
-	let value = $state("");
-
-	const items = [
-		{ value: "sveltekit", label: "SvelteKit" },
-		{ value: "next", label: "Next.js" },
-		{ value: "astro", label: "Astro" },
-		{ value: "nuxt", label: "Nuxt.js" },
-		{ value: "remix", label: "Remix" },
-	];
+	let value = $state('');
 </script>
 
-<Select {items} bind:value placeholder="Select a framework" label="Framework" />
+<Select.Root bind:value placeholder="Select a fruit" widthClass="w-[180px]">
+	<Select.OptGroup label="Fruits">
+		<Select.Option value="apple">Apple</Select.Option>
+		<Select.Option value="banana">Banana</Select.Option>
+		<Select.Option value="blueberry">Blueberry</Select.Option>
+		<Select.Option value="grapes">Grapes</Select.Option>
+	</Select.OptGroup>
+</Select.Root>

@@ -3,8 +3,8 @@
 	import { type WritableBox, boxWith, repairBindable } from '../../../internal/tools/index.js';
 	import type { ComboboxRootProps } from '../types.js';
 	import FloatingLayer from '../../../components/utilities/floating-layer/components/floating-layer.svelte';
-	import { SelectRootState } from '../../../components/select/select.svelte.js';
-	import ListboxHiddenInput from '../../../components/select/components/select-hidden-input.svelte';
+	import { SelectRootState } from '../select/select.svelte.js';
+	import ListboxHiddenInput from '../select/components/select-hidden-input.svelte';
 
 	let {
 		value = $bindable(),

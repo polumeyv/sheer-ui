@@ -3,7 +3,7 @@
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
 	import { buttonVariants } from '../../components/button';
-	import * as NativeSelect from '../../components/native-select';
+	import * as Select from '../../components/select';
 	import { Popover } from '../../components/popover';
 	import { formatTimeDisplay, formatDuration } from '@polumeyv/utilities';
 	import {
@@ -169,23 +169,23 @@
 		<Popover.Content class={join('flex w-auto! gap-2 p-3!', contentClass)} {align} {side}>
 			<div class="flex flex-col gap-1">
 				<span class="text-xs text-muted-foreground px-1">Start</span>
-				<NativeSelect.Root
+				<Select.Root
 					class="w-[120px]"
 					placeholder="Start time"
 					maxHeight="12.5rem"
 					value={value?.start}
 					onchange={(e) => handleStartChange(e.currentTarget.value || undefined)}>
 					{#each startSlots as slot (slot.value)}
-						<NativeSelect.Option value={slot.value}>{slot.label}</NativeSelect.Option>
+						<Select.Option value={slot.value}>{slot.label}</Select.Option>
 					{/each}
-				</NativeSelect.Root>
+				</Select.Root>
 			</div>
 
 			<div class="flex items-end pb-2 text-muted-foreground">—</div>
 
 			<div class="flex flex-col gap-1">
 				<span class="text-xs text-muted-foreground px-1">End</span>
-				<NativeSelect.Root
+				<Select.Root
 					class="w-[120px]"
 					placeholder="End time"
 					maxHeight="12.5rem"
@@ -193,9 +193,9 @@
 					onchange={(e) => handleEndChange(e.currentTarget.value || undefined)}
 					disabled={!value?.start}>
 					{#each endSlots as slot (slot.value)}
-						<NativeSelect.Option value={slot.value}>{slot.label}</NativeSelect.Option>
+						<Select.Option value={slot.value}>{slot.label}</Select.Option>
 					{/each}
-				</NativeSelect.Root>
+				</Select.Root>
 			</div>
 		</Popover.Content>
 	</Popover.Root>

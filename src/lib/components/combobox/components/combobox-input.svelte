@@ -4,7 +4,7 @@
 	import type { ComboboxInputProps } from '../types.js';
 	import { useId } from '../../../internal/use-id.js';
 	import { floatingAnchor } from '../../../components/utilities/floating-layer/index.js';
-	import { SelectInputState } from '../../../components/select/select.svelte.js';
+	import { SelectInputState } from '../select/select.svelte.js';
 
 	let { id = useId(), ref = $bindable(null), child, defaultValue, clearOnDeselect = false, ...restProps }: ComboboxInputProps = $props();
 

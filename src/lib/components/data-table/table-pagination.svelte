@@ -1,6 +1,6 @@
 <script lang="ts" generics="TData">
 	import type { Table } from '@tanstack/table-core';
-	import * as NativeSelect from '../native-select/index';
+	import * as Select from '../select/index';
 	import { Button } from '../button';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
@@ -24,15 +24,15 @@
 		<div class="flex items-center space-x-6 lg:space-x-8">
 			<div class="flex items-center space-x-2">
 				<p class="text-sm font-medium">Rows per page</p>
-				<NativeSelect.Root
+				<Select.Root
 					class="w-17.5!"
 					side="top"
 					value={`${table.getState().pagination.pageSize}`}
 					onchange={(e) => table.setPageSize(Number(e.currentTarget.value))}>
 					{#each [10, 20, 30, 40, 50] as pageSize (pageSize)}
-						<NativeSelect.Option value={`${pageSize}`}>{pageSize}</NativeSelect.Option>
+						<Select.Option value={`${pageSize}`}>{pageSize}</Select.Option>
 					{/each}
-				</NativeSelect.Root>
+				</Select.Root>
 			</div>
 			<div class="grid w-25 place-items-center text-sm font-medium">
 				Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}

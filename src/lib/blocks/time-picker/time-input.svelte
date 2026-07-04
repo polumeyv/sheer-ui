@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
-	import * as NativeSelect from '../../components/native-select';
+	import * as Select from '../../components/select';
 	import { Button } from '../../components/button';
 
 	interface Props {
@@ -101,7 +101,7 @@
 </script>
 
 <div class={join('flex items-center gap-1', className)}>
-	<NativeSelect.Root
+	<Select.Root
 		value={display || ''}
 		onchange={(e) => handleSelect(e.currentTarget.value || undefined)}
 		{disabled}
@@ -110,9 +110,9 @@
 		class={join('h-8', use24Hour ? 'w-18!' : 'w-15!', triggerClass)}
 		triggerClass="justify-center px-2">
 		{#each slots as slot (slot)}
-			<NativeSelect.Option value={slot}>{slot}</NativeSelect.Option>
+			<Select.Option value={slot}>{slot}</Select.Option>
 		{/each}
-	</NativeSelect.Root>
+	</Select.Root>
 
 	{#if !use24Hour}
 		<Button type="button" variant="outline" size="sm" {disabled} onclick={togglePeriod} class="w-10 px-0 font-medium">

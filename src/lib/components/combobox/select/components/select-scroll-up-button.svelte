@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith, mountedAttachment } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { boxWith, mountedAttachment } from '../../../../internal/tools/index.js';
+	import { mergeProps } from '../../../../merge-props.js';
 	import type { SelectScrollUpButtonProps } from '../types.js';
 	import { SelectScrollUpButtonState } from '../select.svelte.js';
-	import { createId } from '../../../internal/create-id.js';
+	import { createId } from '../../../../internal/create-id.js';
 
 	const uid = $props.id();
 

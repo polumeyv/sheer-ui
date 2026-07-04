@@ -3,7 +3,7 @@
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
 	import { buttonVariants } from '../../components/button';
-	import * as NativeSelect from '../../components/native-select';
+	import * as Select from '../../components/select';
 	import { compareTime, generateTimeSlots, isTimeInRange, type TimeSlot, b_HOURS, EXTENDED_HOURS } from './time-slots';
 
 	type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';
@@ -91,7 +91,7 @@
 </script>
 
 <div class={join('grid gap-2', className)}>
-	<NativeSelect.Root
+	<Select.Root
 		{value}
 		onchange={(e) => handleValueChange(e.currentTarget.value || undefined)}
 		{disabled}
@@ -108,7 +108,7 @@
 			<Clock class="size-4" />
 		{/snippet}
 		{#each filteredSlots as slot (slot.value)}
-			<NativeSelect.Option value={slot.value}>{slot.label}</NativeSelect.Option>
+			<Select.Option value={slot.value}>{slot.label}</Select.Option>
 		{/each}
-	</NativeSelect.Root>
+	</Select.Root>
 </div>

@@ -4,7 +4,7 @@ import type {
 	SelectBaseRootPropsWithoutHTML,
 	SelectMultipleRootPropsWithoutHTML,
 	SelectSingleRootPropsWithoutHTML,
-} from '../../components/select/types.js';
+} from './select/types.js';
 import type { WithChild, Without } from '../../internal/types.js';
 
 export type ComboboxBaseRootPropsWithoutHTML = Omit<SelectBaseRootPropsWithoutHTML, 'autocomplete'> & {
@@ -52,7 +52,7 @@ export type {
 	SelectScrollUpButtonPropsWithoutHTML as ComboboxScrollUpButtonPropsWithoutHTML,
 	SelectPortalProps as ComboboxPortalProps,
 	SelectPortalPropsWithoutHTML as ComboboxPortalPropsWithoutHTML,
-} from '../../components/select/types.js';
+} from './select/types.js';
 
 export type ComboboxArrowPropsWithoutHTML = LucideProps;
 

@@ -37,7 +37,6 @@ export const components = [
 	{"slug":"menubar","name":"Menubar","description":"A persistent menu bar providing quick access to a consistent set of commands."},
 	{"slug":"meter","name":"Meter","description":"Displays a value within a known range."},
 	{"slug":"native-dialog","name":"Native Dialog (spike)","description":"A modal dialog built on the native <dialog> element + showModal, as a CSS/HTML spike that drops the JS overlay stack."},
-	{"slug":"native-select","name":"Native Select","description":"A native select element for choosing from a list of options."},
 	{"slug":"navigation-menu","name":"Navigation Menu","description":"A collection of links for navigating a site."},
 	{"slug":"pagination","name":"Pagination","description":"Page navigation with next and previous links."},
 	{"slug":"pin-input","name":"Pin Input","description":"An accessible one-time-password / pin entry input."},
@@ -47,7 +46,7 @@ export const components = [
 	{"slug":"range-calendar","name":"Range Calendar","description":"A calendar component that allows users to select a range of dates."},
 	{"slug":"resizable","name":"Resizable","description":"Accessible resizable panel groups and layouts."},
 	{"slug":"scroll-area","name":"Scroll Area","description":"Augments native scroll with custom, cross-browser styling."},
-	{"slug":"select","name":"Select","description":"Displays a list of options for the user to pick from, triggered by a button."},
+	{"slug":"select","name":"Select","description":"A native select element (appearance: base-select) for choosing from a list of options."},
 	{"slug":"separator","name":"Separator","description":"Visually or semantically separates content."},
 	{"slug":"sheet","name":"Sheet","description":"A dialog that slides in to complement the main content of the screen."},
 	{"slug":"sidebar","name":"Sidebar","description":"A composable, themeable and customizable sidebar component."},
@@ -181,9 +180,6 @@ export const componentDemos = {
 	],
 	"native-dialog": [
 		{ key: "demo", name: "native-dialog-demo", path: "/src/lib/registry/native-dialog-demo.svelte", sourcePath: "../lib/registry/native-dialog-demo.svelte" },
-	],
-	"native-select": [
-		{ key: "demo", name: "native-select-demo", path: "/src/lib/registry/native-select-demo.svelte", sourcePath: "../lib/registry/native-select-demo.svelte" },
 	],
 	"navigation-menu": [
 		{ key: "demo", name: "navigation-menu-demo", path: "/src/lib/registry/navigation-menu-demo.svelte", sourcePath: "../lib/registry/navigation-menu-demo.svelte" },

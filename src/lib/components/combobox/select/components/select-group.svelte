@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
-	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { boxWith } from '../../../../internal/tools/index.js';
+	import { mergeProps } from '../../../../merge-props.js';
 
-	import type { SelectGroupHeadingProps } from '../types.js';
-	import { SelectGroupHeadingState } from '../select.svelte.js';
+	import { SelectGroupState } from '../select.svelte.js';
+	import type { SelectGroupProps } from '../types.js';
 
-	import { createId } from '../../../internal/create-id.js';
+	import { createId } from '../../../../internal/create-id.js';
 
 	const uid = $props.id();
 
@@ -15,14 +15,14 @@
 		id = createId(uid),
 		ref = $bindable(null),
 		class: className,
-		child,
 		children,
+		child,
 		...restProps
-	}: SelectGroupHeadingProps & {
+	}: SelectGroupProps & {
 		class?: ClassValue;
 	} = $props();
 
-	const groupHeadingState = SelectGroupHeadingState.create({
+	const groupState = SelectGroupState.create({
 		id: boxWith(() => id),
 		ref: boxWith(
 			() => ref,
@@ -34,10 +34,10 @@
 		mergeProps(
 			restProps,
 			{
-				'data-slot': 'select-group-heading',
-				class: join('px-2 py-1.5 text-xs text-muted-foreground', className),
+				'data-slot': 'select-group',
+				class: join('scroll-my-1 p-1', className),
 			},
-			groupHeadingState.props,
+			groupState.props,
 		),
 	);
 </script>

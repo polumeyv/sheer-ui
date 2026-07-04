@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../merge-props.js';
+	import { boxWith } from '../../../../internal/tools/index.js';
+	import { mergeProps } from '../../../../merge-props.js';
 	import type { SelectViewportProps } from '../types.js';
 	import { SelectViewportState } from '../select.svelte.js';
-	import { createId } from '../../../internal/create-id.js';
+	import { createId } from '../../../../internal/create-id.js';
 
 	const uid = $props.id();
 

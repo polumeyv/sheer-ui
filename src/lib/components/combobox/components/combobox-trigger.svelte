@@ -3,7 +3,7 @@
 	import { mergeProps } from '../../../merge-props.js';
 	import type { ComboboxTriggerProps } from '../types.js';
 	import { useId } from '../../../internal/use-id.js';
-	import { SelectComboTriggerState } from '../../../components/select/select.svelte.js';
+	import { SelectComboTriggerState } from '../select/select.svelte.js';
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 
 	let { id = useId(), ref = $bindable(null), child, children, type = 'button', ...restProps }: ComboboxTriggerProps = $props();
