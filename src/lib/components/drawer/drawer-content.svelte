@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import * as DialogPrimitive from '../../components/dialog/index.js';
+	// Vaul's drag physics need an in-flow, draggable <div>, not a top-layer native <dialog> — so the
+	// drawer keeps the headless JS-overlay content (the public Dialog.Content is now a native <dialog>).
+	import DialogContentHeadless from '../../components/dialog/components/dialog-content-headless.svelte';
 	import { type WithChildren, boxWith } from '../../internal/tools/index.js';
 	import { mergeProps } from '../../merge-props.js';
 	import type { ComponentProps } from 'svelte';
@@ -80,9 +82,9 @@
 
 <DrawerPortal {...portalProps}>
 	<DrawerOverlay />
-	<DialogPrimitive.Content {...mergedProps}>
+	<DialogContentHeadless {...mergedProps}>
 		<div class="bg-muted mx-auto mt-4 hidden h-2 w-25 shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block">
 		</div>
 		{@render children?.()}
-	</DialogPrimitive.Content>
+	</DialogContentHeadless>
 </DrawerPortal>
