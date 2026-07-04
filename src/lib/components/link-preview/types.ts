@@ -1,4 +1,3 @@
-import type { ArrowProps, ArrowPropsWithoutHTML } from '../../components/utilities/arrow/types.js';
 import type { DismissibleLayerProps } from '../../components/utilities/dismissible-layer/types.js';
 import type { EscapeLayerProps } from '../../components/utilities/escape-layer/types.js';
 import type { FloatingLayerContentProps } from '../../components/utilities/floating-layer/types.js';
@@ -87,9 +86,6 @@ export type LinkPreviewContentPropsWithoutHTML = WithChildNoChildrenSnippetProps
 
 export type LinkPreviewContentProps = LinkPreviewContentPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, LinkPreviewContentPropsWithoutHTML>;
-
-export type LinkPreviewArrowPropsWithoutHTML = ArrowPropsWithoutHTML;
-export type LinkPreviewArrowProps = ArrowProps;
 
 export type LinkPreviewPortalPropsWithoutHTML = PortalProps;
 export type LinkPreviewPortalProps = LinkPreviewPortalPropsWithoutHTML;

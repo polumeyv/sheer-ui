@@ -1,9 +1,10 @@
 import type { Snippet } from 'svelte';
 import type { ReadableBox } from '../../../internal/tools/index.js';
 import type { Align, Boundary, Side } from './use-floating-layer.svelte.js';
-import type { Arrayable } from '../../../internal/types.js';
+import type { Arrayable, WithChild } from '../../../internal/types.js';
 import type { Direction, StyleProperties } from '../../../internal/index.js';
 import type { Measurable } from '../../../internal/floating-svelte/types.js';
+import type { BitsPrimitiveSpanAttributes } from '../../../internal/attributes.js';
 
 export type FloatingLayerContentProps = {
 	/**
@@ -134,3 +135,21 @@ export type FloatingLayerContentImplProps = {
 	 */
 	tooltip?: boolean;
 } & FloatingLayerContentProps;
+
+export type FloatingLayerArrowPropsWithoutHTML = WithChild<{
+	/**
+	 * The width of the arrow in pixels.
+	 *
+	 * @defaultValue 10
+	 */
+	width?: number;
+
+	/**
+	 * The height of the arrow in pixels.
+	 *
+	 * @defaultValue 5
+	 */
+	height?: number;
+}>;
+
+export type FloatingLayerArrowProps = FloatingLayerArrowPropsWithoutHTML & BitsPrimitiveSpanAttributes;

@@ -1,4 +1,4 @@
-import type { ArrowPropsWithoutHTML } from "../utilities/arrow/types.js";
+import type { FloatingLayerArrowPropsWithoutHTML } from "../utilities/floating-layer/types.js";
 import type { MenuArrowProps } from "../menu/types.js";
 import type { OnChangeFn, WithChild, WithChildren, Without } from "../../internal/types.js";
 import type {
@@ -92,6 +92,6 @@ export type {
 	MenuCheckboxGroupProps as MenubarCheckboxGroupProps,
 } from "../menu/types.js";
 
-export type MenubarArrowPropsWithoutHTML = ArrowPropsWithoutHTML;
+export type MenubarArrowPropsWithoutHTML = FloatingLayerArrowPropsWithoutHTML;
 
 export type MenubarArrowProps = MenuArrowProps;

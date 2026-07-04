@@ -1,4 +1,5 @@
 import type { BitsPrimitiveInputAttributes } from '../../internal/attributes.js';
+import type { LucideProps } from '@lucide/svelte';
 import type {
 	SelectBaseRootPropsWithoutHTML,
 	SelectMultipleRootPropsWithoutHTML,
@@ -49,11 +50,13 @@ export type {
 	SelectScrollDownButtonPropsWithoutHTML as ComboboxScrollDownButtonPropsWithoutHTML,
 	SelectScrollUpButtonProps as ComboboxScrollUpButtonProps,
 	SelectScrollUpButtonPropsWithoutHTML as ComboboxScrollUpButtonPropsWithoutHTML,
-	SelectArrowProps as ComboboxArrowProps,
-	SelectArrowPropsWithoutHTML as ComboboxArrowPropsWithoutHTML,
 	SelectPortalProps as ComboboxPortalProps,
 	SelectPortalPropsWithoutHTML as ComboboxPortalPropsWithoutHTML,
 } from '../../components/select/types.js';
+
+export type ComboboxArrowPropsWithoutHTML = LucideProps;
+
+export type ComboboxArrowProps = ComboboxArrowPropsWithoutHTML;
 
 export type ComboboxInputPropsWithoutHTML = WithChild<{
 	/**

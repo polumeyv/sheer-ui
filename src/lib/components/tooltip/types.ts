@@ -1,5 +1,4 @@
 import type { FloatingLayerContentProps } from '../../components/utilities/floating-layer/types.js';
-import type { ArrowProps, ArrowPropsWithoutHTML } from '../../components/utilities/arrow/types.js';
 import type { DismissibleLayerProps } from '../../components/utilities/dismissible-layer/types.js';
 import type { EscapeLayerProps } from '../../components/utilities/escape-layer/types.js';
 import type { Snippet } from 'svelte';
@@ -149,9 +148,6 @@ export type TooltipContentPropsWithoutHTML = WithChildNoChildrenSnippetProps<
 >;
 
 export type TooltipContentProps = TooltipContentPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, TooltipContentPropsWithoutHTML>;
-
-export type TooltipArrowPropsWithoutHTML = ArrowPropsWithoutHTML;
-export type TooltipArrowProps = ArrowProps;
 
 export type TooltipPortalPropsWithoutHTML = PortalProps;
 export type TooltipPortalProps = PortalProps;

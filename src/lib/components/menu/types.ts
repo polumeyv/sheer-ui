@@ -1,6 +1,6 @@
 import type { Expand } from '../../internal/tools/index.js';
 import type { PopperLayerProps, PopperLayerStaticProps } from '../utilities/popper-layer/types.js';
-import type { ArrowProps, ArrowPropsWithoutHTML } from '../utilities/arrow/types.js';
+import type { FloatingLayerArrowProps, FloatingLayerArrowPropsWithoutHTML } from '../utilities/floating-layer/types.js';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../internal/types.js';
 import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attributes.js';
 import type { Direction } from '../../internal/index.js';
@@ -228,8 +228,8 @@ export type MenuSubTriggerProps = MenuSubTriggerPropsWithoutHTML & Without<BitsP
 export type MenuSeparatorPropsWithoutHTML = WithChild;
 export type MenuSeparatorProps = MenuSeparatorPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, MenuSeparatorPropsWithoutHTML>;
 
-export type MenuArrowPropsWithoutHTML = ArrowPropsWithoutHTML;
-export type MenuArrowProps = ArrowProps;
+export type MenuArrowPropsWithoutHTML = FloatingLayerArrowPropsWithoutHTML;
+export type MenuArrowProps = FloatingLayerArrowProps;
 
 export type MenuGroupPropsWithoutHTML = WithChild;
 export type MenuGroupProps = MenuGroupPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, MenuGroupPropsWithoutHTML>;

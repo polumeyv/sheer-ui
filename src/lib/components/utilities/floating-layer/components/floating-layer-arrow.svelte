@@ -2,10 +2,10 @@
 	import { boxWith } from '../../../../internal/tools/index.js';
 	import { mergeProps } from '../../../../merge-props.js';
 	import { FloatingArrowState } from '../use-floating-layer.svelte.js';
-	import { Arrow, type ArrowProps } from '../../../../components/utilities/arrow/index.js';
+	import type { FloatingLayerArrowProps } from '../types.js';
 	import { useId } from '../../../../internal/use-id.js';
 
-	let { id = useId(), ref = $bindable(null), ...restProps }: ArrowProps = $props();
+	let { id = useId(), ref = $bindable(null), children, child, width = 10, height = 5, ...restProps }: FloatingLayerArrowProps = $props();
 
 	const arrowState = FloatingArrowState.create({
 		id: boxWith(() => id),
@@ -18,4 +18,16 @@
 	const mergedProps = $derived(mergeProps(restProps, arrowState.props));
 </script>
 
-<Arrow {...mergedProps} />
+{#if child}
+	{@render child({ props: mergedProps })}
+{:else}
+	<span {...mergedProps}>
+		{#if children}
+			{@render children?.()}
+		{:else}
+			<svg {width} {height} viewBox="0 0 30 10" preserveAspectRatio="none" data-arrow="">
+				<polygon points="0,0 30,0 15,10" fill="currentColor" />
+			</svg>
+		{/if}
+	</span>
+{/if}
