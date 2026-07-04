@@ -28,10 +28,7 @@ export class SidebarState {
 	open = $derived.by(() => this.props.open());
 	#openMobile = $state(false);
 	state = $derived.by(() => (this.open ? 'expanded' : 'collapsed'));
-	/** The single interpretation of the viewport for the whole sidebar — surfaces and
-	 * write-routing must both read this so mode can never desync between them. */
-	isMobile = $derived.by(() => viewportIsMobile.current);
-	openForViewport = $derived.by(() => (this.isMobile ? this.#openMobile : this.open));
+	openForViewport = $derived.by(() => (viewportIsMobile.current ? this.#openMobile : this.open));
 
 	constructor(props: SidebarStateProps) {
 		this.props = props;
@@ -47,7 +44,7 @@ export class SidebarState {
 	};
 
 	setOpen = (value: boolean) => {
-		if (this.isMobile) {
+		if (viewportIsMobile.current) {
 			this.#openMobile = value;
 			return;
 		}

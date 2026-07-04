@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { join } from 'overrule';
+	import { isMobile as viewportIsMobile } from '../../hooks/is-mobile.svelte';
 	import MobileSurface from './sidebar-mobile-surface.svelte';
 	import DesktopSurface from './sidebar-desktop-surface.svelte';
-	import { useSidebar } from './context.svelte.js';
 	import type { SidebarRootProps } from './types.js';
 
 	let {
@@ -14,8 +14,6 @@
 		children,
 		...restProps
 	}: SidebarRootProps = $props();
-
-	const sidebar = useSidebar();
 </script>
 
 {#if collapsible === 'none'}
@@ -25,7 +23,7 @@
 		{...restProps}>
 		{@render children?.()}
 	</div>
-{:else if sidebar.isMobile}
+{:else if viewportIsMobile.current}
 	<MobileSurface bind:ref {side} class={className} {children} {...restProps} />
 {:else}
 	<DesktopSurface bind:ref {side} {variant} {collapsible} class={className} {children} {...restProps} />
