@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Command from '$lib/components/command/index.js';
+	import * as Command from '../components/command/index.js';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import SmileIcon from '@lucide/svelte/icons/smile';
 	import CalculatorIcon from '@lucide/svelte/icons/calculator';

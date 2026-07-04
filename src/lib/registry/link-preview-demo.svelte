@@ -1,7 +1,7 @@
 <script lang="ts">
 	// `link-preview` Content ships its own surface styling; only the inline
 	// trigger anchor takes a couple of link utilities.
-	import { LinkPreview } from '$lib/components/link-preview/index.js';
+	import { LinkPreview } from '../components/link-preview/index.js';
 </script>
 
 <p class="text-sm">

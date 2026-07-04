@@ -1,9 +1,9 @@
 import { createContext, untrack } from 'svelte';
-import { DOMContext, type ReadableBox, type WritableBox, attachRef, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
+import { DOMContext, type ReadableBox, type WritableBox, attachRef, type ReadableBoxedValues } from '../../internal/tools/index.js';
 import type { HTMLImgAttributes } from 'svelte/elements';
 import type { AvatarImageLoadingStatus } from './types.js';
-import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
+import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { createBitsAttrs } from '../../internal/attrs.js';
 
 const avatarAttrs = createBitsAttrs({
 	component: 'avatar',

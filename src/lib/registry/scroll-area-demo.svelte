@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as ScrollArea from '$lib/components/scroll-area/index.js';
-	import { Separator } from '$lib/components/separator/index.js';
+	import * as ScrollArea from '../components/scroll-area/index.js';
+	import { Separator } from '../components/separator/index.js';
 
 	const tags = Array.from({ length: 50 }, (_, i) => `v1.2.0-beta.${50 - i}`);
 </script>

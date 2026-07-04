@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as NativeSelect from '$lib/components/native-select';
-	import { Input } from '$lib/components/input';
+	import * as NativeSelect from '../components/native-select';
+	import { Input } from '../components/input';
 
 	const COUNTRIES = { US: 1, CA: 1, MX: 52 } as const;
 	type CountryCode = keyof typeof COUNTRIES;

@@ -8,7 +8,7 @@ import { NodeHandler, type NodeHandlerType } from './util/NodeHandler';
 import { observeOptionsBreakpoints, OptionsHandler, type OptionsHandlerType } from './util/OptionsHandler';
 import { type ScrollToDirectionType } from './util/ScrollTo';
 
-import type { WithElementRef } from "$lib/utils.js";
+import type { WithElementRef } from "../../utils.js";
 
 export type LoosePluginType = {
 	[key: string]: unknown;

@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import * as Sidebar from '$lib/components/sidebar/index.js';
+	import * as Sidebar from '../components/sidebar/index.js';
 	import ActivityIcon from '@lucide/svelte/icons/activity';
 	import BellIcon from '@lucide/svelte/icons/bell';
 	import CreditCardIcon from '@lucide/svelte/icons/credit-card';

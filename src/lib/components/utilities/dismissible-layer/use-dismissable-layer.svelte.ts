@@ -9,21 +9,24 @@ import {
 	mergeDisposers,
 	mergeHandlers,
 	type ReadableBoxedValues,
-} from '$lib/internal/tools/index.js';
+} from '../../../internal/tools/index.js';
 import { on } from 'svelte/events';
 import { onMount, tick } from 'svelte';
 import type { DismissibleLayerImplProps, InteractOutsideBehaviorType, InteractOutsideEventHandler } from './types.js';
-import { type EventCallback } from '$lib/internal/tools/utils/events.js';
-import { createLayerStack } from '$lib/internal/layer-stack.js';
+import { type EventCallback } from '../../../internal/tools/utils/events.js';
+import { createLayerStack } from '../../../internal/layer-stack.js';
+import { globalSingleton } from '../../../internal/global-singleton.js';
 import { isElementOrSVGElement } from '@polumeyv/utilities/dom';
-import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '$lib/components/menu/menu.svelte.js';
+import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '../../../components/menu/menu.svelte.js';
 import { realScheduler, type Scheduler, type Debounced } from './scheduler.js';
 
 const isPointerOutsideRect = ({ clientX: x, clientY: y }: PointerEvent, node: HTMLElement) =>
 	(({ left, right, top, bottom }) => x < left || x > right || y < top || y > bottom)(node.getBoundingClientRect());
 
-globalThis.bitsDismissableLayers ??= createLayerStack<DismissibleLayerState, ReadableBox<InteractOutsideBehaviorType>>(
-	(box) => box.current === 'close' || box.current === 'ignore',
+const dismissableLayers = globalSingleton('bitsDismissableLayers', () =>
+	createLayerStack<DismissibleLayerState, ReadableBox<InteractOutsideBehaviorType>>(
+		(box) => box.current === 'close' || box.current === 'ignore',
+	),
 );
 
 interface DismissibleLayerStateOpts extends ReadableBoxedValues<Required<Omit<DismissibleLayerImplProps, 'children' | 'ref'>>> {
@@ -104,7 +107,7 @@ export class DismissibleLayerState {
 
 		const cleanup = () => {
 			this.#resetState();
-			globalThis.bitsDismissableLayers.unregister(this);
+			dismissableLayers.unregister(this);
 			this.#handleInteractOutside.destroy();
 			unsubEvents();
 		};
@@ -115,7 +118,7 @@ export class DismissibleLayerState {
 			if (!this.opts.enabled.current || !this.opts.ref.current) return;
 			this.#scheduler.setTimeout(() => {
 				if (!this.opts.ref.current) return;
-				globalThis.bitsDismissableLayers.register(this, this.#behaviorType);
+				dismissableLayers.register(this, this.#behaviorType);
 
 				unsubEvents();
 				unsubEvents = this.#addEventListeners();
@@ -125,7 +128,7 @@ export class DismissibleLayerState {
 
 		onMount(() => () => {
 			this.#resetState.destroy();
-			globalThis.bitsDismissableLayers.unregister(this);
+			dismissableLayers.unregister(this);
 			this.#handleInteractOutside.destroy();
 			this.#unsubClickListener();
 			unsubEvents();
@@ -172,7 +175,7 @@ export class DismissibleLayerState {
 
 	#markResponsibleLayer = () => {
 		if (!this.opts.ref.current) return;
-		this.#isResponsibleLayer = globalThis.bitsDismissableLayers.isResponsible(this);
+		this.#isResponsibleLayer = dismissableLayers.isResponsible(this);
 	};
 	#isTargetWithinLayer = (target: HTMLElement) => {
 		return this.opts.ref.current?.contains(target) ?? false;

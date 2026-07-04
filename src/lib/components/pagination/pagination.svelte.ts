@@ -1,11 +1,11 @@
 import { createContext } from 'svelte';
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import type { Page, PageItem } from './types.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
-import { type Orientation, useId } from '$lib/internal/index.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { createBitsAttrs } from '../../internal/attrs.js';
+import { kbd } from '../../internal/kbd.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
+import { type Orientation, useId } from '../../internal/index.js';
 
 const paginationAttrs = createBitsAttrs({
 	component: 'pagination',

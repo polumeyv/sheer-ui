@@ -1,6 +1,6 @@
-import { type Getter, type RefAttachment } from '$lib/internal/tools/index.js';
+import { type Getter, type RefAttachment } from '../../../internal/tools/index.js';
 import { FocusScopeManager } from './focus-scope-manager.js';
-import { getFocusableCandidates, getTabbableCandidates, isFocusable } from '$lib/internal/tabbable.js';
+import { getFocusableCandidates, getTabbableCandidates, isFocusable } from '../../../internal/tabbable.js';
 import { on } from 'svelte/events';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 import { untrack } from 'svelte';

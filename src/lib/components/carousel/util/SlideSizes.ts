@@ -24,7 +24,7 @@ export const SlideSizes = (
 
   const getStartGap = (): number => {
     if (!withEdgeGap) return 0
-    const slideRect = slideRects[0]
+    const slideRect = slideRects[0]!
     return Math.abs(containerRect[startEdge] - slideRect[startEdge])
   }
 
@@ -39,9 +39,9 @@ export const SlideSizes = (
       .map((rect, index, rects) => {
         const isFirst = !index
         const isLast = arrayIsLastIndex(rects, index)
-        if (isFirst) return slideSizes[index] + startGap
-        if (isLast) return slideSizes[index] + endGap
-        return rects[index + 1][startEdge] - rect[startEdge]
+        if (isFirst) return slideSizes[index]! + startGap
+        if (isLast) return slideSizes[index]! + endGap
+        return rects[index + 1]![startEdge] - rect[startEdge]
       })
       .map(Math.abs)
 

@@ -1,13 +1,13 @@
-import { attachRef, boxWith, type Box, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { attachRef, boxWith, type Box, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import { createContext, tick } from 'svelte';
-import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed, getDataTransitionAttrs } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import type { Orientation } from '$lib/internal/index.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed, getDataTransitionAttrs } from '../../internal/attrs.js';
+import { kbd } from '../../internal/kbd.js';
+import type { Orientation } from '../../internal/index.js';
+import { createBitsAttrs } from '../../internal/attrs.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
 import { on } from 'svelte/events';
-import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
+import { PresenceManager } from '../../internal/presence-manager.svelte.js';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 
 const accordionAttrs = createBitsAttrs({
@@ -111,7 +111,7 @@ abstract class AccordionBaseState {
 }
 
 class AccordionSingleState extends AccordionBaseState {
-	readonly opts: AccordionSingleStateOpts;
+	override readonly opts: AccordionSingleStateOpts;
 	readonly isMulti = false as const;
 
 	constructor(opts: AccordionSingleStateOpts) {

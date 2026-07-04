@@ -12,11 +12,8 @@
 		"target": "esnext",
 		"types": ["bun"],
 		"strict": true,
-		// Inherit base's plugins/options, but keep this component lib's prior strictness profile:
-		// base enables noUncheckedIndexedAccess + noImplicitOverride, which the vendored
-		// upstream bits-ui code isn't written for (it omits `override` modifiers).
-		"noUncheckedIndexedAccess": false,
-		"noImplicitOverride": false
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true
 	},
 	"include": ["src/lib"],
 	"exclude": ["dist", "src/lib/registry/*.svelte"]

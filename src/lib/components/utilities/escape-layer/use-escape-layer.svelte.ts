@@ -6,16 +6,19 @@ import {
 	type ReadableBox,
 	type ReadableBoxedValues,
 	type RefAttachment,
-} from '$lib/internal/tools/index.js';
+} from '../../../internal/tools/index.js';
 import { untrack } from 'svelte';
 import { on } from 'svelte/events';
 import { createAttachmentKey } from 'svelte/attachments';
 import type { EscapeBehaviorType, EscapeLayerImplProps } from './types.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { createLayerStack } from '$lib/internal/layer-stack.js';
+import { kbd } from '../../../internal/kbd.js';
+import { createLayerStack } from '../../../internal/layer-stack.js';
+import { globalSingleton } from '../../../internal/global-singleton.js';
 
-globalThis.bitsEscapeLayers ??= createLayerStack<EscapeLayerState, ReadableBox<EscapeBehaviorType>>(
-	(box) => box.current === 'close' || box.current === 'ignore',
+const escapeLayers = globalSingleton('bitsEscapeLayers', () =>
+	createLayerStack<EscapeLayerState, ReadableBox<EscapeBehaviorType>>(
+		(box) => box.current === 'close' || box.current === 'ignore',
+	),
 );
 
 interface EscapeLayerStateOpts extends ReadableBoxedValues<Required<Omit<EscapeLayerImplProps, 'children' | 'ref'>>> {
@@ -37,19 +40,19 @@ export class EscapeLayerState {
 			if (!opts.enabled.current) return;
 
 			const unsubEvents = untrack(() => {
-				globalThis.bitsEscapeLayers.register(this, opts.escapeKeydownBehavior);
+				escapeLayers.register(this, opts.escapeKeydownBehavior);
 				return on(this.domContext.getDocument(), 'keydown', this.#onkeydown, { passive: false });
 			});
 
 			return () => {
 				unsubEvents();
-				globalThis.bitsEscapeLayers.unregister(this);
+				escapeLayers.unregister(this);
 			};
 		});
 	}
 
 	#onkeydown = (e: KeyboardEvent) => {
-		if (e.key !== kbd.ESCAPE || !globalThis.bitsEscapeLayers.isResponsible(this)) return;
+		if (e.key !== kbd.ESCAPE || !escapeLayers.isResponsible(this)) return;
 		const clonedEvent = new KeyboardEvent(e.type, e);
 		e.preventDefault();
 		const behaviorType = this.opts.escapeKeydownBehavior.current;

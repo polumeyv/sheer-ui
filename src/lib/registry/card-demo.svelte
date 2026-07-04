@@ -1,8 +1,8 @@
 <script lang="ts">
-	import * as Card from "$lib/components/card/index.js";
-	import { Button } from "$lib/components/button/index.js";
-	import { Input } from "$lib/components/input/index.js";
-	import { Label } from "$lib/components/label/index.js";
+	import * as Card from "../components/card/index.js";
+	import { Button } from "../components/button/index.js";
+	import { Input } from "../components/input/index.js";
+	import { Label } from "../components/label/index.js";
 </script>
 
 <Card.Root class="w-96">

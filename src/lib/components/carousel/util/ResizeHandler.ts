@@ -57,9 +57,9 @@ export const ResizeHandler = <API extends ReInitApi>(
 
 			const isContainer = entry.target === container;
 			const slideIndex = slides.indexOf(entry.target as HTMLElement);
-			const lastSize = isContainer ? containerSize : slideSizes[slideIndex];
+			const lastSize = isContainer ? containerSize : slideSizes[slideIndex]!;
 
-			const newSize = readSize(isContainer ? container : slides[slideIndex]);
+			const newSize = readSize(isContainer ? container : slides[slideIndex]!);
 			const diffSize = Math.abs(newSize - lastSize);
 
 			if (diffSize >= 0.5) {

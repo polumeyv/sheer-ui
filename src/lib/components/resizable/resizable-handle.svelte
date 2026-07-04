@@ -2,7 +2,7 @@
 	import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
 	import * as ResizablePrimitive from './paneforge/index.js';
 	import { join } from 'overrule';
-	import type { WithoutChildrenOrChild } from '$lib/utils.js';
+	import type { WithoutChildrenOrChild } from '../../utils.js';
 
 	let {
 		ref = $bindable(null),

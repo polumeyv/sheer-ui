@@ -1,7 +1,7 @@
 <script lang="ts" generics="PM">
 	import type { Stripe, StripeElements } from '@stripe/stripe-js';
-	import { Button } from '$lib/components/button';
-	import { toastError } from '$lib/components/sonner';
+	import { Button } from '../components/button';
+	import { toastError } from '../components/sonner';
 	import Loader2Icon from '@lucide/svelte/icons/loader-2';
 	import { loadStripe } from '@stripe/stripe-js';
 	import { untrack } from 'svelte';

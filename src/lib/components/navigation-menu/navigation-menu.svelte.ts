@@ -15,21 +15,21 @@ import {
 	getWindow,
 	simpleBox,
 	boxWith,
-} from '$lib/internal/tools/index.js';
-import { useDebounce } from '$lib/internal/tools/index.js';
+} from '../../internal/tools/index.js';
+import { useDebounce } from '../../internal/tools/index.js';
 import { createContext, tick, untrack, type Snippet } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
-import { type Direction, type Orientation, useId } from '$lib/internal/index.js';
-import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '$lib/internal/attrs.js';
-import { getTabbableCandidates } from '$lib/internal/focus.js';
-import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment } from '$lib/internal/types.js';
-import { kbd } from '$lib/internal/kbd.js';
+import { type Direction, type Orientation, useId } from '../../internal/index.js';
+import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '../../internal/attrs.js';
+import { getTabbableCandidates } from '../../internal/focus.js';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment } from '../../internal/types.js';
+import { kbd } from '../../internal/kbd.js';
 import { on } from 'svelte/events';
-import { useArrowNavigation } from '$lib/internal/use-arrow-navigation.js';
+import { useArrowNavigation } from '../../internal/use-arrow-navigation.js';
 import { isElement } from '@polumeyv/utilities/dom';
 import type { FocusEventHandler, KeyboardEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
-import { observeResize, observeResizeMany } from '$lib/internal/svelte-resize-observer.svelte.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
+import { observeResize, observeResizeMany } from '../../internal/svelte-resize-observer.svelte.js';
 
 const navigationMenuAttrs = createBitsAttrs({
 	component: 'navigation-menu',

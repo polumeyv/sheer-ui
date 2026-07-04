@@ -1,10 +1,10 @@
 import type { DateValue } from '@internationalized/date';
-import type { OnChangeFn, WithChild, WithChildren, Without } from '$lib/internal/types.js';
-import type { BitsPrimitiveDivAttributes } from '$lib/internal/attributes.js';
-import type { CalendarRootSnippetProps } from '$lib/components/calendar/types.js';
-import type { DateMatcher, DateOnInvalid, DateValidator, EditableSegmentPart } from '$lib/internal/index.js';
-import type { Granularity, WeekStartsOn } from '$lib/internal/date-time/types.js';
-import type { PortalProps } from '$lib/components/utilities/portal/index.js';
+import type { OnChangeFn, WithChild, WithChildren, Without } from '../../internal/types.js';
+import type { BitsPrimitiveDivAttributes } from '../../internal/attributes.js';
+import type { CalendarRootSnippetProps } from '../../components/calendar/types.js';
+import type { DateMatcher, DateOnInvalid, DateValidator, EditableSegmentPart } from '../../internal/index.js';
+import type { Granularity, WeekStartsOn } from '../../internal/date-time/types.js';
+import type { PortalProps } from '../../components/utilities/portal/index.js';
 
 export type DatePickerRootPropsWithoutHTML = WithChildren<{
 	/**
@@ -287,7 +287,7 @@ export type {
 	PopoverContentProps as DatePickerContentProps,
 	PopoverClosePropsWithoutHTML as DatePickerClosePropsWithoutHTML,
 	PopoverCloseProps as DatePickerCloseProps,
-} from '$lib/components/popover/types.js';
+} from '../../components/popover/types.js';
 
 export type {
 	DateFieldInputPropsWithoutHTML as DatePickerInputPropsWithoutHTML,
@@ -296,7 +296,7 @@ export type {
 	DateFieldLabelProps as DatePickerLabelProps,
 	DateFieldSegmentPropsWithoutHTML as DatePickerSegmentPropsWithoutHTML,
 	DateFieldSegmentProps as DatePickerSegmentProps,
-} from '$lib/components/date-field/types.js';
+} from '../../components/date-field/types.js';
 
 export type DatePickerCalendarPropsWithoutHTML = WithChild<{}, CalendarRootSnippetProps>;
 
@@ -333,4 +333,4 @@ export type {
 	CalendarMonthSelectPropsWithoutHTML as DatePickerMonthSelectPropsWithoutHTML,
 	CalendarYearSelectProps as DatePickerYearSelectProps,
 	CalendarYearSelectPropsWithoutHTML as DatePickerYearSelectPropsWithoutHTML,
-} from '$lib/components/calendar/types.js';
+} from '../../components/calendar/types.js';

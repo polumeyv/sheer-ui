@@ -2,7 +2,7 @@
 	// `PinInput.Root` owns one hidden input and exposes the `cells` it should render;
 	// `PinInput.Cell` already carries the shadcn slot styling (border, active ring,
 	// fake caret), so the consumer only lays the cells out in a row.
-	import { PinInput } from '$lib/components/pin-input/index.js';
+	import { PinInput } from '../components/pin-input/index.js';
 
 	let value = $state('');
 </script>

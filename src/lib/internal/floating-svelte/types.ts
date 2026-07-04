@@ -1,5 +1,5 @@
 import type { FloatingElement, Middleware, MiddlewareData, Placement, ReferenceElement, Strategy } from '@floating-ui/dom';
-import type { ReadableBox, WritableBox } from '$lib/internal/tools/index.js';
+import type { ReadableBox, WritableBox } from '../../internal/tools/index.js';
 
 type ValueOrGetValue<T> = T | (() => T);
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Sidebar from '$lib/components/sidebar/index.js';
+	import * as Sidebar from '../components/sidebar/index.js';
 	import HouseIcon from '@lucide/svelte/icons/house';
 	import InboxIcon from '@lucide/svelte/icons/inbox';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';

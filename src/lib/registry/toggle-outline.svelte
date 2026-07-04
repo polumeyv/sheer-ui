@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import { Root as Toggle } from '$lib/components/toggle/index.js';
+	import { Root as Toggle } from '../components/toggle/index.js';
 	import Italic from '@lucide/svelte/icons/italic';
 </script>
 

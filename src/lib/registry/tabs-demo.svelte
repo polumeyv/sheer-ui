@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Tabs from "$lib/components/tabs/index.js";
+	import * as Tabs from "../components/tabs/index.js";
 </script>
 
 <Tabs.Root value="account" class="w-96">

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
-	import * as NativeSelect from '$lib/components/native-select';
-	import { Button } from '$lib/components/button';
+	import * as NativeSelect from '../../components/native-select';
+	import { Button } from '../../components/button';
 
 	interface Props {
 		value?: string;

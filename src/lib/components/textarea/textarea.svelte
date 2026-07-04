@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import type { WithElementRef, WithoutChildren } from '$lib/utils.js';
+	import type { WithElementRef, WithoutChildren } from '../../utils.js';
 	import type { HTMLTextareaAttributes } from 'svelte/elements';
 
 	let {

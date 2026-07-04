@@ -1,6 +1,6 @@
 import { type ComponentProps } from 'svelte';
-import { attachRef, type ReadableBoxedValues, type WithRefProps } from '$lib/internal/tools/index.js';
-import * as DrawerPrimitive from '$lib/components/dialog/index.js';
+import { attachRef, type ReadableBoxedValues, type WithRefProps } from '../../../internal/tools/index.js';
+import * as DrawerPrimitive from '../../../components/dialog/index.js';
 import { getDrawer } from './context.js';
 import type { DrawerDirection } from './types.js';
 import { useScaleBackground } from './use-scale-background.svelte.js';

@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	import { createContext } from 'svelte';
 	import type { VariantProps } from 'overrule';
-	import { toggleVariants } from '$lib/components/toggle/variants.js';
+	import { toggleVariants } from '../../../components/toggle/variants.js';
 
 	type ToggleVariants = VariantProps<typeof toggleVariants>;
 
@@ -14,11 +14,11 @@
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { type WritableBox, boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { type WritableBox, boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { ToggleGroupRootProps } from '../types.js';
 	import { ToggleGroupRootState } from '../toggle-group.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();
 

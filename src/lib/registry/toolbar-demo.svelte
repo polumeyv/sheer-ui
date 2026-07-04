@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Toolbar from '$lib/components/toolbar/index.js';
+	import * as Toolbar from '../components/toolbar/index.js';
 	import BoldIcon from '@lucide/svelte/icons/bold';
 	import ItalicIcon from '@lucide/svelte/icons/italic';
 	import UnderlineIcon from '@lucide/svelte/icons/underline';

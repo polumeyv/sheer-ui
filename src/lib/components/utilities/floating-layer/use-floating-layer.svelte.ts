@@ -11,12 +11,12 @@ import {
 	type Box,
 	simpleBox,
 	boxWith,
-} from '$lib/internal/tools/index.js';
-import type { Arrayable, WithRefOpts } from '$lib/internal/types.js';
-import { useId } from '$lib/internal/use-id.js';
-import { useFloating } from '$lib/internal/floating-svelte/use-floating.svelte.js';
-import type { Measurable, UseFloatingReturn } from '$lib/internal/floating-svelte/types.js';
-import type { Direction, StyleProperties } from '$lib/internal/index.js';
+} from '../../../internal/tools/index.js';
+import type { Arrayable, WithRefOpts } from '../../../internal/types.js';
+import { useId } from '../../../internal/use-id.js';
+import { useFloating } from '../../../internal/floating-svelte/use-floating.svelte.js';
+import type { Measurable, UseFloatingReturn } from '../../../internal/floating-svelte/types.js';
+import type { Direction, StyleProperties } from '../../../internal/index.js';
 
 export const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const;
 export const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;

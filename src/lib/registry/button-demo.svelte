@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from "$lib/components/button/index.js";
+	import { Button } from "../components/button/index.js";
 </script>
 
 <div class="flex flex-wrap items-center gap-3">

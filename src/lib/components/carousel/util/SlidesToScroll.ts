@@ -38,8 +38,8 @@ export const SlidesToScroll = (
 				const isFirst = rectA === 0;
 				const isLast = rectB === arrayLastIndex(array);
 
-				const edgeA = containerRect[startEdge] - slideRects[rectA][startEdge];
-				const edgeB = containerRect[startEdge] - slideRects[rectB][endEdge];
+				const edgeA = containerRect[startEdge] - slideRects[rectA]![startEdge];
+				const edgeB = containerRect[startEdge] - slideRects[rectB]![endEdge];
 				const gapA = !loop && isFirst ? direction(startGap) : 0;
 				const gapB = !loop && isLast ? direction(endGap) : 0;
 				const chunkSize = Math.abs(edgeB - gapB - (edgeA + gapA));

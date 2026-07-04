@@ -2,8 +2,8 @@
 	import { Calendar } from '../components/calendar';
 	import { fade } from 'svelte/transition';
 	import type { CalendarRootProps, CalendarMonthSelectProps, CalendarYearSelectProps } from '../components/calendar/types.js';
-	import type { WithoutChildrenOrChild } from '$lib/utils.js';
-	import type { ButtonVariant } from '$lib/components/button';
+	import type { WithoutChildrenOrChild } from '../utils.js';
+	import type { ButtonVariant } from '../components/button';
 	import type { DateValue } from '@internationalized/date';
 	import type { Snippet } from 'svelte';
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
@@ -80,7 +80,7 @@
 				<ChevronRightIcon class="size-5" />
 			</Calendar.NextButton>
 		</Calendar.Header>
-		{#key months[0].value.toString()}
+		{#key months[0]!.value.toString()}
 			<div class="flex flex-col space-y-4 pt-4 sm:flex-row sm:space-x-4 sm:space-y-0" in:fade={{ duration: 180 }}>
 				{#each months as month, i (i)}
 					<Calendar.Grid class="w-full border-collapse select-none space-y-1">

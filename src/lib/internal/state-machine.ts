@@ -1,4 +1,4 @@
-import { simpleBox, type WritableBox } from '$lib/internal/tools/index.js';
+import { simpleBox, type WritableBox } from '../internal/tools/index.js';
 
 interface Machine<S> {
 	[k: string]: { [k: string]: S };

@@ -1,4 +1,4 @@
-import { boxAutoReset, type Getter, type WritableBox } from '$lib/internal/tools/index.js';
+import { boxAutoReset, type Getter, type WritableBox } from '../internal/tools/index.js';
 import { getNextMatch } from './arrays.js';
 
 interface DataTypeaheadOpts {

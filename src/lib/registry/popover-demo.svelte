@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button } from '$lib/components/button/index.js';
-	import { Input } from '$lib/components/input/index.js';
-	import { Label } from '$lib/components/label/index.js';
+	import { Button } from '../components/button/index.js';
+	import { Input } from '../components/input/index.js';
+	import { Label } from '../components/label/index.js';
 
 	const popoverId = 'popover-demo-content';
 	const anchorName = '--popover-demo-trigger';

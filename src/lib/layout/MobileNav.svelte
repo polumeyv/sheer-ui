@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
-	import { Button } from '$lib/components/button';
+	import { Button } from '../components/button';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import Plus from '@lucide/svelte/icons/plus';
 

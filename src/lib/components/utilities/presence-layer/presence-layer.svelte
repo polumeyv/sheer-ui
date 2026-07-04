@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { PresenceManager } from '../../../internal/presence-manager.svelte.js';
 	import type { PresenceLayerImplProps } from './types.js';
 
 	let { open, forceMount, presence, ref }: PresenceLayerImplProps = $props();

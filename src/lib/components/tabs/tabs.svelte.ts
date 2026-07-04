@@ -1,12 +1,12 @@
 import { createContext, untrack } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import type { TabsActivationMode } from './types.js';
-import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import type { Orientation } from '$lib/internal/index.js';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
+import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '../../internal/attrs.js';
+import { kbd } from '../../internal/kbd.js';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import type { Orientation } from '../../internal/index.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
 
 const tabsAttrs = createBitsAttrs({
 	component: 'tabs',

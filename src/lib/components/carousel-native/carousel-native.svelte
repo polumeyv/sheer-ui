@@ -4,7 +4,7 @@
 	import { on } from 'svelte/events';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Attachment } from 'svelte/attachments';
-	import type { WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '../../utils.js';
 	import { setCarouselContext, type CarouselOrientation } from '../carousel/carouselState.svelte';
 	import { setCarouselNativeContext, type CarouselAlign } from './carouselNativeState.svelte';
 
@@ -63,7 +63,7 @@
 
 		let closest = 0;
 		for (let i = 1; i < offsets.length; i++) {
-			if (Math.abs(offsets[i] - pos) < Math.abs(offsets[closest] - pos)) closest = i;
+			if (Math.abs(offsets[i]! - pos) < Math.abs(offsets[closest]! - pos)) closest = i;
 		}
 
 		selectedIndex = closest;
@@ -82,8 +82,8 @@
 		// Optimistic, so rapid clicks queue from the pending target and the
 		// arrows disable without waiting for scrollend.
 		selectedIndex = clamped;
-		atStart = Math.abs(offsets[clamped]) <= 1;
-		atEnd = Math.abs(offsets[clamped]) >= scrollSize(scroller) - viewSize(scroller) - 1;
+		atStart = Math.abs(offsets[clamped]!) <= 1;
+		atEnd = Math.abs(offsets[clamped]!) >= scrollSize(scroller) - viewSize(scroller) - 1;
 
 		scroller.scrollTo(horizontal ? { left: offsets[clamped], behavior } : { top: offsets[clamped], behavior });
 	}

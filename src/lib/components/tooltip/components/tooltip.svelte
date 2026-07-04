@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts" generics="T = never">
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith } from '../../../internal/tools/index.js';
 	import type { TooltipRootProps } from '../types.js';
 	import { TooltipRootState } from '../tooltip.svelte.js';
 

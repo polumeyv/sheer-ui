@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith, mountedAttachment } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith, mountedAttachment } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { SelectScrollDownButtonProps } from '../types.js';
 	import { SelectScrollDownButtonState } from '../select.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();
 

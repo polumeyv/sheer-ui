@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import { untrack } from 'svelte';
-	import { boxWith, type WritableBox } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith, type WritableBox } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { SliderRootProps } from '../types.js';
 	import { SliderRootState } from '../slider.svelte.js';
 	import SliderRange from './slider-range.svelte';
 	import SliderThumb from './slider-thumb.svelte';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();
 

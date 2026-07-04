@@ -3,9 +3,9 @@
 </script>
 
 <script lang="ts">
-	import * as RadioGroup from '$lib/components/radio-group-native/index.js';
-	import { Label } from '$lib/components/label/index.js';
-	import { Button } from '$lib/components/button/index.js';
+	import * as RadioGroup from '../components/radio-group-native/index.js';
+	import { Label } from '../components/label/index.js';
+	import { Button } from '../components/button/index.js';
 
 	let value = $state('');
 	let submitted = $state('');

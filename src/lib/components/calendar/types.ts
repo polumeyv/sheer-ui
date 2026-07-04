@@ -1,5 +1,5 @@
 import type { DateValue } from '@internationalized/date';
-import type { OnChangeFn, WithChild, Without } from '$lib/internal/types.js';
+import type { OnChangeFn, WithChild, Without } from '../../internal/types.js';
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
@@ -11,8 +11,8 @@ import type {
 	BitsPrimitiveThAttributes,
 	BitsPrimitiveTheadAttributes,
 	BitsPrimitiveTrAttributes,
-} from '$lib/internal/attributes.js';
-import type { DateMatcher, Month, WeekStartsOn } from '$lib/internal/date-time/types.js';
+} from '../../internal/attributes.js';
+import type { DateMatcher, Month, WeekStartsOn } from '../../internal/date-time/types.js';
 
 export type CalendarRootSnippetProps = {
 	months: Month<DateValue>[];

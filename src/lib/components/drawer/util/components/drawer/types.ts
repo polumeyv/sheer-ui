@@ -1,11 +1,11 @@
-import type { BitsPrimitiveDivAttributes } from "$lib/internal/attributes.js";
+import type { BitsPrimitiveDivAttributes } from "../../../../../internal/attributes.js";
 import type {
 	DialogContentPropsWithoutHTML,
 	DialogOverlayPropsWithoutHTML,
 	DialogRootProps,
-} from "$lib/components/dialog/types.js";
-import type { WithChild, WithChildren, Without } from "$lib/internal/types.js";
-import type { WithoutChildrenOrChild } from "$lib/utils.js";
+} from "../../../../../components/dialog/types.js";
+import type { WithChild, WithChildren, Without } from "../../../../../internal/types.js";
+import type { WithoutChildrenOrChild } from "../../../../../utils.js";
 
 export type WithFadeFromProps = {
 	/**
@@ -159,4 +159,4 @@ export type {
 	DialogTitleProps as DrawerTitleProps,
 	DialogDescriptionProps as DrawerDescriptionProps,
 	DialogCloseProps as DrawerCloseProps,
-} from "$lib/components/dialog/types.js";
+} from "../../../../../components/dialog/types.js";

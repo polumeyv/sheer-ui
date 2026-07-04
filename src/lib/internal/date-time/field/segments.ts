@@ -1,6 +1,6 @@
 import { isAnySegmentPart } from './helpers.js';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
-import { kbd } from '$lib/internal/kbd.js';
+import { kbd } from '../../../internal/kbd.js';
 
 const navigate = (e: KeyboardEvent, neighbors: { prev: HTMLElement | null; next: HTMLElement | null }) => {
 	if (e.key === kbd.ARROW_LEFT) neighbors.prev?.focus();
@@ -13,7 +13,7 @@ const navigate = (e: KeyboardEvent, neighbors: { prev: HTMLElement | null; next:
 export const getNextSegment = (node: HTMLElement, segments: HTMLElement[]) => {
 	const index = segments.indexOf(node);
 	if (index === segments.length - 1 || index === -1) return null;
-	return segments[index + 1];
+	return segments[index + 1]!;
 };
 
 /**
@@ -22,7 +22,7 @@ export const getNextSegment = (node: HTMLElement, segments: HTMLElement[]) => {
 export const getPrevSegment = (node: HTMLElement, segments: HTMLElement[]) => {
 	const index = segments.indexOf(node);
 	if (index === 0 || index === -1) return null;
-	return segments[index - 1];
+	return segments[index - 1]!;
 };
 
 /**

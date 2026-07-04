@@ -1,5 +1,5 @@
-import { mergeDisposers } from '$lib/internal/tools/index.js';
-import { SharedState } from '$lib/internal/shared-state.svelte.js';
+import { mergeDisposers } from '../../../internal/tools/index.js';
+import { SharedState } from '../../../internal/shared-state.svelte.js';
 import { on } from 'svelte/events';
 
 /**

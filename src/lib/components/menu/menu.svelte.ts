@@ -8,11 +8,11 @@ import {
 	simpleBox,
 	boxWith,
 	type ReadableBox,
-} from '$lib/internal/tools/index.js';
-import { mergeProps } from '$lib/merge-props.js';
+} from '../../internal/tools/index.js';
+import { mergeProps } from '../../merge-props.js';
 import { createContext, onDestroy, tick, untrack } from 'svelte';
 import { SUB_OPEN_KEYS, getCheckedState, isMouseEvent } from './utils.js';
-import { focusFirst } from '$lib/internal/focus.js';
+import { focusFirst } from '../../internal/focus.js';
 import type {
 	AnyFn,
 	BitsFocusEvent,
@@ -22,9 +22,9 @@ import type {
 	OnChangeFn,
 	RefAttachment,
 	WithRefOpts,
-} from '$lib/internal/types.js';
+} from '../../internal/types.js';
 import { isElement, isElementOrSVGElement, isHTMLElement } from '@polumeyv/utilities/dom';
-import { kbd, FIRST_LAST_KEYS, LAST_KEYS, SELECTION_KEYS } from '$lib/internal/kbd.js';
+import { kbd, FIRST_LAST_KEYS, LAST_KEYS, SELECTION_KEYS } from '../../internal/kbd.js';
 import {
 	createBitsAttrs,
 	getAriaChecked,
@@ -32,15 +32,15 @@ import {
 	getDataOpenClosed,
 	boolToEmptyStrOrUndef,
 	getDataTransitionAttrs,
-} from '$lib/internal/attrs.js';
-import type { Direction } from '$lib/internal/index.js';
-import { useGlobalInputModality } from '$lib/components/utilities/input-modality/input-modality.svelte.js';
-import { getTabbableFrom, isTabbable } from '$lib/internal/tabbable.js';
+} from '../../internal/attrs.js';
+import type { Direction } from '../../internal/index.js';
+import { useGlobalInputModality } from '../../components/utilities/input-modality/input-modality.svelte.js';
+import { getTabbableFrom, isTabbable } from '../../internal/tabbable.js';
 import type { KeyboardEventHandler, PointerEventHandler, MouseEventHandler } from 'svelte/elements';
-import { DOMTypeahead } from '$lib/internal/dom-typeahead.svelte.js';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
-import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
-import { arraysAreEqual } from '$lib/internal/arrays.js';
+import { DOMTypeahead } from '../../internal/dom-typeahead.svelte.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
+import { PresenceManager } from '../../internal/presence-manager.svelte.js';
+import { arraysAreEqual } from '../../internal/arrays.js';
 import { on } from 'svelte/events';
 import {
 	AXIS_VERTICAL,
@@ -56,7 +56,7 @@ import {
 	getSide,
 	isInsideRect,
 	isPointInPolygon,
-} from '$lib/internal/hover-intent-geometry.js';
+} from '../../internal/hover-intent-geometry.js';
 
 export const CONTEXT_MENU_TRIGGER_ATTR = 'data-context-menu-trigger';
 export const CONTEXT_MENU_CONTENT_ATTR = 'data-context-menu-content';

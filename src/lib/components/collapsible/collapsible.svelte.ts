@@ -1,10 +1,10 @@
-import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import { createContext, tick } from 'svelte';
-import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed, getDataTransitionAttrs } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed, getDataTransitionAttrs } from '../../internal/attrs.js';
+import { kbd } from '../../internal/kbd.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { on } from 'svelte/events';
-import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
+import { PresenceManager } from '../../internal/presence-manager.svelte.js';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 
 const collapsibleAttrs = createBitsAttrs({

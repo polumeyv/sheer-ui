@@ -1,13 +1,13 @@
 <script lang="ts">
-	import * as NavigationMenu from '$lib/components/navigation-menu/index.js';
+	import * as NavigationMenu from '../components/navigation-menu/index.js';
 	import { join } from 'overrule';
-	import { navigationMenuTriggerStyle } from '$lib/components/navigation-menu/components/navigation-menu-trigger.svelte';
+	import { navigationMenuTriggerStyle } from '../components/navigation-menu/components/navigation-menu-trigger.svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import CircleHelpIcon from '@lucide/svelte/icons/circle-help';
 	import CircleIcon from '@lucide/svelte/icons/circle';
 	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
 
-	import { IsMobile } from '$lib/hooks/is-mobile.svelte.js';
+	import { IsMobile } from '../hooks/is-mobile.svelte.js';
 
 	const isMobile = new IsMobile();
 

@@ -1,7 +1,7 @@
-import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, type Box, boxWith } from '$lib/internal/tools/index.js';
+import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues, type Box, boxWith } from '../../internal/tools/index.js';
 import { on } from 'svelte/events';
 import { createContext, onDestroy, tick, untrack } from 'svelte';
-import { backward, forward, next, prev } from '$lib/internal/arrays.js';
+import { backward, forward, next, prev } from '../../internal/arrays.js';
 import {
 	boolToStr,
 	boolToStrTrueOrUndef,
@@ -9,8 +9,8 @@ import {
 	getDataOpenClosed,
 	boolToTrueOrUndef,
 	getDataTransitionAttrs,
-} from '$lib/internal/attrs.js';
-import { kbd, FIRST_LAST_KEYS } from '$lib/internal/kbd.js';
+} from '../../internal/attrs.js';
+import { kbd, FIRST_LAST_KEYS } from '../../internal/kbd.js';
 import type {
 	BitsEvent,
 	BitsFocusEvent,
@@ -20,14 +20,14 @@ import type {
 	OnChangeFn,
 	WithRefOpts,
 	RefAttachment,
-} from '$lib/internal/types.js';
+} from '../../internal/types.js';
 import { isIOS } from '@polumeyv/utilities/dom';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
-import { DataTypeahead } from '$lib/internal/data-typeahead.svelte.js';
-import { DOMTypeahead } from '$lib/internal/dom-typeahead.svelte.js';
-import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
-import { createInputModality } from '$lib/components/utilities/input-modality/input-modality.svelte.js';
+import { createBitsAttrs } from '../../internal/attrs.js';
+import { getFloatingContentCSSVars } from '../../internal/floating-svelte/floating-utils.svelte.js';
+import { DataTypeahead } from '../../internal/data-typeahead.svelte.js';
+import { DOMTypeahead } from '../../internal/dom-typeahead.svelte.js';
+import { PresenceManager } from '../../internal/presence-manager.svelte.js';
+import { createInputModality } from '../../components/utilities/input-modality/input-modality.svelte.js';
 import { DEV } from '@polumeyv/utilities/env';
 import type { SelectValueSnippetProps } from './types.js';
 
@@ -228,7 +228,7 @@ interface SelectSingleRootStateOpts
 		}> {}
 
 export class SelectSingleRootState extends SelectBaseRootState {
-	readonly opts: SelectSingleRootStateOpts;
+	override readonly opts: SelectSingleRootStateOpts;
 	readonly isMulti = false as const;
 	readonly hasValue = $derived.by(() => this.opts.value.current !== '');
 	readonly currentLabel = $derived.by(() => {
@@ -302,7 +302,7 @@ interface SelectMultipleRootStateOpts
 		}> {}
 
 class SelectMultipleRootState extends SelectBaseRootState {
-	readonly opts: SelectMultipleRootStateOpts;
+	override readonly opts: SelectMultipleRootStateOpts;
 	readonly isMulti = true as const;
 	readonly hasValue = $derived.by(() => this.opts.value.current.length > 0);
 

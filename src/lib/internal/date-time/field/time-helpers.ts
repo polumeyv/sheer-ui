@@ -7,13 +7,13 @@ import type {
 	TimeSegmentStateMap,
 	TimeSegmentValueObj,
 	TimeValue,
-} from '$lib/internal/date-time/types.js';
+} from '../../../internal/date-time/types.js';
 import { CalendarDateTime, Time, ZonedDateTime } from '@internationalized/date';
 import type { TimeFormatter } from '../formatter.js';
 import { EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';
 import { getTimeSegments } from './segments.js';
 import type { TimeSegmentPart } from './types.js';
-import { styleToString } from '$lib/internal/tools/index.js';
+import { styleToString } from '../../../internal/tools/index.js';
 import { getPlaceholder } from '../placeholders.js';
 import { isZonedDateTime } from '../utils.js';
 import { getDefaultHourCycle } from './helpers.js';

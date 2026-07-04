@@ -2,7 +2,7 @@
 	import { join } from 'overrule';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { getCarouselContext, useCarousel } from './carouselState.svelte';
-	import type { WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '../../utils.js';
 
 	let { ref = $bindable(null), class: className, children, ...restProps }: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
 

@@ -1,8 +1,8 @@
 <script lang="ts">
 	// `collapsible` is the headless bits primitive (no visual styling), so the
 	// consumer supplies the surface with Tailwind utilities — the shadcn convention.
-	import * as Collapsible from '$lib/components/collapsible/index.js';
-	import { Button } from '$lib/components/button/index.js';
+	import * as Collapsible from '../components/collapsible/index.js';
+	import { Button } from '../components/button/index.js';
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 
 	let open = $state(true);

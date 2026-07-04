@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { WithoutChildren } from '$lib/internal/index.js';
+	import type { WithoutChildren } from '../../internal/index.js';
 	import type { Props } from '../button';
 	import CarouselArrow from './carousel-arrow.svelte';
 

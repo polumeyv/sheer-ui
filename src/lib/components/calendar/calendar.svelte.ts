@@ -1,14 +1,14 @@
 import { type DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
 import { DEV } from '@polumeyv/utilities/env';
 import { createContext, onMount, untrack } from 'svelte';
-import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import type { RangeCalendarRootState } from '../range-calendar/range-calendar.svelte.js';
-import { boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { useId } from '$lib/internal/use-id.js';
-import type { DateMatcher, Month } from '$lib/internal/index.js';
-import { type Announcer, getAnnouncer } from '$lib/internal/date-time/announcer.js';
-import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
+import { boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { useId } from '../../internal/use-id.js';
+import type { DateMatcher, Month } from '../../internal/index.js';
+import { type Announcer, getAnnouncer } from '../../internal/date-time/announcer.js';
+import { type Formatter, createFormatter } from '../../internal/date-time/formatter.js';
 import {
 	calendarAttrs,
 	createAccessibleHeading,
@@ -23,9 +23,9 @@ import {
 	handleCalendarKeydown,
 	shiftCalendarFocus,
 	useEnsureNonDisabledPlaceholder,
-} from '$lib/internal/date-time/calendar-helpers.svelte.js';
-import { getDateValueType, isBefore, toDate } from '$lib/internal/date-time/utils.js';
-import type { WeekStartsOn } from '$lib/internal/date-time/types.js';
+} from '../../internal/date-time/calendar-helpers.svelte.js';
+import { getDateValueType, isBefore, toDate } from '../../internal/date-time/utils.js';
+import type { WeekStartsOn } from '../../internal/date-time/types.js';
 
 interface CalendarRootStateOpts
 	extends

@@ -1,5 +1,5 @@
-import type { WithChild, Without } from "$lib/internal/types.js";
-import type { BitsPrimitiveLabelAttributes } from "$lib/internal/attributes.js";
+import type { WithChild, Without } from "../../internal/types.js";
+import type { BitsPrimitiveLabelAttributes } from "../../internal/attributes.js";
 
 export type LabelRootPropsWithoutHTML = WithChild;
 

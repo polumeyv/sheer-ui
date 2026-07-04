@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import { Button } from "$lib/components/button/index.js";
+	import { Button } from "../components/button/index.js";
 	import Mail from "@lucide/svelte/icons/mail";
 	import LoaderCircle from "@lucide/svelte/icons/loader-circle";
 </script>

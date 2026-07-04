@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as DialogPrimitive from '$lib/components/dialog/index.js';
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import * as DialogPrimitive from '../../components/dialog/index.js';
+	import { boxWith } from '../../internal/tools/index.js';
 	import type { RootProps } from './util/components/drawer/index.js';
 	import { noop } from '@polumeyv/utilities';
 	import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT } from './util/internal/constants.js';

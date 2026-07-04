@@ -11,7 +11,7 @@ import {
 	DOMContext,
 	type ReadableBoxedValues,
 	type WritableBoxedValues,
-} from '$lib/internal/tools/index.js';
+} from '../../internal/tools/index.js';
 import { on } from 'svelte/events';
 import {
 	getRangeStyles,
@@ -23,14 +23,14 @@ import {
 	getTickLabelStyles,
 	getThumbLabelStyles,
 } from './helpers.js';
-import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
+import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
+import { kbd } from '../../internal/kbd.js';
 import { isElementOrSVGElement } from '@polumeyv/utilities/dom';
-import { isValidIndex } from '$lib/internal/arrays.js';
-import { resizeAttachment } from '$lib/internal/svelte-resize-observer.svelte.js';
-import type { BitsKeyboardEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import type { Direction, Orientation, SliderThumbPositioning } from '$lib/internal/index.js';
-import { linearScale } from '$lib/internal/math.js';
+import { isValidIndex } from '../../internal/arrays.js';
+import { resizeAttachment } from '../../internal/svelte-resize-observer.svelte.js';
+import type { BitsKeyboardEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import type { Direction, Orientation, SliderThumbPositioning } from '../../internal/index.js';
+import { linearScale } from '../../internal/math.js';
 import type { SliderLabelPosition } from './types.js';
 
 const sliderAttrs = createBitsAttrs({
@@ -186,7 +186,7 @@ interface SliderSingleRootStateOpts
 		}> {}
 
 class SliderSingleRootState extends SliderBaseRootState {
-	readonly opts: SliderSingleRootStateOpts;
+	override readonly opts: SliderSingleRootStateOpts;
 	isMulti = false as const;
 
 	constructor(opts: SliderSingleRootStateOpts) {
@@ -406,7 +406,7 @@ interface SliderMultiRootStateOpts
 		}> {}
 
 class SliderMultiRootState extends SliderBaseRootState {
-	readonly opts: SliderMultiRootStateOpts;
+	override readonly opts: SliderMultiRootStateOpts;
 	isMulti = true as const;
 	activeThumb = $state.raw<{ node: HTMLElement; idx: number } | null>(null);
 	currentThumbIdx = $state(0);
@@ -447,7 +447,7 @@ class SliderMultiRootState extends SliderBaseRootState {
 		return this.opts.value.current.includes(tickValue);
 	};
 
-	isThumbActive(index: number): boolean {
+	override isThumbActive(index: number): boolean {
 		return this.isActive && this.activeThumb?.idx === index;
 	}
 
@@ -563,7 +563,7 @@ class SliderMultiRootState extends SliderBaseRootState {
 		this.isActive = false;
 	};
 
-	getAllThumbs = () => {
+	override getAllThumbs = () => {
 		const node = this.opts.ref.current;
 		if (!node) return [];
 		const thumbs = Array.from(node.querySelectorAll<HTMLElement>(sliderAttrs.selector('thumb')));

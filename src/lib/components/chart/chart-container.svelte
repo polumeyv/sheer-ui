@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import type { WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '../../utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import ChartStyle from './chart-style.svelte';
 	import { setChartContext, type ChartConfig } from './chart-utils.js';

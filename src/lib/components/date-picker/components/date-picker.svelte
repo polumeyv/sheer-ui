@@ -1,15 +1,15 @@
 <script lang="ts">
 	// Date Picker composes the DateField, Popover, and Calendar components
 	import { untrack } from 'svelte';
-	import { boxWith, repairBindable } from '$lib/internal/tools/index.js';
+	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
 	import type { DateValue } from '@internationalized/date';
 	import { DatePickerRootState } from '../date-picker.svelte.js';
 	import type { DatePickerRootProps } from '../types.js';
-	import { PopoverRootState } from '$lib/components/popover/popover.svelte.js';
-	import { DateFieldRootState } from '$lib/components/date-field/date-field.svelte.js';
-	import { FloatingLayer } from '$lib/components/utilities/floating-layer/index.js';
-	import { getDefaultDate } from '$lib/internal/date-time/utils.js';
-	import { resolveLocaleProp } from '$lib/components/utilities/config/prop-resolvers.js';
+	import { PopoverRootState } from '../../../components/popover/popover.svelte.js';
+	import { DateFieldRootState } from '../../../components/date-field/date-field.svelte.js';
+	import { FloatingLayer } from '../../../components/utilities/floating-layer/index.js';
+	import { getDefaultDate } from '../../../internal/date-time/utils.js';
+	import { resolveLocaleProp } from '../../../components/utilities/config/prop-resolvers.js';
 
 	let {
 		open = $bindable(false),

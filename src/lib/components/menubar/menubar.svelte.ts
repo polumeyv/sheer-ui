@@ -1,15 +1,15 @@
-import { type ReadableBox, boxWith, attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { type ReadableBox, boxWith, attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import type { InteractOutsideBehaviorType } from '../utilities/dismissible-layer/types.js';
-import type { Direction } from '$lib/internal/index.js';
-import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { wrapArray } from '$lib/internal/arrays.js';
-import type { OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import type { Direction } from '../../internal/index.js';
+import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '../../internal/attrs.js';
+import { kbd } from '../../internal/kbd.js';
+import { wrapArray } from '../../internal/arrays.js';
+import type { OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { createContext, onMount, tick, untrack } from 'svelte';
 import type { FocusEventHandler, KeyboardEventHandler, PointerEventHandler } from 'svelte/elements';
 import { getFloatingContentCSSVars } from '../../internal/floating-svelte/floating-utils.svelte.js';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
-import { RovingFocusItem } from '$lib/internal/roving-focus-item.svelte.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
+import { RovingFocusItem } from '../../internal/roving-focus-item.svelte.js';
 
 const menubarAttrs = createBitsAttrs({
 	component: 'menubar',

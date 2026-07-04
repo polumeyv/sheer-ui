@@ -1,4 +1,4 @@
-import { simpleBox, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { simpleBox, type ReadableBoxedValues, type WritableBoxedValues } from '../../../internal/tools/index.js';
 import type { DrawerDirection } from './types.js';
 import { useSnapPoints } from './use-snap-points.svelte.js';
 import { isInput, usePreventScroll } from './use-prevent-scroll.svelte.js';
@@ -400,7 +400,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 
 		window.setTimeout(() => {
 			if (opts.snapPoints.current && opts.snapPoints.current.length > 0) {
-				opts.activeSnapPoint.current = opts.snapPoints.current[0];
+				opts.activeSnapPoint.current = opts.snapPoints.current[0]!;
 			}
 		}, TRANSITIONS.DURATION * 1000);
 	}

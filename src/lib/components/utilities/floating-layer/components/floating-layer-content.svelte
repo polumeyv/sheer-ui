@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../../internal/tools/index.js';
+	import { mergeProps } from '../../../../merge-props.js';
 	import { FloatingContentState } from '../use-floating-layer.svelte.js';
 	import type { ContentImplProps } from './index.js';
-	import { useId } from '$lib/internal/use-id.js';
+	import { useId } from '../../../../internal/use-id.js';
 
 	let {
 		content,

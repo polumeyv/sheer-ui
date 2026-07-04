@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { SwitchNative } from '$lib/components/switch-native/index.js';
-	import { Label } from '$lib/components/label/index.js';
+	import { SwitchNative } from '../components/switch-native/index.js';
+	import { Label } from '../components/label/index.js';
 
 	let checked = $state(true);
 </script>

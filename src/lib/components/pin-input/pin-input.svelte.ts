@@ -6,13 +6,13 @@ import {
 	type ReadableBoxedValues,
 	type WritableBoxedValues,
 	simpleBox,
-} from '$lib/internal/tools/index.js';
+} from '../../internal/tools/index.js';
 import { usePasswordManagerBadge } from './usePasswordManager.svelte.js';
 import type { PinInputCell, PinInputRootProps as RootComponentProps } from './types.js';
-import type { BitsEvent, BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { createBitsAttrs, boolToTrueOrUndef } from '$lib/internal/attrs.js';
+import type { BitsEvent, BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { createBitsAttrs, boolToTrueOrUndef } from '../../internal/attrs.js';
 import { on } from 'svelte/events';
-import { resizeAttachment } from '$lib/internal/svelte-resize-observer.svelte.js';
+import { resizeAttachment } from '../../internal/svelte-resize-observer.svelte.js';
 
 export const REGEXP_ONLY_DIGITS = '^\\d+$';
 export const REGEXP_ONLY_CHARS = '^[a-zA-Z]+$';

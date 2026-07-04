@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { ComboboxInputProps } from '../types.js';
-	import { useId } from '$lib/internal/use-id.js';
-	import { floatingAnchor } from '$lib/components/utilities/floating-layer/index.js';
-	import { SelectInputState } from '$lib/components/select/select.svelte.js';
+	import { useId } from '../../../internal/use-id.js';
+	import { floatingAnchor } from '../../../components/utilities/floating-layer/index.js';
+	import { SelectInputState } from '../../../components/select/select.svelte.js';
 
 	let { id = useId(), ref = $bindable(null), child, defaultValue, clearOnDeselect = false, ...restProps }: ComboboxInputProps = $props();
 

@@ -81,8 +81,11 @@ class ToastState {
 			const toastIdx = this.#findToastIdx(id);
 			if (toastIdx === null) return;
 
+			const toast = this.toasts[toastIdx];
+			if (!toast) return;
+
 			this.toasts[toastIdx] = {
-				...this.toasts[toastIdx],
+				...toast,
 				dismiss: true,
 			};
 		});

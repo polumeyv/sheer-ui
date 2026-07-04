@@ -66,8 +66,8 @@
 	import { onMount, untrack } from 'svelte';
 	import { isAction, type SwipeDirection, type ToastClasses, type ToastProps } from './types.js';
 	import { toastState } from './toast-state.svelte.js';
-	import { AnimationsComplete } from '$lib/internal/animations-complete.js';
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { AnimationsComplete } from '../../internal/animations-complete.js';
+	import { boxWith } from '../../internal/tools/index.js';
 	import type { DragEventHandler, PointerEventHandler } from 'svelte/elements';
 	import { on } from 'svelte/events';
 	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';

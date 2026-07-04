@@ -8,7 +8,7 @@ import {
 	attachRef,
 	DOMContext,
 	mergeDisposers,
-} from '$lib/internal/tools/index.js';
+} from '../../../internal/tools/index.js';
 import {
 	callPaneCallbacks,
 	findPaneDataIndex,
@@ -27,7 +27,7 @@ import {
 import { noop } from '@polumeyv/utilities';
 import { isKeyDown, isMouseEvent, isTouchEvent } from './internal/utils/is.js';
 import { adjustLayoutByDelta } from './internal/utils/adjust-layout.js';
-import { arraysAreEqual as areArraysEqual } from '$lib/internal/arrays.js';
+import { arraysAreEqual as areArraysEqual } from '../../../internal/arrays.js';
 import { areNumbersAlmostEqual } from './internal/utils/compare.js';
 import { computePaneFlexBoxStyle, getCursorStyle, resetGlobalCursorStyle, setGlobalCursorStyle } from './internal/utils/style.js';
 import { assert } from './internal/utils/assert.js';
@@ -420,7 +420,7 @@ export class PaneGroupState {
 
 	isPaneExpanded = (pane: PaneState) => {
 		const { collapsedSize = 0, collapsible, paneSize } = paneDataHelper(this.panesArray, pane, this.layout);
-		return !collapsible || paneSize > collapsedSize;
+		return !collapsible || (paneSize != null && paneSize > collapsedSize);
 	};
 
 	registerPane = (pane: PaneState) => {
@@ -655,7 +655,7 @@ export class PaneResizerState {
 			}
 		}
 
-		const nextHandle = handles[nextIndex];
+		const nextHandle = handles[nextIndex]!;
 		nextHandle.focus();
 	};
 

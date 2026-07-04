@@ -1,6 +1,6 @@
 import type { EscapeBehaviorType } from '../utilities/escape-layer/types.js';
 import type { InteractOutsideBehaviorType } from '..//utilities/dismissible-layer/types.js';
-import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, Without } from '$lib/internal/types.js';
+import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, Without } from '../../internal/types.js';
 import type {
 	BitsPrimitiveAnchorAttributes,
 	BitsPrimitiveButtonAttributes,
@@ -8,8 +8,8 @@ import type {
 	BitsPrimitiveElementAttributes,
 	BitsPrimitiveLiAttributes,
 	BitsPrimitiveUListAttributes,
-} from '$lib/internal/attributes.js';
-import type { Direction, Orientation } from '$lib/internal/index.js';
+} from '../../internal/attributes.js';
+import type { Direction, Orientation } from '../../internal/index.js';
 
 export type NavigationMenuRootPropsWithoutHTML = WithChild<{
 	/**

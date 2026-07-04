@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as Field from '$lib/components/field/index.js';
-	import { Input } from '$lib/components/input/index.js';
+	import * as Field from '../components/field/index.js';
+	import { Input } from '../components/input/index.js';
 </script>
 
 <Field.Set class="w-full sm:max-w-sm">

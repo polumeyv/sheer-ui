@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import * as Sidebar from '$lib/components/sidebar/index.js';
+	import * as Sidebar from '../components/sidebar/index.js';
 	import ClockIcon from '@lucide/svelte/icons/clock';
 	import MessageSquareIcon from '@lucide/svelte/icons/message-square';
 	import PaperclipIcon from '@lucide/svelte/icons/paperclip';

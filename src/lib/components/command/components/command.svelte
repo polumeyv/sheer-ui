@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import { CommandRootState } from '../command.svelte.js';
 	import type { CommandRootProps } from '../types.js';
 	import CommandLabel from './_command-label.svelte';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '../../../internal/create-id.js';
 	import { computeCommandScore } from '../index.js';
 
 	const uid = $props.id();

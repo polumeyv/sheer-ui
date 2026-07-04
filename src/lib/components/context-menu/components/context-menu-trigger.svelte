@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { ContextMenuTriggerProps } from '../types.js';
-	import { ContextMenuTriggerState } from '$lib/components/menu/menu.svelte.js';
-	import { useId } from '$lib/internal/use-id.js';
-	import { setFloatingAnchor } from '$lib/components/utilities/floating-layer/index.js';
+	import { ContextMenuTriggerState } from '../../../components/menu/menu.svelte.js';
+	import { useId } from '../../../internal/use-id.js';
+	import { setFloatingAnchor } from '../../../components/utilities/floating-layer/index.js';
 
 	let { id = useId(), ref = $bindable(null), child, children, disabled = false, ...restProps }: ContextMenuTriggerProps = $props();
 

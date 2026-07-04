@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
-	import { DialogTriggerState } from '$lib/components/dialog/dialog.svelte.js';
-	import type { DialogTriggerProps } from '$lib/components/dialog/types.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
+	import { DialogTriggerState } from '../../../components/dialog/dialog.svelte.js';
+	import type { DialogTriggerProps } from '../../../components/dialog/types.js';
+	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();
 

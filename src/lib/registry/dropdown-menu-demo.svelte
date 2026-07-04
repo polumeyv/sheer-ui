@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as DropdownMenu from '$lib/components/dropdown-menu/index.js';
-	import { Button } from '$lib/components/button/index.js';
+	import * as DropdownMenu from '../components/dropdown-menu/index.js';
+	import { Button } from '../components/button/index.js';
 	import User from '@lucide/svelte/icons/user';
 	import CreditCard from '@lucide/svelte/icons/credit-card';
 	import Settings from '@lucide/svelte/icons/settings';

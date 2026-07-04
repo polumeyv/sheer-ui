@@ -1,4 +1,4 @@
-import { getDocument } from '$lib/internal/tools/index.js';
+import { getDocument } from '../internal/tools/index.js';
 import { isSelectableInput } from '@polumeyv/utilities/dom';
 import { getTabbableCandidates as getInternalTabbableCandidates } from './tabbable.js';
 

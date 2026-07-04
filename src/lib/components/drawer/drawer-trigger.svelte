@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Trigger, type TriggerProps } from '$lib/components/dialog/index.js';
+	import { Trigger, type TriggerProps } from '../../components/dialog/index.js';
 
 	let { ref = $bindable(null), ...restProps }: TriggerProps = $props();
 </script>

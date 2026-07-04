@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { mergeProps } from '$lib/merge-props.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import ScrollLock from '../scroll-lock/scroll-lock.svelte';
 	import type { PopperLayerImplProps } from './types.js';
 	import PopperContent from './popper-content.svelte';
-	import { escapeKeydownAttachment } from '$lib/components/utilities/escape-layer/use-escape-layer.svelte.js';
-	import { interactOutsideAttachment } from '$lib/components/utilities/dismissible-layer/use-dismissable-layer.svelte.js';
-	import { textSelectionAttachment } from '$lib/components/utilities/text-selection-layer/use-text-selection-layer.svelte.js';
-	import { createFocusScopeProps } from '$lib/components/utilities/focus-scope/focus-scope.svelte.js';
+	import { escapeKeydownAttachment } from '../../../components/utilities/escape-layer/use-escape-layer.svelte.js';
+	import { interactOutsideAttachment } from '../../../components/utilities/dismissible-layer/use-dismissable-layer.svelte.js';
+	import { textSelectionAttachment } from '../../../components/utilities/text-selection-layer/use-text-selection-layer.svelte.js';
+	import { createFocusScopeProps } from '../../../components/utilities/focus-scope/focus-scope.svelte.js';
 
 	let {
 		popper,

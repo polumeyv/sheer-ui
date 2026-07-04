@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import { Button } from '$lib/components/button';
-	import * as Tooltip from '$lib/components/tooltip';
+	import { Button } from '../../components/button';
+	import * as Tooltip from '../../components/tooltip';
 	import { UseClipboard } from './copy.svelte';
 	import Clipboard from '@lucide/svelte/icons/clipboard';
 	import CheckIcon from '@lucide/svelte/icons/check';

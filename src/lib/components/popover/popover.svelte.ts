@@ -6,9 +6,9 @@ import {
 	attachRef,
 	boxWith,
 	DOMContext,
-} from '$lib/internal/tools/index.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { createBitsAttrs, boolToStr, getDataOpenClosed } from '$lib/internal/attrs.js';
+} from '../../internal/tools/index.js';
+import { kbd } from '../../internal/kbd.js';
+import { createBitsAttrs, boolToStr, getDataOpenClosed } from '../../internal/attrs.js';
 import type {
 	BitsFocusEvent,
 	BitsKeyboardEvent,
@@ -17,11 +17,11 @@ import type {
 	OnChangeFn,
 	RefAttachment,
 	WithRefOpts,
-} from '$lib/internal/types.js';
+} from '../../internal/types.js';
 import { isElement } from '@polumeyv/utilities/dom';
-import type { Measurable } from '$lib/internal/floating-svelte/types.js';
-import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
-import { isTabbable } from '$lib/internal/tabbable.js';
+import type { Measurable } from '../../internal/floating-svelte/types.js';
+import { SafePolygon } from '../../internal/safe-polygon.svelte.js';
+import { isTabbable } from '../../internal/tabbable.js';
 
 const popoverAttrs = createBitsAttrs({
 	component: 'popover',

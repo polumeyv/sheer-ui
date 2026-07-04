@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { boxWith, repairBindable } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import { type DateValue } from '@internationalized/date';
 	import { CalendarRootState } from '../calendar.svelte.js';
 	import type { CalendarRootProps } from '../types.js';
-	import { useId } from '$lib/internal/use-id.js';
-	import { getDefaultDate } from '$lib/internal/date-time/utils.js';
+	import { useId } from '../../../internal/use-id.js';
+	import { getDefaultDate } from '../../../internal/date-time/utils.js';
 	import { resolveLocaleProp } from '../../utilities/config/prop-resolvers.js';
 
 	let {

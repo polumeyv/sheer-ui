@@ -3,14 +3,14 @@
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import type { DateValue } from '@internationalized/date';
-	import type { DateRange } from '$lib/internal/index.js';
+	import type { DateRange } from '../../internal/index.js';
 	import { formatDateDisplay } from '@polumeyv/utilities/date';
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
-	import { buttonVariants } from '$lib/components/button';
-	import { RangeCalendar } from '$lib/components/range-calendar';
-	import { Popover } from '$lib/components/popover';
-	import * as Resizable from '$lib/components/resizable';
+	import { buttonVariants } from '../../components/button';
+	import { RangeCalendar } from '../../components/range-calendar';
+	import { Popover } from '../../components/popover';
+	import * as Resizable from '../../components/resizable';
 
 	interface Props {
 		/** Selected range as `@internationalized/date` `DateValue`s — every date prop and callback speaks the same type. */
@@ -120,7 +120,7 @@
 						</Resizable.PaneGroup>
 					{:else}
 						<div class="pt-4">
-							{@render monthGrid(months[0])}
+							{@render monthGrid(months[0]!)}
 						</div>
 					{/if}
 				{/snippet}

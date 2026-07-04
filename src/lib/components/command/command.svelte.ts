@@ -1,10 +1,10 @@
-import { srOnlyStyles, attachRef, type WritableBoxedValues, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
+import { srOnlyStyles, attachRef, type WritableBoxedValues, type ReadableBoxedValues } from '../../internal/tools/index.js';
 import { createContext, tick, untrack } from 'svelte';
 import { findNextSibling, findPreviousSibling } from './utils.js';
 import type { CommandState } from './types.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { kbd } from '../../internal/kbd.js';
+import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import { computeCommandScore } from './index.js';
 
 const COMMAND_VALUE_ATTR = 'data-value';

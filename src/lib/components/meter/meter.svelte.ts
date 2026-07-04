@@ -1,6 +1,6 @@
-import { attachRef, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
-import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
+import { attachRef, type ReadableBoxedValues } from '../../internal/tools/index.js';
+import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { createBitsAttrs } from '../../internal/attrs.js';
 
 const meterAttrs = createBitsAttrs({
 	component: 'meter',

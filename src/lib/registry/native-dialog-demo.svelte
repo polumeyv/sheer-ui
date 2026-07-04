@@ -2,10 +2,10 @@
 	// SPIKE demo — the native <dialog> alternative to dialog-demo.svelte. Same surface, none of the
 	// Dialog JS stack (PresenceManager / FocusScope / Escape + Dismissible layers / BodyScrollLock /
 	// overlay div). `open` is the only state; everything else is native + CSS.
-	import NativeDialog from '$lib/components/native-dialog/native-dialog.svelte';
-	import { Button } from '$lib/components/button/index.js';
-	import { Input } from '$lib/components/input/index.js';
-	import { Label } from '$lib/components/label/index.js';
+	import NativeDialog from '../components/native-dialog/native-dialog.svelte';
+	import { Button } from '../components/button/index.js';
+	import { Input } from '../components/input/index.js';
+	import { Label } from '../components/label/index.js';
 	import X from '@lucide/svelte/icons/x';
 
 	let open = $state(false);

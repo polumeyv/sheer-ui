@@ -2,8 +2,8 @@
 	// Headless range variant: two Inputs (start/end) inside one bordered shell, each
 	// rendering its segments via the `segments` snippet. Styling is the same shadcn
 	// field/segment convention as the single date field.
-	import * as DateRangeField from '$lib/components/date-range-field/index.js';
-	import type { DateRange } from '$lib/internal/index.js';
+	import * as DateRangeField from '../components/date-range-field/index.js';
+	import type { DateRange } from '../internal/index.js';
 
 	let value = $state<DateRange>();
 </script>

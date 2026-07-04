@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import { noop } from '@polumeyv/utilities';
 	import type { PaneProps } from './types.js';
 	import { PaneState } from './paneforge.svelte.js';

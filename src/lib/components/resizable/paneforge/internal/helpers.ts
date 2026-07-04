@@ -1,5 +1,5 @@
 import type { PaneState } from '../paneforge.svelte.js';
-import type { DOMContext } from '$lib/internal/tools/index.js';
+import type { DOMContext } from '../../../../internal/tools/index.js';
 import { BROWSER } from '@polumeyv/utilities/env';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
 import type { Direction, DragState, PaneConstraints, ResizeEvent } from './types.js';
@@ -29,7 +29,7 @@ export function updateResizeHandleAriaValues({ groupId, layout, panesArray, domC
 		const resizeHandleEl = resizeHandleElements[index];
 
 		if (isHTMLElement(resizeHandleEl)) {
-			const paneData = panesArray[index];
+			const paneData = panesArray[index]!;
 			resizeHandleEl.setAttribute('aria-controls', paneData.opts.id.current);
 			resizeHandleEl.setAttribute('aria-valuemax', `${Math.round(valueMax)}`);
 			resizeHandleEl.setAttribute('aria-valuemin', `${Math.round(valueMin)}`);
@@ -106,7 +106,7 @@ export function findPaneDataIndex(panesArray: readonly PaneState[], pane: PaneSt
 // Layout should be pre-converted into percentages
 export function callPaneCallbacks(panesArray: PaneState[], layout: number[], paneIdToLastNotifiedSizeMap: Record<string, number>) {
 	for (let index = 0; index < layout.length; index++) {
-		const size = layout[index];
+		const size = layout[index]!;
 		const paneData = panesArray[index];
 		assert(paneData);
 

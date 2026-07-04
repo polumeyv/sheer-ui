@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { AccordionTriggerProps } from '../types.js';
 	import { AccordionTriggerState } from '../accordion.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '../../../internal/create-id.js';
 	import AccordionHeader from './accordion-header.svelte';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 

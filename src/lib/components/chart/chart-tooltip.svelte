@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import type { WithElementRef, WithoutChildren } from '$lib/utils.js';
+	import type { WithElementRef, WithoutChildren } from '../../utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { getPayloadConfigFromPayload, useChart, type TooltipPayload } from './chart-utils.js';
 	import { getChartContext, Tooltip as TooltipPrimitive } from 'layerchart';
@@ -66,7 +66,7 @@
 		const dataLabel = tooltipData != null ? chartCtx.x(tooltipData) : undefined;
 
 		const key = labelKey ?? item?.label ?? item?.key ?? 'value';
-		const itemConfig = getPayloadConfigFromPayload(chart.config, item, key, tooltipData as Record<string, unknown> | null);
+		const itemConfig = getPayloadConfigFromPayload(chart.config, item!, key, tooltipData as Record<string, unknown> | null);
 
 		let value: unknown;
 		if (!labelKey && typeof label === 'string') {

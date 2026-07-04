@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { CollapsibleRootProps } from '../types.js';
 	import { CollapsibleRootState } from '../collapsible.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();
 

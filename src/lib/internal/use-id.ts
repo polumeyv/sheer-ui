@@ -1,9 +1,11 @@
-globalThis.bitsIdCounter ??= { current: 0 };
+import { globalSingleton } from './global-singleton.js';
+
+const counter = globalSingleton('bitsIdCounter', () => ({ current: 0 }));
 
 /**
  * Generates a unique ID based on a global counter.
  */
 export function useId(prefix = "bits") {
-	globalThis.bitsIdCounter.current++;
-	return `${prefix}-${globalThis.bitsIdCounter.current}`;
+	counter.current++;
+	return `${prefix}-${counter.current}`;
 }

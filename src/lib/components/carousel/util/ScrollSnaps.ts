@@ -20,7 +20,7 @@ export const ScrollSnaps = (
 
   const measureSizes = (): number[] =>
     groupSlides(slideRects)
-      .map((rects) => rects.at(-1)![endEdge] - rects[0][startEdge])
+      .map((rects) => rects.at(-1)![endEdge] - rects[0]![startEdge])
       .map(Math.abs)
 
   const measureUnaligned = (): number[] =>
@@ -30,8 +30,8 @@ export const ScrollSnaps = (
 
   const measureAligned = (): number[] =>
     groupSlides(snaps)
-      .map((g) => g[0])
-      .map((snap, index) => snap + alignments[index])
+      .map((g) => g[0]!)
+      .map((snap, index) => snap + alignments[index]!)
 
   const alignments = measureSizes().map(alignment.measure)
   const snaps = measureUnaligned()

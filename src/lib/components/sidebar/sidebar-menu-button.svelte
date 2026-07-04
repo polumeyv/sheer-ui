@@ -27,8 +27,8 @@
 
 <script lang="ts">
 	import * as Tooltip from '../tooltip/index';
-	import type { WithElementRef, WithoutChildrenOrChild } from '$lib/utils.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import type { WithElementRef, WithoutChildrenOrChild } from '../../utils.js';
+	import { mergeProps } from '../../merge-props.js';
 	import type { ComponentProps, Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { useSidebar } from './context.svelte';

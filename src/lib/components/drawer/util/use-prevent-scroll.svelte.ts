@@ -3,9 +3,9 @@
 
 import { isIOS } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
-import { mergeDisposers } from '$lib/internal/tools/index.js';
-import { SharedState } from '$lib/internal/shared-state.svelte.js';
-import { BodyScrollLock } from '$lib/internal/body-scroll-lock.svelte.js';
+import { mergeDisposers } from '../../../internal/tools/index.js';
+import { SharedState } from '../../../internal/shared-state.svelte.js';
+import { BodyScrollLock } from '../../../internal/body-scroll-lock.svelte.js';
 import { on } from 'svelte/events';
 import { untrack } from 'svelte';
 
@@ -103,7 +103,7 @@ function preventScrollMobileSafari() {
 			return;
 		}
 
-		lastY = e.changedTouches[0].pageY;
+		lastY = e.changedTouches[0]!.pageY;
 	};
 
 	const onTouchMove = (e: TouchEvent) => {
@@ -117,7 +117,7 @@ function preventScrollMobileSafari() {
 		// of a nested scrollable area, otherwise mobile Safari will start scrolling
 		// the window instead. Unfortunately, this disables bounce scrolling when at
 		// the top but it's the best we can do.
-		const y = e.changedTouches[0].pageY;
+		const y = e.changedTouches[0]!.pageY;
 		const scrollTop = scrollable.scrollTop;
 		const bottom = scrollable.scrollHeight - scrollable.clientHeight;
 

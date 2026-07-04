@@ -5,16 +5,16 @@
  * Incredible thought must have went into solving all the intricacies of this component.
  */
 
-import { useDebounce } from '$lib/internal/tools/index.js';
+import { useDebounce } from '../../internal/tools/index.js';
 import { createContext, untrack } from 'svelte';
-import { simpleBox, mergeDisposers, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
+import { simpleBox, mergeDisposers, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '../../internal/tools/index.js';
 import type { ScrollAreaType } from './types.js';
-import type { BitsPointerEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { type Direction, type Orientation, mergeProps, useId } from '$lib/internal/index.js';
+import type { BitsPointerEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { type Direction, type Orientation, mergeProps, useId } from '../../internal/index.js';
 import { on } from 'svelte/events';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import { StateMachine } from '$lib/internal/state-machine.js';
-import { observeResize, observeResizeMany } from '$lib/internal/svelte-resize-observer.svelte.js';
+import { createBitsAttrs } from '../../internal/attrs.js';
+import { StateMachine } from '../../internal/state-machine.js';
+import { observeResize, observeResizeMany } from '../../internal/svelte-resize-observer.svelte.js';
 
 const scrollAreaAttrs = createBitsAttrs({
 	component: 'scroll-area',

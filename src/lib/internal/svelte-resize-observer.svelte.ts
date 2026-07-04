@@ -1,4 +1,4 @@
-import type { Getter } from '$lib/internal/tools/index.js';
+import type { Getter } from '../internal/tools/index.js';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 
 type MaybeElement = Element | null | undefined | false;

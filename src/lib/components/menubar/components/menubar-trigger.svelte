@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { attachRef, boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { attachRef, boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { MenubarTriggerProps } from '../types.js';
 	import { MenubarTriggerState } from '../menubar.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
-	import { floatingAnchor } from '$lib/components/utilities/floating-layer/index.js';
-	import { DropdownMenuTriggerState } from '$lib/components/menu/menu.svelte.js';
+	import { createId } from '../../../internal/create-id.js';
+	import { floatingAnchor } from '../../../components/utilities/floating-layer/index.js';
+	import { DropdownMenuTriggerState } from '../../../components/menu/menu.svelte.js';
 
 	const uid = $props.id();
 

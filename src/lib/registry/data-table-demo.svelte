@@ -9,7 +9,7 @@
 
 <script lang="ts">
 	import { type ColumnDef, getCoreRowModel, getSortedRowModel, type SortingState } from '@tanstack/table-core';
-	import * as Table from '$lib/components/table/index.js';
+	import * as Table from '../components/table/index.js';
 	import {
 		createSvelteTable,
 		FlexRender,
@@ -17,7 +17,7 @@
 		textCell,
 		textHeader,
 		SortButton
-	} from '$lib/components/data-table/index.js';
+	} from '../components/data-table/index.js';
 
 	const data: Payment[] = [
 		{ id: 'm5gr84i9', amount: 316, status: 'success', email: 'ken99@example.com' },

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as ContextMenu from '$lib/components/context-menu/index.js';
+	import * as ContextMenu from '../components/context-menu/index.js';
 </script>
 
 <ContextMenu.Root>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as NativeSelect from '$lib/components/native-select/index.js';
+	import * as NativeSelect from '../components/native-select/index.js';
 
 	let value = $state('');
 </script>

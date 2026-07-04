@@ -28,7 +28,7 @@ export const DragTracker = (axis: AxisType): DragTrackerType => {
 	const readPoint = (evt: PointerEventType, evtAxis?: AxisOptionType): number => {
 		const property = evtAxis || axis.scroll;
 		const coord: PointerCoordType = `client${property === 'x' ? 'X' : 'Y'}`;
-		return (isMouseEvent(evt, windowInstance) ? evt : evt.touches[0])[coord];
+		return (isMouseEvent(evt, windowInstance) ? evt : evt.touches[0]!)[coord];
 	};
 
 	const pointerDown = (evt: PointerEventType): number => {

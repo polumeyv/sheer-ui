@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { WritableBox } from '$lib/internal/tools/index.js';
+import type { WritableBox } from '../../../internal/tools/index.js';
 
 export type InteractOutsideEvent = PointerEvent;
 export type InteractOutsideEventHandler = (e: PointerEvent) => void;

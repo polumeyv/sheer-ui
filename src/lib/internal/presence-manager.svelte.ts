@@ -1,5 +1,5 @@
 import { untrack } from 'svelte';
-import { type ReadableBoxedValues } from '$lib/internal/tools/index.js';
+import { type ReadableBoxedValues } from '../internal/tools/index.js';
 import { AnimationsComplete } from './animations-complete.js';
 import type { TransitionState } from './attrs.js';
 

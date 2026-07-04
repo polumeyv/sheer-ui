@@ -4,7 +4,7 @@
 	import type { HTMLDialogAttributes } from 'svelte/elements';
 	import { on } from 'svelte/events';
 	import ScrollLock from '../utilities/scroll-lock/scroll-lock.svelte';
-	import { getTabbableCandidates } from '$lib/internal/tabbable.js';
+	import { getTabbableCandidates } from '../../internal/tabbable.js';
 
 	/**
 	 * SPIKE: a modal dialog on the native <dialog> element + showModal(), to diff against the vendored

@@ -1,6 +1,6 @@
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
-import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '$lib/internal/attrs.js';
-import type { BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
+import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '../../internal/attrs.js';
+import type { BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
 
 export const toggleAttrs = createBitsAttrs({
 	component: 'toggle',

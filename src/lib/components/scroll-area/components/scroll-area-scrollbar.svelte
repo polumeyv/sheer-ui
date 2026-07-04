@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { ScrollAreaScrollbarProps } from '../types.js';
 	import { ScrollAreaScrollbarState } from '../scroll-area.svelte.js';
 	import ScrollAreaScrollbarAuto from './scroll-area-scrollbar-auto.svelte';
@@ -8,7 +8,7 @@
 	import ScrollAreaScrollbarHover from './scroll-area-scrollbar-hover.svelte';
 	import ScrollAreaScrollbarVisible from './scroll-area-scrollbar-visible.svelte';
 	import Thumb from './scroll-area-thumb.svelte';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();
 

@@ -1,20 +1,20 @@
 <script lang="ts" module>
 	import { join } from 'overrule';
-	import { sheetVariants, type Side } from '$lib/components/sheet/variants.js';
+	import { sheetVariants, type Side } from '../../../components/sheet/variants.js';
 	export { sheetVariants, type Side };
 </script>
 
 <script lang="ts">
 	import type { HTMLDialogAttributes } from 'svelte/elements';
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
-	import { DialogContentState } from '$lib/components/dialog/dialog.svelte.js';
-	import type { DialogContentProps, DialogPortalProps } from '$lib/components/dialog/types.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
+	import { DialogContentState } from '../../../components/dialog/dialog.svelte.js';
+	import type { DialogContentProps, DialogPortalProps } from '../../../components/dialog/types.js';
+	import { createId } from '../../../internal/create-id.js';
 	import { on } from 'svelte/events';
 	import { createAttachmentKey } from 'svelte/attachments';
-	import type { WithoutChildrenOrChild } from '$lib/utils.js';
-	import ScrollLock from '$lib/components/utilities/scroll-lock/scroll-lock.svelte';
+	import type { WithoutChildrenOrChild } from '../../../utils.js';
+	import ScrollLock from '../../../components/utilities/scroll-lock/scroll-lock.svelte';
 	import SheetClose from './sheet-close.svelte';
 	import XIcon from '@lucide/svelte/icons/x';
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Meter from '$lib/components/meter/index.js';
+	import * as Meter from '../components/meter/index.js';
 
 	const value = 72;
 	const max = 100;

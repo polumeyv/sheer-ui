@@ -9,7 +9,7 @@ type CheckedState = boolean | 'indeterminate';
 // `createRawSnippet`'s `render` returns a raw HTML string (like `{@html}`), so any cell text — which is usually
 // user-controlled (names, emails, …) — must be escaped before interpolation to avoid XSS.
 const ESCAPE: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ESCAPE[c]);
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ESCAPE[c]!);
 
 /**
  * Creates a selection column with checkbox for selecting rows

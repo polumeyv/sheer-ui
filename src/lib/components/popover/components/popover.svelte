@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PopoverRootProps } from '../types.js';
 	import { PopoverRootState } from '../popover.svelte.js';
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith } from '../../../internal/tools/index.js';
 
 	let {
 		open = $bindable(false),

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as Carousel from '$lib/components/carousel-native/index.js';
-	import * as Card from '$lib/components/card/index.js';
+	import * as Carousel from '../components/carousel-native/index.js';
+	import * as Card from '../components/card/index.js';
 </script>
 
 <Carousel.Root class="w-full max-w-xs">

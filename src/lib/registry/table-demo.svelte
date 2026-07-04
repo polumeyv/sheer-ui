@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Table from '$lib/components/table/index.js';
+	import * as Table from '../components/table/index.js';
 
 	const invoices = [
 		{ invoice: 'INV001', status: 'Paid', method: 'Credit Card', amount: '$250.00' },

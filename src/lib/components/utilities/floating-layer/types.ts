@@ -1,9 +1,9 @@
 import type { Snippet } from 'svelte';
-import type { ReadableBox } from '$lib/internal/tools/index.js';
+import type { ReadableBox } from '../../../internal/tools/index.js';
 import type { Align, Boundary, Side } from './use-floating-layer.svelte.js';
-import type { Arrayable } from '$lib/internal/types.js';
-import type { Direction, StyleProperties } from '$lib/internal/index.js';
-import type { Measurable } from '$lib/internal/floating-svelte/types.js';
+import type { Arrayable } from '../../../internal/types.js';
+import type { Direction, StyleProperties } from '../../../internal/index.js';
+import type { Measurable } from '../../../internal/floating-svelte/types.js';
 
 export type FloatingLayerContentProps = {
 	/**

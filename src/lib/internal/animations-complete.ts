@@ -1,5 +1,5 @@
 import { onDestroy, tick } from 'svelte';
-import { type ReadableBoxedValues } from '$lib/internal/tools/index.js';
+import { type ReadableBoxedValues } from '../internal/tools/index.js';
 
 interface AnimationsCompleteOpts extends ReadableBoxedValues<{
 	ref: HTMLElement | null;

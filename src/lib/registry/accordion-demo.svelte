@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Accordion from '$lib/components/accordion/index.js';
+	import * as Accordion from '../components/accordion/index.js';
 </script>
 
 <Accordion.Root type="single" value="item-1" class="w-full sm:max-w-[70%]">

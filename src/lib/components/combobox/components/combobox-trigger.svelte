@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { ComboboxTriggerProps } from '../types.js';
-	import { useId } from '$lib/internal/use-id.js';
-	import { SelectComboTriggerState } from '$lib/components/select/select.svelte.js';
+	import { useId } from '../../../internal/use-id.js';
+	import { SelectComboTriggerState } from '../../../components/select/select.svelte.js';
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 
 	let { id = useId(), ref = $bindable(null), child, children, type = 'button', ...restProps }: ComboboxTriggerProps = $props();

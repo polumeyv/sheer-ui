@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Label } from '$lib/components/label/index.js';
-	import { Input } from '$lib/components/input/index.js';
+	import { Label } from '../components/label/index.js';
+	import { Input } from '../components/input/index.js';
 </script>
 
 <div class="flex w-80 flex-col gap-2">

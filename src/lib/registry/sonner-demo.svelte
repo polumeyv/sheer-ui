@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Toaster, toast } from '$lib/components/sonner/index.js';
-	import { Button } from '$lib/components/button/index.js';
+	import { Toaster, toast } from '../components/sonner/index.js';
+	import { Button } from '../components/button/index.js';
 </script>
 
 <Toaster closeButton />

@@ -24,6 +24,8 @@ export function adjustLayoutByDelta({
 }): number[] {
 	if (areNumbersAlmostEqual(delta, 0)) return prevLayout;
 
+	assert(firstPivotIndex != null && secondPivotIndex != null);
+
 	const nextLayout = [...prevLayout];
 	const safeSize = (paneIndex: number, initialSize: number) => resizePane({ paneConstraints, paneIndex, initialSize });
 

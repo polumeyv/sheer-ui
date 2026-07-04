@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { HTMLOlAttributes } from 'svelte/elements';
 	import { join } from 'overrule';
-	import type { WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '../../utils.js';
 
 	let { ref = $bindable(null), class: className, children, ...restProps }: WithElementRef<HTMLOlAttributes> = $props();
 </script>

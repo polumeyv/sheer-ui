@@ -51,7 +51,7 @@ export const OptionsHandler = (): OptionsHandlerType => {
     const optionsAtMedia = options.breakpoints || {}
     const matchedMediaOptions = Object.keys(optionsAtMedia)
       .filter((media) => matchesMedia(media))
-      .map((media) => optionsAtMedia[media])
+      .map((media) => optionsAtMedia[media]!)
       .reduce(
         (mediaOptions, mediaOption) => mergeOptions(mediaOptions, mediaOption),
         {}

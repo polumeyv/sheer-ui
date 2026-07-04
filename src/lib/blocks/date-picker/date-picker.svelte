@@ -4,9 +4,9 @@
 	import { formatDateDisplay } from '@polumeyv/utilities/date';
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
-	import { buttonVariants } from '$lib/components/button';
+	import { buttonVariants } from '../../components/button';
 	import Calendar from '../calendar.svelte';
-	import { Popover } from '$lib/components/popover';
+	import { Popover } from '../../components/popover';
 
 	interface Props {
 		/** Selected date as an `@internationalized/date` `DateValue` — every date prop and callback speaks the same type. */

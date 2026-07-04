@@ -1,5 +1,5 @@
 // oxlint-disable no-explicit-any
-export { REGEXP_ONLY_DIGITS, REGEXP_ONLY_CHARS, REGEXP_ONLY_DIGITS_AND_CHARS } from '$lib/components/pin-input/pin-input.svelte.js';
+export { REGEXP_ONLY_DIGITS, REGEXP_ONLY_CHARS, REGEXP_ONLY_DIGITS_AND_CHARS } from '../components/pin-input/pin-input.svelte.js';
 
 export type Selected<Value> = {
 	value: Value;
@@ -21,7 +21,7 @@ export type Direction = 'ltr' | 'rtl';
 export type SliderThumbPositioning = 'exact' | 'contain';
 
 export type { StyleProperties } from './tools/types.js';
-export type { WithoutChild, WithoutChildren, WithoutChildrenOrChild, WithElementRef } from '$lib/utils.js';
+export type { WithoutChild, WithoutChildren, WithoutChildrenOrChild, WithElementRef } from '../utils.js';
 export type { WithChild, Without, WithChildren, FloatingContentSnippetProps, StaticContentSnippetProps } from './types.js';
 export type {
 	SegmentPart,
@@ -41,6 +41,6 @@ export type {
 	TimeOnInvalid,
 } from './date-time/types.js';
 
-export { mergeProps } from '$lib/merge-props.js';
+export { mergeProps } from '../merge-props.js';
 export { useId } from './use-id.js';
 export * from './attributes.js';

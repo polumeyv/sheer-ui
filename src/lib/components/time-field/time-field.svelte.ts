@@ -7,14 +7,14 @@ import {
 	type ReadableBoxedValues,
 	type WritableBoxedValues,
 	simpleBox,
-} from '$lib/internal/tools/index.js';
+} from '../../internal/tools/index.js';
 import { createContext, onMount, untrack } from 'svelte';
-import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
+import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import { isNumberString } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
-import { kbd } from '$lib/internal/kbd.js';
-import { useId } from '$lib/internal/use-id.js';
+import { kbd } from '../../internal/kbd.js';
+import { useId } from '../../internal/use-id.js';
 import type {
 	TimeSegmentObj,
 	SegmentPart,
@@ -23,13 +23,13 @@ import type {
 	TimeValidator,
 	TimeOnInvalid,
 	EditableTimeSegmentPart,
-} from '$lib/internal/date-time/types.js';
-import { type TimeFormatter, createTimeFormatter } from '$lib/internal/date-time/formatter.js';
-import { type Announcer, getAnnouncer } from '$lib/internal/date-time/announcer.js';
-import { EDITABLE_TIME_SEGMENT_PARTS } from '$lib/internal/date-time/field/parts.js';
-import { toDate } from '$lib/internal/date-time/utils.js';
+} from '../../internal/date-time/types.js';
+import { type TimeFormatter, createTimeFormatter } from '../../internal/date-time/formatter.js';
+import { type Announcer, getAnnouncer } from '../../internal/date-time/announcer.js';
+import { EDITABLE_TIME_SEGMENT_PARTS } from '../../internal/date-time/field/parts.js';
+import { toDate } from '../../internal/date-time/utils.js';
 
-import type { TimeValue } from '$lib/internal/date-time/types.js';
+import type { TimeValue } from '../../internal/date-time/types.js';
 import {
 	areAllTimeSegmentsFilled,
 	convertTimeValueToTime,
@@ -41,15 +41,15 @@ import {
 	isTimeBefore,
 	removeTimeDescriptionElement,
 	setTimeDescription,
-} from '$lib/internal/date-time/field/time-helpers.js';
+} from '../../internal/date-time/field/time-helpers.js';
 import {
 	getFirstTimeSegment,
 	handleTimeSegmentNavigation,
 	isSegmentNavigationKey,
 	moveToNextSegment,
 	moveToPrevSegment,
-} from '$lib/internal/date-time/field/segments.js';
-import { getDefaultHourCycle, isAcceptableSegmentKey } from '$lib/internal/date-time/field/helpers.js';
+} from '../../internal/date-time/field/segments.js';
+import { getDefaultHourCycle, isAcceptableSegmentKey } from '../../internal/date-time/field/helpers.js';
 import type { TimeRangeFieldRootState } from '../../components/time-range-field/time-range-field.svelte.js';
 
 export const timeFieldAttrs = createBitsAttrs({
@@ -977,7 +977,7 @@ class TimeFieldHourSegmentState extends BaseTimeSegmentState {
 		super(opts, root, 'hour', SEGMENT_CONFIGS.hour);
 	}
 
-	onkeydown(e: BitsKeyboardEvent) {
+	override onkeydown(e: BitsKeyboardEvent) {
 		const oldUpdateSegment = this.root.updateSegment.bind(this.root);
 
 		if (isNumberString(e.key)) {

@@ -1,11 +1,11 @@
 import { createContext } from 'svelte';
-import { type WritableBox, type WritableBoxedValues, type ReadableBoxedValues, attachRef } from '$lib/internal/tools/index.js';
-import { createBitsAttrs, getAriaChecked, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import type { Orientation } from '$lib/internal/index.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
-import { RovingFocusItem } from '$lib/internal/roving-focus-item.svelte.js';
+import { type WritableBox, type WritableBoxedValues, type ReadableBoxedValues, attachRef } from '../../internal/tools/index.js';
+import { createBitsAttrs, getAriaChecked, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '../../internal/attrs.js';
+import { kbd } from '../../internal/kbd.js';
+import type { Orientation } from '../../internal/index.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
+import { RovingFocusItem } from '../../internal/roving-focus-item.svelte.js';
 
 export const toolbarAttrs = createBitsAttrs({
 	component: 'toolbar',
@@ -93,8 +93,8 @@ interface ToolbarGroupSingleStateOpts
 		}> {}
 
 class ToolbarGroupSingleState extends ToolbarGroupBaseState {
-	readonly opts: ToolbarGroupSingleStateOpts;
-	readonly root: ToolbarRootState;
+	override readonly opts: ToolbarGroupSingleStateOpts;
+	override readonly root: ToolbarRootState;
 	readonly isMulti = false as const;
 	readonly anyPressed = $derived.by(() => this.opts.value.current !== '');
 
@@ -126,8 +126,8 @@ interface ToolbarGroupMultipleStateOpts
 		}> {}
 
 class ToolbarGroupMultipleState extends ToolbarGroupBaseState {
-	readonly opts: ToolbarGroupMultipleStateOpts;
-	readonly root: ToolbarRootState;
+	override readonly opts: ToolbarGroupMultipleStateOpts;
+	override readonly root: ToolbarRootState;
 	readonly isMulti = true as const;
 	readonly anyPressed = $derived.by(() => this.opts.value.current.length > 0);
 

@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from 'svelte/elements';
-import type { Without, WithChild } from '$lib/internal/index.js';
+import type { Without, WithChild } from '../../../internal/index.js';
 import type { Direction, PaneOnCollapse, PaneOnExpand, PaneOnResize, PaneResizeHandleOnDragging } from './internal/types.js';
 import type { PaneGroupStorage } from './internal/utils/storage.js';
 

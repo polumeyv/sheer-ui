@@ -10,12 +10,12 @@ import type {
 	WithChildNoChildrenSnippetProps,
 	WithChildren,
 	Without,
-} from "$lib/internal/types.js";
+} from "../../internal/types.js";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/internal/attributes.js";
-import type { PortalProps } from "$lib/components/utilities/portal/index.js";
+} from "../../internal/attributes.js";
+import type { PortalProps } from "../../components/utilities/portal/index.js";
 
 export type DialogRootPropsWithoutHTML = WithChildren<{
 	/**

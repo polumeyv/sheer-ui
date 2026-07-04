@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 
 	import { NavigationMenuContentState } from '../navigation-menu.svelte.js';
 	import NavigationMenuContentImpl from './navigation-menu-content-impl.svelte';
@@ -10,8 +10,8 @@
 	import Portal from '../../utilities/portal/portal.svelte';
 	import PresenceLayer from '../../utilities/presence-layer/presence-layer.svelte';
 
-	import { createId } from '$lib/internal/create-id.js';
-	import { getDataTransitionAttrs } from '$lib/internal/attrs.js';
+	import { createId } from '../../../internal/create-id.js';
+	import { getDataTransitionAttrs } from '../../../internal/attrs.js';
 
 	import type { NavigationMenuContentProps } from '../types.js';
 

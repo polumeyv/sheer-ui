@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Resizable from '$lib/components/resizable/index.js';
+	import * as Resizable from '../components/resizable/index.js';
 </script>
 
 <Resizable.PaneGroup direction="horizontal" class="h-48 max-w-md rounded-lg border">

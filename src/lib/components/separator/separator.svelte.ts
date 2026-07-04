@@ -1,7 +1,7 @@
-import { attachRef, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
-import { createBitsAttrs, boolToStrTrueOrUndef } from '$lib/internal/attrs.js';
-import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import type { Orientation } from '$lib/internal/index.js';
+import { attachRef, type ReadableBoxedValues } from '../../internal/tools/index.js';
+import { createBitsAttrs, boolToStrTrueOrUndef } from '../../internal/attrs.js';
+import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
+import type { Orientation } from '../../internal/index.js';
 
 const separatorAttrs = createBitsAttrs({
 	component: 'separator',

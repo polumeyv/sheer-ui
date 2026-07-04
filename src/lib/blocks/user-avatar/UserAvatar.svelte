@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Avatar from "$lib/components/avatar";
+	import * as Avatar from "../../components/avatar";
 	import type { ClassValue } from 'svelte/elements';
 
 	// Display avatar: an optional image (e.g. an S3 object keyed by the user) with initials as the fallback when no `src`

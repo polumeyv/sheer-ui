@@ -1,11 +1,11 @@
-import type { ArrowProps, ArrowPropsWithoutHTML } from '$lib/components/utilities/arrow/types.js';
-import type { DismissibleLayerProps } from '$lib/components/utilities/dismissible-layer/types.js';
-import type { EscapeLayerProps } from '$lib/components/utilities/escape-layer/types.js';
-import type { FloatingLayerContentProps } from '$lib/components/utilities/floating-layer/types.js';
-import type { PortalProps } from '$lib/components/utilities/portal/index.js';
-import type { BitsPrimitiveAnchorAttributes, BitsPrimitiveDivAttributes } from '$lib/internal/attributes.js';
-import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '$lib/internal/types.js';
-import type { FloatingContentSnippetProps } from '$lib/internal/types.js';
+import type { ArrowProps, ArrowPropsWithoutHTML } from '../../components/utilities/arrow/types.js';
+import type { DismissibleLayerProps } from '../../components/utilities/dismissible-layer/types.js';
+import type { EscapeLayerProps } from '../../components/utilities/escape-layer/types.js';
+import type { FloatingLayerContentProps } from '../../components/utilities/floating-layer/types.js';
+import type { PortalProps } from '../../components/utilities/portal/index.js';
+import type { BitsPrimitiveAnchorAttributes, BitsPrimitiveDivAttributes } from '../../internal/attributes.js';
+import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../internal/types.js';
+import type { FloatingContentSnippetProps } from '../../internal/types.js';
 
 export type LinkPreviewRootPropsWithoutHTML = WithChildren<{
 	/**

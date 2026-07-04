@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import { Separator } from '../separator';
-	import type { WithElementRef } from '$lib/utils.js';
+	import type { WithElementRef } from '../../utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 	let {

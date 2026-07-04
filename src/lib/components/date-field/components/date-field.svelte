@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith } from '../../../internal/tools/index.js';
 	import { DateFieldRootState } from '../date-field.svelte.js';
 	import type { DateFieldRootProps } from '../types.js';
-	import { getDefaultDate } from '$lib/internal/date-time/utils.js';
-	import { resolveLocaleProp } from '$lib/components/utilities/config/prop-resolvers.js';
+	import { getDefaultDate } from '../../../internal/date-time/utils.js';
+	import { resolveLocaleProp } from '../../../components/utilities/config/prop-resolvers.js';
 
 	let {
 		disabled = false,

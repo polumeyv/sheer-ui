@@ -1,8 +1,8 @@
 import { DateFormatter, type DateValue } from '@internationalized/date';
 import { hasTime, isZonedDateTime, toDate } from './utils.js';
-import type { HourCycle, TimeValue } from '$lib/internal/date-time/types.js';
+import type { HourCycle, TimeValue } from '../../internal/date-time/types.js';
 import { convertTimeValueToDateValue } from './field/time-helpers.js';
-import type { ReadableBox } from '$lib/internal/tools/index.js';
+import type { ReadableBox } from '../../internal/tools/index.js';
 
 export type Formatter = ReturnType<typeof createFormatter>;
 export type TimeFormatter = ReturnType<typeof createTimeFormatter>;

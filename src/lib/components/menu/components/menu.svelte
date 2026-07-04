@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith } from '../../../internal/tools/index.js';
 	import type { MenuRootProps } from '../types.js';
 	import { MenuMenuState, MenuRootState } from '../menu.svelte.js';
-	import FloatingLayer from '$lib/components/utilities/floating-layer/components/floating-layer.svelte';
+	import FloatingLayer from '../../../components/utilities/floating-layer/components/floating-layer.svelte';
 
 	let {
 		open = $bindable(false),

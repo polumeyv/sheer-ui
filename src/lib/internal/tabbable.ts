@@ -4,7 +4,7 @@ import {
 	isTabbable as getTabbableIsTabbable,
 	tabbable as getTabbableCandidatesForContainer,
 } from './vendor/tabbable.js';
-import { getDocument } from '$lib/internal/tools/index.js';
+import { getDocument } from '../internal/tools/index.js';
 
 function getTabbableOptions() {
 	return {

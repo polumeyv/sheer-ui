@@ -31,6 +31,6 @@ export const calculateAriaValues = ({
 	return {
 		valueMax: Math.min(currentMaxSize, 100 - totalMinSize),
 		valueMin: Math.max(currentMinSize, 100 - totalMaxSize),
-		valueNow: layout[firstIndex],
+		valueNow: layout[firstIndex!],
 	};
 };

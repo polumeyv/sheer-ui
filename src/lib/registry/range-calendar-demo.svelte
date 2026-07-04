@@ -3,9 +3,9 @@
 	// styling, so the consumer paints the grid/day cells with Tailwind utilities.
 	// The class strings mirror the project's styled range composition in
 	// `blocks/date-picker/range-date-picker.svelte`.
-	import { RangeCalendar } from '$lib/components/range-calendar/index.js';
+	import { RangeCalendar } from '../components/range-calendar/index.js';
 	import { today, getLocalTimeZone } from '@internationalized/date';
-	import type { DateRange } from '$lib/internal/index.js';
+	import type { DateRange } from '../internal/index.js';
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 

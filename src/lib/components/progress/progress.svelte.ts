@@ -1,6 +1,6 @@
-import { attachRef, type ReadableBoxedValues } from '$lib/internal/tools/index.js';
-import { createBitsAttrs } from '$lib/internal/attrs.js';
-import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
+import { attachRef, type ReadableBoxedValues } from '../../internal/tools/index.js';
+import { createBitsAttrs } from '../../internal/attrs.js';
+import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
 
 const progressAttrs = createBitsAttrs({
 	component: 'progress',

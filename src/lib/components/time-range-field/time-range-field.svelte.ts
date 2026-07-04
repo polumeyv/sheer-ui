@@ -1,16 +1,16 @@
 import type { Time } from '@internationalized/date';
-import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import { createContext, onMount, untrack } from 'svelte';
-import { TimeFieldRootState } from '$lib/components/time-field/time-field.svelte.js';
-import { TimeFieldInputState } from '$lib/components/time-field/time-field.svelte.js';
-import { useId } from '$lib/internal/use-id.js';
-import type { TimeSegmentPart } from '$lib/internal/index.js';
-import type { RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
-import type { TimeGranularity, TimeOnInvalid, TimeEndpoints, TimeRangeValidator, TimeValue } from '$lib/internal/date-time/types.js';
-import { type TimeFormatter, createTimeFormatter } from '$lib/internal/date-time/formatter.js';
-import { getFirstSegment } from '$lib/internal/date-time/field/segments.js';
-import { convertTimeValueToTime, isTimeBefore } from '$lib/internal/date-time/field/time-helpers.js';
+import { TimeFieldRootState } from '../../components/time-field/time-field.svelte.js';
+import { TimeFieldInputState } from '../../components/time-field/time-field.svelte.js';
+import { useId } from '../../internal/use-id.js';
+import type { TimeSegmentPart } from '../../internal/index.js';
+import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { createBitsAttrs, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
+import type { TimeGranularity, TimeOnInvalid, TimeEndpoints, TimeRangeValidator, TimeValue } from '../../internal/date-time/types.js';
+import { type TimeFormatter, createTimeFormatter } from '../../internal/date-time/formatter.js';
+import { getFirstSegment } from '../../internal/date-time/field/segments.js';
+import { convertTimeValueToTime, isTimeBefore } from '../../internal/date-time/field/time-helpers.js';
 
 export const timeRangeFieldAttrs = createBitsAttrs({
 	component: 'time-range-field',

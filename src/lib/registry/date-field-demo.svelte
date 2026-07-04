@@ -3,7 +3,7 @@
 	// styling, so the consumer supplies the bordered field shell and per-segment
 	// utilities (the shadcn convention). The Input renders one Segment per part via
 	// its `segments` snippet.
-	import * as DateField from '$lib/components/date-field/index.js';
+	import * as DateField from '../components/date-field/index.js';
 	import type { DateValue } from '@internationalized/date';
 
 	let value = $state<DateValue>();

@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import * as ToggleGroup from '$lib/components/toggle-group/index.js';
+	import * as ToggleGroup from '../components/toggle-group/index.js';
 	import Bold from '@lucide/svelte/icons/bold';
 	import Italic from '@lucide/svelte/icons/italic';
 	import Underline from '@lucide/svelte/icons/underline';

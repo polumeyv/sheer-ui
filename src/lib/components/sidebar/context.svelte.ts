@@ -1,5 +1,5 @@
 import { createContext } from "svelte";
-import { isMobile } from '$lib/hooks/is-mobile.svelte.js';
+import { isMobile } from '../../hooks/is-mobile.svelte.js';
 import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants';
 
 function isEditableTarget(target: EventTarget | null) {

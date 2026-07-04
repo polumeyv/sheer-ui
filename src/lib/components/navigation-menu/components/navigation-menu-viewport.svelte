@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
-	import { boxWith, mountedAttachment } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith, mountedAttachment } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 
 	import type { NavigationMenuViewportProps } from '../types.js';
 	import { NavigationMenuViewportState } from '../navigation-menu.svelte.js';
 
-	import PresenceLayer from '$lib/components/utilities/presence-layer/presence-layer.svelte';
+	import PresenceLayer from '../../../components/utilities/presence-layer/presence-layer.svelte';
 
-	import { createId } from '$lib/internal/create-id.js';
-	import { getDataTransitionAttrs } from '$lib/internal/attrs.js';
+	import { createId } from '../../../internal/create-id.js';
+	import { getDataTransitionAttrs } from '../../../internal/attrs.js';
 
 	const uid = $props.id();
 

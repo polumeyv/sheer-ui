@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { PaginationNextButtonProps } from '../types.js';
 	import { PaginationButtonState } from '../pagination.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '../../../internal/create-id.js';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-	import { buttonVariants } from '$lib/components/button';
+	import { buttonVariants } from '../../../components/button';
 
 	const uid = $props.id();
 

@@ -1,9 +1,9 @@
-import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { attachRef, boxWith, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import { createContext, onDestroy, untrack } from 'svelte';
-import { createBitsAttrs, boolToStr, getDataOpenClosed, boolToEmptyStrOrUndef, getDataTransitionAttrs } from '$lib/internal/attrs.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { PresenceManager } from '$lib/internal/presence-manager.svelte.js';
+import { createBitsAttrs, boolToStr, getDataOpenClosed, boolToEmptyStrOrUndef, getDataTransitionAttrs } from '../../internal/attrs.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { kbd } from '../../internal/kbd.js';
+import { PresenceManager } from '../../internal/presence-manager.svelte.js';
 
 type DialogVariant = 'alert-dialog' | 'dialog';
 

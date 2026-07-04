@@ -2,11 +2,11 @@
 	// Checkbox (button): controlled / headless. A <button role=checkbox> for table
 	// select-all, JS-owned state, and Checkbox.Group. It does NOT submit in a form;
 	// use `CheckboxNative` (name/value) for form fields.
-	import { boxWith, repairBindable } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { CheckboxRootProps } from '../types.js';
 	import { getCheckboxGroupOr, CheckboxRootState } from '../checkbox.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '../../../internal/create-id.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 

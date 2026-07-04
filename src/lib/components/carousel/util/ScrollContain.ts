@@ -21,7 +21,7 @@ export const ScrollContain = (
     pixelTolerance ? Math.abs(bound - snap) <= 1 : false
 
   const getScrollContainLimit = (): LimitType => {
-    const startSnap = snapsBounded[0]
+    const startSnap = snapsBounded[0]!
     const endSnap = snapsBounded.at(-1)!
     const min = snapsBounded.lastIndexOf(startSnap)
     const max = snapsBounded.indexOf(endSnap) + 1

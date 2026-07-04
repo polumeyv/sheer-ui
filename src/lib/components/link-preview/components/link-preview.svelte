@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith } from '../../../internal/tools/index.js';
 	import type { LinkPreviewRootProps } from '../types.js';
 	import { LinkPreviewRootState } from '../link-preview.svelte.js';
 

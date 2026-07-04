@@ -146,7 +146,7 @@ export const Engine = <API extends ReInitApi>(
 	);
 
 	const friction = 0.68;
-	const startLocation = scrollSnaps[indexCurrent.get()];
+	const startLocation = scrollSnaps[indexCurrent.get()]!;
 	const location = NumberStore(startLocation);
 	const previousLocation = NumberStore(startLocation);
 	const offsetLocation = NumberStore(startLocation);

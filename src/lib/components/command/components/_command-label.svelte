@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith } from '../../../internal/tools/index.js';
 	import { CommandLabelState } from '../command.svelte.js';
 
-	import type { WithChildren } from '$lib/internal/types.js';
-	import { createId } from '$lib/internal/create-id.js';
-	import { mergeProps } from '$lib/merge-props.js';
-	import type { BitsPrimitiveLabelAttributes, WithElementRef } from '$lib/internal/index.js';
+	import type { WithChildren } from '../../../internal/types.js';
+	import { createId } from '../../../internal/create-id.js';
+	import { mergeProps } from '../../../merge-props.js';
+	import type { BitsPrimitiveLabelAttributes, WithElementRef } from '../../../internal/index.js';
 
 	const uid = $props.id();
 	let {

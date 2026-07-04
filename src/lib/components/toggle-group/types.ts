@@ -1,9 +1,9 @@
-import type { OnChangeFn, WithChild, Without } from "$lib/internal/types.js";
+import type { OnChangeFn, WithChild, Without } from "../../internal/types.js";
 import type {
 	BitsPrimitiveButtonAttributes,
 	BitsPrimitiveDivAttributes,
-} from "$lib/internal/attributes.js";
-import type { Orientation } from "$lib/index.js";
+} from "../../internal/attributes.js";
+import type { Orientation } from "../../index.js";
 
 export type BaseToggleGroupRootProps = {
 	/**

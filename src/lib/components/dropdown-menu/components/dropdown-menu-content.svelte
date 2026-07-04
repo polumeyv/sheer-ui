@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { DropdownMenuContentProps } from '../types.js';
-	import { MenuContentState } from '$lib/components/menu/menu.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
-	import PopperLayer from '$lib/components/utilities/popper-layer/popper-layer.svelte';
-	import { getFloatingContentCSSVars } from '$lib/internal/floating-svelte/floating-utils.svelte.js';
+	import { MenuContentState } from '../../../components/menu/menu.svelte.js';
+	import { createId } from '../../../internal/create-id.js';
+	import PopperLayer from '../../../components/utilities/popper-layer/popper-layer.svelte';
+	import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
 
 	const uid = $props.id();
 

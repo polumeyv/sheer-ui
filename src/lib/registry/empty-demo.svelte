@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as Empty from '$lib/components/empty/index.js';
-	import { Button } from '$lib/components/button/index.js';
+	import * as Empty from '../components/empty/index.js';
+	import { Button } from '../components/button/index.js';
 	import FolderIcon from '@lucide/svelte/icons/folder';
 </script>
 

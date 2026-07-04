@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import * as Avatar from '$lib/components/avatar/index.js';
+	import * as Avatar from '../components/avatar/index.js';
 </script>
 
 <div class="flex -space-x-2">

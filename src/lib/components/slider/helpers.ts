@@ -1,4 +1,4 @@
-import type { StyleProperties } from "$lib/internal/index.js";
+import type { StyleProperties } from "../../internal/index.js";
 
 export function getRangeStyles(direction: "lr" | "rl" | "tb" | "bt", min: number, max: number) {
 	const styles: StyleProperties = {

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import * as Sheet from '$lib/components/sheet/index.js';
-	import { Button } from '$lib/components/button/index.js';
-	import { Input } from '$lib/components/input/index.js';
-	import { Label } from '$lib/components/label/index.js';
+	import * as Sheet from '../components/sheet/index.js';
+	import { Button } from '../components/button/index.js';
+	import { Input } from '../components/input/index.js';
+	import { Label } from '../components/label/index.js';
 </script>
 
 <Sheet.Root>

@@ -2,8 +2,8 @@
 	import Clock from '@lucide/svelte/icons/clock';
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
-	import { buttonVariants } from '$lib/components/button';
-	import * as NativeSelect from '$lib/components/native-select';
+	import { buttonVariants } from '../../components/button';
+	import * as NativeSelect from '../../components/native-select';
 	import { compareTime, generateTimeSlots, isTimeInRange, type TimeSlot, b_HOURS, EXTENDED_HOURS } from './time-slots';
 
 	type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';

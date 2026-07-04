@@ -3,11 +3,11 @@
 </script>
 
 <script lang="ts" generics="T = never">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { TooltipTriggerProps } from '../types.js';
 	import { TooltipTriggerState } from '../tooltip.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();
 

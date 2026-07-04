@@ -8,12 +8,13 @@ import {
 	composeHandlers,
 	contains,
 	mergeDisposers,
-} from '$lib/internal/tools/index.js';
+} from '../../../internal/tools/index.js';
 import { untrack } from 'svelte';
 import { on } from 'svelte/events';
 import { createAttachmentKey } from 'svelte/attachments';
 import type { PointerHandler, TextSelectionLayerImplProps } from './types.js';
-import { createLayerStack } from '$lib/internal/layer-stack.js';
+import { createLayerStack } from '../../../internal/layer-stack.js';
+import { globalSingleton } from '../../../internal/global-singleton.js';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
 
 interface TextSelectionLayerStateOpts extends ReadableBoxedValues<
@@ -22,7 +23,9 @@ interface TextSelectionLayerStateOpts extends ReadableBoxedValues<
 	}
 > {}
 
-globalThis.bitsTextSelectionLayers ??= createLayerStack<TextSelectionLayerState, ReadableBox<boolean>>();
+const textSelectionLayers = globalSingleton('bitsTextSelectionLayers', () =>
+	createLayerStack<TextSelectionLayerState, ReadableBox<boolean>>(),
+);
 
 export class TextSelectionLayerState {
 	static create(opts: TextSelectionLayerStateOpts) {
@@ -53,7 +56,7 @@ export class TextSelectionLayerState {
 				this.#onPointerUpSnapshot = onPointerUp;
 
 				if (enabled) {
-					globalThis.bitsTextSelectionLayers.register(this, this.opts.enabled);
+					textSelectionLayers.register(this, this.opts.enabled);
 					unsubEvents();
 					unsubEvents = this.#addEventListeners();
 				}
@@ -61,7 +64,7 @@ export class TextSelectionLayerState {
 					this.#enabledSnapshot = false;
 					unsubEvents();
 					this.#resetSelectionLock();
-					globalThis.bitsTextSelectionLayers.unregister(this);
+					textSelectionLayers.unregister(this);
 				};
 			});
 		});
@@ -87,7 +90,7 @@ export class TextSelectionLayerState {
 		 * pointerdown occurred inside the node. You are still allowed to select text
 		 * outside the node provided pointerdown occurs outside the node.
 		 */
-		if (!globalThis.bitsTextSelectionLayers.isResponsible(this) || !contains(node, target)) return;
+		if (!textSelectionLayers.isResponsible(this) || !contains(node, target)) return;
 		this.#onPointerDownSnapshot(e);
 		if (e.defaultPrevented) return;
 		this.#unsubSelectionLock = preventTextSelectionOverflow(node, this.domContext.getDocument().body);

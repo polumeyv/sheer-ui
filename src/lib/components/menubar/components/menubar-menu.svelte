@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith } from '../../../internal/tools/index.js';
 	import type { MenubarMenuProps } from '../types.js';
 	import { MenubarMenuState } from '../menubar.svelte.js';
-	import Menu from '$lib/components/menu/components/menu.svelte';
-	import { createId } from '$lib/internal/create-id.js';
+	import Menu from '../../../components/menu/components/menu.svelte';
+	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();
 

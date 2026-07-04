@@ -1,5 +1,5 @@
-import { kbd, SELECTION_KEYS } from "$lib/internal/kbd.js";
-import type { Direction } from "$lib/internal/index.js";
+import { kbd, SELECTION_KEYS } from "../../internal/kbd.js";
+import type { Direction } from "../../internal/index.js";
 
 export type CheckedState = boolean | "indeterminate";
 

@@ -9,15 +9,15 @@ import {
 	type ReadableBoxedValues,
 	type WritableBoxedValues,
 	simpleBox,
-} from '$lib/internal/tools/index.js';
+} from '../../internal/tools/index.js';
 import { createContext, onMount, untrack } from 'svelte';
 import type { DateRangeFieldRootState } from '../date-range-field/date-range-field.svelte.js';
-import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, WithRefOpts, RefAttachment } from '$lib/internal/types.js';
-import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
+import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, WithRefOpts, RefAttachment } from '../../internal/types.js';
+import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import { isNumberString } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
-import { kbd } from '$lib/internal/kbd.js';
-import { useId } from '$lib/internal/use-id.js';
+import { kbd } from '../../internal/kbd.js';
+import { useId } from '../../internal/use-id.js';
 import type {
 	DateAndTimeSegmentObj,
 	DateOnInvalid,
@@ -30,9 +30,9 @@ import type {
 	SegmentValueObj,
 	TimeSegmentObj,
 	EditableTimeSegmentPart,
-} from '$lib/internal/date-time/types.js';
-import { type Formatter, createFormatter } from '$lib/internal/date-time/formatter.js';
-import { type Announcer, getAnnouncer } from '$lib/internal/date-time/announcer.js';
+} from '../../internal/date-time/types.js';
+import { type Formatter, createFormatter } from '../../internal/date-time/formatter.js';
+import { type Announcer, getAnnouncer } from '../../internal/date-time/announcer.js';
 import {
 	areAllSegmentsFilled,
 	createContent,
@@ -46,16 +46,16 @@ import {
 	isDateSegmentPart,
 	isFirstSegment,
 	setDescription,
-} from '$lib/internal/date-time/field/helpers.js';
-import { DATE_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from '$lib/internal/date-time/field/parts.js';
-import { getDaysInMonth, isBefore, toDate } from '$lib/internal/date-time/utils.js';
+} from '../../internal/date-time/field/helpers.js';
+import { DATE_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from '../../internal/date-time/field/parts.js';
+import { getDaysInMonth, isBefore, toDate } from '../../internal/date-time/utils.js';
 import {
 	getFirstSegment,
 	handleSegmentNavigation,
 	isSegmentNavigationKey,
 	moveToNextSegment,
 	moveToPrevSegment,
-} from '$lib/internal/date-time/field/segments.js';
+} from '../../internal/date-time/field/segments.js';
 
 export const dateFieldAttrs = createBitsAttrs({
 	component: 'date-field',
@@ -1101,7 +1101,7 @@ class DateFieldYearSegmentState extends BaseNumericSegmentState {
 		super(opts, root, 'year', SEGMENT_CONFIGS.year);
 	}
 
-	onkeydown(e: BitsKeyboardEvent) {
+	override onkeydown(e: BitsKeyboardEvent) {
 		if (e.ctrlKey || e.metaKey || this.root.disabled.current) return;
 		if (e.key !== kbd.TAB) e.preventDefault();
 		if (!isAcceptableSegmentKey(e.key)) return;
@@ -1220,7 +1220,7 @@ class DateFieldYearSegmentState extends BaseNumericSegmentState {
 		}
 	}
 
-	onfocusout(_: BitsFocusEvent) {
+	override onfocusout(_: BitsFocusEvent) {
 		this.root.states.year.hasLeftFocus = true;
 		this.#pressedKeys = [];
 		this.#resetBackspaceCount();
@@ -1251,7 +1251,7 @@ class DateFieldHourSegmentState extends BaseNumericSegmentState {
 	}
 
 	// Override to handle special hour logic
-	onkeydown(e: BitsKeyboardEvent) {
+	override onkeydown(e: BitsKeyboardEvent) {
 		// Add special handling for hour display with dayPeriod
 		if (isNumberString(e.key)) {
 			const oldUpdateSegment = this.root.updateSegment.bind(this.root);

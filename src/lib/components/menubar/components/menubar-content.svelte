@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { MenubarContentProps } from '../types.js';
 	import { MenubarContentState } from '../menubar.svelte.js';
-	import MenuContent from '$lib/components/menu/components/menu-content.svelte';
-	import { createId } from '$lib/internal/create-id.js';
+	import MenuContent from '../../../components/menu/components/menu-content.svelte';
+	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();
 

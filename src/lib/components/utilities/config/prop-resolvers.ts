@@ -1,5 +1,5 @@
-import { boxWith, type Getter, type ReadableBox } from '$lib/internal/tools/index.js';
-import type { PortalTarget } from '$lib/components/utilities/portal';
+import { boxWith, type Getter, type ReadableBox } from '../../../internal/tools/index.js';
+import type { PortalTarget } from '../../../components/utilities/portal';
 
 const createPropResolver =
 	<T>(fallback: T) =>

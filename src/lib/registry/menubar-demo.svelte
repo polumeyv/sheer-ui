@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Menubar from '$lib/components/menubar/index.js';
+	import * as Menubar from '../components/menubar/index.js';
 </script>
 
 <Menubar.Root>

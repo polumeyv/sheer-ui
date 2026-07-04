@@ -1,4 +1,4 @@
-import { getWindow, type DOMContext, type ReadableBox, type WritableBox } from '$lib/internal/tools/index.js';
+import { getWindow, type DOMContext, type ReadableBox, type WritableBox } from '../../internal/tools/index.js';
 import type { PinInputRootPropsWithoutHTML } from './types.js';
 
 const PWM_BADGE_MARGIN_RIGHT = 18;

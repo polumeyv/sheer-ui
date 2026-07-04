@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Breadcrumb from '$lib/components/breadcrumb/index.js';
+	import * as Breadcrumb from '../components/breadcrumb/index.js';
 </script>
 
 <Breadcrumb.Root>

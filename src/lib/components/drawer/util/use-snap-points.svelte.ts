@@ -1,4 +1,4 @@
-import type { ReadableBoxedValues, WritableBoxedValues } from '$lib/internal/tools/index.js';
+import type { ReadableBoxedValues, WritableBoxedValues } from '../../../internal/tools/index.js';
 import type { DrawerDirection, Getters } from './types.js';
 import { applyStyle, isVertical } from './helpers.js';
 import { TRANSITIONS, VELOCITY_THRESHOLD } from './internal/constants.js';
@@ -174,13 +174,13 @@ export function useSnapPoints({
 			if (dismissible) {
 				closeDrawer();
 			} else {
-				snapToPoint(snapPointsOffset[0]);
+				snapToPoint(snapPointsOffset[0]!);
 			}
 			return;
 		}
 
 		if (!snapToSequentialPoint.current && velocity > 2 && hasDraggedUp && snapPointsOffset && snapPoints.current) {
-			snapToPoint(snapPointsOffset[snapPoints.current.length - 1]);
+			snapToPoint(snapPointsOffset[snapPoints.current.length - 1]!);
 			return;
 		}
 
@@ -197,7 +197,7 @@ export function useSnapPoints({
 
 			// Don't do anything if we swipe upwards while being on the last snap point
 			if (dragDirection > 0 && isLastSnapPoint && snapPoints.current) {
-				snapToPoint(snapPointsOffset[snapPoints.current.length - 1]);
+				snapToPoint(snapPointsOffset[snapPoints.current.length - 1]!);
 				return;
 			}
 
@@ -207,18 +207,18 @@ export function useSnapPoints({
 
 			if (activeSnapPointIndex === null) return;
 
-			snapToPoint(snapPointsOffset[activeSnapPointIndex! + dragDirection]);
+			snapToPoint(snapPointsOffset[activeSnapPointIndex! + dragDirection]!);
 			return;
 		}
 		snapToPoint(closestSnapPoint);
 	}
 
 	const onDrag = ({ draggedDistance }: { draggedDistance: number }) => {
-		if (activeSnapPointOffset === null) return;
+		if (activeSnapPointOffset == null) return;
 		const dir = direction.current;
 		const bottomOrRight = dir === 'bottom' || dir === 'right';
 		const newValue = bottomOrRight ? activeSnapPointOffset - draggedDistance : activeSnapPointOffset + draggedDistance;
-		const lastSnapPoint = snapPointsOffset[snapPointsOffset.length - 1];
+		const lastSnapPoint = snapPointsOffset[snapPointsOffset.length - 1]!;
 		// Don't do anything if we exceed the last (biggest) snap point
 		if (bottomOrRight && newValue < lastSnapPoint) return;
 		if (!bottomOrRight && newValue > lastSnapPoint) return;
@@ -237,8 +237,8 @@ export function useSnapPoints({
 		if (!shouldFade && !isOverlaySnapPoint) return null;
 		const targetSnapPointIndex = isOverlaySnapPoint ? activeSnapPointIndex + 1 : activeSnapPointIndex - 1;
 		const snapPointDistance = isOverlaySnapPoint
-			? snapPointsOffset[targetSnapPointIndex] - snapPointsOffset[targetSnapPointIndex - 1]
-			: snapPointsOffset[targetSnapPointIndex + 1] - snapPointsOffset[targetSnapPointIndex];
+			? snapPointsOffset[targetSnapPointIndex]! - snapPointsOffset[targetSnapPointIndex - 1]!
+			: snapPointsOffset[targetSnapPointIndex + 1]! - snapPointsOffset[targetSnapPointIndex]!;
 		const percentageDragged = absDraggedDistance / Math.abs(snapPointDistance);
 		return isOverlaySnapPoint ? 1 - percentageDragged : percentageDragged;
 	};

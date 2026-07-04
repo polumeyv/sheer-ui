@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as Drawer from '$lib/components/drawer/index.js';
-	import { Button } from '$lib/components/button/index.js';
+	import * as Drawer from '../components/drawer/index.js';
+	import { Button } from '../components/button/index.js';
 </script>
 
 <Drawer.Root>

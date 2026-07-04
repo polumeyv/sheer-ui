@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import type { DatePickerCalendarProps } from '../types.js';
 	import { getDatePickerRoot } from '../date-picker.svelte.js';
-	import { CalendarRootState } from '$lib/components/calendar/calendar.svelte.js';
-	import { createId } from '$lib/internal/create-id.js';
+	import { CalendarRootState } from '../../../components/calendar/calendar.svelte.js';
+	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();
 

@@ -36,7 +36,7 @@ export const SlideLooper = (
 
 	const getRemainingGapAfterSlides = (indexes: number[], from: number): number =>
 		indexes.reduce((remainingGap: number, index) => {
-			return remainingGap - slideSizesWithGaps[index];
+			return remainingGap - slideSizesWithGaps[index]!;
 		}, from);
 
 	const getSlidesThatFitGap = (indexes: number[], gap: number): number[] =>
@@ -47,7 +47,7 @@ export const SlideLooper = (
 
 	const getSlideBounds = (offset: number): SlideBoundType[] =>
 		snaps.map((snap, index) => ({
-			start: snap - slideSizes[index] + roundingSafety + offset,
+			start: snap - slideSizes[index]! + roundingSafety + offset,
 			end: snap + viewSize - roundingSafety + offset,
 		}));
 
@@ -58,26 +58,26 @@ export const SlideLooper = (
 			const initial = isEndEdge ? 0 : -contentSize;
 			const altered = isEndEdge ? contentSize : 0;
 			const boundEdge = isEndEdge ? 'end' : 'start';
-			const loopPoint = slideBounds[index][boundEdge];
+			const loopPoint = slideBounds[index]![boundEdge];
 
 			return {
 				index,
 				loopPoint,
 				slideLocation: NumberStore(-1),
-				translate: slideTranslates[index],
+				translate: slideTranslates[index]!,
 				target: () => (location.get() > loopPoint ? initial : altered),
 			};
 		});
 	};
 
 	const startPoints = (): LoopPointType[] => {
-		const gap = scrollSnaps[0];
+		const gap = scrollSnaps[0]!;
 		const indexes = getSlidesThatFitGap(descItems, gap);
 		return getLoopPoints(indexes, contentSize, false);
 	};
 
 	const endPoints = (): LoopPointType[] => {
-		const gap = viewSize - scrollSnaps[0] - 1;
+		const gap = viewSize - scrollSnaps[0]! - 1;
 		const indexes = getSlidesThatFitGap(ascItems, gap);
 		return getLoopPoints(indexes, -contentSize, true);
 	};

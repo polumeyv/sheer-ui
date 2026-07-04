@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { type WritableBox, boxWith, repairBindable } from '$lib/internal/tools/index.js';
+	import { type WritableBox, boxWith, repairBindable } from '../../../internal/tools/index.js';
 	import type { ComboboxRootProps } from '../types.js';
-	import FloatingLayer from '$lib/components/utilities/floating-layer/components/floating-layer.svelte';
-	import { SelectRootState } from '$lib/components/select/select.svelte.js';
-	import ListboxHiddenInput from '$lib/components/select/components/select-hidden-input.svelte';
+	import FloatingLayer from '../../../components/utilities/floating-layer/components/floating-layer.svelte';
+	import { SelectRootState } from '../../../components/select/select.svelte.js';
+	import ListboxHiddenInput from '../../../components/select/components/select-hidden-input.svelte';
 
 	let {
 		value = $bindable(),

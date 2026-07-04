@@ -1,6 +1,6 @@
-import { attachRef } from '$lib/internal/tools/index.js';
-import type { BitsMouseEvent, RefAttachment, WithRefOpts } from "$lib/internal/types.js";
-import { createBitsAttrs } from "$lib/internal/attrs.js";
+import { attachRef } from '../../internal/tools/index.js';
+import type { BitsMouseEvent, RefAttachment, WithRefOpts } from "../../internal/types.js";
+import { createBitsAttrs } from "../../internal/attrs.js";
 
 const labelAttrs = createBitsAttrs({
 	component: "label",

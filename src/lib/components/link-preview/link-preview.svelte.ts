@@ -1,11 +1,11 @@
-import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import { on } from 'svelte/events';
 import { createContext, onDestroy, untrack } from 'svelte';
-import { createBitsAttrs, boolToStr, getDataOpenClosed } from '$lib/internal/attrs.js';
+import { createBitsAttrs, boolToStr, getDataOpenClosed } from '../../internal/attrs.js';
 import { isElement } from '@polumeyv/utilities/dom';
-import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { getTabbableCandidates } from '$lib/internal/focus.js';
-import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
+import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { getTabbableCandidates } from '../../internal/focus.js';
+import { SafePolygon } from '../../internal/safe-polygon.svelte.js';
 
 const linkPreviewAttrs = createBitsAttrs({
 	component: 'link-preview',

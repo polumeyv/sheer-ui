@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import * as DialogPrimitive from '$lib/components/dialog/index.js';
-	import { type WithChildren, boxWith } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import * as DialogPrimitive from '../../components/dialog/index.js';
+	import { type WithChildren, boxWith } from '../../internal/tools/index.js';
+	import { mergeProps } from '../../merge-props.js';
 	import type { ComponentProps } from 'svelte';
-	import type { WithoutChildrenOrChild } from '$lib/utils.js';
-	import { useId } from '$lib/internal/use-id.js';
+	import type { WithoutChildrenOrChild } from '../../utils.js';
+	import { useId } from '../../internal/use-id.js';
 	import DrawerPortal from './drawer-portal.svelte';
 	import DrawerOverlay from './drawer-overlay.svelte';
 	import { noop } from '@polumeyv/utilities';

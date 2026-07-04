@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith } from '../../../internal/tools/index.js';
 	import type { TooltipProviderProps } from '../types.js';
 	import { TooltipProviderState } from '../tooltip.svelte.js';
 

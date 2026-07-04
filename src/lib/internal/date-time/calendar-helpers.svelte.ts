@@ -1,5 +1,5 @@
 import { type DateValue, endOfMonth, isSameDay, isSameMonth, startOfMonth } from '@internationalized/date';
-import { type ReadableBox, type WritableBox, getDocument, srOnlyStylesString } from '$lib/internal/tools/index.js';
+import { type ReadableBox, type WritableBox, getDocument, srOnlyStylesString } from '../../internal/tools/index.js';
 import { tick, untrack } from 'svelte';
 import {
 	getDaysInMonth,
@@ -13,12 +13,12 @@ import {
 	toDate,
 } from './utils.js';
 import type { Formatter } from './formatter.js';
-import { createBitsAttrs, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
-import { chunk, isValidIndex } from '$lib/internal/arrays.js';
+import { createBitsAttrs, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
+import { chunk, isValidIndex } from '../../internal/arrays.js';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
-import { kbd } from '$lib/internal/kbd.js';
-import type { DateMatcher, Month } from '$lib/internal/index.js';
+import { kbd } from '../../internal/kbd.js';
+import type { DateMatcher, Month } from '../../internal/index.js';
 
 /** Is `node` a calendar cell? */
 export const isCalendarDayNode = (node: unknown): node is HTMLElement => isHTMLElement(node) && node.hasAttribute('data-bits-day');

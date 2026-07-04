@@ -1,11 +1,11 @@
 import { createContext } from 'svelte';
-import { type WritableBox, type ReadableBoxedValues, type WritableBoxedValues, attachRef } from '$lib/internal/tools/index.js';
-import { createBitsAttrs, getAriaChecked, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import type { Orientation } from '$lib/internal/index.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { RovingFocusGroup } from '$lib/internal/roving-focus-group.js';
-import { RovingFocusItem } from '$lib/internal/roving-focus-item.svelte.js';
+import { type WritableBox, type ReadableBoxedValues, type WritableBoxedValues, attachRef } from '../../internal/tools/index.js';
+import { createBitsAttrs, getAriaChecked, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '../../internal/attrs.js';
+import { kbd } from '../../internal/kbd.js';
+import type { Orientation } from '../../internal/index.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
+import { RovingFocusItem } from '../../internal/roving-focus-item.svelte.js';
 
 export const toggleGroupAttrs = createBitsAttrs({
 	component: 'toggle-group',
@@ -61,7 +61,7 @@ interface ToggleGroupSingleStateOpts
 		}> {}
 
 class ToggleGroupSingleState extends ToggleGroupBaseState {
-	readonly opts: ToggleGroupSingleStateOpts;
+	override readonly opts: ToggleGroupSingleStateOpts;
 	isMulti = false;
 	readonly anyPressed = $derived.by(() => this.opts.value.current !== '');
 
@@ -96,7 +96,7 @@ interface ToggleGroupMultipleStateOpts
 		}> {}
 
 class ToggleGroupMultipleState extends ToggleGroupBaseState {
-	readonly opts: ToggleGroupMultipleStateOpts;
+	override readonly opts: ToggleGroupMultipleStateOpts;
 	isMulti = true;
 	readonly anyPressed = $derived.by(() => this.opts.value.current.length > 0);
 

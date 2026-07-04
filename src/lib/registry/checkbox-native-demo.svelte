@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { CheckboxNative } from '$lib/components/checkbox-native/index.js';
-	import { Label } from '$lib/components/label/index.js';
+	import { CheckboxNative } from '../components/checkbox-native/index.js';
+	import { Label } from '../components/label/index.js';
 
 	let checked = $state(true);
 </script>

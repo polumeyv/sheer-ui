@@ -3,8 +3,8 @@
 </script>
 
 <script lang="ts">
-	import { CheckboxNative } from '$lib/components/checkbox-native/index.js';
-	import { Label } from '$lib/components/label/index.js';
+	import { CheckboxNative } from '../components/checkbox-native/index.js';
+	import { Label } from '../components/label/index.js';
 
 	let channels = $state({ email: true, sms: false, push: false });
 	const values = $derived(Object.values(channels));

@@ -3,8 +3,8 @@
 </script>
 
 <script lang="ts">
-	import * as Checkbox from '$lib/components/checkbox/index.js';
-	import { Label } from '$lib/components/label/index.js';
+	import * as Checkbox from '../components/checkbox/index.js';
+	import { Label } from '../components/label/index.js';
 
 	let value = $state(['recents']);
 

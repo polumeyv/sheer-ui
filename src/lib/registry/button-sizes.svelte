@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import { Button } from "$lib/components/button/index.js";
+	import { Button } from "../components/button/index.js";
 	import Plus from "@lucide/svelte/icons/plus";
 </script>
 

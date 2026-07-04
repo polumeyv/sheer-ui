@@ -11,7 +11,7 @@ import {
 	parseZonedDateTime,
 	toCalendar,
 } from '@internationalized/date';
-import type { DateMatcher, Granularity, TimeGranularity, TimeValue } from '$lib/internal/date-time/types.js';
+import type { DateMatcher, Granularity, TimeGranularity, TimeValue } from '../../internal/date-time/types.js';
 
 type GetDefaultDateProps = {
 	defaultValue?: DateValue | DateValue[] | undefined;

@@ -3,8 +3,8 @@
 </script>
 
 <script lang="ts">
-	import * as Sheet from '$lib/components/sheet/index.js';
-	import { Button } from '$lib/components/button/index.js';
+	import * as Sheet from '../components/sheet/index.js';
+	import { Button } from '../components/button/index.js';
 </script>
 
 <Sheet.Root>

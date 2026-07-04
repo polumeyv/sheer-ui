@@ -1,6 +1,6 @@
 import { createContext } from 'svelte';
 import type { DrawerDirection } from './types.js';
-import type { ReadableBoxedValues, WritableBoxedValues } from '$lib/internal/tools/index.js';
+import type { ReadableBoxedValues, WritableBoxedValues } from '../../../internal/tools/index.js';
 
 export interface DrawerContextValue
 	extends

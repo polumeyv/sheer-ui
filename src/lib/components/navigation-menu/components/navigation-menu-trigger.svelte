@@ -8,14 +8,14 @@
 
 <script lang="ts">
 	import type { ClassValue } from 'svelte/elements';
-	import { boxWith, mountedAttachment } from '$lib/internal/tools/index.js';
-	import { mergeProps } from '$lib/merge-props.js';
+	import { boxWith, mountedAttachment } from '../../../internal/tools/index.js';
+	import { mergeProps } from '../../../merge-props.js';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
 	import type { NavigationMenuTriggerProps } from '../types.js';
 	import { NavigationMenuTriggerState } from '../navigation-menu.svelte.js';
 
-	import { createId } from '$lib/internal/create-id.js';
+	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();
 

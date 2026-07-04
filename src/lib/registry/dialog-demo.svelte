@@ -2,10 +2,10 @@
 	// `components/dialog` is the headless bits primitive — it ships no visual
 	// styling, so the consumer supplies the modal surface with Tailwind utilities
 	// (the shadcn convention). This is real usage, not a parallel CSS system.
-	import * as Dialog from "$lib/components/dialog/index.js";
-	import { Button } from "$lib/components/button/index.js";
-	import { Input } from "$lib/components/input/index.js";
-	import { Label } from "$lib/components/label/index.js";
+	import * as Dialog from "../components/dialog/index.js";
+	import { Button } from "../components/button/index.js";
+	import { Input } from "../components/input/index.js";
+	import { Label } from "../components/label/index.js";
 	import X from "@lucide/svelte/icons/x";
 </script>
 

@@ -1,4 +1,4 @@
-import type { Getter } from '$lib/internal/tools/index.js';
+import type { Getter } from '../internal/tools/index.js';
 import { on } from 'svelte/events';
 import { isFunction, isString } from '@polumeyv/utilities';
 

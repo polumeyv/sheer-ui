@@ -2,8 +2,8 @@
 	// `item` ships no `Title`/`Actions` parts — the title is a styled element
 	// inside `Item.Content` and the trailing action sits as the last child of
 	// `Item.Root`, matching the shadcn item composition.
-	import * as Item from '$lib/components/item/index.js';
-	import { Button } from '$lib/components/button/index.js';
+	import * as Item from '../components/item/index.js';
+	import { Button } from '../components/button/index.js';
 	import BellIcon from '@lucide/svelte/icons/bell';
 </script>
 

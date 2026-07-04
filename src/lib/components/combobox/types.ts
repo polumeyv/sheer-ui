@@ -1,10 +1,10 @@
-import type { BitsPrimitiveInputAttributes } from '$lib/internal/attributes.js';
+import type { BitsPrimitiveInputAttributes } from '../../internal/attributes.js';
 import type {
 	SelectBaseRootPropsWithoutHTML,
 	SelectMultipleRootPropsWithoutHTML,
 	SelectSingleRootPropsWithoutHTML,
-} from '$lib/components/select/types.js';
-import type { WithChild, Without } from '$lib/internal/types.js';
+} from '../../components/select/types.js';
+import type { WithChild, Without } from '../../internal/types.js';
 
 export type ComboboxBaseRootPropsWithoutHTML = Omit<SelectBaseRootPropsWithoutHTML, 'autocomplete'> & {
 	/**
@@ -53,7 +53,7 @@ export type {
 	SelectArrowPropsWithoutHTML as ComboboxArrowPropsWithoutHTML,
 	SelectPortalProps as ComboboxPortalProps,
 	SelectPortalPropsWithoutHTML as ComboboxPortalPropsWithoutHTML,
-} from '$lib/components/select/types.js';
+} from '../../components/select/types.js';
 
 export type ComboboxInputPropsWithoutHTML = WithChild<{
 	/**

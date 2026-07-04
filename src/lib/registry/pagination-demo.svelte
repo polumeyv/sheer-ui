@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Pagination from '$lib/components/pagination/index.js';
+	import * as Pagination from '../components/pagination/index.js';
 	import MoreHorizontalIcon from '@lucide/svelte/icons/ellipsis';
 </script>
 

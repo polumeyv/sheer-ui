@@ -1,5 +1,5 @@
-import type { WithChild } from "$lib/internal/types.js";
-import type { BitsPrimitiveSpanAttributes } from "$lib/internal/attributes.js";
+import type { WithChild } from "../../../internal/types.js";
+import type { BitsPrimitiveSpanAttributes } from "../../../internal/attributes.js";
 
 export type ArrowPropsWithoutHTML = WithChild<{
 	/**

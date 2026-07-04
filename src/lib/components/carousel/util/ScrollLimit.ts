@@ -9,7 +9,7 @@ export const ScrollLimit = (
   scrollSnaps: number[],
   loop: boolean
 ): ScrollLimitType => {
-  const max = scrollSnaps[0]
+  const max = scrollSnaps[0]!
   const min = loop ? max - contentSize : scrollSnaps.at(-1)!
   const limit = Limit(min, max)
 

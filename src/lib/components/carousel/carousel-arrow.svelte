@@ -2,7 +2,7 @@
 	import { join } from 'overrule';
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-	import type { WithoutChildren } from '$lib/internal/index.js';
+	import type { WithoutChildren } from '../../internal/index.js';
 	import { getCarouselContext } from './carouselState.svelte';
 	import { Button, type Props } from '../button';
 

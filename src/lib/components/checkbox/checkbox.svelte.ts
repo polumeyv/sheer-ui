@@ -1,10 +1,10 @@
 import { createContext, untrack } from 'svelte';
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '$lib/internal/tools/index.js';
+import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import type { HTMLButtonAttributes } from 'svelte/elements';
-import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '$lib/internal/types.js';
-import { boolToStr, createBitsAttrs, getAriaChecked, boolToEmptyStrOrUndef } from '$lib/internal/attrs.js';
-import { kbd } from '$lib/internal/kbd.js';
-import { arraysAreEqual } from '$lib/internal/arrays.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import { boolToStr, createBitsAttrs, getAriaChecked, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
+import { kbd } from '../../internal/kbd.js';
+import { arraysAreEqual } from '../../internal/arrays.js';
 
 const checkboxAttrs = createBitsAttrs({
 	component: 'checkbox',

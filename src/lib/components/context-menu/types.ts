@@ -1,6 +1,6 @@
 import type { MenuContentProps, MenuContentPropsWithoutHTML } from "../menu/types.js";
-import type { WithChild, Without } from "$lib/internal/types.js";
-import type { BitsPrimitiveDivAttributes } from "$lib/internal/attributes.js";
+import type { WithChild, Without } from "../../internal/types.js";
+import type { BitsPrimitiveDivAttributes } from "../../internal/attributes.js";
 
 export type ContextMenuContentPropsWithoutHTML = MenuContentPropsWithoutHTML;
 
@@ -34,7 +34,7 @@ export type {
 	MenuSubTriggerProps as ContextMenuSubTriggerProps,
 	MenuPortalProps as ContextMenuPortalProps,
 	MenuCheckboxGroupProps as ContextMenuCheckboxGroupProps,
-} from "$lib/components/menu/types.js";
+} from "../../components/menu/types.js";
 
 export type {
 	MenuRootPropsWithoutHTML as ContextMenuRootPropsWithoutHTML,
@@ -53,4 +53,4 @@ export type {
 	MenuSubContentStaticPropsWithoutHTML as ContextMenuSubContentStaticPropsWithoutHTML,
 	MenuPortalPropsWithoutHTML as ContextMenuPortalPropsWithoutHTML,
 	MenuCheckboxGroupPropsWithoutHTML as ContextMenuCheckboxGroupPropsWithoutHTML,
-} from "$lib/components/menu/types.js";
+} from "../../components/menu/types.js";

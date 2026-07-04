@@ -1,16 +1,16 @@
 <script lang="ts" module>
-	import type { TimeValue } from '$lib/internal/date-time/types.js';
+	import type { TimeValue } from '../../../internal/date-time/types.js';
 	import type { Time } from '@internationalized/date';
 	type T = unknown;
 </script>
 
 <script lang="ts" generics="T extends TimeValue = Time">
 	import { untrack } from 'svelte';
-	import { boxWith } from '$lib/internal/tools/index.js';
+	import { boxWith } from '../../../internal/tools/index.js';
 	import { TimeFieldRootState } from '../time-field.svelte.js';
 	import type { TimeFieldRootProps } from '../types.js';
-	import { getDefaultTime } from '$lib/internal/date-time/utils.js';
-	import { resolveLocaleProp } from '$lib/components/utilities/config/prop-resolvers.js';
+	import { getDefaultTime } from '../../../internal/date-time/utils.js';
+	import { resolveLocaleProp } from '../../../components/utilities/config/prop-resolvers.js';
 
 	let {
 		disabled = false,

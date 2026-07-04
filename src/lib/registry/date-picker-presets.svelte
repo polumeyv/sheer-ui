@@ -4,7 +4,7 @@
 
 <script lang="ts">
 	// Same picker with a relative-day preset dropdown above the calendar.
-	import { DatePickerWithPresets } from '$lib/blocks/date-picker/index.js';
+	import { DatePickerWithPresets } from '../blocks/date-picker/index.js';
 	import type { DateValue } from '@internationalized/date';
 
 	let value = $state<DateValue>();

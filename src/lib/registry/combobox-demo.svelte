@@ -2,7 +2,7 @@
 	// `components/combobox` is the headless bits primitive (like select). The Input
 	// and Trigger ship baked shadcn styling, but the popover Content + Items do not —
 	// those class strings are copied from the project's styled select block.
-	import * as Combobox from '$lib/components/combobox/index.js';
+	import * as Combobox from '../components/combobox/index.js';
 	import Check from '@lucide/svelte/icons/check';
 	import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';
 
