@@ -71,11 +71,9 @@
 </FloatingLayer>
 
 {#if Array.isArray(rootState.opts.value.current)}
-	{#if rootState.opts.value.current.length}
-		{#each rootState.opts.value.current as item (item)}
-			<ListboxHiddenInput value={item} />
-		{/each}
-	{/if}
+	{#each rootState.opts.value.current as item (item)}
+		<ListboxHiddenInput value={item} />
+	{/each}
 {:else}
 	<ListboxHiddenInput bind:value={rootState.opts.value.current as string} />
 {/if}
