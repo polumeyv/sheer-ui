@@ -13,7 +13,11 @@
 		"types": ["bun"],
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
-		"noImplicitOverride": true
+		"noImplicitOverride": true,
+		// Carried from the monorepo base tsconfig, which a standalone checkout cannot reach:
+		// `allowJs` types the one non-TS component (theme-toggle.svelte).
+		"allowJs": true,
+		"noFallthroughCasesInSwitch": true
 	},
 	"include": ["src/lib"],
 	"exclude": ["dist", "src/lib/registry/*.svelte"]

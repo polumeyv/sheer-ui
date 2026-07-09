@@ -4,7 +4,7 @@
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 	import type { DateValue } from '@internationalized/date';
 	import type { DateRange } from '../../internal/index.js';
-	import { formatDateDisplay } from '@polumeyv/utilities/date';
+	import { formatDateDisplay } from '@polumeyv/utilities/date/formatters';
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
 	import { buttonVariants } from '../../components/button';

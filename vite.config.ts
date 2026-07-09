@@ -1,8 +1,13 @@
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { sveltekit } from '@sveltejs/kit/vite';
 import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
+
+// Present only when this package sits inside the mono checkout; a standalone ui-lib clone has no such file.
+const monorepoTsconfig = fileURLToPath(new URL('../../../tsconfig.json', import.meta.url));
 
 export default defineConfig({
 	plugins: [
@@ -15,10 +20,11 @@ export default defineConfig({
 			preprocess: vitePreprocess({ script: true }),
 			// Inherit the monorepo base tsconfig so this lib gets the shared plugin list
 			// (typescript-svelte-plugin → @effect/language-service) + diagnostic config.
-			// Path is relative to the generated .svelte-kit/tsconfig.json.
+			// Path is relative to the generated .svelte-kit/tsconfig.json. Skipped outside the
+			// mono, where ./tsconfig.json already carries every option the check depends on.
 			typescript: {
 				config: (c) => {
-					c.extends = '../../../../tsconfig.json';
+					if (existsSync(monorepoTsconfig)) c.extends = '../../../../tsconfig.json';
 				},
 			},
 			// Force runes mode for the project, except for libraries. Can be removed in svelte 6.

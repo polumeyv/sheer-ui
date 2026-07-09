@@ -3,7 +3,7 @@
 	import type { ClassValue } from 'svelte/elements';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import { today, getLocalTimeZone, type DateValue } from '@internationalized/date';
-	import { formatDateDisplay } from '@polumeyv/utilities/date';
+	import { formatDateDisplay } from '@polumeyv/utilities/date/formatters';
 	import { buttonVariants } from '../../components/button';
 	import Calendar from '../calendar.svelte';
 	import { Popover } from '../../components/popover';

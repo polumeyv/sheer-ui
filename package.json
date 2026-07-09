@@ -324,12 +324,12 @@
 	"peerDependencies": {
 		"svelte": "^5.56.3",
 		"@sveltejs/kit": "^2.65.1",
-		"@internationalized/date": "^3.12.0",
-		"effect": "catalog:infra"
+		"@internationalized/date": "^3.12.0"
 	},
 	"dependencies": {
 		"@floating-ui/dom": "^1.7.1",
 		"@lucide/svelte": "^1.18.0",
+		"@polumeyv/utilities": "^0.1.0",
 		"@stripe/stripe-js": "^9.8.0",
 		"@tanstack/table-core": "^8.21.3",
 		"d3-scale": "^4.0.2",
@@ -339,9 +339,7 @@
 	"devDependencies": {
 		"@fontsource-variable/inter": "^5.2.8",
 		"@sveltejs/adapter-auto": "^7.0.1",
-		"@polumeyv/utilities": "workspace:*",
 		"@internationalized/date": "^3.12.2",
-		"effect": "catalog:infra",
 		"@sveltejs/kit": "^2.68.0",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
 		"@tailwindcss/vite": "^4.3.2",
@@ -354,10 +352,12 @@
 		"@types/d3-sankey": "^0.12.5",
 		"@types/d3-shape": "^3.1.8",
 		"@types/d3-time": "^3.0.4",
+		"@types/bun": "^1.3.14",
 		"csstype": "^3.2.3",
 		"jsdom": "^29.1.1",
 		"svelte": "^5.56.3",
 		"svelte-check": "^4.7.1",
+		"typescript": "^6.0.3",
 		"vite": "^8.1.0",
 		"vitest": "^4.1.9"
 	}

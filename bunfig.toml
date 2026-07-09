@@ -1,2 +1,0 @@
-[install.scopes]
-"@polumeyv" = { token = "$GITHUB_TOKEN", url = "https://npm.pkg.github.com/" }

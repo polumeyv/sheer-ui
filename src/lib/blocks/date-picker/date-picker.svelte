@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import type { DateValue } from '@internationalized/date';
-	import { formatDateDisplay } from '@polumeyv/utilities/date';
+	import { formatDateDisplay } from '@polumeyv/utilities/date/formatters';
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
 	import { buttonVariants } from '../../components/button';

@@ -27,6 +27,31 @@ All upstreams are MIT. clsx and style-to-object (in the original inline) are gon
 plain join via `overrule`. Kept as regular dependencies on purpose: `@floating-ui/dom` (pure TS)
 and the `@internationalized/date` peer.
 
+## No workspace edges (2026-07-08)
+
+This package installs and typechecks standalone. That is a hard constraint, not an accident: it is
+mirrored to [polumeyv/ui-lib](https://github.com/polumeyv/ui-lib), and a specifier that only resolves
+inside the mono makes that clone uninstallable. **Nothing here may use `workspace:*` or a bun
+`catalog:`.** Verify with a cold install outside the monorepo before changing dependencies.
+
+`@polumeyv/utilities` is still imported everywhere it always was — it is simply depended on by semver
+range rather than `workspace:*`. Bun links the workspace copy when the local version satisfies the
+range, and falls back to the npm registry outside the workspace, so one manifest serves both. The
+imports reach only utilities' dependency-free subpaths (`.`, `/dom`, `/env`, `/date/formatters`), so a
+standalone install pulls nothing transitive — in particular not `effect`, which sits behind an
+optional peer on `/date` and `/schema-primitives`.
+
+Three edges only a cold install reveals, each of which had been quietly borrowing from the mono root:
+
+- `typescript` and `@types/bun` are declared here now; they used to hoist from the root manifest.
+- `vite.config.ts` extends the monorepo base tsconfig **only when that file exists**. The two options
+  it supplied that the check truly needs — `allowJs` (for `theme-toggle.svelte`, the one non-TS
+  component) and `noFallthroughCasesInSwitch` — live in `./tsconfig.json`.
+- `bunfig.toml` is gone. It pointed the `@polumeyv` scope at GitHub Packages behind a `$GITHUB_TOKEN`;
+  now that `@polumeyv/utilities` comes from npm, that config would break a standalone clone.
+
+`effect` was a peer + dev dependency with zero imports anywhere in the package; dropped.
+
 ## Locally-authored (not vendored)
 
 Modules written here, marked by their `.test.ts` siblings: `internal/layer-stack.ts`,
