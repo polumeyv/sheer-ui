@@ -46,6 +46,7 @@
 			"default": "./src/lib/internal/utils.ts"
 		},
 		"./icons/*": {
+			"types": "./src/lib/icons/icon.d.ts",
 			"svelte": "./src/lib/icons/*",
 			"default": "./src/lib/icons/*"
 		},
