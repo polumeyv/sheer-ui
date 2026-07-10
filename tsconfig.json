@@ -20,5 +20,5 @@
 		"noFallthroughCasesInSwitch": true
 	},
 	"include": ["src/lib"],
-	"exclude": ["dist", "src/lib/registry/*.svelte"]
+	"exclude": ["src/lib/registry/*.svelte"]
 }
