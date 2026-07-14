@@ -41,6 +41,8 @@ export function createInputModality(): InputModality {
  * the first consumer and detach when the last one tears down.
  */
 const globalInputModality = new SharedState((): InputModality => {
+	// $state is load-bearing: the exported contract is a reactive flag (the test fixture renders
+	// it), even though menu today only reads it inside handlers and tick() callbacks.
 	let isKeyboard = $state(false);
 
 	const stop = mergeDisposers(

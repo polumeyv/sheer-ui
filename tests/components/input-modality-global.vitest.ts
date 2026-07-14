@@ -84,7 +84,7 @@ describe('useGlobalInputModality', () => {
 		}
 	});
 
-	test('listeners tear down only after the last consumer unmounts, not before', () => {
+	test('listeners tear down only after the last consumer unmounts, not before', async () => {
 		const addSpy = vi.spyOn(document, 'addEventListener');
 		const removeSpy = vi.spyOn(document, 'removeEventListener');
 		const first = render();
@@ -95,6 +95,7 @@ describe('useGlobalInputModality', () => {
 
 			unmount(first.component);
 			flushSync();
+			await Promise.resolve(); // let SharedState's deferred release run before asserting
 			// one of two consumers gone — the shared listener must still be live
 			expect(listenerCalls(removeSpy, 'pointerdown')).toHaveLength(0);
 			expect(listenerCalls(removeSpy, 'keydown')).toHaveLength(0);
@@ -106,11 +107,36 @@ describe('useGlobalInputModality', () => {
 
 			unmount(second.component);
 			flushSync();
+			await Promise.resolve(); // teardown is microtask-deferred by SharedState
 			// last consumer gone — now it tears down, exactly once
 			expect(listenerCalls(removeSpy, 'pointerdown')).toHaveLength(1);
 			expect(listenerCalls(removeSpy, 'keydown')).toHaveLength(1);
 		} finally {
 			document.body.innerHTML = '';
+		}
+	});
+
+	test('a same-tick unmount→mount handoff reuses the live listeners instead of re-attaching', async () => {
+		const addSpy = vi.spyOn(document, 'addEventListener');
+		const removeSpy = vi.spyOn(document, 'removeEventListener');
+		const first = render();
+		unmount(first.component);
+		// same tick: the release is still microtask-pending, so the new consumer must land on
+		// the still-alive shared root instead of forcing a detach/re-attach churn
+		const second = render();
+		await Promise.resolve();
+		flushSync();
+
+		try {
+			expect(listenerCalls(removeSpy, 'pointerdown')).toHaveLength(0);
+			expect(listenerCalls(removeSpy, 'keydown')).toHaveLength(0);
+			expect(listenerCalls(addSpy, 'pointerdown')).toHaveLength(1);
+			expect(listenerCalls(addSpy, 'keydown')).toHaveLength(1);
+
+			fireKeydown();
+			expect(isKeyboard(second.target)).toBe('true');
+		} finally {
+			unmount(second.component);
 		}
 	});
 });

@@ -11,13 +11,18 @@ export class SharedState<T extends AnyFn> {
 	}
 
 	#release = () => {
-		this.#subscribers -= 1;
+		// Deferred a microtask so a same-tick destroy→create (last overlay closing while the
+		// next one opens) lands on the still-alive root instead of disposing and rebuilding it —
+		// the same race svelte core defers for in createSubscriber.
+		queueMicrotask(() => {
+			this.#subscribers -= 1;
 
-		if (this.#subscribers > 0) return;
+			if (this.#subscribers > 0) return;
 
-		this.#disposeRoot?.();
-		this.#disposeRoot = undefined;
-		this.#state = undefined;
+			this.#disposeRoot?.();
+			this.#disposeRoot = undefined;
+			this.#state = undefined;
+		});
 	};
 
 	get(...args: Parameters<T>): ReturnType<T> {

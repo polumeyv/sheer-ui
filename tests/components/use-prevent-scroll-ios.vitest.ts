@@ -38,7 +38,10 @@ beforeEach(() => {
 	vi.useFakeTimers();
 });
 
-afterEach(() => {
+afterEach(async () => {
+	// flush SharedState's microtask-deferred release from any unmount above, while the
+	// window.scrollTo mock is still in place (jsdom's real scrollTo is not implemented)
+	await Promise.resolve();
 	vi.advanceTimersByTime(50);
 	document.body.innerHTML = '';
 	vi.useRealTimers();
@@ -82,7 +85,7 @@ describe('usePreventScroll (iOS)', () => {
 		}
 	});
 
-	test('the workaround tears down only after the last active consumer disables/unmounts, not before', () => {
+	test('the workaround tears down only after the last active consumer disables/unmounts, not before', async () => {
 		const addDocSpy = vi.spyOn(document, 'addEventListener');
 		const removeDocSpy = vi.spyOn(document, 'removeEventListener');
 		const removeWinSpy = vi.spyOn(window, 'removeEventListener');
@@ -95,6 +98,7 @@ describe('usePreventScroll (iOS)', () => {
 			// first consumer becomes disabled — second is still active, must stay attached
 			first.component.setDisabled(true);
 			flushSync();
+			await Promise.resolve(); // let SharedState's deferred release run
 			vi.advanceTimersByTime(30); // let BodyScrollLock's delayed cleanup have its chance
 			flushSync();
 			for (const type of SOLO_IOS_TOUCH_EVENTS) {
@@ -106,6 +110,7 @@ describe('usePreventScroll (iOS)', () => {
 			// now the last active consumer disables too — the shared workaround must tear down, exactly once
 			second.component.setDisabled(true);
 			flushSync();
+			await Promise.resolve(); // teardown is microtask-deferred by SharedState
 			vi.advanceTimersByTime(30);
 			flushSync();
 			for (const type of SOLO_IOS_TOUCH_EVENTS) {
