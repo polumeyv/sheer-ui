@@ -370,6 +370,4 @@ export class ToolbarButtonState {
 // HELPERS
 //
 
-function getToggleItemDataState(condition: boolean) {
-	return condition ? 'on' : 'off';
-}
+const getToggleItemDataState = (condition: boolean) => condition ? 'on' : 'off';

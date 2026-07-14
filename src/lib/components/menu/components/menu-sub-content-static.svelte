@@ -4,10 +4,9 @@
 	import { tick } from 'svelte';
 	import type { MenuSubContentStaticProps } from '../types.js';
 	import { MenuContentState } from '../menu.svelte.js';
-	import { SUB_CLOSE_KEYS } from '../utils.js';
+	import { createSubmenuHandlers } from '../utils.js';
 	import { createId } from '../../../internal/create-id.js';
 	import PopperLayer from '../../../internal/popper-layer/popper-layer.svelte';
-	import { isHTMLElement } from '@polumeyv/utilities/dom';
 	import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
 
 	const uid = $props.id();
@@ -42,16 +41,11 @@
 		isSub: true,
 	});
 
-	function onkeydown(e: KeyboardEvent) {
-		const isKeyDownInside = (e.currentTarget as HTMLElement).contains(e.target as HTMLElement);
-		const isCloseKey = SUB_CLOSE_KEYS[subContentState.parentMenu.root.opts.dir.current].includes(e.key);
-		if (isKeyDownInside && isCloseKey) {
-			subContentState.parentMenu.onClose();
-			const triggerNode = subContentState.parentMenu.triggerNode;
-			triggerNode?.focus();
-			e.preventDefault();
-		}
-	}
+	const { onkeydown, handleInteractOutside, handleEscapeKeydown, handleOnFocusOutside } = createSubmenuHandlers(subContentState, {
+		onInteractOutside: () => onInteractOutside,
+		onEscapeKeydown: () => onEscapeKeydown,
+		onFocusOutside: () => onFocusOutside,
+	});
 
 	const dataAttr = $derived(subContentState.parentMenu.root.getBitsAttr('sub-content'));
 
@@ -76,7 +70,7 @@
 		if (e.defaultPrevented) return;
 		tick().then(() => {
 			e.preventDefault();
-			if (subContentState.parentMenu.root.inputModality.isKeyboard) {
+			if (subContentState.parentMenu.root.isKeyboard) {
 				const subContentEl = subContentState.parentMenu.contentNode;
 				subContentEl?.focus();
 			}
@@ -89,37 +83,6 @@
 		e.preventDefault();
 	}
 
-	function handleInteractOutside(e: PointerEvent) {
-		onInteractOutside(e);
-		if (e.defaultPrevented) return;
-		subContentState.parentMenu.onClose();
-	}
-
-	function handleEscapeKeydown(e: KeyboardEvent) {
-		onEscapeKeydown(e);
-		if (e.defaultPrevented) return;
-		subContentState.parentMenu.onClose();
-	}
-
-	function handleOnFocusOutside(e: FocusEvent) {
-		onFocusOutside(e);
-		if (e.defaultPrevented) return;
-		if (!isHTMLElement(e.target)) return;
-		if (e.target.id === subContentState.parentMenu.triggerNode?.id) return;
-		const parentContent = subContentState.parentMenu.parentMenu?.contentNode;
-		if (parentContent?.contains(e.target)) {
-			subContentState.parentMenu.onClose();
-			e.preventDefault();
-			return;
-		}
-		// focus moved to a descendant sub-content (rendered in a portal)
-		const subContentSelector = `[${subContentState.parentMenu.root.getBitsAttr('sub-content')}]`;
-		if (e.target.closest(subContentSelector)) {
-			e.preventDefault();
-			return;
-		}
-		subContentState.parentMenu.onClose();
-	}
 </script>
 
 <PopperLayer

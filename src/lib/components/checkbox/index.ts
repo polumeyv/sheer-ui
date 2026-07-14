@@ -1,2 +1,9 @@
-export * from "./exports.js";
-export { Root as Checkbox } from "./exports.js";
+export { default as Root, default as Checkbox } from './components/checkbox.svelte';
+export { default as Group } from './components/checkbox-group.svelte';
+export { default as GroupLabel } from './components/checkbox-group-label.svelte';
+
+export type {
+	CheckboxRootProps as RootProps,
+	CheckboxGroupProps as GroupProps,
+	CheckboxGroupLabelProps as GroupLabelProps,
+} from './types.js';

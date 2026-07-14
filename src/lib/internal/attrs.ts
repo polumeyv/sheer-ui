@@ -1,22 +1,12 @@
-export function boolToStr(condition: boolean): 'true' | 'false' {
-	return condition ? 'true' : 'false';
-}
+export const boolToStr = (condition: boolean): 'true' | 'false' => condition ? 'true' : 'false';
 
-export function boolToStrTrueOrUndef(condition: boolean): 'true' | undefined {
-	return condition ? 'true' : undefined;
-}
+export const boolToStrTrueOrUndef = (condition: boolean): 'true' | undefined => condition ? 'true' : undefined;
 
-export function boolToEmptyStrOrUndef(condition: boolean): '' | undefined {
-	return condition ? '' : undefined;
-}
+export const boolToEmptyStrOrUndef = (condition: boolean): '' | undefined => condition ? '' : undefined;
 
-export function boolToTrueOrUndef(condition: boolean): true | undefined {
-	return condition ? true : undefined;
-}
+export const boolToTrueOrUndef = (condition: boolean): true | undefined => condition ? true : undefined;
 
-export function getDataOpenClosed(condition: boolean): 'open' | 'closed' {
-	return condition ? 'open' : 'closed';
-}
+export const getDataOpenClosed = (condition: boolean): 'open' | 'closed' => condition ? 'open' : 'closed';
 
 export type TransitionState = 'starting' | 'ending' | 'idle' | undefined;
 
@@ -29,10 +19,8 @@ export function getDataTransitionAttrs(state: TransitionState): {
 	return {};
 }
 
-export function getAriaChecked(checked: boolean, indeterminate: boolean): 'true' | 'false' | 'mixed' {
-	if (indeterminate) return 'mixed';
-	return checked ? 'true' : 'false';
-}
+export const getAriaChecked = (checked: boolean, indeterminate: boolean): 'true' | 'false' | 'mixed' =>
+	indeterminate ? 'mixed' : checked ? 'true' : 'false';
 
 export type BitsAttrsConfig<T extends readonly string[]> = {
 	component: string;

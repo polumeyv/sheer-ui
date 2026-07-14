@@ -4,7 +4,7 @@ import { createContext, onDestroy, untrack } from 'svelte';
 import { createBitsAttrs, boolToStr, getDataOpenClosed } from '../../internal/attrs.js';
 import { isElement } from '@polumeyv/utilities/dom';
 import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
-import { getTabbableCandidates } from '../../internal/focus.js';
+import { getTabbableCandidates } from '../../internal/tabbable.js';
 import { SafePolygon } from '../../internal/safe-polygon.svelte.js';
 
 const linkPreviewAttrs = createBitsAttrs({

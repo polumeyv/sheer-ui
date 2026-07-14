@@ -4,9 +4,7 @@
 	import type { ClassValue } from 'svelte/elements';
 	import { buttonVariants } from '../../components/button';
 	import * as Select from '../../components/select';
-	import { compareTime, generateTimeSlots, isTimeInRange, type TimeSlot, b_HOURS, EXTENDED_HOURS } from './time-slots';
-
-	type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';
+	import { compareTime, isTimeInRange, resolveTimeSlots, type TimeSlot, type TimeSlotPreset } from './time-slots';
 
 	interface Props {
 		value?: string;
@@ -49,21 +47,7 @@
 	}: Props = $props();
 
 	// Generate time slots based on configuration
-	const timeSlots = $derived.by(() => {
-		if (slots) return slots;
-
-		switch (preset) {
-			case 'business':
-				return b_HOURS;
-			case 'extended':
-				return EXTENDED_HOURS;
-			case 'full':
-				return generateTimeSlots(0, 24, interval);
-			case 'custom':
-			default:
-				return generateTimeSlots(startHour, endHour, interval);
-		}
-	});
+	const timeSlots = $derived(resolveTimeSlots({ slots, preset, interval, startHour, endHour }));
 
 	// Filter slots based on constraints
 	const filteredSlots = $derived.by(() => {

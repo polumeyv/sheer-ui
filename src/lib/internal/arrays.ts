@@ -1,11 +1,8 @@
 /**
  * Checks if two arrays are equal by comparing their values.
  */
-export function arraysAreEqual<T extends Array<unknown>>(arr1: T, arr2: T): boolean {
-	if (arr1.length !== arr2.length) return false;
-
-	return arr1.every((value, index) => isEqual(value, arr2[index]));
-}
+export const arraysAreEqual = <T extends Array<unknown>>(arr1: T, arr2: T): boolean =>
+	arr1.length === arr2.length && arr1.every((value, index) => isEqual(value, arr2[index]));
 
 /**
  * A utility function that compares two values for equality.
@@ -69,9 +66,7 @@ export function chunk<T>(arr: T[], size: number): T[][] {
  * @param arr - The array to check
  */
 
-export function isValidIndex(index: number, arr: unknown[]) {
-	return index >= 0 && index < arr.length;
-}
+export const isValidIndex = (index: number, arr: unknown[]) => index >= 0 && index < arr.length;
 
 /**
  * Returns the array element after the given index, or undefined for out-of-bounds or empty arrays.
@@ -249,6 +244,5 @@ export function getNextMatch(values: string[], search: string, currentMatch?: st
  * Wraps an array around itself at a given start index
  * Example: `wrapArray(['a', 'b', 'c', 'd'], 2) === ['c', 'd', 'a', 'b']`
  */
-export function wrapArray<T>(array: T[], startIndex: number) {
-	return array.map((_, index) => array[(startIndex + index) % array.length]) as T[];
-}
+export const wrapArray = <T>(array: T[], startIndex: number) =>
+	array.map((_, index) => array[(startIndex + index) % array.length]) as T[];

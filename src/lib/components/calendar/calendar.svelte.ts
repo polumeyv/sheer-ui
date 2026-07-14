@@ -22,6 +22,11 @@ import {
 	getWeekdays,
 	handleCalendarKeydown,
 	shiftCalendarFocus,
+	shiftCalendarPage,
+	shiftCalendarYear,
+	setCalendarMonth,
+	setCalendarYear,
+	isOutsideCalendarView,
 	useEnsureNonDisabledPlaceholder,
 } from '../../internal/date-time/calendar-helpers.svelte.js';
 import { getDateValueType, isBefore, toDate } from '../../internal/date-time/utils.js';
@@ -246,28 +251,30 @@ export class CalendarRootState {
 
 	/** Moves the anchor a page (or single month) and keeps the placeholder in the new view. */
 	#shiftView(direction: 1 | -1) {
-		const first = this.months[0]?.value;
-		if (!first) return;
-		const step = this.opts.pagedNavigation.current ? this.opts.numberOfMonths.current : 1;
-		const target = direction === 1 ? first.add({ months: step }) : first.subtract({ months: step });
-		this.#anchor = target;
-		this.opts.placeholder.current = target;
+		shiftCalendarPage({
+			months: this.months,
+			placeholder: this.opts.placeholder,
+			pagedNavigation: this.opts.pagedNavigation.current,
+			numberOfMonths: this.opts.numberOfMonths.current,
+			direction,
+			setAnchor: (value) => (this.#anchor = value),
+		});
 	}
 
 	nextYear() {
-		this.opts.placeholder.current = this.opts.placeholder.current.add({ years: 1 });
+		shiftCalendarYear(this.opts.placeholder, 1);
 	}
 
 	prevYear() {
-		this.opts.placeholder.current = this.opts.placeholder.current.subtract({ years: 1 });
+		shiftCalendarYear(this.opts.placeholder, -1);
 	}
 
 	setYear(year: number) {
-		this.opts.placeholder.current = this.opts.placeholder.current.set({ year });
+		setCalendarYear(this.opts.placeholder, year);
 	}
 
 	setMonth(month: number) {
-		this.opts.placeholder.current = this.opts.placeholder.current.set({ month });
+		setCalendarMonth(this.opts.placeholder, month);
 	}
 
 	isNextButtonDisabled = $derived.by(() => {
@@ -319,7 +326,7 @@ export class CalendarRootState {
 	});
 
 	isOutsideVisibleMonths(date: DateValue) {
-		return !this.visibleMonths.some((month) => isSameMonth(date, month));
+		return isOutsideCalendarView(this.visibleMonths, date);
 	}
 
 	isDateDisabled(date: DateValue) {

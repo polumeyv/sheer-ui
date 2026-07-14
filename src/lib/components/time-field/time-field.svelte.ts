@@ -49,7 +49,14 @@ import {
 	moveToNextSegment,
 	moveToPrevSegment,
 } from '../../internal/date-time/field/segments.js';
-import { getDefaultHourCycle, isAcceptableSegmentKey } from '../../internal/date-time/field/helpers.js';
+import {
+	getDefaultHourCycle,
+	isAcceptableDayPeriodKey,
+	isAcceptableSegmentKey,
+	isArrowDown,
+	isArrowUp,
+	isBackspace,
+} from '../../internal/date-time/field/helpers.js';
 import type { TimeRangeFieldRootState } from '../time-range-field/time-range-field.svelte.js';
 
 export const timeFieldAttrs = createBitsAttrs({
@@ -293,12 +300,9 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 	}
 
 	#toDateValue(timeValue: TimeValue): CalendarDateTime | ZonedDateTime {
-		if ('calendar' in timeValue) {
-			// CalendarDateTime or ZonedDateTime
-			return timeValue;
-		} else {
-			return new CalendarDateTime(2000, 1, 1, timeValue.hour, timeValue.minute, timeValue.second, timeValue.millisecond);
-		}
+		return 'calendar' in timeValue
+			? timeValue
+			: new CalendarDateTime(2000, 1, 1, timeValue.hour, timeValue.minute, timeValue.second, timeValue.millisecond);
 	}
 
 	#clearUpdating() {
@@ -321,16 +325,7 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 	 * used in a standalone context or within a `TimeRangeField` component.
 	 */
 	getFieldNode() {
-		/** If we're not within a TimeRangeField, we return this field. */
-		if (!this.rangeRoot) {
-			return this.#fieldNode;
-		} else {
-			/**
-			 * Otherwise, we return the rangeRoot's field node which
-			 * contains both start and end fields.
-			 */
-			return this.rangeRoot.fieldNode;
-		}
+		return this.rangeRoot ? this.rangeRoot.fieldNode : this.#fieldNode;
 	}
 
 	setLabelNode(node: HTMLElement | null) {
@@ -1199,21 +1194,4 @@ export class TimeFieldSegmentState {
 				throw new Error(`Invalid part: ${part}`);
 		}
 	}
-}
-
-// Utils/helpers
-function isAcceptableDayPeriodKey(key: string) {
-	return isAcceptableSegmentKey(key) || key === kbd.A || key === kbd.P || key === kbd.a || key === kbd.p;
-}
-
-function isArrowUp(key: string) {
-	return key === kbd.ARROW_UP;
-}
-
-function isArrowDown(key: string) {
-	return key === kbd.ARROW_DOWN;
-}
-
-function isBackspace(key: string) {
-	return key === kbd.BACKSPACE;
 }

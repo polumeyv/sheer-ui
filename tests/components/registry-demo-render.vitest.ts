@@ -22,6 +22,21 @@ const cases = [
 		load: () => import("../../src/docs/registry/sidebar-demo.svelte"),
 		selector: '[data-slot="sidebar-wrapper"]',
 	},
+	{
+		name: "date picker",
+		load: () => import("../../src/docs/registry/date-picker-demo.svelte"),
+		selector: "button",
+	},
+	{
+		name: "date picker with presets",
+		load: () => import("../../src/docs/registry/date-picker-presets.svelte"),
+		selector: "button",
+	},
+	{
+		name: "sheet",
+		load: () => import("../../src/docs/registry/sheet-demo.svelte"),
+		selector: '[data-slot="sheet-trigger"]',
+	},
 ] as const;
 
 beforeEach(() => {

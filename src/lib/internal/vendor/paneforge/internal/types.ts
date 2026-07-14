@@ -22,7 +22,7 @@ export type PaneTransitionState = '' | 'collapsing' | 'expanding';
 
 export type DragState = {
 	dragHandleId: string;
-	dragHandleRect: DOMRect;
+	groupSizeInPixels: number;
 	initialCursorPosition: number;
 	initialLayout: number[];
 };

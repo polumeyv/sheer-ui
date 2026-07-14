@@ -86,13 +86,9 @@ export class PinInputRootState {
 
 	#previousValue = $state<string | undefined>(undefined);
 
-	readonly #regexPattern = $derived.by(() => {
-		if (typeof this.opts.pattern.current === 'string') {
-			return new RegExp(this.opts.pattern.current);
-		} else {
-			return this.opts.pattern.current;
-		}
-	});
+	readonly #regexPattern = $derived.by(() =>
+		typeof this.opts.pattern.current === 'string' ? new RegExp(this.opts.pattern.current) : this.opts.pattern.current,
+	);
 	// only read/written inside event handlers — needs no reactivity
 	#prevInputMetadata: PrevInputMetadata = {
 		prev: [null, null, 'none'],

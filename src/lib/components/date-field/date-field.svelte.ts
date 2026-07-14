@@ -41,7 +41,11 @@ import {
 	inferGranularity,
 	initSegmentStates,
 	initializeSegmentValues,
+	isAcceptableDayPeriodKey,
 	isAcceptableSegmentKey,
+	isArrowDown,
+	isArrowUp,
+	isBackspace,
 	isDateAndTimeSegmentObj,
 	isDateSegmentPart,
 	isFirstSegment,
@@ -307,16 +311,7 @@ export class DateFieldRootState {
 	 * used in a standalone context or within a `DateRangeField` component.
 	 */
 	getFieldNode() {
-		/** If we're not within a DateRangeField, we return this field. */
-		if (!this.rangeRoot) {
-			return this.#fieldNode;
-		} else {
-			/**
-			 * Otherwise, we return the rangeRoot's field node which
-			 * contains both start and end fields.
-			 */
-			return this.rangeRoot.fieldNode;
-		}
+		return this.rangeRoot ? this.rangeRoot.fieldNode : this.#fieldNode;
 	}
 
 	/**
@@ -332,12 +327,7 @@ export class DateFieldRootState {
 	 * a standalone context or within a `DateRangeField` component.
 	 */
 	getLabelNode() {
-		/** If we're not within a DateRangeField, we return this field. */
-		if (!this.rangeRoot) {
-			return this.#labelNode;
-		}
-		/** Otherwise we return the rangeRoot's label node. */
-		return this.rangeRoot.labelNode;
+		return this.rangeRoot ? this.rangeRoot.labelNode : this.#labelNode;
 	}
 
 	#clearUpdating() {
@@ -1474,22 +1464,6 @@ export class DateFieldSegmentState {
 				return new DateFieldTimeZoneSegmentState(opts, root);
 		}
 	}
-}
-
-function isAcceptableDayPeriodKey(key: string) {
-	return isAcceptableSegmentKey(key) || key === kbd.A || key === kbd.P || key === kbd.a || key === kbd.p;
-}
-
-function isArrowUp(key: string) {
-	return key === kbd.ARROW_UP;
-}
-
-function isArrowDown(key: string) {
-	return key === kbd.ARROW_DOWN;
-}
-
-function isBackspace(key: string) {
-	return key === kbd.BACKSPACE;
 }
 
 function prependYearZeros(year: number) {

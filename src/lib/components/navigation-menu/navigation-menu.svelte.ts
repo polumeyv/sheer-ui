@@ -21,7 +21,7 @@ import { createContext, tick, untrack, type Snippet } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
 import { type Direction, type Orientation, useId } from '../../internal/index.js';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '../../internal/attrs.js';
-import { getTabbableCandidates } from '../../internal/focus.js';
+import { getTabbableCandidates } from '../../internal/tabbable.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment } from '../../internal/types.js';
 import { kbd } from '../../internal/kbd.js';
 import { on } from 'svelte/events';

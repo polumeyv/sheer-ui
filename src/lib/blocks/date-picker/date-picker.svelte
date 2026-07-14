@@ -4,6 +4,7 @@
 	import { formatDateDisplay } from '@polumeyv/utilities/date/formatters';
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
+	import type { Snippet } from 'svelte';
 	import { buttonVariants } from '../../components/button';
 	import Calendar from '../calendar.svelte';
 	import { Popover } from '../../components/popover';
@@ -30,6 +31,8 @@
 		fixedWeeks?: boolean;
 		isDateDisabled?: (date: DateValue) => boolean;
 		isDateUnavailable?: (date: DateValue) => boolean;
+		/** Internal composition seam used by the presets adapter. */
+		contentHeader?: Snippet;
 	}
 
 	let {
@@ -52,6 +55,7 @@
 		fixedWeeks,
 		isDateDisabled,
 		isDateUnavailable,
+		contentHeader,
 	}: Props = $props();
 
 	const displayValue = $derived(value ? formatDateDisplay(value.toString(), { dateStyle: dateFormat }, locale) : placeholder);
@@ -70,10 +74,14 @@
 				variant: 'outline',
 				class: ['w-70 justify-start! text-start font-normal!', !value && 'text-muted-foreground', triggerClass],
 			})}>
-			<CalendarIcon class="size-4" />
+			<CalendarIcon class={contentHeader ? 'me-2 size-4' : 'size-4'} />
 			{displayValue}
 		</Popover.Trigger>
-		<Popover.Content class={join('w-auto! p-0!', contentClass)} {align} {side}>
+		<Popover.Content
+			class={join(contentHeader ? 'flex w-auto! flex-col space-y-2 p-2!' : 'w-auto! p-0!', contentClass)}
+			{align}
+			{side}>
+			{@render contentHeader?.()}
 			<Calendar
 				type="single"
 				{value}

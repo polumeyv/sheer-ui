@@ -1,6 +1,6 @@
 import type { DateValue } from '@internationalized/date';
 import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
-import { createContext, onMount, untrack } from 'svelte';
+import { createContext, onMount } from 'svelte';
 import { DateFieldInputState, DateFieldRootState } from '../date-field/date-field.svelte.js';
 import { useId } from '../../internal/use-id.js';
 import type { DateOnInvalid, DateRange, DateRangeValidator, SegmentPart } from '../../internal/index.js';
@@ -10,6 +10,7 @@ import type { Granularity } from '../../internal/date-time/types.js';
 import { type Formatter, createFormatter } from '../../internal/date-time/formatter.js';
 import { isBefore } from '../../internal/date-time/utils.js';
 import { getFirstSegment } from '../../internal/date-time/field/segments.js';
+import { RangeFieldValueController } from '../../internal/date-time/field/range-field.svelte.js';
 
 export const dateRangeFieldAttrs = createBitsAttrs({
 	component: 'date-range-field',
@@ -54,17 +55,18 @@ export class DateRangeFieldRootState {
 	fieldNode = $state<HTMLElement | null>(null);
 	labelNode = $state<HTMLElement | null>(null);
 	descriptionNode = $state<HTMLElement | null>(null);
-	/** Per-side values derive from the bound range; a child-field write overrides until the range recommits. */
-	startValue = $derived.by(() => this.opts.value.current?.start);
-	endValue = $derived.by(() => this.opts.value.current?.end);
-	readonly startValueComplete = $derived.by(() => this.startValue !== undefined);
-	readonly endValueComplete = $derived.by(() => this.endValue !== undefined);
-	readonly rangeComplete = $derived(this.startValueComplete && this.endValueComplete);
+	readonly valueController: RangeFieldValueController<DateValue>;
+	get startValue() { return this.valueController.start; }
+	get endValue() { return this.valueController.end; }
+	get startValueComplete() { return this.valueController.startComplete; }
+	get endValueComplete() { return this.valueController.endComplete; }
+	get rangeComplete() { return this.valueController.complete; }
 	domContext: DOMContext;
 	readonly attachment: RefAttachment;
 
 	constructor(opts: DateRangeFieldRootStateOpts) {
 		this.opts = opts;
+		this.valueController = new RangeFieldValueController(opts.value, opts.placeholder);
 		this.formatter = createFormatter({
 			locale: this.opts.locale,
 			monthFormat: boxWith(() => 'long'),
@@ -76,42 +78,11 @@ export class DateRangeFieldRootState {
 		onMount(() => () => {
 			this.domContext.getDocument().getElementById(this.descriptionId)?.remove();
 		});
-
-		// Keep the placeholder on the committed start so both fields render segments around it.
-		$effect(() => {
-			const start = this.opts.value.current?.start;
-			untrack(() => {
-				if (start && this.opts.placeholder.current !== start) {
-					this.opts.placeholder.current = start;
-				}
-			});
-		});
 	}
 
 	/** Box for a child field's value: reads the derived side; writes override it and recommit the range. */
 	sideValueBox(type: 'start' | 'end') {
-		return boxWith(
-			() => (type === 'start' ? this.startValue : this.endValue),
-			(v: DateValue | undefined) => {
-				if (type === 'start') this.startValue = v;
-				else this.endValue = v;
-				this.#commitSides();
-			},
-		);
-	}
-
-	/** Child-field write: commit when both sides are set, clear a committed range when one side empties. */
-	#commitSides() {
-		const start = this.startValue;
-		const end = this.endValue;
-		const value = this.opts.value.current;
-		if (start !== undefined && end !== undefined) {
-			if (value?.start !== start || value?.end !== end) {
-				this.#updateValue(() => ({ start, end }));
-			}
-		} else if (value?.start !== undefined && value?.end !== undefined) {
-			this.#updateValue(() => ({ start: undefined, end: undefined }));
-		}
+		return this.valueController.sideValueBox(type);
 	}
 
 	readonly validationStatus = $derived.by(() => {
@@ -149,16 +120,7 @@ export class DateRangeFieldRootState {
 		return false as const;
 	});
 
-	readonly isInvalid = $derived.by(() => {
-		if (this.validationStatus === false) return false;
-		return true;
-	});
-
-	#updateValue(cb: (value: DateRange) => DateRange) {
-		const value = this.opts.value.current;
-		const newValue = cb(value);
-		this.opts.value.current = newValue;
-	}
+	readonly isInvalid = $derived(this.validationStatus !== false);
 
 	readonly props = $derived.by(
 		() =>

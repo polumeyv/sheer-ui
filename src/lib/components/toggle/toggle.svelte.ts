@@ -54,6 +54,4 @@ export class ToggleRootState {
 	);
 }
 
-export function getToggleDataState(condition: boolean): 'on' | 'off' {
-	return condition ? 'on' : 'off';
-}
+export const getToggleDataState = (condition: boolean): 'on' | 'off' => condition ? 'on' : 'off';

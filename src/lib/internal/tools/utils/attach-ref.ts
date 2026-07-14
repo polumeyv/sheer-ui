@@ -7,9 +7,7 @@ export type RefAttachment<T extends EventTarget = Element> = {
 	[key: symbol]: Attachment<T>;
 };
 
-function shouldClearRef(node: EventTarget) {
-	return !('isConnected' in node && node.isConnected === true);
-}
+const shouldClearRef = (node: EventTarget) => !('isConnected' in node && node.isConnected === true);
 
 /**
  * Creates a Svelte Attachment that attaches a DOM element to a ref.

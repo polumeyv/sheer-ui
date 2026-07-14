@@ -27,7 +27,6 @@ import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/flo
 import { DataTypeahead } from '../../../internal/data-typeahead.svelte.js';
 import { DOMTypeahead } from '../../../internal/dom-typeahead.svelte.js';
 import { PresenceManager } from '../../../internal/presence-manager.svelte.js';
-import { createInputModality } from '../../../internal/input-modality/input-modality.svelte.js';
 import { DEV } from '@polumeyv/utilities/env';
 import type { SelectValueSnippetProps } from './types.js';
 
@@ -103,7 +102,7 @@ abstract class SelectBaseRootState {
 		return this.highlightedNode.getAttribute('data-label');
 	});
 	contentIsPositioned = $state(false);
-	readonly inputModality = createInputModality();
+	isKeyboard = $state(false);
 	isCombobox = false;
 	domContext = new DOMContext(() => null);
 
@@ -128,7 +127,7 @@ abstract class SelectBaseRootState {
 
 	setHighlightedNode(node: HTMLElement | null, initial = false) {
 		this.highlightedNode = node;
-		if (node && (this.inputModality.isKeyboard || initial)) {
+		if (node && (this.isKeyboard || initial)) {
 			this.scrollHighlightedNodeIntoView(node);
 		}
 	}
@@ -507,7 +506,7 @@ export class SelectInputState {
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
-		this.root.inputModality.keyboard();
+		this.root.isKeyboard = true;
 		if (e.key === kbd.ESCAPE) return;
 
 		// prevent arrow up/down from moving the position of the cursor in the input
@@ -764,7 +763,7 @@ export class SelectTriggerState {
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
-		this.root.inputModality.keyboard();
+		this.root.isKeyboard = true;
 		if (e.key === kbd.ARROW_UP || e.key === kbd.ARROW_DOWN) e.preventDefault();
 
 		if (!this.root.opts.open.current) {
@@ -983,7 +982,7 @@ export class SelectContentState {
 	}
 
 	onpointermove(_: BitsPointerEvent) {
-		this.root.inputModality.pointer();
+		this.root.isKeyboard = false;
 	}
 
 	readonly #styles = $derived.by(() => {

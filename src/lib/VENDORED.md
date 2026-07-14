@@ -16,9 +16,9 @@ Nothing under `internal/` appears in the package.json exports map.
 
 | Path | Upstream | Version |
 | --- | --- | --- |
-| `internal/` engine core (`tools/utils`, `date-time/`, `floating-svelte/`, flat helpers) + the behavior primitives (`portal/`, `floating-layer/`, `popper-layer/`, `dismissible-layer/`, `presence-layer/`, `escape-layer/`, `focus-scope/`, `scroll-lock/`, `text-selection-layer/`, `input-modality/`, `prop-resolvers.ts`) + component state engines in `components/*/**.svelte.ts` | [huntabyte/bits-ui](https://github.com/huntabyte/bits-ui) tag `bits-ui@2.18.1`, `packages/bits-ui/src/lib` (the behavior primitives are upstream's `bits/utilities`, moved here 2026-07-04) | 2.18.1 |
+| `internal/` engine core (`tools/utils`, `date-time/`, `floating-svelte/`, flat helpers) + the behavior primitives (`portal/`, `floating-layer/`, `popper-layer/`, `dismissible-layer/`, `presence-layer/`, `escape-layer/`, `focus-scope/`, `scroll-lock/`, `text-selection-layer/`, `prop-resolvers.ts`) + component state engines in `components/*/**.svelte.ts` | [huntabyte/bits-ui](https://github.com/huntabyte/bits-ui) tag `bits-ui@2.18.1`, `packages/bits-ui/src/lib` (the behavior primitives are upstream's `bits/utilities`, moved here 2026-07-04) | 2.18.1 |
 | `internal/tools/runed/` (`box`, `use-debounce`, `repair-bindable`) | [svecosystem/runed](https://github.com/svecosystem/runed) `runed@0.35.1` subset + svelte-toolbelt `v0.10.6` derivations (`box`) | 0.35.1 / 0.10.6 |
-| `internal/vendor/tabbable.ts` | [focus-trap/tabbable](https://github.com/focus-trap/tabbable) `v6.5.0` `src/index.js`, adapted (see file header) | 6.5.0 |
+| `internal/tabbable.ts` | [focus-trap/tabbable](https://github.com/focus-trap/tabbable) `v6.5.0` `src/index.js`, adapted (see file header) | 6.5.0 |
 | `internal/vendor/vaul/` | vaul-svelte (drawer engine; sole consumer `components/drawer`) | untracked — pin on next sync |
 | `internal/vendor/paneforge/` | [svecosystem/paneforge](https://github.com/svecosystem/paneforge) (resizable engine; sole consumer `components/resizable`) | untracked — pin on next sync |
 | `internal/vendor/embla/` | embla-carousel core, TS/Svelte adaptation (sole consumer `components/carousel`) | untracked — pin on next sync |
@@ -56,8 +56,10 @@ Three edges only a cold install reveals, each of which had been quietly borrowin
 
 Modules written here, marked by their `.test.ts` siblings: `internal/layer-stack.ts`,
 `internal/hover-intent-geometry.ts`, `internal/arrays.ts`, `internal/animations-complete.ts`,
-`internal/tools/utils/attach-ref.ts`. A future upstream diff touching these is drift on our side,
-not upstream's.
+`internal/tools/utils/attach-ref.ts`. The shared `internal/native-dialog-controller.svelte.ts` and
+`internal/date-time/field/range-field.svelte.ts` are also local consolidation Modules, covered through
+their dialog and range-field integration suites. A future upstream diff touching these is drift on
+our side, not upstream's.
 
 ## Local deviations from upstream (carried forward from the original)
 
@@ -68,6 +70,13 @@ not upstream's.
   `noUncheckedIndexedAccess` fixes from the 07-03 source-consumption migration).
 - runed's `Context` class replaced with Svelte's native `createContext` (5.40+).
 - Upstream test files dropped.
+- Package-entry `exports.ts` barrels are folded into their sibling `index.ts` when that `index.ts`
+  was their sole consumer. Namespace-producing barrels (`export * as`) remain because they preserve
+  type members as well as runtime values; non-entry source inventory is retained independently of
+  current in-repository usage.
+- Menu and Select input modality is a boolean field on each root state. Menu roots own capture-phase
+  document listeners through `<svelte:document>` instead of routing browser-only lifecycle through
+  `SharedState`.
 - `state_referenced_locally` warnings (14) from vendored files are upstream's; svelte-check prints
   them.
 

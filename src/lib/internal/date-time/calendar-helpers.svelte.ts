@@ -17,7 +17,7 @@ import { createBitsAttrs, boolToEmptyStrOrUndef } from '../attrs.js';
 import { chunk, isValidIndex } from '../arrays.js';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
-import { kbd } from '../kbd.js';
+import { kbd, SELECTION_KEYS } from '../kbd.js';
 import type { DateMatcher, Month } from '../index.js';
 
 /** Is `node` a calendar cell? */
@@ -77,6 +77,36 @@ export const createMonths = ({ numberOfMonths = 1, dateObj, ...monthProps }: Set
 	for (let i = 1; i < numberOfMonths; i++) months.push(createMonth({ ...monthProps, dateObj: dateObj.add({ months: i }) }));
 	return months;
 };
+
+type ShiftCalendarPageProps = {
+	months: Month<DateValue>[];
+	placeholder: WritableBox<DateValue>;
+	pagedNavigation: boolean;
+	numberOfMonths: number;
+	direction: 1 | -1;
+	setAnchor: (value: DateValue) => void;
+};
+
+export function shiftCalendarPage({ months, placeholder, pagedNavigation, numberOfMonths, direction, setAnchor }: ShiftCalendarPageProps) {
+	const first = months[0]?.value;
+	if (!first) return;
+	const step = pagedNavigation ? numberOfMonths : 1;
+	const target = direction === 1 ? first.add({ months: step }) : first.subtract({ months: step });
+	setAnchor(target);
+	placeholder.current = target;
+}
+
+export const shiftCalendarYear = (placeholder: WritableBox<DateValue>, years: number) =>
+	(placeholder.current = placeholder.current.add({ years }));
+
+export const setCalendarYear = (placeholder: WritableBox<DateValue>, year: number) =>
+	(placeholder.current = placeholder.current.set({ year }));
+
+export const setCalendarMonth = (placeholder: WritableBox<DateValue>, month: number) =>
+	(placeholder.current = placeholder.current.set({ month }));
+
+export const isOutsideCalendarView = (visibleMonths: DateValue[], date: DateValue) =>
+	!visibleMonths.some((month) => isSameMonth(date, month));
 
 export const getSelectableCells = (calendarNode: HTMLElement | null) =>
 	calendarNode
@@ -156,7 +186,6 @@ type HandleCalendarKeydownProps = {
 	placeholderValue: DateValue;
 };
 const ARROW_KEYS = [kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT] as const;
-const SELECT_KEYS: string[] = [kbd.ENTER, kbd.SPACE];
 const kbdFocusMap: Record<(typeof ARROW_KEYS)[number], number> = {
 	[kbd.ARROW_DOWN]: 7,
 	[kbd.ARROW_UP]: -7,
@@ -170,7 +199,7 @@ export function handleCalendarKeydown({ event, handleCellClick, shiftFocus, plac
 	if (!isCalendarDayNode(currentCell)) return;
 	// oxlint-disable-next-line no-explicit-any
 	const isArrow = ARROW_KEYS.includes(event.key as any);
-	if (!isArrow && !SELECT_KEYS.includes(event.key)) return;
+	if (!isArrow && !SELECTION_KEYS.includes(event.key)) return;
 
 	event.preventDefault();
 

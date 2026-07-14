@@ -119,25 +119,13 @@ export function getPlaceholder(
 	return "";
 }
 
-function isSupportedLocale(locale: string): locale is SupportedLocale {
-	return supportedLocales.includes(locale as SupportedLocale);
-}
+const isSupportedLocale = (locale: string): locale is SupportedLocale => supportedLocales.includes(locale as SupportedLocale);
 
-function isPlaceholderField(field: unknown): field is PlaceholderField {
-	return placeholderFields.includes(field as PlaceholderField);
-}
+const isPlaceholderField = (field: unknown): field is PlaceholderField => placeholderFields.includes(field as PlaceholderField);
 
-function isTimeField(field: unknown): field is "hour" | "minute" | "second" {
-	return field === "hour" || field === "minute" || field === "second";
-}
+const isTimeField = (field: unknown): field is "hour" | "minute" | "second" =>
+	field === "hour" || field === "minute" || field === "second";
 
-function isDefaultField(field: unknown): field is "era" | "dayPeriod" {
-	return field === "era" || field === "dayPeriod";
-}
+const isDefaultField = (field: unknown): field is "era" | "dayPeriod" => field === "era" || field === "dayPeriod";
 
-function getLocaleLanguage(locale: string) {
-	if (Intl.Locale) {
-		return new Intl.Locale(locale).language;
-	}
-	return locale.split("-")[0]!;
-}
+const getLocaleLanguage = (locale: string) => (Intl.Locale ? new Intl.Locale(locale).language : locale.split("-")[0]!);

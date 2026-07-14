@@ -12,7 +12,6 @@ import { CalendarDateTime, Time, ZonedDateTime } from '@internationalized/date';
 import type { TimeFormatter } from '../formatter.js';
 import { EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';
 import { getTimeSegments } from './segments.js';
-import type { TimeSegmentPart } from './types.js';
 import { styleToString } from '../../tools/index.js';
 import { getPlaceholder } from '../placeholders.js';
 import { isZonedDateTime } from '../utils.js';
@@ -54,7 +53,7 @@ function createTimeContentObj(props: CreateTimeContentObjProps) {
 		return obj;
 	}, {} as TimeSegmentContentObj);
 
-	function getPartContent(part: TimeSegmentPart) {
+	function getPartContent(part: EditableTimeSegmentPart) {
 		const value = segmentValues[part];
 		const leadingZero = typeof value === 'string' && value?.startsWith('0');
 		const intValue = value !== null ? Number.parseInt(value) : null;
@@ -135,7 +134,7 @@ function createTimeContentArr(props: CreateTimeContentArrProps) {
 				value: contentObj[part.type],
 			};
 		})
-		.filter((segment): segment is { part: TimeSegmentPart; value: string } => {
+		.filter((segment): segment is { part: EditableTimeSegmentPart; value: string } => {
 			if (segment.part === null || segment.value === null) return false;
 			if (segment.part === 'timeZoneName' && (!isZonedDateTime(timeRef) || hideTimeZone)) {
 				return false;
@@ -180,8 +179,8 @@ function getOptsByGranularity(granularity: TimeGranularity, hourCycle: HourCycle
 	return opts;
 }
 
-export function initTimeSegmentStates() {
-	return EDITABLE_TIME_SEGMENT_PARTS.reduce((acc, key) => {
+export const initTimeSegmentStates = () =>
+	EDITABLE_TIME_SEGMENT_PARTS.reduce((acc, key) => {
 		acc[key] = {
 			lastKeyZero: false,
 			hasLeftFocus: true,
@@ -189,11 +188,9 @@ export function initTimeSegmentStates() {
 		};
 		return acc;
 	}, {} as TimeSegmentStateMap);
-}
 
-export function isEditableTimeSegmentPart(part: unknown): part is EditableTimeSegmentPart {
-	return EDITABLE_TIME_SEGMENT_PARTS.includes(part as EditableTimeSegmentPart);
-}
+export const isEditableTimeSegmentPart = (part: unknown): part is EditableTimeSegmentPart =>
+	EDITABLE_TIME_SEGMENT_PARTS.includes(part as EditableTimeSegmentPart);
 
 /**
  * Get the segments being used/ are rendered in the DOM.
@@ -303,22 +300,12 @@ export function removeTimeDescriptionElement(id: string, doc: Document) {
 	doc.body.removeChild(el);
 }
 
-export function convertTimeValueToDateValue(time: TimeValue): CalendarDateTime | ZonedDateTime {
-	if (time instanceof Time) {
-		return new CalendarDateTime(2020, 1, 1, time.hour, time.minute, time.second, time.millisecond);
-	}
-	return time;
-}
+export const convertTimeValueToDateValue = (time: TimeValue): CalendarDateTime | ZonedDateTime =>
+	time instanceof Time ? new CalendarDateTime(2020, 1, 1, time.hour, time.minute, time.second, time.millisecond) : time;
 
-export function convertTimeValueToTime(time: TimeValue): Time {
-	if (time instanceof Time) return time;
-	return new Time(time.hour, time.minute, time.second, time.millisecond);
-}
+export const convertTimeValueToTime = (time: TimeValue): Time =>
+	time instanceof Time ? time : new Time(time.hour, time.minute, time.second, time.millisecond);
 
-export function isTimeBefore(timeToCompare: Time, referenceTime: Time) {
-	return timeToCompare.compare(referenceTime) < 0;
-}
+export const isTimeBefore = (timeToCompare: Time, referenceTime: Time) => timeToCompare.compare(referenceTime) < 0;
 
-export function getISOTimeValue(time: TimeValue): string {
-	return convertTimeValueToTime(time).toString();
-}
+export const getISOTimeValue = (time: TimeValue): string => convertTimeValueToTime(time).toString();

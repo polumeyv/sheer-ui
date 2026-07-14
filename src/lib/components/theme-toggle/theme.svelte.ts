@@ -19,9 +19,7 @@ export type Mode = 'light' | 'dark';
 
 const KEY = 'mode';
 
-function isMode(value: unknown): value is Mode {
-	return value === 'light' || value === 'dark';
-}
+const isMode = (value: unknown): value is Mode => value === 'light' || value === 'dark';
 
 function readStored(): Mode | null {
 	if (!BROWSER) return null;
@@ -77,9 +75,7 @@ export class ThemeState {
 const [getTheme, setTheme] = createContext<ThemeState>();
 
 /** Create and provide the theme. Call once in a root layout's `<script>`. */
-export function initTheme(): ThemeState {
-	return setTheme(new ThemeState());
-}
+export const initTheme = (): ThemeState => setTheme(new ThemeState());
 
 /** Read the theme provided by `initTheme()`. Call during init of any descendant. */
 export { getTheme };

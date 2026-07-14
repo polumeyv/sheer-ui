@@ -41,9 +41,8 @@ export type ToastAction = {
 	actionButtonStyle?: string;
 };
 
-export function isAction(action: ToastAction | AnyComponent | undefined): action is ToastAction {
-	return (action as ToastAction).label !== undefined;
-}
+export const isAction = (action: ToastAction | AnyComponent | undefined): action is ToastAction =>
+	(action as ToastAction).label !== undefined;
 
 export type ToastT<T extends AnyComponent = AnyComponent> = {
 	id: number | string;

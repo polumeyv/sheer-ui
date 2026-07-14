@@ -15,7 +15,6 @@ import {
 	getDeltaPercentage,
 	getPivotIndices,
 	getResizeEventCursorPosition,
-	getResizeHandleElement,
 	getResizeHandleElementIndex,
 	getResizeHandleElementsForGroup,
 	getResizeHandlePaneIds,
@@ -30,7 +29,6 @@ import { adjustLayoutByDelta } from './internal/utils/adjust-layout.js';
 import { arraysAreEqual as areArraysEqual } from '../../arrays.js';
 import { areNumbersAlmostEqual } from './internal/utils/compare.js';
 import { computePaneFlexBoxStyle, getCursorStyle, resetGlobalCursorStyle, setGlobalCursorStyle } from './internal/utils/style.js';
-import { assert } from './internal/utils/assert.js';
 import type {
 	Direction,
 	DragState,
@@ -198,14 +196,13 @@ export class PaneGroupState {
 				dragHandleId,
 				domContext: this.domContext,
 			});
+			if (!pivotIndices) return;
 
 			let delta = getDeltaPercentage({
 				event: event,
-				dragHandleId,
 				dir: direction,
 				initialDragState: dragState,
 				keyboardResizeBy,
-				domContext: this.domContext,
 			});
 			if (delta === 0) return;
 
@@ -267,7 +264,7 @@ export class PaneGroupState {
 
 		const { paneSize, pivotIndices } = paneDataHelper(panesArray, paneState, prevLayout);
 
-		assert(paneSize != null);
+		if (paneSize == null || !pivotIndices) return;
 
 		const isLastPane = findPaneDataIndex(panesArray, paneState) === panesArray.length - 1;
 
@@ -293,19 +290,22 @@ export class PaneGroupState {
 	startDragging = (dragHandleId: string, e: ResizeEvent) => {
 		const direction = this.opts.direction.current;
 		const layout = this.layout;
-
-		const handleElement = getResizeHandleElement(dragHandleId, this.domContext);
-
-		assert(handleElement);
+		const groupElement = this.opts.ref.current;
+		if (!groupElement) return false;
+		const groupRect = groupElement.getBoundingClientRect();
+		const groupSizeInPixels = direction === 'horizontal' ? groupRect.width : groupRect.height;
+		if (groupSizeInPixels <= 0) return false;
 
 		const initialCursorPosition = getResizeEventCursorPosition(direction, e);
+		if (initialCursorPosition == null) return false;
 
 		this.dragState = {
 			dragHandleId,
-			dragHandleRect: handleElement.getBoundingClientRect(),
+			groupSizeInPixels,
 			initialCursorPosition,
 			initialLayout: layout,
 		};
+		return true;
 	};
 
 	stopDragging = () => {
@@ -338,7 +338,7 @@ export class PaneGroupState {
 			pivotIndices,
 		} = paneDataHelper(paneDataArray, pane, prevLayout);
 
-		if (paneSize !== collapsedSize) return;
+		if (paneSize !== collapsedSize || !pivotIndices) return;
 		// restore this pane to the size it was before it was collapsed, if possible.
 		const prevPaneSize = this.paneSizeBeforeCollapseMap.get(pane.opts.id.current);
 		const baseSize = prevPaneSize != null && prevPaneSize >= minSize ? prevPaneSize : minSize;
@@ -373,7 +373,7 @@ export class PaneGroupState {
 
 		const { collapsedSize = 0, paneSize, pivotIndices } = paneDataHelper(paneDataArray, pane, prevLayout);
 
-		assert(paneSize != null);
+		if (paneSize == null || !pivotIndices) return;
 
 		if (paneSize === collapsedSize) return;
 
@@ -482,7 +482,7 @@ export class PaneGroupState {
 				if (index < 0) return;
 
 				const paneData = paneDataArray[index];
-				assert(paneData);
+				if (!paneData) return;
 				const layout = this.layout;
 
 				const size = layout[index];
@@ -491,15 +491,18 @@ export class PaneGroupState {
 
 				if (!(size != null && collapsible)) return;
 
+				const pivotIndices = getPivotIndices({
+					groupId,
+					dragHandleId: handleId,
+					domContext: this.domContext,
+				});
+				if (!pivotIndices) return;
+
 				const nextLayout = adjustLayoutByDelta({
 					delta: areNumbersAlmostEqual(size, collapsedSize) ? minSize - size : collapsedSize - size,
 					layout,
 					paneConstraints: paneDataArray.map((paneData) => paneData.constraints),
-					pivotIndices: getPivotIndices({
-						groupId,
-						dragHandleId: handleId,
-						domContext: this.domContext,
-					}),
+					pivotIndices,
 					trigger: 'keyboard',
 				});
 
@@ -603,7 +606,7 @@ export class PaneResizerState {
 		e.preventDefault();
 
 		if (this.opts.disabled.current) return;
-		this.#group.startDragging(this.opts.id.current, e);
+		if (!this.#group.startDragging(this.opts.id.current, e)) return;
 		this.opts.onDraggingChange.current(true);
 	};
 

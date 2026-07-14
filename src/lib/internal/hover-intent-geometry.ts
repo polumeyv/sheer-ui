@@ -39,9 +39,8 @@ export function isPointInPolygon(point: Point, polygon: Point[]): boolean {
 	return isInside;
 }
 
-export function isInsideRect(point: Point, rect: DOMRect): boolean {
-	return point[0] >= rect.left && point[0] <= rect.right && point[1] >= rect.top && point[1] <= rect.bottom;
-}
+export const isInsideRect = (point: Point, rect: DOMRect): boolean =>
+	point[0] >= rect.left && point[0] <= rect.right && point[1] >= rect.top && point[1] <= rect.bottom;
 
 export function getSide(triggerRect: DOMRect, contentRect: DOMRect): SideBits {
 	// determine which side the content is on relative to trigger
@@ -53,9 +52,7 @@ export function getSide(triggerRect: DOMRect, contentRect: DOMRect): SideBits {
 		: ((AXIS_VERTICAL | (dy > 0 ? DIR_POS : 0)) as SideBits);
 }
 
-export function flipSide(side: SideBits): SideBits {
-	return (side ^ DIR_POS) as SideBits;
-}
+export const flipSide = (side: SideBits): SideBits => (side ^ DIR_POS) as SideBits;
 
 export const TARGET_NONE = 0;
 export const TARGET_TRIGGER = 0b01;

@@ -11,10 +11,9 @@
 	import { DialogContentState } from '../../dialog/dialog.svelte.js';
 	import type { DialogContentProps, DialogPortalProps } from '../../dialog/types.js';
 	import { createId } from '../../../internal/create-id.js';
-	import { on } from 'svelte/events';
-	import { createAttachmentKey } from 'svelte/attachments';
 	import type { WithoutChildrenOrChild } from '../../../internal/utils.js';
 	import { scrollLockAttachment } from '../../../internal/body-scroll-lock.svelte.js';
+	import { nativeDialogControllerAttachment } from '../../../internal/native-dialog-controller.svelte.js';
 	import SheetClose from './sheet-close.svelte';
 	import XIcon from '@lucide/svelte/icons/x';
 
@@ -91,41 +90,15 @@
 	// DialogContentState which sets `contentNode`. That PresenceManager's AnimationsComplete watches
 	// the <dialog>'s getAnimations() and already fires onOpenChangeComplete after the slide settles —
 	// adding a transitionend listener would double-fire it.
-	function controller(node: HTMLDialogElement) {
-		$effect(() => {
-			const open = contentState.root.cell.open;
-			if (open && !node.open) node.showModal();
-			else if (!open && node.open) node.close();
-		});
-
-		// Any native dismissal (Esc default action, backdrop click, command=close) → sync the root.
-		const offClose = on(node, 'close', () => contentState.root.handleClose());
-
-		// Backdrop click: dismiss unless the onInteractOutside shim vetoes (preventDefault) or
-		// interactOutsideBehavior is 'ignore'.
-		const offClick = on(node, 'click', (event) => {
-			if (event.target !== node) return;
-			const shim = new PointerEvent('pointerdown', { cancelable: true });
-			onInteractOutside(shim);
-			if (shim.defaultPrevented || interactOutsideBehavior === 'ignore') return;
-			node.close();
-		});
-
-		// Esc fires the native `cancel`, whose default action closes the dialog. Run the
-		// onEscapeKeydown shim; if it vetoes (preventDefault) or escapeKeydownBehavior is 'ignore',
-		// preventDefault the native close to keep the sheet open.
-		const offCancel = on(node, 'cancel', (event) => {
-			const shim = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true });
-			onEscapeKeydown(shim);
-			if (shim.defaultPrevented || escapeKeydownBehavior === 'ignore') event.preventDefault();
-		});
-
-		return () => {
-			offClose();
-			offClick();
-			offCancel();
-		};
-	}
+	const controllerAttachment = nativeDialogControllerAttachment({
+		open: () => contentState.root.cell.open,
+		onClose: () => contentState.root.handleClose(),
+		outsideEvent: 'click',
+		onInteractOutside: () => onInteractOutside,
+		interactOutsideBehavior: () => interactOutsideBehavior,
+		onEscapeKeydown: () => onEscapeKeydown,
+		escapeKeydownBehavior: () => escapeKeydownBehavior,
+	});
 
 
 	// The <dialog> persists across open/close, so the lock gates on the cell's open, not element lifecycle.
@@ -138,9 +111,6 @@
 		mergeProps({ 'data-slot': 'sheet-content', class: join('sheet-dialog', sheetVariants({ side })) }, restProps, contentState.props, scrollLock),
 	);
 
-	// For the (currently unused) `child` path the controller rides along as an attachment, so a
-	// consumer MUST spread these props onto a native <dialog> for showModal()/close() to work.
-	const controllerAttachment = { [createAttachmentKey()]: controller };
 </script>
 
 {#if child}
@@ -148,7 +118,7 @@
 {:else}
 	<!-- DialogContentState.props / DialogContentProps are authored for a <div>; their generic event
 	     handlers are typed to HTMLDivElement, so assert the merged set as dialog attributes. -->
-	<dialog {@attach controller} {...mergedProps as unknown as HTMLDialogAttributes}>
+	<dialog {...controllerAttachment} {...mergedProps as unknown as HTMLDialogAttributes}>
 		{@render children?.()}
 		<SheetClose
 			class="ring-offset-background focus-visible:ring-ring absolute inset-e-4 top-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none">

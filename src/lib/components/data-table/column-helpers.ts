@@ -3,8 +3,7 @@ import { renderComponent, renderSnippet } from './';
 import { createRawSnippet } from 'svelte';
 import { DataTableCheckbox } from './index';
 import DataTableSortButton from './data-table-sort-button.svelte';
-
-type CheckedState = boolean | 'indeterminate';
+import type { CheckedState } from './data-table.svelte.js';
 
 // `createRawSnippet`'s `render` returns a raw HTML string (like `{@html}`), so any cell text — which is usually
 // user-controlled (names, emails, …) — must be escaped before interpolation to avoid XSS.

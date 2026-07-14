@@ -1,8 +1,6 @@
 import { type Box, type ReadableBox, simpleBox } from './tools/index.js';
-import { getElemDirection } from './locale.js';
-import { getDirectionalKeys } from './get-directional-keys.js';
-import { kbd } from './kbd.js';
-import type { Orientation } from './index.js';
+import { getDirectionalKeys, kbd } from './kbd.js';
+import type { Direction, Orientation } from './index.js';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
 
@@ -82,7 +80,7 @@ export class RovingFocusGroup {
 		if (!items.length) return;
 
 		const currentIndex = items.indexOf(node);
-		const dir = getElemDirection(rootNode);
+		const dir = (rootNode.ownerDocument.defaultView ?? window).getComputedStyle(rootNode).direction as Direction;
 		const { nextKey, prevKey } = getDirectionalKeys(dir, this.#opts.orientation.current);
 		const loop = this.#opts.loop.current;
 

@@ -1,14 +1,10 @@
 import { getDocument } from './tools/index.js';
 import { isSelectableInput } from '@polumeyv/utilities/dom';
-import { getTabbableCandidates as getInternalTabbableCandidates } from './tabbable.js';
+import { getTabbableCandidates } from './tabbable.js';
 
 export type FocusableTarget = HTMLElement;
 
-export function focusWithoutScroll(element: HTMLElement) {
-	element.focus({ preventScroll: true });
-}
-
-export function focus(element?: FocusableTarget | null, { select = false } = {}) {
+function focus(element?: FocusableTarget | null, { select = false } = {}) {
 	if (!element) return false;
 
 	const doc = getDocument(element);
@@ -39,10 +35,6 @@ export function focusFirst(candidates: HTMLElement[], { select = false } = {}, g
 	}
 
 	return false;
-}
-
-export function getTabbableCandidates(container: HTMLElement) {
-	return getInternalTabbableCandidates(container);
 }
 
 export function getTabbableEdges(container: HTMLElement) {

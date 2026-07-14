@@ -1,4 +1,4 @@
-import Root from './components/sheet.svelte';
+import Root from '../dialog/components/dialog.svelte';
 import Close from './components/sheet-close.svelte';
 import Content from './components/sheet-content.svelte';
 import Description from './components/sheet-description.svelte';

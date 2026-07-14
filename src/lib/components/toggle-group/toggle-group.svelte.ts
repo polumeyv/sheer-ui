@@ -232,6 +232,4 @@ export class ToggleGroupItemState {
 	);
 }
 
-function getToggleItemDataState(condition: boolean) {
-	return condition ? 'on' : 'off';
-}
+const getToggleItemDataState = (condition: boolean) => condition ? 'on' : 'off';

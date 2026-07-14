@@ -12,9 +12,8 @@ function getAriaNotifyDocument(doc: Document | null): AriaNotifyDocument | null 
 	return typeof ariaNotify === 'function' ? (doc as AriaNotifyDocument) : null;
 }
 
-function getAnnouncementText(value: string | null | number) {
-	return typeof value === 'number' ? value.toString() : value === null ? 'Empty' : value.trim();
-}
+const getAnnouncementText = (value: string | null | number) =>
+	typeof value === 'number' ? value.toString() : value === null ? 'Empty' : value.trim();
 
 /**
  * Creates or gets an announcer element which is used to announce messages to screen readers.

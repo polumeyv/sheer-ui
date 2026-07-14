@@ -22,6 +22,7 @@ import {
 	getAdjacentStepValue,
 	getTickLabelStyles,
 	getThumbLabelStyles,
+	normalizeSliderValue,
 } from './helpers.js';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import { kbd } from '../../internal/kbd.js';
@@ -31,7 +32,7 @@ import { resizeAttachment } from '../../internal/svelte-resize-observer.svelte.j
 import type { BitsKeyboardEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import type { Direction, Orientation, SliderThumbPositioning } from '../../internal/index.js';
 import { linearScale } from '../../internal/math.js';
-import type { SliderLabelPosition } from './types.js';
+import type { SliderLabelPosition, ThumbItem, TickItem } from './types.js';
 
 const sliderAttrs = createBitsAttrs({
 	component: 'slider',
@@ -63,20 +64,35 @@ abstract class SliderBaseRootState {
 	readonly direction: 'rl' | 'lr' | 'tb' | 'bt' = $derived.by(() => {
 		if (this.opts.orientation.current === 'horizontal') {
 			return this.opts.dir.current === 'rtl' ? 'rl' : 'lr';
-		} else {
-			return this.opts.dir.current === 'rtl' ? 'tb' : 'bt';
 		}
+		return this.opts.dir.current === 'rtl' ? 'tb' : 'bt';
 	});
 
 	// Normalized steps array for consistent handling
-	readonly normalizedSteps = $derived.by(() => {
-		return normalizeSteps(this.opts.step.current, this.opts.min.current, this.opts.max.current);
-	});
+	readonly normalizedSteps = $derived.by(() => normalizeSteps(this.opts.step.current, this.opts.min.current, this.opts.max.current));
 	domContext: DOMContext;
 
 	abstract handlePointerDown: (e: PointerEvent) => void;
 	abstract handlePointerUp: () => void;
 	abstract handlePointerMove: (e: PointerEvent) => void;
+	abstract readonly thumbsPropsArr: readonly { 'data-value': number | undefined }[];
+	abstract readonly ticksPropsArr: readonly { 'data-value': number }[];
+	abstract readonly thumbItemsArr: ThumbItem[];
+
+	readonly thumbsRenderArr = $derived.by(() => this.thumbsPropsArr.map((_, index) => index));
+	readonly ticksRenderArr = $derived.by(() => this.ticksPropsArr.map((_, index) => index));
+	readonly tickItemsArr = $derived.by((): TickItem[] =>
+		this.ticksPropsArr.map((tick, index) => ({ value: tick['data-value'], index })),
+	);
+	readonly snippetProps = $derived.by(
+		() =>
+			({
+				ticks: this.ticksRenderArr,
+				thumbs: this.thumbsRenderArr,
+				tickItems: this.tickItemsArr,
+				thumbItems: this.thumbItemsArr,
+			}) as const,
+	);
 
 	constructor(opts: SliderBaseRootStateOpts) {
 		this.opts = opts;
@@ -206,17 +222,8 @@ class SliderSingleRootState extends SliderBaseRootState {
 			untrack(() => {
 				const steps = normalizeSteps(step, min, max);
 
-				const isValidValue = (v: number) => {
-					return steps.includes(v);
-				};
-
-				const gcv = (v: number) => {
-					return snapValueToCustomSteps(v, steps);
-				};
-
-				if (!isValidValue(value)) {
-					this.opts.value.current = gcv(value);
-				}
+				const normalized = normalizeSliderValue(value, steps);
+				if (normalized !== value) this.opts.value.current = normalized;
 			});
 		});
 	}
@@ -332,10 +339,6 @@ class SliderSingleRootState extends SliderBaseRootState {
 		});
 	});
 
-	readonly thumbsRenderArr = $derived.by(() => {
-		return this.thumbsPropsArr.map((_, i) => i);
-	});
-
 	readonly ticksPropsArr = $derived.by(() => {
 		const steps = this.normalizedSteps;
 		const currValue = this.opts.value.current;
@@ -363,17 +366,6 @@ class SliderSingleRootState extends SliderBaseRootState {
 		});
 	});
 
-	readonly ticksRenderArr = $derived.by(() => {
-		return this.ticksPropsArr.map((_, i) => i);
-	});
-
-	readonly tickItemsArr = $derived.by(() => {
-		return this.ticksPropsArr.map((tick, i) => ({
-			value: tick['data-value'],
-			index: i,
-		}));
-	});
-
 	readonly thumbItemsArr = $derived.by(() => {
 		const currValue = this.opts.value.current;
 		return [
@@ -384,15 +376,6 @@ class SliderSingleRootState extends SliderBaseRootState {
 		];
 	});
 
-	readonly snippetProps = $derived.by(
-		() =>
-			({
-				ticks: this.ticksRenderArr,
-				thumbs: this.thumbsRenderArr,
-				tickItems: this.tickItemsArr,
-				thumbItems: this.thumbItemsArr,
-			}) as const,
-	);
 }
 
 interface SliderMultiRootStateOpts
@@ -428,17 +411,8 @@ class SliderMultiRootState extends SliderBaseRootState {
 			untrack(() => {
 				const steps = normalizeSteps(step, min, max);
 
-				const isValidValue = (v: number) => {
-					return steps.includes(v);
-				};
-
-				const gcv = (v: number) => {
-					return snapValueToCustomSteps(v, steps);
-				};
-
-				if (value.some((v) => !isValidValue(v))) {
-					this.opts.value.current = value.map(gcv);
-				}
+				const normalized = normalizeSliderValue(value, steps);
+				if (normalized !== value) this.opts.value.current = normalized;
 			});
 		});
 	}
@@ -640,10 +614,6 @@ class SliderMultiRootState extends SliderBaseRootState {
 		});
 	});
 
-	readonly thumbsRenderArr = $derived.by(() => {
-		return this.thumbsPropsArr.map((_, i) => i);
-	});
-
 	readonly ticksPropsArr = $derived.by(() => {
 		const steps = this.normalizedSteps;
 		const currValue = this.opts.value.current;
@@ -671,17 +641,6 @@ class SliderMultiRootState extends SliderBaseRootState {
 		});
 	});
 
-	readonly ticksRenderArr = $derived.by(() => {
-		return this.ticksPropsArr.map((_, i) => i);
-	});
-
-	readonly tickItemsArr = $derived.by(() => {
-		return this.ticksPropsArr.map((tick, i) => ({
-			value: tick['data-value'],
-			index: i,
-		}));
-	});
-
 	readonly thumbItemsArr = $derived.by(() => {
 		const currValue = this.opts.value.current;
 		return currValue.map((value, index) => ({
@@ -690,15 +649,6 @@ class SliderMultiRootState extends SliderBaseRootState {
 		}));
 	});
 
-	readonly snippetProps = $derived.by(
-		() =>
-			({
-				ticks: this.ticksRenderArr,
-				thumbs: this.thumbsRenderArr,
-				tickItems: this.tickItemsArr,
-				thumbItems: this.thumbItemsArr,
-			}) as const,
-	);
 }
 
 type SliderRoot = SliderSingleRootState | SliderMultiRootState;

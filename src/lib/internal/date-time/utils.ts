@@ -30,11 +30,6 @@ const defaultDateDefaults = {
 	granularity: 'day',
 };
 
-const defaultTimeDefaults = {
-	defaultValue: undefined,
-	granularity: 'minute',
-};
-
 /**
  * A helper function used throughout the various date builders
  * to generate a default `DateValue` using the `defaultValue`,
@@ -55,36 +50,27 @@ export function getDefaultDate(opts: GetDefaultDateProps): DateValue {
 
 	if (defaultValue && !Array.isArray(defaultValue)) {
 		return defaultValue;
-	} else {
-		let date = new Date();
-		if (minValue && date < minValue.toDate(getLocalTimeZone())) {
-			date = minValue.toDate(getLocalTimeZone());
-		} else if (maxValue && date > maxValue.toDate(getLocalTimeZone())) {
-			date = maxValue.toDate(getLocalTimeZone());
-		}
-		const year = date.getFullYear();
-		const month = date.getMonth() + 1;
-		const day = date.getDate();
-		const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
-
-		if (calendarDateTimeGranularities.includes(granularity ?? 'day')) {
-			return new CalendarDateTime(year, month, day, 0, 0, 0);
-		}
-
-		return new CalendarDate(year, month, day);
 	}
+
+	let date = new Date();
+	if (minValue && date < minValue.toDate(getLocalTimeZone())) {
+		date = minValue.toDate(getLocalTimeZone());
+	} else if (maxValue && date > maxValue.toDate(getLocalTimeZone())) {
+		date = maxValue.toDate(getLocalTimeZone());
+	}
+	const year = date.getFullYear();
+	const month = date.getMonth() + 1;
+	const day = date.getDate();
+	const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
+
+	if (calendarDateTimeGranularities.includes(granularity ?? 'day')) {
+		return new CalendarDateTime(year, month, day, 0, 0, 0);
+	}
+
+	return new CalendarDate(year, month, day);
 }
 
-export function getDefaultTime(opts: GetDefaultTimeProps): TimeValue {
-	const withDefaults = { ...defaultTimeDefaults, ...opts };
-	const { defaultValue } = withDefaults;
-
-	if (defaultValue) {
-		return defaultValue;
-	} else {
-		return new Time(0, 0, 0);
-	}
-}
+export const getDefaultTime = ({ defaultValue }: GetDefaultTimeProps): TimeValue => defaultValue ?? new Time(0, 0, 0);
 
 /**
  * Given a date string and a reference `DateValue` object, parse the
@@ -112,13 +98,8 @@ export function parseStringToDateValue(dateStr: string, referenceVal: DateValue)
  * If a timezone is provided, the date will be converted to that timezone.
  * If no timezone is provided, the date will be converted to the local timezone.
  */
-export function toDate(dateValue: DateValue, tz: string = getLocalTimeZone()) {
-	if (dateValue instanceof ZonedDateTime) {
-		return dateValue.toDate();
-	} else {
-		return dateValue.toDate(tz);
-	}
-}
+export const toDate = (dateValue: DateValue, tz: string = getLocalTimeZone()) =>
+	dateValue instanceof ZonedDateTime ? dateValue.toDate() : dateValue.toDate(tz);
 
 export function getDateValueType(date: DateValue): string {
 	if (date instanceof CalendarDate) return 'date';
@@ -139,13 +120,10 @@ export function parseAnyDateValue(value: string, type: string): DateValue {
 			throw new Error(`Unknown date type: ${type}`);
 	}
 }
-export function isZonedDateTime(dateValue: DateValue | TimeValue): dateValue is ZonedDateTime {
-	return dateValue instanceof ZonedDateTime;
-}
+export const isZonedDateTime = (dateValue: DateValue | TimeValue): dateValue is ZonedDateTime => dateValue instanceof ZonedDateTime;
 
-export function hasTime(dateValue: DateValue): dateValue is CalendarDateTime | ZonedDateTime {
-	return dateValue instanceof CalendarDateTime || isZonedDateTime(dateValue);
-}
+export const hasTime = (dateValue: DateValue): dateValue is CalendarDateTime | ZonedDateTime =>
+	dateValue instanceof CalendarDateTime || isZonedDateTime(dateValue);
 
 /**
  * Given a date, return the number of days in the month.
@@ -160,9 +138,8 @@ export function getDaysInMonth(date: Date | DateValue) {
 		 * is the month we originally passed in.
 		 */
 		return new Date(year, month, 0).getDate();
-	} else {
-		return date.set({ day: 100 }).day;
 	}
+	return date.set({ day: 100 }).day;
 }
 
 /**
@@ -172,9 +149,7 @@ export function getDaysInMonth(date: Date | DateValue) {
  *
  * @see {@link isBeforeOrSame} for inclusive
  */
-export function isBefore(dateToCompare: DateValue, referenceDate: DateValue) {
-	return dateToCompare.compare(referenceDate) < 0;
-}
+export const isBefore = (dateToCompare: DateValue, referenceDate: DateValue) => dateToCompare.compare(referenceDate) < 0;
 
 /**
  * Determine if a date is after the reference date.
@@ -183,9 +158,7 @@ export function isBefore(dateToCompare: DateValue, referenceDate: DateValue) {
  *
  * @see {@link isAfterOrSame} for inclusive
  */
-export function isAfter(dateToCompare: DateValue, referenceDate: DateValue) {
-	return dateToCompare.compare(referenceDate) > 0;
-}
+export const isAfter = (dateToCompare: DateValue, referenceDate: DateValue) => dateToCompare.compare(referenceDate) > 0;
 
 /**
  * Determine if a date is before or the same as the reference date.
@@ -195,9 +168,7 @@ export function isAfter(dateToCompare: DateValue, referenceDate: DateValue) {
  *
  * @see {@link isBefore} for non-inclusive
  */
-function isBeforeOrSame(dateToCompare: DateValue, referenceDate: DateValue) {
-	return dateToCompare.compare(referenceDate) <= 0;
-}
+const isBeforeOrSame = (dateToCompare: DateValue, referenceDate: DateValue) => dateToCompare.compare(referenceDate) <= 0;
 
 /**
  * Determine if a date is after or the same as the reference date.
@@ -207,9 +178,7 @@ function isBeforeOrSame(dateToCompare: DateValue, referenceDate: DateValue) {
  *
  * @see {@link isAfter} for non-inclusive
  */
-function isAfterOrSame(dateToCompare: DateValue, referenceDate: DateValue) {
-	return dateToCompare.compare(referenceDate) >= 0;
-}
+const isAfterOrSame = (dateToCompare: DateValue, referenceDate: DateValue) => dateToCompare.compare(referenceDate) >= 0;
 
 /**
  * Determine if a date is inclusively between a start and end reference date.
@@ -220,9 +189,8 @@ function isAfterOrSame(dateToCompare: DateValue, referenceDate: DateValue) {
  *
  * @see {@link isBetween} for non-inclusive
  */
-export function isBetweenInclusive(date: DateValue, start: DateValue, end: DateValue) {
-	return isAfterOrSame(date, start) && isBeforeOrSame(date, end);
-}
+export const isBetweenInclusive = (date: DateValue, start: DateValue, end: DateValue) =>
+	isAfterOrSame(date, start) && isBeforeOrSame(date, end);
 
 export function getLastFirstDayOfWeek<T extends DateValue = DateValue>(date: T, firstDayOfWeek: number, locale: string): T {
 	const day = getDayOfWeek(date, locale);

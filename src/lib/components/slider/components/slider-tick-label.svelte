@@ -4,6 +4,7 @@
 	import type { SliderTickLabelProps } from '../types.js';
 	import { getSliderRoot, SliderTickLabelState } from '../slider.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
+	import { getLabelPosition } from '../helpers.js';
 
 	const uid = $props.id();
 
@@ -19,17 +20,7 @@
 
 	const root = getSliderRoot();
 
-	const position = $derived.by(() => {
-		if (positionProp !== undefined) return positionProp;
-		switch (root.direction) {
-			case 'lr':
-			case 'rl':
-				return 'top';
-			case 'tb':
-			case 'bt':
-				return 'left';
-		}
-	});
+	const position = $derived(getLabelPosition(root.direction, positionProp));
 
 	const tickLabelState = SliderTickLabelState.create({
 		id: boxWith(() => id),

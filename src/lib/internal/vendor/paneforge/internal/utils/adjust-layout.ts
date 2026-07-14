@@ -1,5 +1,4 @@
 import type { PaneConstraints } from '../types.js';
-import { assert } from './assert.js';
 import { areNumbersAlmostEqual, compareNumbersWithTolerance } from './compare.js';
 import { resizePane } from './resize.js';
 
@@ -19,12 +18,25 @@ export function adjustLayoutByDelta({
 	delta: number;
 	layout: number[];
 	paneConstraints: PaneConstraints[];
-	pivotIndices: number[];
+	pivotIndices: [number, number];
 	trigger: 'imperative-api' | 'keyboard' | 'mouse-or-touch';
 }): number[] {
 	if (areNumbersAlmostEqual(delta, 0)) return prevLayout;
-
-	assert(firstPivotIndex != null && secondPivotIndex != null);
+	if (prevLayout.length !== paneConstraints.length) return prevLayout;
+	if (
+		!Number.isInteger(firstPivotIndex) ||
+		!Number.isInteger(secondPivotIndex) ||
+		firstPivotIndex < 0 ||
+		secondPivotIndex < 0 ||
+		secondPivotIndex !== firstPivotIndex + 1 ||
+		firstPivotIndex >= prevLayout.length ||
+		secondPivotIndex >= prevLayout.length
+	) {
+		return prevLayout;
+	}
+	for (let index = 0; index < prevLayout.length; index++) {
+		if (prevLayout[index] == null || paneConstraints[index] == null) return prevLayout;
+	}
 
 	const nextLayout = [...prevLayout];
 	const safeSize = (paneIndex: number, initialSize: number) => resizePane({ paneConstraints, paneIndex, initialSize });
@@ -34,13 +46,11 @@ export function adjustLayoutByDelta({
 	if (trigger === 'keyboard')
 		for (const expand of [true, false]) {
 			const index = delta < 0 === expand ? secondPivotIndex : firstPivotIndex;
-			const constraints = paneConstraints[index];
-			assert(constraints);
+			const constraints = paneConstraints[index]!;
 			if (!constraints.collapsible) continue;
 
 			const { collapsedSize = 0, minSize = 0 } = constraints;
-			const prevSize = prevLayout[index];
-			assert(prevSize != null);
+			const prevSize = prevLayout[index]!;
 			if (!areNumbersAlmostEqual(prevSize, expand ? collapsedSize : minSize)) continue;
 
 			const localDelta = expand ? minSize - prevSize : prevSize - collapsedSize;
@@ -52,8 +62,7 @@ export function adjustLayoutByDelta({
 		const increment = delta < 0 ? 1 : -1;
 		let maxAvailableDelta = 0;
 		for (let index = delta < 0 ? secondPivotIndex : firstPivotIndex; index >= 0 && index < paneConstraints.length; index += increment) {
-			const prevSize = prevLayout[index];
-			assert(prevSize != null);
+			const prevSize = prevLayout[index]!;
 			maxAvailableDelta += safeSize(index, 100) - prevSize;
 		}
 		const minAbsDelta = Math.min(Math.abs(delta), Math.abs(maxAvailableDelta));
@@ -65,8 +74,7 @@ export function adjustLayoutByDelta({
 	{
 		let index = delta < 0 ? firstPivotIndex : secondPivotIndex;
 		while (index >= 0 && index < paneConstraints.length) {
-			const prevSize = prevLayout[index];
-			assert(prevSize != null);
+			const prevSize = prevLayout[index]!;
 
 			const next = safeSize(index, prevSize - (Math.abs(delta) - Math.abs(deltaApplied)));
 			if (!areNumbersAlmostEqual(prevSize, next)) {
@@ -85,8 +93,7 @@ export function adjustLayoutByDelta({
 	// Add the applied delta to the pivot pane on the other side.
 	{
 		const pivotIndex = delta < 0 ? secondPivotIndex : firstPivotIndex;
-		const prevSize = prevLayout[pivotIndex];
-		assert(prevSize != null);
+		const prevSize = prevLayout[pivotIndex]!;
 
 		const unsafeSize = prevSize + deltaApplied;
 		const size = safeSize(pivotIndex, unsafeSize);
@@ -97,8 +104,7 @@ export function adjustLayoutByDelta({
 			let deltaRemaining = unsafeSize - size;
 			let index = pivotIndex;
 			while (index >= 0 && index < paneConstraints.length) {
-				const prevSize = nextLayout[index];
-				assert(prevSize != null);
+				const prevSize = nextLayout[index]!;
 
 				const next = safeSize(index, prevSize + deltaRemaining);
 				if (!areNumbersAlmostEqual(prevSize, next)) {

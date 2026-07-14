@@ -53,7 +53,8 @@
 				'data-slot': 'tooltip-content',
 				'data-anchored': '',
 				class: join(
-					'native-tooltip-content z-50 w-fit rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background',
+					'group/tooltip z-50 w-fit rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background [container-type:anchored]',
+					'data-[side=left]:[position-try-fallbacks:flip-inline] data-[side=right]:[position-try-fallbacks:flip-inline]',
 					'transition-[opacity,translate,display,overlay] transition-discrete opacity-0 translate-y-1 open:opacity-100 open:translate-y-0 starting:open:opacity-0 starting:open:translate-y-1',
 				),
 			},
@@ -69,34 +70,19 @@
 {:else}
 	<div {...mergedProps} bind:this={ref} popover="manual" data-side={side} data-align={align}>
 		{@render children?.()}
-		<div class={join('native-tooltip-arrow bg-foreground size-2.5 rotate-45 rounded-xs', arrowClasses)}></div>
+		<div
+			class={join(
+				'hidden absolute z-50 size-2.5 rotate-45 rounded-xs bg-foreground supports-[container-type:anchored]:block',
+				'group-data-[side=top]/tooltip:-bottom-[0.3rem] group-data-[side=top]/tooltip:left-1/2 group-data-[side=top]/tooltip:-translate-x-1/2',
+				'group-data-[side=bottom]/tooltip:-top-[0.3rem] group-data-[side=bottom]/tooltip:left-1/2 group-data-[side=bottom]/tooltip:-translate-x-1/2',
+				'group-data-[side=left]/tooltip:-right-[0.3rem] group-data-[side=left]/tooltip:top-1/2 group-data-[side=left]/tooltip:-translate-y-1/2',
+				'group-data-[side=right]/tooltip:-left-[0.3rem] group-data-[side=right]/tooltip:top-1/2 group-data-[side=right]/tooltip:-translate-y-1/2',
+				'[@container_anchored(fallback:_flip-block)]:group-data-[side=top]/tooltip:bottom-auto [@container_anchored(fallback:_flip-block)]:group-data-[side=top]/tooltip:-top-[0.3rem]',
+				'[@container_anchored(fallback:_flip-block)]:group-data-[side=bottom]/tooltip:top-auto [@container_anchored(fallback:_flip-block)]:group-data-[side=bottom]/tooltip:-bottom-[0.3rem]',
+				'[@container_anchored(fallback:_flip-inline)]:group-data-[side=left]/tooltip:right-auto [@container_anchored(fallback:_flip-inline)]:group-data-[side=left]/tooltip:-left-[0.3rem]',
+				'[@container_anchored(fallback:_flip-inline)]:group-data-[side=right]/tooltip:left-auto [@container_anchored(fallback:_flip-inline)]:group-data-[side=right]/tooltip:-right-[0.3rem]',
+				arrowClasses,
+			)}
+		></div>
 	</div>
 {/if}
-
-<style>
-	/* static arrow — points correctly per side; flip updates data-side so no JS tracking needed */
-	:global(.native-tooltip-arrow) {
-		position: absolute;
-		z-index: 50;
-	}
-	:global(.native-tooltip-content[data-side='top'] .native-tooltip-arrow) {
-		bottom: -0.3rem;
-		left: 50%;
-		translate: -50% 0;
-	}
-	:global(.native-tooltip-content[data-side='bottom'] .native-tooltip-arrow) {
-		top: -0.3rem;
-		left: 50%;
-		translate: -50% 0;
-	}
-	:global(.native-tooltip-content[data-side='left'] .native-tooltip-arrow) {
-		right: -0.3rem;
-		top: 50%;
-		translate: 0 -50%;
-	}
-	:global(.native-tooltip-content[data-side='right'] .native-tooltip-arrow) {
-		left: -0.3rem;
-		top: 50%;
-		translate: 0 -50%;
-	}
-</style>

@@ -188,9 +188,8 @@ class ToastState {
 
 const hasStatus = (value: unknown): value is { status: unknown } => value !== null && typeof value === 'object' && 'status' in value;
 
-function constructPromiseErrorMessage(error: unknown) {
-	return hasStatus(error) ? `HTTP error! Status: ${error.status}` : `Error! ${String(error)}`;
-}
+const constructPromiseErrorMessage = (error: unknown) =>
+	hasStatus(error) ? `HTTP error! Status: ${error.status}` : `Error! ${String(error)}`;
 
 export const toastState = new ToastState();
 

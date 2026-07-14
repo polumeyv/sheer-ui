@@ -44,6 +44,11 @@
 	);
 </script>
 
+<svelte:document
+	onkeydowncapture={() => (root.isKeyboard = true)}
+	onpointerdowncapture={() => (root.isKeyboard = false)}
+/>
+
 <FloatingLayer>
 	{@render children?.()}
 </FloatingLayer>

@@ -7,12 +7,11 @@ import { timeToMinutes, minutesToTime, formatTimeDisplay } from '@polumeyv/utili
 
 export type TimeSlot = { value: string; label: string };
 export type SlotRange = { start: string; end: string };
+export type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';
 
 /** Non-throwing parse of an ISO 8601 "HH:MM" wall-clock string → minutes since midnight, or null if malformed.
  *  The regex IS the brand's validation, so the cast is sound — this is the lenient seam for free-form props. */
-function toMin(time: string): number | null {
-	return /^\d{2}:\d{2}(:\d{2})?$/.test(time) ? timeToMinutes(time) : null;
-}
+const toMin = (time: string): number | null => /^\d{2}:\d{2}(:\d{2})?$/.test(time) ? timeToMinutes(time) : null;
 
 /** Sign of (time1 − time2): negative if earlier, 0 if equal or either is malformed, positive if later. */
 export function compareTime(time1: string, time2: string): number {
@@ -22,9 +21,8 @@ export function compareTime(time1: string, time2: string): number {
 	return a - b;
 }
 
-export function isTimeInRange(time: string, minTime: string, maxTime: string): boolean {
-	return compareTime(time, minTime) >= 0 && compareTime(time, maxTime) <= 0;
-}
+export const isTimeInRange = (time: string, minTime: string, maxTime: string): boolean =>
+	compareTime(time, minTime) >= 0 && compareTime(time, maxTime) <= 0;
 
 /** Duration in minutes from startTime to endTime (0 if either is malformed). */
 export function getTimeDuration(startTime: string, endTime: string): number {
@@ -48,3 +46,18 @@ export function generateTimeSlots(startHour: number, endHour: number, interval: 
 
 export const b_HOURS: TimeSlot[] = generateTimeSlots(9, 17, 60);
 export const EXTENDED_HOURS: TimeSlot[] = generateTimeSlots(7, 21, 60);
+
+type ResolveTimeSlotsOptions = {
+	slots: TimeSlot[] | undefined;
+	preset: TimeSlotPreset;
+	interval: number;
+	startHour: number;
+	endHour: number;
+};
+
+export const resolveTimeSlots = ({ slots, preset, interval, startHour, endHour }: ResolveTimeSlotsOptions) => {
+	if (slots) return slots;
+	if (preset === 'business') return b_HOURS;
+	if (preset === 'extended') return EXTENDED_HOURS;
+	return preset === 'full' ? generateTimeSlots(0, 24, interval) : generateTimeSlots(startHour, endHour, interval);
+};

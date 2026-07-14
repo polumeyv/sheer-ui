@@ -6,13 +6,13 @@ import { hasTime, isZonedDateTime } from '../utils.js';
 import type {
 	DateAndTimeSegmentObj,
 	DateSegmentPart,
+	EditableTimeSegmentPart,
 	EditableSegmentPart,
 	SegmentContentObj,
 	SegmentPart,
 	SegmentStateMap,
 	SegmentValueObj,
-	TimeSegmentPart,
-} from './types.js';
+} from '../types.js';
 import { ALL_SEGMENT_PARTS, DATE_SEGMENT_PARTS, EDITABLE_SEGMENT_PARTS, EDITABLE_TIME_SEGMENT_PARTS } from './parts.js';
 import { getSegments } from './segments.js';
 import { isNumberString } from '@polumeyv/utilities/dom';
@@ -74,7 +74,7 @@ function createContentObj(props: CreateContentObjProps) {
 		return obj;
 	}, {} as SegmentContentObj);
 
-	function getPartContent(part: DateSegmentPart | TimeSegmentPart) {
+	function getPartContent(part: DateSegmentPart | EditableTimeSegmentPart) {
 		if ('hour' in segmentValues) {
 			const value = segmentValues[part];
 			const leadingZero = typeof value === 'string' && value?.startsWith('0');
@@ -236,8 +236,8 @@ function getOptsByGranularity(granularity: Granularity, hourCycle: HourCycle | u
 	return opts;
 }
 
-export function initSegmentStates() {
-	return EDITABLE_SEGMENT_PARTS.reduce((acc, key) => {
+export const initSegmentStates = () =>
+	EDITABLE_SEGMENT_PARTS.reduce((acc, key) => {
 		acc[key] = {
 			lastKeyZero: false,
 			hasLeftFocus: true,
@@ -245,19 +245,13 @@ export function initSegmentStates() {
 		};
 		return acc;
 	}, {} as SegmentStateMap);
-}
 
-export function isDateSegmentPart(part: unknown): part is DateSegmentPart {
-	return DATE_SEGMENT_PARTS.includes(part as DateSegmentPart);
-}
+export const isDateSegmentPart = (part: unknown): part is DateSegmentPart => DATE_SEGMENT_PARTS.includes(part as DateSegmentPart);
 
-export function isSegmentPart(part: string): part is EditableSegmentPart {
-	return EDITABLE_SEGMENT_PARTS.includes(part as EditableSegmentPart);
-}
+export const isSegmentPart = (part: string): part is EditableSegmentPart =>
+	EDITABLE_SEGMENT_PARTS.includes(part as EditableSegmentPart);
 
-export function isAnySegmentPart(part: unknown): part is SegmentPart {
-	return ALL_SEGMENT_PARTS.includes(part as EditableSegmentPart);
-}
+export const isAnySegmentPart = (part: unknown): part is SegmentPart => ALL_SEGMENT_PARTS.includes(part as EditableSegmentPart);
 
 /**
  * Get the segments being used/ are rendered in the DOM.
@@ -334,7 +328,8 @@ export function isDateAndTimeSegmentObj(obj: unknown): obj is DateAndTimeSegment
 		return false;
 	}
 	return Object.entries(obj).every(([key, value]) => {
-		const validKey = EDITABLE_TIME_SEGMENT_PARTS.includes(key as TimeSegmentPart) || DATE_SEGMENT_PARTS.includes(key as DateSegmentPart);
+		const validKey =
+			EDITABLE_TIME_SEGMENT_PARTS.includes(key as EditableTimeSegmentPart) || DATE_SEGMENT_PARTS.includes(key as DateSegmentPart);
 
 		const validValue =
 			key === 'dayPeriod'
@@ -369,6 +364,13 @@ export function isAcceptableSegmentKey(key: string) {
 	if (isNumberString(key)) return true;
 	return false;
 }
+
+export const isAcceptableDayPeriodKey = (key: string) =>
+	isAcceptableSegmentKey(key) || key === kbd.A || key === kbd.P || key === kbd.a || key === kbd.p;
+
+export const isArrowUp = (key: string) => key === kbd.ARROW_UP;
+export const isArrowDown = (key: string) => key === kbd.ARROW_DOWN;
+export const isBackspace = (key: string) => key === kbd.BACKSPACE;
 
 /**
  * Determines if the element with the provided id is the first focusable

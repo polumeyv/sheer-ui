@@ -250,6 +250,4 @@ export class TabsContentState {
 	);
 }
 
-function getTabDataState(condition: boolean): 'active' | 'inactive' {
-	return condition ? 'active' : 'inactive';
-}
+const getTabDataState = (condition: boolean): 'active' | 'inactive' => condition ? 'active' : 'inactive';

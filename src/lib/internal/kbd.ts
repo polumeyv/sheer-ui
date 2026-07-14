@@ -1,3 +1,5 @@
+import type { Direction, Orientation } from './index.js';
+
 export const kbd = {
 	ALT: 'Alt',
 	ARROW_DOWN: 'ArrowDown',
@@ -42,6 +44,11 @@ export const kbd = {
 	h: 'h',
 	l: 'l',
 } as const;
+
+export const getDirectionalKeys = (dir: Direction = 'ltr', orientation: Orientation = 'horizontal') => ({
+	nextKey: orientation === 'vertical' ? kbd.ARROW_DOWN : dir === 'rtl' ? kbd.ARROW_LEFT : kbd.ARROW_RIGHT,
+	prevKey: orientation === 'vertical' ? kbd.ARROW_UP : dir === 'rtl' ? kbd.ARROW_RIGHT : kbd.ARROW_LEFT,
+});
 
 /**
  * Keyboard key-sets shared across menu, select, and roving-focus navigation.

@@ -1,31 +1,9 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../internal/merge-props.js';
-	import { DialogDescriptionState } from '../../dialog/dialog.svelte.js';
+	import { join } from 'overrule';
+	import DialogDescription from '../../dialog/components/dialog-description.svelte';
 	import type { DialogDescriptionProps } from '../../dialog/types.js';
-	import { createId } from '../../../internal/create-id.js';
 
-	const uid = $props.id();
-
-	let { id = createId(uid), children, child, ref = $bindable(null), ...restProps }: DialogDescriptionProps = $props();
-
-	const descriptionState = DialogDescriptionState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-	});
-
-	const mergedProps = $derived(
-		mergeProps({ 'data-slot': 'sheet-description', class: 'text-muted-foreground text-sm' }, restProps, descriptionState.props),
-	);
+	let { ref = $bindable(null), class: className, ...restProps }: DialogDescriptionProps = $props();
 </script>
 
-{#if child}
-	{@render child({ props: mergedProps })}
-{:else}
-	<div {...mergedProps}>
-		{@render children?.()}
-	</div>
-{/if}
+<DialogDescription bind:ref data-slot="sheet-description" class={join('text-muted-foreground text-sm', className)} {...restProps} />

@@ -6,11 +6,9 @@
 	import { DialogContentState } from '../dialog.svelte.js';
 	import type { DialogContentProps, DialogPortalProps } from '../types.js';
 	import { createId } from '../../../internal/create-id.js';
-	import { on } from 'svelte/events';
-	import { createAttachmentKey } from 'svelte/attachments';
-	import { getTabbableCandidates } from '../../../internal/tabbable.js';
 	import type { WithoutChildrenOrChild } from '../../../internal/utils.js';
 	import { scrollLockAttachment } from '../../../internal/body-scroll-lock.svelte.js';
+	import { nativeDialogControllerAttachment } from '../../../internal/native-dialog-controller.svelte.js';
 
 	/**
 	 * Modal dialog rendered as a native `<dialog>` (showModal()/close()), mirroring sheet-content.svelte
@@ -93,63 +91,16 @@
 	// `contentPresence`, and DialogContentState sets `contentNode`; that PresenceManager's
 	// AnimationsComplete watches the <dialog>'s getAnimations() and already fires onOpenChangeComplete
 	// after the transition settles — a transitionend listener here would double-fire it.
-	function controller(node: HTMLDialogElement) {
-		$effect(() => {
-			const open = contentState.root.cell.open;
-			if (open && !node.open) node.showModal();
-			else if (!open && node.open) node.close();
-		});
-
-		// Any native dismissal (Esc default action, backdrop click, command=close) → sync the root.
-		const offClose = on(node, 'close', () => contentState.root.handleClose());
-
-		// Backdrop click: checked on pointerdown (gesture start), not click (gesture end), so a
-		// text-selection drag that overshoots past the dialog edge before release isn't misread as a
-		// backdrop click — the same rule the JS dismissible-layer used. Dismiss unless the
-		// onInteractOutside shim vetoes (preventDefault) or interactOutsideBehavior is 'ignore'.
-		const offPointerDown = on(node, 'pointerdown', (event) => {
-			if (event.target !== node) return;
-			const shim = new PointerEvent('pointerdown', { cancelable: true });
-			onInteractOutside(shim);
-			if (shim.defaultPrevented || interactOutsideBehavior === 'ignore') return;
-			node.close();
-		});
-
-		// Esc fires the native `cancel`, whose default action closes the dialog. Run the onEscapeKeydown
-		// shim; if it vetoes (preventDefault) or escapeKeydownBehavior is 'ignore', preventDefault the
-		// native close to keep the dialog open.
-		const offCancel = on(node, 'cancel', (event) => {
-			const shim = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true });
-			onEscapeKeydown(shim);
-			if (shim.defaultPrevented || escapeKeydownBehavior === 'ignore') event.preventDefault();
-		});
-
-		// inert stops focus escaping to the background, but sequential nav doesn't wrap on its own —
-		// tabbing off the last tabbable (or shift-tabbing off the first) lands on <body> for one step
-		// instead of looping. This closes just that gap.
-		const offKeydown = on(node, 'keydown', (event) => {
-			if (event.key !== 'Tab' || !trapFocus) return;
-			const tabbables = getTabbableCandidates(node);
-			if (tabbables.length === 0) return;
-			const first = tabbables[0]!;
-			const last = tabbables[tabbables.length - 1]!;
-			const active = node.ownerDocument.activeElement;
-			if (!event.shiftKey && active === last) {
-				event.preventDefault();
-				first.focus();
-			} else if (event.shiftKey && active === first) {
-				event.preventDefault();
-				last.focus();
-			}
-		});
-
-		return () => {
-			offClose();
-			offPointerDown();
-			offCancel();
-			offKeydown();
-		};
-	}
+	const controllerAttachment = nativeDialogControllerAttachment({
+		open: () => contentState.root.cell.open,
+		onClose: () => contentState.root.handleClose(),
+		outsideEvent: 'pointerdown',
+		onInteractOutside: () => onInteractOutside,
+		interactOutsideBehavior: () => interactOutsideBehavior,
+		onEscapeKeydown: () => onEscapeKeydown,
+		escapeKeydownBehavior: () => escapeKeydownBehavior,
+		trapFocus: () => trapFocus,
+	});
 
 
 	// The <dialog> persists across open/close, so the lock gates on the cell's open, not element lifecycle.
@@ -175,9 +126,6 @@
 		),
 	);
 
-	// For the `child` path the controller rides along as an attachment, so a consumer MUST spread these
-	// props onto a native <dialog> for showModal()/close() to work.
-	const controllerAttachment = { [createAttachmentKey()]: controller };
 </script>
 
 {#if child}
@@ -185,7 +133,7 @@
 {:else}
 	<!-- DialogContentState.props / DialogContentProps are authored for a <div>; their generic event
 	     handlers are typed to HTMLDivElement, so assert the merged set as dialog attributes. -->
-	<dialog {@attach controller} {...mergedProps as unknown as HTMLDialogAttributes}>
+	<dialog {...controllerAttachment} {...mergedProps as unknown as HTMLDialogAttributes}>
 		<div class="grid gap-4">
 			{@render children?.()}
 		</div>

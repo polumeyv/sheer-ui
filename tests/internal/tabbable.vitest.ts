@@ -4,8 +4,8 @@ import {
 	getTabbableCandidates,
 	isFocusable,
 	isTabbable,
+	tabbable,
 } from "../../src/lib/internal/tabbable.js";
-import { tabbable } from "../../src/lib/internal/vendor/tabbable.js";
 
 function render(html: string) {
 	const root = document.createElement("div");
@@ -28,7 +28,7 @@ afterEach(() => {
 	document.body.innerHTML = "";
 });
 
-describe("internal tabbable vendor", () => {
+describe("internal tabbable", () => {
 	test("sorts positive tabindex nodes before normal source-order tabbables", () => {
 		const root = render(`
 			<button data-id="normal">normal</button>

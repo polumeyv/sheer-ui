@@ -1,6 +1,5 @@
 import { PRECISION } from '../constants.js';
 import type { PaneConstraints } from '../types.js';
-import { assert } from './assert.js';
 import { compareNumbersWithTolerance } from './compare.js';
 
 /**
@@ -21,7 +20,7 @@ export const resizePane = ({
 	initialSize: number;
 }): number => {
 	const constraints = paneConstraints[paneIndex];
-	assert(constraints != null, 'Pane constraints should not be null.');
+	if (!constraints) return initialSize;
 	const { collapsedSize = 0, collapsible, maxSize = 100, minSize = 0 } = constraints;
 
 	const size =

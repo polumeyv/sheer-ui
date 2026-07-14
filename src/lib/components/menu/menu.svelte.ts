@@ -34,7 +34,6 @@ import {
 	getDataTransitionAttrs,
 } from '../../internal/attrs.js';
 import type { Direction } from '../../internal/index.js';
-import { useGlobalInputModality } from '../../internal/input-modality/input-modality.svelte.js';
 import { getTabbableFrom, isTabbable } from '../../internal/tabbable.js';
 import type { KeyboardEventHandler, PointerEventHandler, MouseEventHandler } from 'svelte/elements';
 import { DOMTypeahead } from '../../internal/dom-typeahead.svelte.js';
@@ -492,7 +491,7 @@ export class MenuRootState {
 	}
 
 	readonly opts: MenuRootStateOpts;
-	readonly inputModality = useGlobalInputModality();
+	isKeyboard = $state(false);
 	ignoreCloseAutoFocus = $state(false);
 	isPointerInTransit = $state(false);
 
@@ -646,7 +645,7 @@ export class MenuContentState {
 		$effect(() => {
 			this.parentMenu.focusFirstItem = () => {
 				tick().then(() => {
-					if (!this.parentMenu.root.inputModality.isKeyboard) return;
+					if (!this.parentMenu.root.isKeyboard) return;
 					this.rovingFocusGroup.focusFirstCandidate();
 				});
 			};
@@ -793,7 +792,7 @@ export class MenuContentState {
 	}
 
 	onfocus(_: BitsFocusEvent) {
-		if (!this.parentMenu.root.inputModality.isKeyboard) return;
+		if (!this.parentMenu.root.isKeyboard) return;
 		tick().then(() => this.rovingFocusGroup.focusFirstCandidate());
 	}
 
@@ -803,15 +802,14 @@ export class MenuContentState {
 
 	onItemLeave(e: BitsPointerEvent) {
 		if (e.currentTarget.hasAttribute(this.parentMenu.root.getBitsAttr('sub-trigger'))) return;
-		if (this.#isPointerMovingToSubmenu() || this.parentMenu.root.inputModality.isKeyboard) return;
+		if (this.#isPointerMovingToSubmenu() || this.parentMenu.root.isKeyboard) return;
 		const contentNode = this.parentMenu.contentNode;
 		contentNode?.focus({ preventScroll: true });
 		this.rovingFocusGroup.setCurrentTabStopId('');
 	}
 
 	onTriggerLeave() {
-		if (this.#isPointerMovingToSubmenu()) return true;
-		return false;
+		return this.#isPointerMovingToSubmenu();
 	}
 
 	handleInteractOutside(e: PointerEvent) {
@@ -980,7 +978,7 @@ export class MenuItemState {
 		const selectEvent = new CustomEvent('menuitemselect', { bubbles: true, cancelable: true });
 		this.opts.onSelect.current(selectEvent);
 		if (selectEvent.defaultPrevented) {
-			this.item.content.parentMenu.root.inputModality.reset();
+			this.item.content.parentMenu.root.isKeyboard = false;
 			return;
 		}
 		if (this.opts.closeOnSelect.current) {

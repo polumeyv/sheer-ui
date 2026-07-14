@@ -2,9 +2,8 @@
 	import { join } from 'overrule';
 	import type { Snippet } from 'svelte';
 	import type { HTMLDialogAttributes } from 'svelte/elements';
-	import { on } from 'svelte/events';
 	import { scrollLockAttachment } from '../body-scroll-lock.svelte.js';
-	import { getTabbableCandidates } from '../tabbable.js';
+	import { nativeDialogControllerAttachment } from '../native-dialog-controller.svelte.js';
 
 	/**
 	 * SPIKE: a modal dialog on the native <dialog> element + showModal(), to diff against the vendored
@@ -71,57 +70,21 @@
 	// The <dialog> persists across open/close, so the lock gates on `open`, not element lifecycle.
 	const scrollLock = scrollLockAttachment({ enabled: () => open });
 
-	// Bridge `open` to the imperative top-layer API + mirror native dismissal back, in one attachment.
-	// Guards keep showModal()/close() idempotent; `open` is read only in the nested effect and the
-	// listeners, so the attachment sets up once.
-	function controller(node: HTMLDialogElement) {
-		$effect(() => {
-			if (open && !node.open) node.showModal();
-			else if (!open && node.open) node.close();
-		});
-		const offClose = on(node, 'close', () => {
+	const controller = nativeDialogControllerAttachment({
+		open: () => open,
+		onClose: () => {
 			if (!open) return;
 			open = false;
 			onOpenChange?.(false);
-		});
-		// Backdrop click closes -- checked on pointerdown (gesture start), not click (gesture end).
-		// A click's target is reconciled to the nearest common ancestor of the mousedown and mouseup
-		// targets when they differ (spec'd, cross-browser), so a text-selection drag that starts
-		// inside content and overshoots past the dialog edge before release would otherwise land on
-		// `node` and get misread as a backdrop click. Checking pointerdown avoids that ambiguity
-		// entirely -- same rule the JS dismissible-layer uses for the vendored Dialog.
-		const offPointerDown = on(node, 'pointerdown', (event) => {
-			if (event.target === node) node.close();
-		});
-		// inert stops focus from escaping to the background, but sequential nav doesn't wrap on its
-		// own -- tabbing off the last tabbable (or shift-tabbing off the first) lands on <body> for
-		// one step instead of looping back. This closes just that gap.
-		const offKeydown = on(node, 'keydown', (event) => {
-			if (event.key !== 'Tab') return;
-			const tabbables = getTabbableCandidates(node);
-			if (tabbables.length === 0) return;
-			const first = tabbables[0]!;
-			const last = tabbables[tabbables.length - 1]!;
-			const activeElement = node.ownerDocument.activeElement;
-			if (!event.shiftKey && activeElement === last) {
-				event.preventDefault();
-				first.focus();
-			} else if (event.shiftKey && activeElement === first) {
-				event.preventDefault();
-				last.focus();
-			}
-		});
-		return () => {
-			offClose();
-			offPointerDown();
-			offKeydown();
-		};
-	}
+		},
+		outsideEvent: 'pointerdown',
+		trapFocus: () => true,
+	});
 
 </script>
 
 <dialog
-	{@attach controller}
+	{...controller}
 	{...restProps}
 	{...scrollLock}
 	id={dialogId}

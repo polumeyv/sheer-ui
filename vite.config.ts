@@ -10,6 +10,7 @@ import { defineConfig } from 'vite';
 const monorepoTsconfig = fileURLToPath(new URL('../../../tsconfig.json', import.meta.url));
 
 export default defineConfig({
+	css: { lightningcss: { errorRecovery: true } },
 	plugins: [
 		tailwindcss(),
 		sveltekit({

@@ -7,21 +7,18 @@
 	import { Popover } from '../../components/popover';
 	import { formatTimeDisplay, formatDuration } from '@polumeyv/utilities';
 	import {
-		generateTimeSlots,
 		isTimeInRange,
 		compareTime,
 		getTimeDuration,
 		type TimeSlot,
 		type SlotRange,
-		b_HOURS,
-		EXTENDED_HOURS,
+		resolveTimeSlots,
+		type TimeSlotPreset,
 	} from './time-slots';
 
 	// The internal SlotRange keeps plain strings ('' = unset end); every set value comes from a TimeSlot,
 	// so casting at the guarded display seam is sound.
 	const fmt = (t: string) => formatTimeDisplay(t);
-
-	type TimeSlotPreset = 'business' | 'extended' | 'full' | 'custom';
 
 	interface Props {
 		value?: SlotRange;
@@ -73,21 +70,7 @@
 	}: Props = $props();
 
 	// Generate time slots based on configuration
-	const timeSlots = $derived.by(() => {
-		if (slots) return slots;
-
-		switch (preset) {
-			case 'business':
-				return b_HOURS;
-			case 'extended':
-				return EXTENDED_HOURS;
-			case 'full':
-				return generateTimeSlots(0, 24, interval);
-			case 'custom':
-			default:
-				return generateTimeSlots(startHour, endHour, interval);
-		}
-	});
+	const timeSlots = $derived(resolveTimeSlots({ slots, preset, interval, startHour, endHour }));
 
 	// Filter start time slots
 	const startSlots = $derived.by(() => {

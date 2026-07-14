@@ -1,32 +1,9 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../internal/merge-props.js';
-	import { DialogTitleState } from '../../dialog/dialog.svelte.js';
+	import { join } from 'overrule';
+	import DialogTitle from '../../dialog/components/dialog-title.svelte';
 	import type { DialogTitleProps } from '../../dialog/types.js';
-	import { createId } from '../../../internal/create-id.js';
 
-	const uid = $props.id();
-
-	let { id = createId(uid), ref = $bindable(null), child, children, level = 2, ...restProps }: DialogTitleProps = $props();
-
-	const titleState = DialogTitleState.create({
-		id: boxWith(() => id),
-		level: boxWith(() => level),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-	});
-
-	const mergedProps = $derived(
-		mergeProps({ 'data-slot': 'sheet-title', class: 'text-foreground font-semibold' }, restProps, titleState.props),
-	);
+	let { ref = $bindable(null), class: className, ...restProps }: DialogTitleProps = $props();
 </script>
 
-{#if child}
-	{@render child({ props: mergedProps })}
-{:else}
-	<div {...mergedProps}>
-		{@render children?.()}
-	</div>
-{/if}
+<DialogTitle bind:ref data-slot="sheet-title" class={join('text-foreground font-semibold', className)} {...restProps} />

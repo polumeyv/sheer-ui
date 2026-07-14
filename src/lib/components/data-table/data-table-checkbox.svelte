@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { Checkbox } from '../checkbox';
 	import type { ClassValue } from 'svelte/elements';
-
-	type CheckedState = boolean | 'indeterminate';
+	import type { CheckedState } from './data-table.svelte.js';
 
 	// The table owns selection state: `checked`/`indeterminate` are derived from the table
 	// (getIsSelected / getIsAllPageRowsSelected) and clicks flow out via `onCheckedChange`.

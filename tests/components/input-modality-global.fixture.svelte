@@ -1,7 +1,17 @@
 <script lang="ts">
-	import { useGlobalInputModality } from '$lib/internal/input-modality/input-modality.svelte.js';
+	import MenuRoot from '$lib/components/menu/components/menu.svelte';
+	import ContextMenuRoot from '$lib/components/context-menu/components/context-menu.svelte';
 
-	const modality = useGlobalInputModality();
+	let {
+		menuRoots = 1,
+		contextMenuRoots = 0,
+	}: { menuRoots?: number; contextMenuRoots?: number } = $props();
 </script>
 
-<div data-testid="is-keyboard">{modality.isKeyboard}</div>
+{#each Array(menuRoots) as _, index (index)}
+	<MenuRoot />
+{/each}
+
+{#each Array(contextMenuRoots) as _, index (index)}
+	<ContextMenuRoot />
+{/each}

@@ -1,16 +1,20 @@
-import type { StyleProperties } from "../../internal/index.js";
+import type { StyleProperties } from '../../internal/index.js';
+import type { SliderLabelPosition } from './types.js';
 
-export function getRangeStyles(direction: "lr" | "rl" | "tb" | "bt", min: number, max: number) {
+export const getLabelPosition = (direction: 'lr' | 'rl' | 'tb' | 'bt', position: SliderLabelPosition | undefined): SliderLabelPosition =>
+	position ?? (direction === 'lr' || direction === 'rl' ? 'top' : 'left');
+
+export function getRangeStyles(direction: 'lr' | 'rl' | 'tb' | 'bt', min: number, max: number) {
 	const styles: StyleProperties = {
-		position: "absolute",
+		position: 'absolute',
 	};
-	if (direction === "lr") {
+	if (direction === 'lr') {
 		styles.left = `${min}%`;
 		styles.right = `${max}%`;
-	} else if (direction === "rl") {
+	} else if (direction === 'rl') {
 		styles.right = `${min}%`;
 		styles.left = `${max}%`;
-	} else if (direction === "bt") {
+	} else if (direction === 'bt') {
 		styles.bottom = `${min}%`;
 		styles.top = `${max}%`;
 	} else {
@@ -20,42 +24,38 @@ export function getRangeStyles(direction: "lr" | "rl" | "tb" | "bt", min: number
 	return styles;
 }
 
-export function getThumbStyles(direction: "lr" | "rl" | "tb" | "bt", thumbPos: number) {
+export function getThumbStyles(direction: 'lr' | 'rl' | 'tb' | 'bt', thumbPos: number) {
 	const styles: StyleProperties = {
-		position: "absolute",
+		position: 'absolute',
 	};
-	if (direction === "lr") {
+	if (direction === 'lr') {
 		styles.left = `${thumbPos}%`;
-		styles.translate = "-50% 0";
-	} else if (direction === "rl") {
+		styles.translate = '-50% 0';
+	} else if (direction === 'rl') {
 		styles.right = `${thumbPos}%`;
-		styles.translate = "50% 0";
-	} else if (direction === "bt") {
+		styles.translate = '50% 0';
+	} else if (direction === 'bt') {
 		styles.bottom = `${thumbPos}%`;
-		styles.translate = "0 50%";
+		styles.translate = '0 50%';
 	} else {
 		styles.top = `${thumbPos}%`;
-		styles.translate = "0 -50%";
+		styles.translate = '0 -50%';
 	}
 	return styles;
 }
 
-export function getTickStyles(
-	direction: "lr" | "rl" | "tb" | "bt",
-	tickPosition: number,
-	offsetPercentage: number
-) {
+export function getTickStyles(direction: 'lr' | 'rl' | 'tb' | 'bt', tickPosition: number, offsetPercentage: number) {
 	const style: StyleProperties = {
-		position: "absolute",
+		position: 'absolute',
 	};
 
-	if (direction === "lr") {
+	if (direction === 'lr') {
 		style.left = `${tickPosition}%`;
 		style.translate = `${offsetPercentage}% 0`;
-	} else if (direction === "rl") {
+	} else if (direction === 'rl') {
 		style.right = `${tickPosition}%`;
 		style.translate = `${-offsetPercentage}% 0`;
-	} else if (direction === "bt") {
+	} else if (direction === 'bt') {
 		style.bottom = `${tickPosition}%`;
 		style.translate = `0 ${-offsetPercentage}%`;
 	} else {
@@ -67,38 +67,38 @@ export function getTickStyles(
 }
 
 export function getTickLabelStyles(
-	direction: "lr" | "rl" | "tb" | "bt",
+	direction: 'lr' | 'rl' | 'tb' | 'bt',
 	tickPosition: number,
-	labelPosition: "top" | "bottom" | "left" | "right" = "top"
+	labelPosition: 'top' | 'bottom' | 'left' | 'right' = 'top',
 ) {
 	const style: StyleProperties = {
-		position: "absolute",
+		position: 'absolute',
 	};
 
-	if (direction === "lr" || direction === "rl") {
+	if (direction === 'lr' || direction === 'rl') {
 		// Horizontal slider
-		style.left = direction === "lr" ? `${tickPosition}%` : undefined;
-		style.right = direction === "rl" ? `${tickPosition}%` : undefined;
-		style.translate = "-50% 0";
+		style.left = direction === 'lr' ? `${tickPosition}%` : undefined;
+		style.right = direction === 'rl' ? `${tickPosition}%` : undefined;
+		style.translate = '-50% 0';
 
-		if (labelPosition === "top") {
-			style.bottom = "100%";
-		} else if (labelPosition === "bottom") {
-			style.top = "100%";
+		if (labelPosition === 'top') {
+			style.bottom = '100%';
+		} else if (labelPosition === 'bottom') {
+			style.top = '100%';
 		}
 	} else {
 		// Vertical slider - use same positioning as ticks
-		if (direction === "tb") {
+		if (direction === 'tb') {
 			style.top = `${tickPosition}%`;
 		} else {
 			style.bottom = `${tickPosition}%`;
 		}
-		style.translate = "0 50%";
+		style.translate = '0 50%';
 
-		if (labelPosition === "left") {
-			style.right = "100%";
-		} else if (labelPosition === "right") {
-			style.left = "100%";
+		if (labelPosition === 'left') {
+			style.right = '100%';
+		} else if (labelPosition === 'right') {
+			style.left = '100%';
 		}
 	}
 
@@ -106,38 +106,38 @@ export function getTickLabelStyles(
 }
 
 export function getThumbLabelStyles(
-	direction: "lr" | "rl" | "tb" | "bt",
+	direction: 'lr' | 'rl' | 'tb' | 'bt',
 	thumbPosition: number,
-	labelPosition: "top" | "bottom" | "left" | "right" = "top"
+	labelPosition: 'top' | 'bottom' | 'left' | 'right' = 'top',
 ) {
 	const style: StyleProperties = {
-		position: "absolute",
+		position: 'absolute',
 	};
 
-	if (direction === "lr" || direction === "rl") {
+	if (direction === 'lr' || direction === 'rl') {
 		// Horizontal slider
-		style.left = direction === "lr" ? `${thumbPosition}%` : undefined;
-		style.right = direction === "rl" ? `${thumbPosition}%` : undefined;
-		style.translate = "-50% 0";
+		style.left = direction === 'lr' ? `${thumbPosition}%` : undefined;
+		style.right = direction === 'rl' ? `${thumbPosition}%` : undefined;
+		style.translate = '-50% 0';
 
-		if (labelPosition === "top") {
-			style.bottom = "100%";
-		} else if (labelPosition === "bottom") {
-			style.top = "100%";
+		if (labelPosition === 'top') {
+			style.bottom = '100%';
+		} else if (labelPosition === 'bottom') {
+			style.top = '100%';
 		}
 	} else {
 		// Vertical slider
-		if (direction === "tb") {
+		if (direction === 'tb') {
 			style.top = `${thumbPosition}%`;
 		} else {
 			style.bottom = `${thumbPosition}%`;
 		}
-		style.translate = "0 -50%";
+		style.translate = '0 -50%';
 
-		if (labelPosition === "left") {
-			style.right = "100%";
-		} else if (labelPosition === "right") {
-			style.left = "100%";
+		if (labelPosition === 'left') {
+			style.right = '100%';
+		} else if (labelPosition === 'right') {
+			style.left = '100%';
 		}
 	}
 
@@ -150,10 +150,10 @@ export function getThumbLabelStyles(
 function getDecimalPlaces(num: number): number {
 	if (Math.floor(num) === num) return 0;
 	const str = num.toString();
-	if (str.indexOf(".") !== -1 && str.indexOf("e-") === -1) {
-		return str.split(".")[1]!.length;
-	} else if (str.indexOf("e-") !== -1) {
-		const parts = str.split("e-");
+	if (str.indexOf('.') !== -1 && str.indexOf('e-') === -1) {
+		return str.split('.')[1]!.length;
+	} else if (str.indexOf('e-') !== -1) {
+		const parts = str.split('e-');
 		return parseInt(parts[1]!, 10);
 	}
 	return 0;
@@ -171,7 +171,7 @@ function roundToPrecision(num: number, precision: number): number {
  * Normalizes step to always be a sorted array of valid values within min/max range
  */
 export function normalizeSteps(step: number | number[], min: number, max: number): number[] {
-	if (typeof step === "number") {
+	if (typeof step === 'number') {
 		// generate regular steps - match original behavior exactly
 		const difference = max - min;
 		let count = Math.ceil(difference / step);
@@ -222,14 +222,18 @@ export function snapValueToCustomSteps(value: number, steps: number[]): number {
 	return closest;
 }
 
+export function normalizeSliderValue(value: number, steps: number[]): number;
+export function normalizeSliderValue(value: number[], steps: number[]): number[];
+export function normalizeSliderValue(value: number | number[], steps: number[]) {
+	if (Array.isArray(value))
+		return value.every((item) => steps.includes(item)) ? value : value.map((item) => snapValueToCustomSteps(item, steps));
+	return steps.includes(value) ? value : snapValueToCustomSteps(value, steps);
+}
+
 /**
  * Gets the next/previous step value for keyboard navigation
  */
-export function getAdjacentStepValue(
-	currentValue: number,
-	steps: number[],
-	direction: "next" | "prev"
-): number {
+export function getAdjacentStepValue(currentValue: number, steps: number[], direction: 'next' | 'prev'): number {
 	const currentIndex = steps.indexOf(currentValue);
 
 	if (currentIndex === -1) {
@@ -237,7 +241,7 @@ export function getAdjacentStepValue(
 		return snapValueToCustomSteps(currentValue, steps);
 	}
 
-	if (direction === "next") {
+	if (direction === 'next') {
 		return currentIndex < steps.length - 1 ? steps[currentIndex + 1]! : currentValue;
 	} else {
 		return currentIndex > 0 ? steps[currentIndex - 1]! : currentValue;

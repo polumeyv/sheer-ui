@@ -3,8 +3,11 @@ import {
 	type TableOptions,
 	type TableOptionsResolved,
 	type TableState,
+	type Updater,
 	createTable,
 } from "@tanstack/table-core";
+
+export type CheckedState = boolean | 'indeterminate';
 
 /**
  * Creates a reactive TanStack table object for Svelte.
@@ -49,15 +52,14 @@ export function createSvelteTable<TData extends RowData>(options: TableOptions<T
 	);
 
 	const table = createTable(resolvedOptions);
-	let state = $state<Partial<TableState>>(table.initialState);
+	let state = $state<TableState>(table.initialState);
 
 	function updateOptions() {
 		table.setOptions((prev) => {
 			return mergeObjects(prev, options, {
 				state: mergeObjects(state, options.state || {}),
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				onStateChange: (updater: any) => {
+				onStateChange: (updater: Updater<TableState>) => {
 					if (updater instanceof Function) state = updater(state);
 					else state = mergeObjects(state, updater);
 
@@ -87,8 +89,7 @@ type Intersection<T extends readonly unknown[]> = (T extends [infer H, ...infer 
  *
  * Proxy-based to avoid known WebKit recursion issue.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function mergeObjects<Sources extends readonly MaybeThunk<any>[]>(
+export function mergeObjects<Sources extends readonly MaybeThunk<object>[]>(
 	...sources: Sources
 ): Intersection<{ [K in keyof Sources]: Sources[K] }> {
 	const resolve = <T extends object>(src: MaybeThunk<T>): T | undefined =>
@@ -96,7 +97,7 @@ export function mergeObjects<Sources extends readonly MaybeThunk<any>[]>(
 
 	const findSourceWithKey = (key: PropertyKey) => {
 		for (let i = sources.length - 1; i >= 0; i--) {
-			const obj = resolve(sources[i]);
+			const obj = resolve(sources[i]!);
 			if (obj && key in obj) return obj;
 		}
 		return undefined;
@@ -133,8 +134,7 @@ export function mergeObjects<Sources extends readonly MaybeThunk<any>[]>(
 			return {
 				configurable: true,
 				enumerable: true,
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				value: (src as any)[key],
+				value: (src as Record<PropertyKey, unknown>)[key],
 				writable: true,
 			};
 		},

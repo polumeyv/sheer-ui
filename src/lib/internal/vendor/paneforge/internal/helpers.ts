@@ -4,7 +4,6 @@ import { BROWSER } from '@polumeyv/utilities/env';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
 import type { Direction, DragState, PaneConstraints, ResizeEvent } from './types.js';
 import { calculateAriaValues } from './utils/aria.js';
-import { assert } from './utils/assert.js';
 import { areNumbersAlmostEqual } from './utils/compare.js';
 import { isKeyDown, isMouseEvent, isTouchEvent } from './utils/is.js';
 import { resizePane } from './utils/resize.js';
@@ -62,7 +61,7 @@ export function getResizeHandleElementIndex({ groupId, id, domContext }: GetResi
 	if (!BROWSER) return null;
 	const handles = getResizeHandleElementsForGroup(groupId, domContext);
 	const index = handles.findIndex((handle) => handle.getAttribute('data-pane-resizer-id') === id);
-	return index ?? null;
+	return index < 0 ? null : index;
 }
 
 type GetPivotIndicesOpts = {
@@ -71,14 +70,14 @@ type GetPivotIndicesOpts = {
 	domContext: DOMContext;
 };
 
-export function getPivotIndices({ groupId, dragHandleId, domContext }: GetPivotIndicesOpts): [indexBefore: number, indexAfter: number] {
+export function getPivotIndices({ groupId, dragHandleId, domContext }: GetPivotIndicesOpts): [indexBefore: number, indexAfter: number] | null {
 	const index = getResizeHandleElementIndex({
 		groupId,
 		id: dragHandleId,
 		domContext: domContext,
 	});
 
-	return index != null ? [index, index + 1] : [-1, -1];
+	return index == null ? null : [index, index + 1];
 }
 
 export function paneDataHelper(panesArray: PaneState[], pane: PaneState, layout: number[]) {
@@ -88,7 +87,12 @@ export function paneDataHelper(panesArray: PaneState[], pane: PaneState, layout:
 	const paneConstraints = paneConstraintsArray[paneIndex];
 
 	const isLastPane = paneIndex === panesArray.length - 1;
-	const pivotIndices = isLastPane ? [paneIndex - 1, paneIndex] : [paneIndex, paneIndex + 1];
+	const pivotIndices: [number, number] | null =
+		paneIndex < 0 || panesArray.length < 2
+			? null
+			: isLastPane
+				? [paneIndex - 1, paneIndex]
+				: [paneIndex, paneIndex + 1];
 
 	const paneSize = layout[paneIndex];
 
@@ -105,10 +109,9 @@ export function findPaneDataIndex(panesArray: readonly PaneState[], pane: PaneSt
 
 // Layout should be pre-converted into percentages
 export function callPaneCallbacks(panesArray: PaneState[], layout: number[], paneIdToLastNotifiedSizeMap: Record<string, number>) {
-	for (let index = 0; index < layout.length; index++) {
-		const size = layout[index]!;
-		const paneData = panesArray[index];
-		assert(paneData);
+	for (const [index, paneData] of panesArray.entries()) {
+		const size = layout[index];
+		if (size == null) continue;
 
 		const { collapsedSize = 0, collapsible } = paneData.constraints;
 
@@ -136,16 +139,12 @@ export function callPaneCallbacks(panesArray: PaneState[], layout: number[], pan
 export function getUnsafeDefaultLayout({ panesArray }: { panesArray: PaneState[] }): number[] {
 	const layout = Array<number>(panesArray.length);
 
-	const paneConstraintsArray = panesArray.map((paneData) => paneData.constraints);
-
 	let numPanesWithSizes = 0;
 	let remainingSize = 100;
 
 	// Distribute default sizes first
-	for (let index = 0; index < panesArray.length; index++) {
-		const paneConstraints = paneConstraintsArray[index];
-		assert(paneConstraints);
-		const { defaultSize } = paneConstraints;
+	for (const [index, paneData] of panesArray.entries()) {
+		const { defaultSize } = paneData.constraints;
 
 		if (defaultSize != null) {
 			numPanesWithSizes++;
@@ -155,10 +154,8 @@ export function getUnsafeDefaultLayout({ panesArray }: { panesArray: PaneState[]
 	}
 
 	// Remaining size should be distributed evenly between panes without default sizes
-	for (let index = 0; index < panesArray.length; index++) {
-		const paneConstraints = paneConstraintsArray[index];
-		assert(paneConstraints);
-		const { defaultSize } = paneConstraints;
+	for (const [index, paneData] of panesArray.entries()) {
+		const { defaultSize } = paneData.constraints;
 
 		if (defaultSize != null) {
 			continue;
@@ -189,10 +186,16 @@ export function validatePaneGroupLayout({
 	// Validate layout expectations
 	if (nextLayout.length !== paneConstraints.length) {
 		throw new Error(`Invalid ${paneConstraints.length} pane layout: ${nextLayout.map((size) => `${size}%`).join(', ')}`);
-	} else if (!areNumbersAlmostEqual(nextLayoutTotalSize, 100)) {
-		for (let index = 0; index < paneConstraints.length; index++) {
-			const unsafeSize = nextLayout[index];
-			assert(unsafeSize != null);
+	}
+
+	for (let index = 0; index < nextLayout.length; index++) {
+		if (nextLayout[index] == null || paneConstraints[index] == null) {
+			throw new Error(`Invalid pane layout entry at index ${index}.`);
+		}
+	}
+
+	if (!areNumbersAlmostEqual(nextLayoutTotalSize, 100)) {
+		for (const [index, unsafeSize] of nextLayout.entries()) {
 			const safeSize = (100 / nextLayoutTotalSize) * unsafeSize;
 			nextLayout[index] = safeSize;
 		}
@@ -201,10 +204,7 @@ export function validatePaneGroupLayout({
 	let remainingSize = 0;
 
 	// First pass: Validate the proposed layout given each pane's constraints
-	for (let index = 0; index < paneConstraints.length; index++) {
-		const unsafeSize = nextLayout[index];
-		assert(unsafeSize != null);
-
+	for (const [index, unsafeSize] of nextLayout.entries()) {
 		const safeSize = resizePane({
 			paneConstraints,
 			paneIndex: index,
@@ -221,9 +221,7 @@ export function validatePaneGroupLayout({
 	// If there is additional, left over space, assign it to any pane(s) that permits it
 	// (It's not worth taking multiple additional passes to evenly distribute)
 	if (!areNumbersAlmostEqual(remainingSize, 0)) {
-		for (let index = 0; index < paneConstraints.length; index++) {
-			const prevSize = nextLayout[index];
-			assert(prevSize != null);
+		for (const [index, prevSize] of nextLayout.entries()) {
 			const unsafeSize = prevSize + remainingSize;
 			const safeSize = resizePane({
 				paneConstraints,
@@ -246,13 +244,6 @@ export function validatePaneGroupLayout({
 	return nextLayout;
 }
 
-export function getPaneGroupElement(id: string, domContext: DOMContext): HTMLElement | null {
-	if (!BROWSER) return null;
-	const element = domContext.querySelector(`[data-pane-group][data-pane-group-id="${id}"]`) as HTMLElement;
-	if (element) return element;
-	return null;
-}
-
 export function getResizeHandleElement(id: string, domContext: DOMContext): HTMLElement | null {
 	if (!BROWSER) return null;
 	const element = domContext.querySelector(`[data-pane-resizer-id="${id}"]`) as HTMLElement;
@@ -262,30 +253,16 @@ export function getResizeHandleElement(id: string, domContext: DOMContext): HTML
 
 interface GetDragOffsetPercentageOpts {
 	event: ResizeEvent;
-	dragHandleId: string;
 	dir: Direction;
 	initialDragState: DragState;
-	domContext: DOMContext;
 }
 
-export function getDragOffsetPercentage({ event, dragHandleId, dir, initialDragState, domContext }: GetDragOffsetPercentageOpts): number {
-	const isHorizontal = dir === 'horizontal';
-
-	const handleElement = getResizeHandleElement(dragHandleId, domContext);
-	assert(handleElement);
-
-	const groupId = handleElement.getAttribute('data-pane-group-id');
-	assert(groupId);
-
-	const { initialCursorPosition } = initialDragState;
+export function getDragOffsetPercentage({ event, dir, initialDragState }: GetDragOffsetPercentageOpts): number {
+	const { groupSizeInPixels, initialCursorPosition } = initialDragState;
+	if (groupSizeInPixels <= 0) return 0;
 
 	const cursorPosition = getResizeEventCursorPosition(dir, event);
-
-	const groupElement = getPaneGroupElement(groupId, domContext);
-	assert(groupElement);
-
-	const groupRect = groupElement.getBoundingClientRect();
-	const groupSizeInPixels = isHorizontal ? groupRect.width : groupRect.height;
+	if (cursorPosition == null) return 0;
 
 	const offsetPixels = cursorPosition - initialCursorPosition;
 	const offsetPercentage = (offsetPixels / groupSizeInPixels) * 100;
@@ -295,21 +272,17 @@ export function getDragOffsetPercentage({ event, dragHandleId, dir, initialDragS
 
 interface GetDeltaPercentageOpts {
 	event: ResizeEvent;
-	dragHandleId: string;
 	dir: Direction;
 	initialDragState: DragState | null;
 	keyboardResizeBy: number | null;
-	domContext: DOMContext;
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/movementX
 export function getDeltaPercentage({
 	event,
-	dragHandleId,
 	dir,
 	initialDragState,
 	keyboardResizeBy,
-	domContext,
 }: GetDeltaPercentageOpts): number {
 	if (isKeyDown(event)) {
 		const isHorizontal = dir === 'horizontal';
@@ -351,25 +324,22 @@ export function getDeltaPercentage({
 
 		return getDragOffsetPercentage({
 			event,
-			dragHandleId,
 			dir,
 			initialDragState,
-			domContext: domContext,
 		});
 	}
 }
 
-export function getResizeEventCursorPosition(dir: Direction, e: ResizeEvent): number {
+export function getResizeEventCursorPosition(dir: Direction, e: ResizeEvent): number | null {
 	const isHorizontal = dir === 'horizontal';
 
 	if (isMouseEvent(e)) {
 		return isHorizontal ? e.clientX : e.clientY;
 	} else if (isTouchEvent(e)) {
 		const firstTouch = e.touches[0];
-		assert(firstTouch);
-		return isHorizontal ? firstTouch.screenX : firstTouch.screenY;
+		return firstTouch ? (isHorizontal ? firstTouch.screenX : firstTouch.screenY) : null;
 	} else {
-		throw new Error(`Unsupported event type "${e.type}"`);
+		return null;
 	}
 }
 
