@@ -18,4 +18,5 @@ export const blocks = [
 	"tab-nav",
 	"time-picker",
 	"user-avatar",
+	"verification-code-field",
 ] as const;
