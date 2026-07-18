@@ -11,7 +11,7 @@
 
 	let {
 		ref = $bindable<HTMLSelectElement | null>(null),
-		value = $bindable<string>(),
+		value = $bindable(''),
 		class: className,
 		triggerClass,
 		widthClass = 'w-fit',
@@ -108,6 +108,12 @@
 		<ChevronDown class="size-4 shrink-0 text-muted-foreground opacity-50 pointer-events-none" />
 	</button>
 
+	{#if placeholder}
+		<!-- Baseline placeholder: engines without base-select ignore the trigger <button> above, so the
+		     placeholder must exist as a real (hidden, disabled) option to show in the native widget.
+		     Kept after the button — base-select only treats the FIRST child button as the trigger. -->
+		<option value="" disabled hidden>{placeholder}</option>
+	{/if}
 	{@render children?.()}
 </select>
 
@@ -121,6 +127,20 @@
 	/* Hide the default picker icon */
 	:global(.select::picker-icon) {
 		display: none;
+	}
+
+	/* Without customizable-select support (Firefox, Safari < 27) the classic native widget renders: the
+	   trigger <button> is ignored entirely, so the select itself needs the trigger's inset. The arrow
+	   and the popup stay the OS-native ones. */
+	@supports not (appearance: base-select) {
+		:global(.select) {
+			padding-inline: 0.75rem 0.5rem;
+		}
+
+		/* The selected placeholder option shows in the closed widget; tint it like a placeholder. */
+		:global(.select:has(option:disabled:checked)) {
+			color: var(--muted-foreground);
+		}
 	}
 
 	/* Hide the native checkmark completely */
