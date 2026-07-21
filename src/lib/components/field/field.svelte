@@ -1,11 +1,13 @@
 <script lang="ts" module>
 	import { fieldVariants, type FieldOrientation } from './variants';
 	export { fieldVariants, type FieldOrientation };
+
+	/** Anything that reports validation issues — deliberately structural so ui never depends on a binding API. */
+	export type IssueSource = { issues: () => { message?: string }[] | undefined };
 </script>
 
 <script lang="ts">
 	import FieldError from './field-error.svelte';
-	import type { RemoteFormField } from '@sveltejs/kit';
 	import type { WithElementRef } from '../../internal/utils.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 	let {
@@ -17,7 +19,7 @@
 		...restProps
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
 		orientation?: FieldOrientation;
-		field?: RemoteFormField<any>;
+		field?: IssueSource;
 	} = $props();
 </script>
 
