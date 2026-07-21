@@ -335,7 +335,7 @@
 		"@tanstack/table-core": "^8.21.3",
 		"d3-scale": "^4.0.2",
 		"layerchart": "^2.0.1",
-		"overrule": "^0.6.0"
+		"overrule": "^0.7.1"
 	},
 	"devDependencies": {
 		"@fontsource-variable/inter": "^5.2.8",
