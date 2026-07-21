@@ -4,6 +4,7 @@
 export const blocks = [
 	"alert-modal",
 	"Appearance",
+	"BoundaryFailed",
 	"calendar",
 	"copy-button",
 	"date-picker",
