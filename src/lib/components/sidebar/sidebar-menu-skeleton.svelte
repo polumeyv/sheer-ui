@@ -14,8 +14,10 @@
 		showIcon?: boolean;
 	} = $props();
 
-	// Random width between 50% and 90%
-	const width = `${Math.floor(Math.random() * 40) + 50}%`;
+	const uid = $props.id();
+	// Pseudo-random width between 50% and 90%, derived from the SSR-stable instance id
+	// (Math.random here would mismatch between server render and hydration).
+	const width = `${50 + (parseInt(uid.replace(/\D/g, '') || '0', 10) * 7) % 41}%`;
 </script>
 
 <div
