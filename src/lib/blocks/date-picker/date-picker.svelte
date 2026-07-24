@@ -23,7 +23,7 @@
 		side?: 'top' | 'right' | 'bottom' | 'left';
 		onValueChange?: (value: DateValue | undefined) => void;
 		// Calendar props
-		captionLayout?: 'dropdown' | 'dropdown-months' | 'dropdown-years' | 'label';
+		captionLayout?: 'dropdown' | 'label';
 		minValue?: DateValue;
 		maxValue?: DateValue;
 		weekdayFormat?: 'short' | 'long' | 'narrow';
@@ -46,7 +46,7 @@
 		contentClass,
 		align = 'start',
 		side = 'bottom',
-		captionLayout = 'dropdown',
+		captionLayout = 'label',
 		onValueChange,
 		minValue,
 		maxValue,

@@ -6,6 +6,7 @@
 	import type { ButtonVariant } from '../components/button';
 	import type { DateValue } from '@internationalized/date';
 	import type { Snippet } from 'svelte';
+	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
@@ -29,7 +30,7 @@
 		locale = 'en-US',
 		months: monthsProp,
 		years,
-		captionLayout = 'dropdown',
+		captionLayout = 'label',
 		monthFormat: monthFormatProp,
 		yearFormat = 'numeric',
 		day,
@@ -38,7 +39,7 @@
 	}: Omit<WithoutChildrenOrChild<SingleRootProps>, 'type'> & {
 		type: 'single';
 		buttonVariant?: ButtonVariant;
-		captionLayout?: 'dropdown' | 'dropdown-months' | 'dropdown-years' | 'label';
+		captionLayout?: 'dropdown' | 'label';
 		months?: CalendarMonthSelectProps['months'];
 		years?: CalendarYearSelectProps['years'];
 		monthFormat?: CalendarMonthSelectProps['monthFormat'];
@@ -48,9 +49,12 @@
 
 	const monthFormat = $derived.by(() => {
 		if (monthFormatProp) return monthFormatProp;
-		if (captionLayout.startsWith('dropdown')) return 'short';
-		return 'long';
+		return captionLayout === 'dropdown' ? 'short' : 'long';
 	});
+
+	const selectShell =
+		'relative flex rounded border border-border hover:bg-muted has-focus-visible:border-ring has-focus-visible:ring-ring/50 has-focus-visible:ring-[3px]';
+	const selectLabel = 'flex select-none items-center gap-1 py-1.5 pe-1.5 ps-2 text-sm font-medium';
 </script>
 
 <Calendar.Root
@@ -75,7 +79,42 @@
 			<Calendar.PrevButton class="rounded bg-background-alt p-2 hover:bg-muted inline-grid place-items-center">
 				<ChevronLeftIcon class="size-5" />
 			</Calendar.PrevButton>
-			<Calendar.Heading class="text-md font-medium" />
+			{#if captionLayout === 'dropdown'}
+				<div class="flex items-center gap-1.5">
+					<Calendar.MonthSelect months={monthsProp} {monthFormat}>
+						{#snippet child({ props, monthItems, selectedMonthItem })}
+							<span class={selectShell}>
+								<select {...props} class="absolute inset-0 opacity-0">
+									{#each monthItems as month (month.value)}
+										<option value={month.value}>{month.label}</option>
+									{/each}
+								</select>
+								<span class={selectLabel} aria-hidden="true">
+									{selectedMonthItem.label}
+									<ChevronDownIcon class="size-3.5 text-muted-foreground" />
+								</span>
+							</span>
+						{/snippet}
+					</Calendar.MonthSelect>
+					<Calendar.YearSelect {years} {yearFormat}>
+						{#snippet child({ props, yearItems, selectedYearItem })}
+							<span class={selectShell}>
+								<select {...props} class="absolute inset-0 opacity-0">
+									{#each yearItems as year (year.value)}
+										<option value={year.value}>{year.label}</option>
+									{/each}
+								</select>
+								<span class={selectLabel} aria-hidden="true">
+									{selectedYearItem.label}
+									<ChevronDownIcon class="size-3.5 text-muted-foreground" />
+								</span>
+							</span>
+						{/snippet}
+					</Calendar.YearSelect>
+				</div>
+			{:else}
+				<Calendar.Heading class="text-md font-medium" />
+			{/if}
 			<Calendar.NextButton class="rounded bg-background-alt p-2 hover:bg-muted inline-grid place-items-center">
 				<ChevronRightIcon class="size-5" />
 			</Calendar.NextButton>
