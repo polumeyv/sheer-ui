@@ -7,9 +7,8 @@ import {
 	type RefAttachment,
 	composeHandlers,
 	contains,
-	mergeDisposers,
 } from '../tools/index.js';
-import { untrack } from 'svelte';
+import { getAbortSignal, untrack } from 'svelte';
 import { on } from 'svelte/events';
 import { createAttachmentKey } from 'svelte/attachments';
 import type { PointerHandler, TextSelectionLayerImplProps } from './types.js';
@@ -42,14 +41,13 @@ export class TextSelectionLayerState {
 		this.opts = opts;
 		this.domContext = new DOMContext(opts.ref);
 
-		let unsubEvents = () => {};
-
 		$effect(() => {
 			const [enabled, onPointerDown, onPointerUp] = [
 				this.opts.enabled.current,
 				this.opts.onPointerDown.current,
 				this.opts.onPointerUp.current,
 			] as const;
+			const signal = getAbortSignal();
 			return untrack(() => {
 				this.#enabledSnapshot = enabled;
 				this.#onPointerDownSnapshot = onPointerDown;
@@ -57,12 +55,10 @@ export class TextSelectionLayerState {
 
 				if (enabled) {
 					textSelectionLayers.register(this, this.opts.enabled);
-					unsubEvents();
-					unsubEvents = this.#addEventListeners();
+					this.#addEventListeners(signal);
 				}
 				return () => {
 					this.#enabledSnapshot = false;
-					unsubEvents();
 					this.#resetSelectionLock();
 					textSelectionLayers.unregister(this);
 				};
@@ -70,11 +66,9 @@ export class TextSelectionLayerState {
 		});
 	}
 
-	#addEventListeners() {
-		return mergeDisposers(
-			on(this.domContext.getDocument(), 'pointerdown', this.#pointerdown),
-			on(this.domContext.getDocument(), 'pointerup', composeHandlers(this.#resetSelectionLock, this.#pointerupUserHandler)),
-		);
+	#addEventListeners(signal: AbortSignal) {
+		on(this.domContext.getDocument(), 'pointerdown', this.#pointerdown, { signal });
+		on(this.domContext.getDocument(), 'pointerup', composeHandlers(this.#resetSelectionLock, this.#pointerupUserHandler), { signal });
 	}
 
 	#pointerupUserHandler = (e: PointerEvent) => {

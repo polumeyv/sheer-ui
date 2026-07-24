@@ -118,17 +118,26 @@ describe('Slider pointer listener registration', () => {
 		}
 	});
 
-	test('unmounting removes the pointer listeners', () => {
-		const removeSpy = vi.spyOn(document, 'removeEventListener');
+	test('unmounting aborts the document pointer listeners', () => {
+		// Listener removal rides the onMount effect's AbortSignal, so removeEventListener is
+		// never called — the removal contract is that every registration carried the signal
+		// and unmount aborts it.
+		const addSpy = vi.spyOn(document, 'addEventListener');
 		const { component } = renderFixture({ type: 'single', min: 0, max: 100, step: 1 });
+
+		const signals = (['pointerdown', 'pointerup', 'pointermove', 'pointerleave'] as const).map((type) => {
+			const calls = documentCalls(addSpy, type);
+			expect(calls).toHaveLength(1);
+			const options = calls[0]![2] as AddEventListenerOptions;
+			expect(options.signal).toBeInstanceOf(AbortSignal);
+			return options.signal!;
+		});
+		expect(signals.some((signal) => signal.aborted)).toBe(false);
 
 		unmount(component);
 		flushSync();
 
-		expect(documentCalls(removeSpy, 'pointerdown')).toHaveLength(1);
-		expect(documentCalls(removeSpy, 'pointerup')).toHaveLength(1);
-		expect(documentCalls(removeSpy, 'pointermove')).toHaveLength(1);
-		expect(documentCalls(removeSpy, 'pointerleave')).toHaveLength(1);
+		expect(signals.every((signal) => signal.aborted)).toBe(true);
 	});
 });
 

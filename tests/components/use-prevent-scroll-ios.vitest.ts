@@ -87,13 +87,26 @@ describe('usePreventScroll (iOS)', () => {
 
 	test('the workaround tears down only after the last active consumer disables/unmounts, not before', async () => {
 		const addDocSpy = vi.spyOn(document, 'addEventListener');
+		const addWinSpy = vi.spyOn(window, 'addEventListener');
 		const removeDocSpy = vi.spyOn(document, 'removeEventListener');
-		const removeWinSpy = vi.spyOn(window, 'removeEventListener');
 		const first = render();
 		const second = render();
 
 		try {
 			expect(documentCalls(addDocSpy, 'touchstart')).toHaveLength(1);
+
+			// preventScrollMobileSafari's listeners ride the shared root effect's AbortSignal —
+			// teardown is that signal aborting, so collect the signals its registrations carried:
+			// 3 solo touch events + its one touchmove (BodyScrollLock's touchmove guard carries no
+			// signal, it has a mid-life manual disposer) + the window scroll listener.
+			const signals = [
+				...SOLO_IOS_TOUCH_EVENTS.flatMap((type) => documentCalls(addDocSpy, type)),
+				...documentCalls(addDocSpy, 'touchmove'),
+				...documentCalls(addWinSpy, 'scroll'),
+			]
+				.map((call) => (call[2] as AddEventListenerOptions | undefined)?.signal)
+				.filter((signal): signal is AbortSignal => signal instanceof AbortSignal);
+			expect(signals).toHaveLength(5);
 
 			// first consumer becomes disabled — second is still active, must stay attached
 			first.component.setDisabled(true);
@@ -101,11 +114,8 @@ describe('usePreventScroll (iOS)', () => {
 			await Promise.resolve(); // let SharedState's deferred release run
 			vi.advanceTimersByTime(30); // let BodyScrollLock's delayed cleanup have its chance
 			flushSync();
-			for (const type of SOLO_IOS_TOUCH_EVENTS) {
-				expect(documentCalls(removeDocSpy, type)).toHaveLength(0);
-			}
+			expect(signals.some((signal) => signal.aborted)).toBe(false);
 			expect(documentCalls(removeDocSpy, 'touchmove')).toHaveLength(0);
-			expect(documentCalls(removeWinSpy, 'scroll')).toHaveLength(0);
 
 			// now the last active consumer disables too — the shared workaround must tear down, exactly once
 			second.component.setDisabled(true);
@@ -113,16 +123,13 @@ describe('usePreventScroll (iOS)', () => {
 			await Promise.resolve(); // teardown is microtask-deferred by SharedState
 			vi.advanceTimersByTime(30);
 			flushSync();
-			for (const type of SOLO_IOS_TOUCH_EVENTS) {
-				expect(documentCalls(removeDocSpy, type)).toHaveLength(1);
-			}
+			expect(signals.every((signal) => signal.aborted)).toBe(true);
 			// BodyScrollLock has two independent teardown paths that can both call
 			// stopTouchMoveListener (the SharedState root's own disposal, and the domain-level
 			// "no locks left" scheduled reset) — both null the reference after calling it, so
-			// only the one that fires first actually removes the listener. Combined with
-			// preventScrollMobileSafari's own removal, that's 2 total, not 3.
-			expect(documentCalls(removeDocSpy, 'touchmove')).toHaveLength(2);
-			expect(documentCalls(removeWinSpy, 'scroll')).toHaveLength(1);
+			// only the one that fires first actually calls removeEventListener: 1 total
+			// (preventScrollMobileSafari's own touchmove now detaches via its signal instead).
+			expect(documentCalls(removeDocSpy, 'touchmove')).toHaveLength(1);
 		} finally {
 			unmount(first.component);
 			unmount(second.component);

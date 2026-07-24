@@ -6,8 +6,8 @@
  */
 
 import { useDebounce } from '../../internal/tools/index.js';
-import { createContext, untrack } from 'svelte';
-import { simpleBox, mergeDisposers, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '../../internal/tools/index.js';
+import { createContext, getAbortSignal, untrack } from 'svelte';
+import { simpleBox, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '../../internal/tools/index.js';
 import type { ScrollAreaType } from './types.js';
 import type { BitsPointerEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { type Direction, type Orientation, mergeProps, useId } from '../../internal/index.js';
@@ -208,14 +208,12 @@ export class ScrollAreaScrollbarHoverState {
 				}, hideDelay);
 			};
 
-			const unsubListeners = mergeDisposers(
-				on(scrollAreaNode, 'pointerenter', handlePointerEnter),
-				on(scrollAreaNode, 'pointerleave', handlePointerLeave),
-			);
+			const signal = getAbortSignal();
+			on(scrollAreaNode, 'pointerenter', handlePointerEnter, { signal });
+			on(scrollAreaNode, 'pointerleave', handlePointerLeave, { signal });
 
 			return () => {
 				this.root.domContext.getWindow().clearTimeout(hideTimer);
-				unsubListeners();
 			};
 		});
 	}

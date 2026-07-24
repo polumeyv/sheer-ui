@@ -1,9 +1,10 @@
 import type { EscapeBehaviorType } from './escape-layer/types.js';
 import type { InteractOutsideBehaviorType } from './dismissible-layer/types.js';
 import { getTabbableCandidates } from './tabbable.js';
-import { mergeDisposers, type Getter } from './tools/index.js';
+import type { Getter } from './tools/index.js';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 import { on } from 'svelte/events';
+import { getAbortSignal } from 'svelte';
 
 type NativeDialogControllerOptions = {
 	open: Getter<boolean>;
@@ -28,7 +29,8 @@ export function nativeDialogControllerAttachment(options: NativeDialogController
 			else if (!open && node.open) node.close();
 		});
 
-		const disposers = [on(node, 'close', options.onClose)];
+		const signal = getAbortSignal();
+		on(node, 'close', options.onClose, { signal });
 
 		const handleInteractOutside = (event: PointerEvent) => {
 			if (event.target !== node) return;
@@ -38,22 +40,27 @@ export function nativeDialogControllerAttachment(options: NativeDialogController
 			node.close();
 		};
 
-		if (options.outsideEvent === 'pointerdown') disposers.push(on(node, 'pointerdown', handleInteractOutside));
-		else if (options.outsideEvent === 'click') disposers.push(on(node, 'click', handleInteractOutside));
+		if (options.outsideEvent === 'pointerdown') on(node, 'pointerdown', handleInteractOutside, { signal });
+		else if (options.outsideEvent === 'click') on(node, 'click', handleInteractOutside, { signal });
 
 		if (options.onEscapeKeydown || options.escapeKeydownBehavior) {
-			disposers.push(
-				on(node, 'cancel', (event) => {
+			on(
+				node,
+				'cancel',
+				(event) => {
 					const shim = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true });
 					options.onEscapeKeydown?.()(shim);
 					if (shim.defaultPrevented || options.escapeKeydownBehavior?.() === 'ignore') event.preventDefault();
-				}),
+				},
+				{ signal },
 			);
 		}
 
 		if (options.trapFocus) {
-			disposers.push(
-				on(node, 'keydown', (event) => {
+			on(
+				node,
+				'keydown',
+				(event) => {
 					if (event.key !== 'Tab' || !options.trapFocus?.()) return;
 					const tabbables = getTabbableCandidates(node);
 					if (tabbables.length === 0) return;
@@ -67,11 +74,10 @@ export function nativeDialogControllerAttachment(options: NativeDialogController
 						event.preventDefault();
 						last.focus();
 					}
-				}),
+				},
+				{ signal },
 			);
 		}
-
-		return mergeDisposers(...disposers);
 	}) satisfies Attachment<HTMLDialogElement>;
 
 	return { [createAttachmentKey()]: controller };

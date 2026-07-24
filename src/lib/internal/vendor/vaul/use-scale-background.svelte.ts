@@ -1,7 +1,5 @@
 import { BORDER_RADIUS, TRANSITIONS, WINDOW_TOP_OFFSET } from './internal/constants.js';
 import { assignStyle, isVertical } from './helpers.js';
-import { mergeDisposers } from '../../tools/index.js';
-import { noop } from '@polumeyv/utilities';
 import { getDrawer } from './context.js';
 
 export function useScaleBackground() {
@@ -23,15 +21,16 @@ export function useScaleBackground() {
 
 			if (!wrapper) return;
 
-			mergeDisposers(
-				ctx.setBackgroundColorOnScale.current && !ctx.noBodyStyles.current ? assignStyle(document.body, { background: 'black' }) : noop,
-				assignStyle(wrapper, {
-					transformOrigin: isVertical(ctx.direction.current) ? 'top' : 'left',
-					transitionProperty: 'transform, border-radius',
-					transitionDuration: `${TRANSITIONS.DURATION}s`,
-					transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-				}),
-			);
+			// These styles are applied for good: upstream vaul chains their restore fns but discards
+			// the chain, so the transition styles persist (the close animation needs them) and the
+			// body background is restored by the timeout in the teardown below instead.
+			if (ctx.setBackgroundColorOnScale.current && !ctx.noBodyStyles.current) assignStyle(document.body, { background: 'black' });
+			assignStyle(wrapper, {
+				transformOrigin: isVertical(ctx.direction.current) ? 'top' : 'left',
+				transitionProperty: 'transform, border-radius',
+				transitionDuration: `${TRANSITIONS.DURATION}s`,
+				transitionTimingFunction: `cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
+			});
 
 			const wrapperStylesCleanup = assignStyle(wrapper, {
 				borderRadius: `${BORDER_RADIUS}px`,

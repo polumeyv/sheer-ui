@@ -6,12 +6,11 @@ import {
 	type ReadableBox,
 	type RefAttachment,
 	type WritableBox,
-	mergeDisposers,
 	mergeHandlers,
 	type ReadableBoxedValues,
 } from '../tools/index.js';
 import { on } from 'svelte/events';
-import { onMount, tick } from 'svelte';
+import { getAbortSignal, onMount, tick } from 'svelte';
 import type { DismissibleLayerImplProps, InteractOutsideBehaviorType, InteractOutsideEventHandler } from './types.js';
 import { type EventCallback } from '../tools/utils/events.js';
 import { createLayerStack } from '../layer-stack.js';
@@ -103,25 +102,23 @@ export class DismissibleLayerState {
 			this.#isResponsibleLayer = false;
 		}, 20);
 
-		let unsubEvents = () => {};
-
 		const cleanup = () => {
 			this.#resetState();
 			dismissableLayers.unregister(this);
 			this.#handleInteractOutside.destroy();
-			unsubEvents();
 		};
 
 		$effect(() => {
 			this.opts.enabled.current;
 			this.opts.ref.current;
 			if (!this.opts.enabled.current || !this.opts.ref.current) return;
+			// Minted here, passed into the timeout: a stale timeout firing after this run
+			// was superseded adds listeners against an aborted signal, i.e. not at all.
+			const signal = getAbortSignal();
 			this.#scheduler.setTimeout(() => {
-				if (!this.opts.ref.current) return;
+				if (!this.opts.ref.current || signal.aborted) return;
 				dismissableLayers.register(this, this.#behaviorType);
-
-				unsubEvents();
-				unsubEvents = this.#addEventListeners();
+				this.#addEventListeners(signal);
 			}, 1);
 			return cleanup;
 		});
@@ -131,7 +128,6 @@ export class DismissibleLayerState {
 			dismissableLayers.unregister(this);
 			this.#handleInteractOutside.destroy();
 			this.#unsubClickListener();
-			unsubEvents();
 		});
 	}
 
@@ -147,14 +143,12 @@ export class DismissibleLayerState {
 		});
 	};
 
-	#addEventListeners() {
+	#addEventListeners(signal: AbortSignal) {
 		const doc = this.opts.ref.current?.ownerDocument ?? document;
 
-		return mergeDisposers(
-			on(doc, 'pointerdown', mergeHandlers(this.#markInterceptedEvent, this.#markResponsibleLayer), { capture: true }),
-			on(doc, 'pointerdown', mergeHandlers(this.#markNonInterceptedEvent, this.#handleInteractOutside)),
-			on(doc, 'focusin', this.#handleFocus),
-		);
+		on(doc, 'pointerdown', mergeHandlers(this.#markInterceptedEvent, this.#markResponsibleLayer), { capture: true, signal });
+		on(doc, 'pointerdown', mergeHandlers(this.#markNonInterceptedEvent, this.#handleInteractOutside), { signal });
+		on(doc, 'focusin', this.#handleFocus, { signal });
 	}
 
 	#handleDismiss = (e: MouseEvent) => {

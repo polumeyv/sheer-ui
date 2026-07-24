@@ -2,9 +2,8 @@
  * This logic is adapted from the @melt-ui/svelte slider, which was mostly written by
  * Abdelrahman (https://github.com/abdel-17)
  */
-import { createContext, onMount, untrack } from 'svelte';
+import { createContext, getAbortSignal, onMount, untrack } from 'svelte';
 import {
-	mergeDisposers,
 	attachRef,
 	type Box,
 	type ReadableBox,
@@ -100,12 +99,11 @@ abstract class SliderBaseRootState {
 		this.domContext = new DOMContext(this.opts.ref);
 
 		onMount(() => {
-			return mergeDisposers(
-				on(this.domContext.getDocument(), 'pointerdown', this.handlePointerDown),
-				on(this.domContext.getDocument(), 'pointerup', this.handlePointerUp),
-				on(this.domContext.getDocument(), 'pointermove', this.handlePointerMove),
-				on(this.domContext.getDocument(), 'pointerleave', this.handlePointerUp),
-			);
+			const signal = getAbortSignal();
+			on(this.domContext.getDocument(), 'pointerdown', this.handlePointerDown, { signal });
+			on(this.domContext.getDocument(), 'pointerup', this.handlePointerUp, { signal });
+			on(this.domContext.getDocument(), 'pointermove', this.handlePointerMove, { signal });
+			on(this.domContext.getDocument(), 'pointerleave', this.handlePointerUp, { signal });
 		});
 	}
 

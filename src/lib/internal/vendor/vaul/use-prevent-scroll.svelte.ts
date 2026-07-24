@@ -3,11 +3,10 @@
 
 import { isIOS } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
-import { mergeDisposers } from '../../tools/index.js';
 import { SharedState } from '../../shared-state.svelte.js';
 import { BodyScrollLock } from '../../body-scroll-lock.svelte.js';
 import { on } from 'svelte/events';
-import { untrack } from 'svelte';
+import { getAbortSignal, untrack } from 'svelte';
 
 const KEYBOARD_BUFFER = 24;
 
@@ -35,8 +34,13 @@ const nonTextInputTypes = new Set(['checkbox', 'radio', 'range', 'color', 'file'
 // from body-lock coordination below — it's Drawer-specific (dragging a sheet on iOS Safari), not
 // something Dialog/Popover/Select need.
 const preventScroll = new SharedState(() => {
-	const restore = isIOS ? preventScrollMobileSafari() : undefined;
-	$effect(() => restore);
+	// Setup runs inside the effect (matching upstream react-spectrum's useEffect timing) so the
+	// workaround can ride the effect's abort signal; the signal aborts when the shared root is
+	// disposed, i.e. when the last consumer releases.
+	$effect(() => {
+		if (!isIOS) return;
+		preventScrollMobileSafari(getAbortSignal());
+	});
 });
 
 /**
@@ -93,7 +97,7 @@ export const usePreventScroll = (opts: PreventScrollOptions) => {
 //    above work or Safari will still try to scroll the page when focusing an input.
 // 6. As a last resort, handle window scroll events, and scroll back to the top. This can happen when attempting
 //    to navigate to an input with the next/previous buttons that's outside a modal.
-function preventScrollMobileSafari() {
+function preventScrollMobileSafari(signal: AbortSignal) {
 	let scrollable: Element;
 	let lastY = 0;
 	const onTouchStart = (e: TouchEvent) => {
@@ -186,29 +190,24 @@ function preventScrollMobileSafari() {
 	let scrollX = window.pageXOffset;
 	let scrollY = window.pageYOffset;
 
-	let restoreStyles = mergeDisposers(
-		setStyle(document.documentElement, 'paddingRight', `${window.innerWidth - document.documentElement.clientWidth}px`),
-		// setStyle(document.documentElement, 'overflow', 'hidden'),
-		// setStyle(document.body, 'marginTop', `-${scrollY}px`),
-	);
+	const restoreStyles = setStyle(document.documentElement, 'paddingRight', `${window.innerWidth - document.documentElement.clientWidth}px`);
+	// setStyle(document.documentElement, 'overflow', 'hidden'),
+	// setStyle(document.body, 'marginTop', `-${scrollY}px`),
 
 	// Scroll to the top. The negative margin on the body will make this appear the same.
 	window.scrollTo(0, 0);
 
-	let removeEvents = mergeDisposers(
-		on(document, 'touchstart', onTouchStart, { passive: false, capture: true }),
-		on(document, 'touchmove', onTouchMove, { passive: false, capture: true }),
-		on(document, 'touchend', onTouchEnd, { passive: false, capture: true }),
-		on(document, 'focus', onFocus, { capture: true }),
-		on(window, 'scroll', onWindowScroll),
-	);
+	on(document, 'touchstart', onTouchStart, { passive: false, capture: true, signal });
+	on(document, 'touchmove', onTouchMove, { passive: false, capture: true, signal });
+	on(document, 'touchend', onTouchEnd, { passive: false, capture: true, signal });
+	on(document, 'focus', onFocus, { capture: true, signal });
+	on(window, 'scroll', onWindowScroll, { signal });
 
-	return () => {
+	signal.addEventListener('abort', () => {
 		// Restore styles and scroll the page back to where it was.
 		restoreStyles();
-		removeEvents();
 		window.scrollTo(scrollX, scrollY);
-	};
+	});
 }
 
 // Sets a CSS property on an element, and returns a function to revert it to the previous value.

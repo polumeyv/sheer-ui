@@ -7,7 +7,7 @@ import { BROWSER } from '@polumeyv/utilities/env';
 import { useId } from './use-id.js';
 import { SharedState } from './shared-state.svelte.js';
 import { on } from 'svelte/events';
-import { onMount, tick, untrack } from 'svelte';
+import { getAbortSignal, onMount, tick, untrack } from 'svelte';
 
 export interface ScrollBodyOption {
 	padding?: boolean | number;
@@ -45,7 +45,6 @@ let cleanupScheduledAt: number | null = null;
 const bodyLockStackCount = new SharedState(() => {
 	const doc = BROWSER && typeof document !== 'undefined' ? document : null;
 	const win = doc?.defaultView ?? (BROWSER && typeof window !== 'undefined' ? window : null);
-	let disposed = false;
 
 	function getDOM() {
 		if (!doc?.body || !doc.documentElement || !win) return null;
@@ -129,6 +128,7 @@ const bodyLockStackCount = new SharedState(() => {
 
 	$effect(() => {
 		anyLocked.current;
+		const signal = getAbortSignal();
 		untrack(() => {
 			if (!anyLocked.current) return;
 			const dom = getDOM();
@@ -189,7 +189,7 @@ const bodyLockStackCount = new SharedState(() => {
 			 */
 			tick().then(() => {
 				const latestDOM = getDOM();
-				if (disposed || !latestDOM || !isAnyLocked(lockMap)) return;
+				if (signal.aborted || !latestDOM || !isAnyLocked(lockMap)) return;
 				latestDOM.body.style.pointerEvents = 'none';
 				latestDOM.body.style.overflow = 'hidden';
 			});
@@ -198,7 +198,6 @@ const bodyLockStackCount = new SharedState(() => {
 
 	$effect(() => {
 		return () => {
-			disposed = true;
 			cleanupTouchMoveListener();
 		};
 	});

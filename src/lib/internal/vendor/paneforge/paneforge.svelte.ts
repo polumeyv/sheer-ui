@@ -1,4 +1,4 @@
-import { createContext, onMount, tick, untrack } from 'svelte';
+import { createContext, getAbortSignal, onMount, tick, untrack } from 'svelte';
 import { on } from 'svelte/events';
 import type { FocusEventHandler, KeyboardEventHandler } from 'svelte/elements';
 import {
@@ -7,7 +7,6 @@ import {
 	type WithRefProps,
 	attachRef,
 	DOMContext,
-	mergeDisposers,
 } from '../../tools/index.js';
 import {
 	callPaneCallbacks,
@@ -591,14 +590,13 @@ export class PaneResizerState {
 			const domBody = this.domContext.getDocument().body;
 			const domWindow = this.domContext.getWindow();
 
-			return mergeDisposers(
-				on(domBody, 'contextmenu', stopDraggingAndBlur),
-				on(domBody, 'mousemove', resizeHandler),
-				on(domBody, 'touchmove', resizeHandler, { passive: false }),
-				on(domBody, 'mouseleave', resizeHandler),
-				on(domWindow, 'mouseup', stopDraggingAndBlur),
-				on(domWindow, 'touchend', stopDraggingAndBlur),
-			);
+			const signal = getAbortSignal();
+			on(domBody, 'contextmenu', stopDraggingAndBlur, { signal });
+			on(domBody, 'mousemove', resizeHandler, { signal });
+			on(domBody, 'touchmove', resizeHandler, { passive: false, signal });
+			on(domBody, 'mouseleave', resizeHandler, { signal });
+			on(domWindow, 'mouseup', stopDraggingAndBlur, { signal });
+			on(domWindow, 'touchend', stopDraggingAndBlur, { signal });
 		});
 	}
 
