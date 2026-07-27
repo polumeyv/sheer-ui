@@ -5,128 +5,40 @@
 </script>
 
 <script lang="ts">
-	import type { HTMLDialogAttributes } from 'svelte/elements';
-	import { boxWith } from '../../../internal/tools/index.js';
-	import { mergeProps } from '../../../internal/merge-props.js';
-	import { DialogContentState } from '../../dialog/dialog.svelte.js';
+	import ModalSurface from '../../dialog/components/modal-surface.svelte';
 	import type { DialogContentProps, DialogPortalProps } from '../../dialog/types.js';
-	import { createId } from '../../../internal/create-id.js';
 	import type { WithoutChildrenOrChild } from '../../../internal/utils.js';
-	import { scrollLockAttachment } from '../../../internal/body-scroll-lock.svelte.js';
-	import { nativeDialogControllerAttachment } from '../../../internal/native-dialog-controller.svelte.js';
 	import SheetClose from './sheet-close.svelte';
 	import XIcon from '@lucide/svelte/icons/x';
 
 	/**
-	 * Side panel rendered as a native modal `<dialog>` (showModal()/close()), mirroring
-	 * native-dialog.svelte. What native + CSS absorb, replacing the previous JS overlay stack:
-	 *   focus trap / restore / initial focus  → showModal() (drops FocusScope + tabbable)
-	 *   Esc to close                          → native `cancel` (drops EscapeLayer + its stack)
-	 *   inert background (clicks/focus/AT)     → native modal, stronger than the JS Tab-trap
-	 *   backdrop dim                           → ::backdrop (drops the rendered SheetOverlay <div>)
-	 *   mount/unmount + enter/exit timing      → @starting-style + display/overlay allow-discrete
-	 *                                            (drops the {#if shouldRender} presence gate)
-	 *   click-outside to close                 → backdrop click (drops DismissibleLayer + stack)
-	 * Surviving JS: the `controller` attachment (open↔showModal + dismissal sync) and <ScrollLock>
-	 * (native showModal makes the page inert but still scrollable; the ref-counted body lock stays).
+	 * Side panel adapter over the shared native modal surface (modal-surface.svelte),
+	 * which owns the skeleton: parity props, content state, controller, scroll lock, and
+	 * the `<dialog>` render. This file owns only Sheet's visual policy.
 	 *
-	 * The slide + per-side positioning still come from `sheetVariants({ side })`; `data-state`
+	 * The slide + per-side positioning come from `sheetVariants({ side })`; `data-state`
 	 * (from DialogContentState.props) drives its `data-[state=closed]:translate-…-full` exit.
 	 */
-
-	const uid = $props.id();
-
 	let {
-		id = createId(uid),
 		children,
-		child,
 		ref = $bindable(null),
 		side = 'right',
-		// --- Accepted for API parity; the native <dialog> absorbs or no-ops these ---
-		// no-op: the <dialog> is always rendered; showModal()/close() toggles visibility.
-		forceMount = false,
-		// no-op: native modal restores focus to the opener on close.
-		onCloseAutoFocus = () => {},
-		// no-op: showModal() autofocuses ([autofocus] or the first focusable).
-		onOpenAutoFocus = () => {},
-		// wired below via the native `cancel` event.
-		onEscapeKeydown = () => {},
-		// wired below via backdrop click.
-		onInteractOutside = () => {},
-		// no-op: a native modal makes the background inert (no focus-outside to report).
-		onFocusOutside = () => {},
-		// no-op: showModal() traps focus.
-		trapFocus = true,
-		// still honored — passed to the scrollLockAttachment below.
-		preventScroll = true,
-		restoreScrollDelay = null,
-		// honored in the `cancel` / backdrop-click handlers below.
-		escapeKeydownBehavior = 'close',
-		interactOutsideBehavior = 'close',
-		// no-op: not applicable to a native modal surface.
-		preventOverflowTextSelection = true,
-		// no-op: no portal — a modal <dialog> renders in place and is promoted to the top layer.
-		portalProps,
+		class: className,
 		...restProps
 	}: DialogContentProps & {
 		side?: Side;
 		portalProps?: WithoutChildrenOrChild<DialogPortalProps>;
 	} = $props();
-
-	const contentState = DialogContentState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-	});
-
-	// Bridge the shared Dialog root `open` to the native top-layer API and mirror native dismissal
-	// back into the root state, in one attachment (mirrors native-dialog.svelte's `controller`). The
-	// root (Sheet.Root) is the source of truth, so Trigger / Close / handleClose stay authoritative.
-	//
-	// NOTE: onOpenChangeComplete is intentionally NOT re-homed here. Unlike the Popover (whose root
-	// dropped its PresenceManager), the Dialog root keeps `contentPresence`, and we keep
-	// DialogContentState which sets `contentNode`. That PresenceManager's AnimationsComplete watches
-	// the <dialog>'s getAnimations() and already fires onOpenChangeComplete after the slide settles —
-	// adding a transitionend listener would double-fire it.
-	const controllerAttachment = nativeDialogControllerAttachment({
-		open: () => contentState.root.cell.open,
-		onClose: () => contentState.root.handleClose(),
-		outsideEvent: 'click',
-		onInteractOutside: () => onInteractOutside,
-		interactOutsideBehavior: () => interactOutsideBehavior,
-		onEscapeKeydown: () => onEscapeKeydown,
-		escapeKeydownBehavior: () => escapeKeydownBehavior,
-	});
-
-
-	// The <dialog> persists across open/close, so the lock gates on the cell's open, not element lifecycle.
-	const scrollLock = scrollLockAttachment({
-		enabled: () => contentState.root.cell.open && preventScroll,
-		restoreScrollDelay: () => restoreScrollDelay,
-	});
-
-	const mergedProps = $derived(
-		mergeProps({ 'data-slot': 'sheet-content', class: join('sheet-dialog', sheetVariants({ side })) }, restProps, contentState.props, scrollLock),
-	);
-
 </script>
 
-{#if child}
-	{@render child({ props: mergeProps(mergedProps, controllerAttachment), ...contentState.snippetProps })}
-{:else}
-	<!-- DialogContentState.props / DialogContentProps are authored for a <div>; their generic event
-	     handlers are typed to HTMLDivElement, so assert the merged set as dialog attributes. -->
-	<dialog {...controllerAttachment} {...mergedProps as unknown as HTMLDialogAttributes}>
-		{@render children?.()}
-		<SheetClose
-			class="ring-offset-background focus-visible:ring-ring absolute inset-e-4 top-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none">
-			<XIcon class="size-4" />
-			<span class="sr-only">Close</span>
-		</SheetClose>
-	</dialog>
-{/if}
+<ModalSurface bind:ref data-slot="sheet-content" class={join('sheet-dialog', sheetVariants({ side }), className)} {...restProps}>
+	{@render children?.()}
+	<SheetClose
+		class="ring-offset-background focus-visible:ring-ring absolute inset-e-4 top-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none">
+		<XIcon class="size-4" />
+		<span class="sr-only">Close</span>
+	</SheetClose>
+</ModalSurface>
 
 <style>
 	/* Neutralise the UA modal-dialog box defaults (`inset:0`, `margin:auto`, the `max-width/height`
@@ -150,32 +62,12 @@
 	   join `translate` with allow-discrete: that keeps the box in the top layer long enough for the
 	   `data-[state=closed]:translate-…-full` EXIT to animate in Chromium. Firefox/Safari lack
 	   `overlay` and snap the close (they still animate the OPEN via @starting-style) — the same
-	   progressive-enhancement trade as AlertModal/Popover. */
+	   progressive-enhancement trade as Dialog/Popover. The closed-state display reset and the
+	   ::backdrop fade live in ui.css under `[data-modal-surface]`; the fade duration is stretched
+	   to match the 300ms slide via the custom property. */
 	:global(.sheet-dialog) {
 		transition-property: translate, transform, display, overlay;
 		transition-behavior: allow-discrete;
-	}
-	/* The variant puts `flex flex-col` on the dialog for internal layout. A display utility overrides
-	   the UA `dialog:not([open]) { display: none }`, so re-assert it here (unlayered → wins) to keep a
-	   closed dialog hidden + non-interactive while still flexing when open. */
-	:global(.sheet-dialog:not([open])) {
-		display: none;
-	}
-	/* ::backdrop replaces the removed SheetOverlay (was `bg-black/50`). Fades in everywhere via
-	   @starting-style; in Chromium it also fades out (overlay/display allow-discrete keep it alive). */
-	:global(.sheet-dialog::backdrop) {
-		background-color: rgb(0 0 0 / 0);
-		transition:
-			background-color 0.3s ease,
-			overlay 0.3s allow-discrete,
-			display 0.3s allow-discrete;
-	}
-	:global(.sheet-dialog[open]::backdrop) {
-		background-color: rgb(0 0 0 / 0.5);
-	}
-	@starting-style {
-		:global(.sheet-dialog[open]::backdrop) {
-			background-color: rgb(0 0 0 / 0);
-		}
+		--modal-backdrop-duration: 300ms;
 	}
 </style>

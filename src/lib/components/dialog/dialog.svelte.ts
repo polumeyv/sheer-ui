@@ -25,27 +25,10 @@ function getDialogRootOr<TFallback>(fallback: TFallback): DialogRootState | TFal
 	}
 }
 
-/**
- * The dialog's public state cell: pure signals, no effects — safe to construct
- * anywhere (component init, app state classes) and hand to `Dialog.Root` /
- * `Sheet.Root` via the `state` prop. Reading and writing `open` is the whole
- * API: the dialog's trigger/close/dismiss machinery and any consumer markup,
- * deriveds, or effects are all dependents of the same signal — there is no
- * change callback and nothing to wire.
- *
- * An optional `source` makes `open` a writable derived: it re-derives whenever
- * the source changes (a route param, `editing !== null`, an external machine's
- * open), and direct writes — Escape, a Close button, `cell.open = false` —
- * override it until the next source change.
- */
-export class DialogState {
-	readonly #source?: () => boolean;
-	open: boolean = $derived.by(() => this.#source?.() ?? false);
-
-	constructor(source?: () => boolean) {
-		this.#source = source;
-	}
-}
+// The dialog's public state cell is the shared overlay OpenCell (internal/open-cell.svelte.ts),
+// exported under its established dialog-facing name.
+import { OpenCell as DialogState } from '../../internal/open-cell.svelte.js';
+export { DialogState };
 
 interface DialogRootStateOpts
 	extends ReadableBoxedValues<{

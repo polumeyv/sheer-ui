@@ -3,10 +3,12 @@ import type { PortalProps } from '../../../internal/portal/index.js';
 import type { PopperLayerProps, PopperLayerStaticProps } from '../../../internal/popper-layer/types.js';
 import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes, BitsPrimitiveSpanAttributes } from '../../../internal/attribute-types.js';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../../internal/types.js';
+import type { Snippet } from 'svelte';
+import type { OpenCell } from '../../../internal/open-cell.svelte.js';
 import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '../../../internal/types.js';
 import type { HTMLInputAttributes } from 'svelte/elements';
 
-export type SelectBaseRootPropsWithoutHTML = WithChildren<{
+export type SelectSharedRootPropsWithoutHTML = {
 	/**
 	 * Whether the combobox is disabled.
 	 *
@@ -26,19 +28,6 @@ export type SelectBaseRootPropsWithoutHTML = WithChildren<{
 	 * If not provided, a hidden input will not be rendered and the combobox will not be part of a form.
 	 */
 	name?: string;
-
-	/**
-	 * Whether the combobox popover is open.
-	 *
-	 * @defaultValue `false`
-	 * @bindable
-	 */
-	open?: boolean;
-
-	/**
-	 * A callback function called when the open state changes.
-	 */
-	onOpenChange?: OnChangeFn<boolean>;
 
 	/**
 	 * A callback function called when the open state changes and the animation is complete.
@@ -89,7 +78,26 @@ export type SelectBaseRootPropsWithoutHTML = WithChildren<{
 	 * The autocomplete attribute to forward to the hidden input element.
 	 */
 	autocomplete?: HTMLInputAttributes['autocomplete'];
-}>;
+};
+
+export type SelectBaseRootPropsWithoutHTML = SelectSharedRootPropsWithoutHTML & {
+	/**
+	 * The derivation source for the select's open state: the internal cell
+	 * re-derives whenever this prop changes, and interactions (trigger, Escape,
+	 * a snippet-cell write) override it until the next change. Reconcile
+	 * dismissals via onOpenChangeComplete. Plain value — not bindable.
+	 */
+	open?: boolean;
+
+	/**
+	 * A caller-constructed cell (own source and, optionally, a delegate writer)
+	 * used instead of building one from `open`. When given, `open` is ignored.
+	 */
+	state?: OpenCell;
+
+	/** Children receive the state cell, typed and guaranteed within the tree. */
+	children?: Snippet<[OpenCell]>;
+};
 
 export type SelectSingleRootPropsWithoutHTML = {
 	/**

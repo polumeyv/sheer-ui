@@ -4,12 +4,17 @@ import type { FloatingLayerArrowProps, FloatingLayerArrowPropsWithoutHTML } from
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../internal/types.js';
 import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attribute-types.js';
 import type { Direction } from '../../internal/index.js';
+import type { Snippet } from 'svelte';
+import type { OpenCell } from '../../internal/open-cell.svelte.js';
 import type { PortalProps } from '../../internal/portal/index.js';
 import type { FloatingContentSnippetProps, StaticContentSnippetProps } from '../../internal/types.js';
 
-export type MenuRootPropsWithoutHTML = WithChildren<{
+export type MenuRootPropsWithoutHTML = {
 	/**
-	 * The open state of the menu.
+	 * The derivation source for the menu's open state: the internal cell
+	 * re-derives whenever this prop changes, and interactions (trigger, Escape,
+	 * a snippet-cell write) override it until the next change. Reconcile
+	 * dismissals via onOpenChangeComplete. Plain value — not bindable.
 	 */
 	open?: boolean;
 
@@ -21,14 +26,16 @@ export type MenuRootPropsWithoutHTML = WithChildren<{
 	// debugMode?: boolean;
 
 	/**
-	 * A callback that is called when the menu is opened or closed.
-	 */
-	onOpenChange?: OnChangeFn<boolean>;
-
-	/**
-	 * A callback that is called when the menu is opened or closed.
+	 * A callback that is called when the menu finishes opening/closing animations.
+	 * This is an occurrence (animation settled), not a state mirror — depend on the cell instead.
 	 */
 	onOpenChangeComplete?: OnChangeFn<boolean>;
+
+	/**
+	 * A caller-constructed cell (own source and, optionally, a delegate writer)
+	 * used instead of building one from `open`. When given, `open` is ignored.
+	 */
+	state?: OpenCell;
 
 	/**
 	 * The direction of the site.
@@ -36,7 +43,10 @@ export type MenuRootPropsWithoutHTML = WithChildren<{
 	 * @defaultValue "ltr"
 	 */
 	dir?: Direction;
-}>;
+
+	/** Children receive the state cell, typed and guaranteed within the tree. */
+	children?: Snippet<[OpenCell]>;
+};
 
 export type MenuRootProps = MenuRootPropsWithoutHTML;
 

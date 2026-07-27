@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
+	import { OpenCell } from '../../../internal/open-cell.svelte.js';
 	import type { MenuRootProps } from '../types.js';
 	import { MenuMenuState, MenuRootState } from '../menu.svelte.js';
 	import FloatingLayer from '../../../internal/floating-layer/components/floating-layer.svelte';
 
 	let {
-		open = $bindable(false),
+		open = false,
 		dir = 'ltr',
 		// debugMode = false,
-		onOpenChange = () => {},
+		state: givenCell,
 		onOpenChangeComplete = () => {},
 		_internal_variant: variant = 'dropdown-menu',
 		_internal_should_skip_exit_animation: shouldSkipExitAnimation = undefined,
@@ -18,25 +19,28 @@
 		_internal_should_skip_exit_animation?: () => boolean;
 	} = $props();
 
+	// Root owns both the machinery and the cell; `open` (the prop) is the cell's
+	// derivation source, and the children snippet is the only way the cell leaves.
+	// A caller-built `state` cell (with its own source/writer) takes over both roles.
+	// The cell's identity is fixed at mount — swapping `state` later is not supported.
+	// The engine keeps its boxed-open interface (vendored, ADR 0006); the box is a
+	// bridge over the cell, so the cell stays the one owner of `open`.
+	// svelte-ignore state_referenced_locally
+	const menu = givenCell ?? new OpenCell(() => open);
+
 	const root = MenuRootState.create({
 		variant: boxWith(() => variant),
 		dir: boxWith(() => dir),
 		// debugMode: boxWith(() => debugMode),
-		onClose: () => {
-			open = false;
-			onOpenChange(false);
-		},
+		onClose: () => (menu.open = false),
 		shouldSkipExitAnimation: () => shouldSkipExitAnimation?.() ?? false,
 	});
 
 	MenuMenuState.create(
 		{
 			open: boxWith(
-				() => open,
-				(v) => {
-					open = v;
-					onOpenChange(v);
-				},
+				() => menu.open,
+				(v) => (menu.open = v),
 			),
 			onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
 		},
@@ -50,5 +54,5 @@
 />
 
 <FloatingLayer>
-	{@render children?.()}
+	{@render children?.(menu)}
 </FloatingLayer>

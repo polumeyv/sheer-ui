@@ -37,21 +37,12 @@
 		onEscapeKeydown: boxWith(() => onEscapeKeydown),
 	});
 
-	useNativePopoverLifecycle({
-		anchor: () => contentState.root.triggerNode,
-		open: () => contentState.root.opts.open.current,
-		ref: () => ref,
-		triggerNode: () => contentState.root.triggerNode,
-		onEscapeKeydown: () => contentState.onEscapeKeydown,
-		onInteractOutside: () => contentState.onInteractOutside,
-		onOpenChangeComplete: () => contentState.root.opts.onOpenChangeComplete.current,
-	});
+	const lifecycleProps = useNativePopoverLifecycle(contentState);
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
 				'data-slot': 'tooltip-content',
-				'data-anchored': '',
 				class: join(
 					'group/tooltip z-50 w-fit rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background [container-type:anchored]',
 					'data-[side=left]:[position-try-fallbacks:flip-inline] data-[side=right]:[position-try-fallbacks:flip-inline]',
@@ -61,14 +52,15 @@
 			restProps,
 			contentState.props,
 			{ style },
+			lifecycleProps,
 		),
 	);
 </script>
 
 {#if child}
-	{@render child({ props: mergeProps(mergedProps, { popover: 'manual' }), wrapperProps: {}, ...contentState.snippetProps })}
+	{@render child({ props: mergedProps, wrapperProps: {}, ...contentState.snippetProps })}
 {:else}
-	<div {...mergedProps} bind:this={ref} popover="manual" data-side={side} data-align={align}>
+	<div {...mergedProps} bind:this={ref} data-side={side} data-align={align}>
 		{@render children?.()}
 		<div
 			class={join(

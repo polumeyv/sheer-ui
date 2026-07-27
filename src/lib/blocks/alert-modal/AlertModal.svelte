@@ -1,9 +1,11 @@
 <script lang="ts">
-	// Migrated off the bits AlertDialog stack onto the native <dialog> spike. Dropped: AlertDialog.Root
-	// / Portal / Overlay / Content / Title / Description / Cancel / Action — and with them the
-	// PresenceManager, FocusScope, escape + dismissible layers, BodyScrollLock and the JS overlay div.
-	// Same `open` / `onOpenChange` contract, so the alertModal store is untouched.
-	import NativeDialog from '../../internal/native-dialog/native-dialog.svelte';
+	// Composes the real Dialog (native <dialog> surface). The alertModal store stays the machine;
+	// an own-or-delegate cell derives from it and reports self-closes (Esc / backdrop) straight
+	// back, so the store and the dialog can never disagree. Same store contract as before.
+	import * as Dialog from '../../components/dialog/index.js';
+	// Library-internal import: the cell class is deliberately NOT in the public exports —
+	// app consumers drive overlays via the `open` source prop, never a constructed cell.
+	import { OpenCell } from '../../internal/open-cell.svelte.js';
 	import { Button } from '../../components/button/index.js';
 	import * as Field from '../../components/field';
 	import { Root as Input } from '../../components/input';
@@ -34,45 +36,48 @@
 	$effect(() => {
 		if (alertModal.options) shownOptions = alertModal.options;
 	});
+
+	const cell = new OpenCell(
+		() => alertModal.open,
+		(open) => {
+			if (!open) alertModal.close();
+		},
+	);
 </script>
 
-<NativeDialog
-	open={alertModal.open}
-	onOpenChange={(open) => {
-		if (!open) alertModal.close();
-	}}
-	aria-labelledby="alert-modal-title"
-	aria-describedby="alert-modal-desc">
-	{#if shownOptions}
-		<div class="flex flex-col gap-2 text-center sm:text-start">
-			<h2 id="alert-modal-title" class="text-lg font-semibold {titleClasses[shownOptions.variant ?? ''] ?? ''}">
-				{shownOptions.title}
-			</h2>
-			<p id="alert-modal-desc" class="text-muted-foreground text-sm">{shownOptions.description}</p>
-		</div>
+<Dialog.Root state={cell}>
+	<Dialog.Content>
+		{#if shownOptions}
+			<div class="flex flex-col gap-2 text-center sm:text-start">
+				<Dialog.Title class="text-lg font-semibold {titleClasses[shownOptions.variant ?? ''] ?? ''}">
+					{shownOptions.title}
+				</Dialog.Title>
+				<Dialog.Description class="text-muted-foreground text-sm">{shownOptions.description}</Dialog.Description>
+			</div>
 
-		{#if shownOptions.confirmText}
-			<Field.Field>
-				<Field.Label>Type "{shownOptions.confirmText}" to confirm</Field.Label>
-				<Input bind:value={alertModal.confirmInput} placeholder={shownOptions.confirmText} />
-			</Field.Field>
+			{#if shownOptions.confirmText}
+				<Field.Field>
+					<Field.Label>Type "{shownOptions.confirmText}" to confirm</Field.Label>
+					<Input bind:value={alertModal.confirmInput} placeholder={shownOptions.confirmText} />
+				</Field.Field>
+			{/if}
+
+			{#if shownOptions.content}
+				{@render shownOptions.content()}
+			{/if}
+
+			<div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+				<Button variant="outline" disabled={alertModal.loading} onclick={() => alertModal.close()}>
+					{shownOptions.cancelLabel ?? 'Cancel'}
+				</Button>
+				<Button
+					class={variantClasses[shownOptions.variant ?? ''] ?? ''}
+					disabled={!alertModal.canConfirm}
+					onclick={() => alertModal.handleConfirm()}>
+					{#if alertModal.loading}<Loader2Icon class="size-4 animate-spin" />{/if}
+					{shownOptions.actionLabel ?? VARIANT_DEFAULTS[shownOptions.variant ?? 'default']}
+				</Button>
+			</div>
 		{/if}
-
-		{#if shownOptions.content}
-			{@render shownOptions.content()}
-		{/if}
-
-		<div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-			<Button variant="outline" disabled={alertModal.loading} onclick={() => alertModal.close()}>
-				{shownOptions.cancelLabel ?? 'Cancel'}
-			</Button>
-			<Button
-				class={variantClasses[shownOptions.variant ?? ''] ?? ''}
-				disabled={!alertModal.canConfirm}
-				onclick={() => alertModal.handleConfirm()}>
-				{#if alertModal.loading}<Loader2Icon class="size-4 animate-spin" />{/if}
-				{shownOptions.actionLabel ?? VARIANT_DEFAULTS[shownOptions.variant ?? 'default']}
-			</Button>
-		</div>
-	{/if}
-</NativeDialog>
+	</Dialog.Content>
+</Dialog.Root>

@@ -174,10 +174,6 @@ export const Index = {
 		type: "registry:example",
 		files: ["../docs/registry/meter-demo.svelte"],
 	},
-	"native-dialog-demo": {
-		type: "registry:example",
-		files: ["../docs/registry/native-dialog-demo.svelte"],
-	},
 	"navigation-menu-demo": {
 		type: "registry:example",
 		files: ["../docs/registry/navigation-menu-demo.svelte"],

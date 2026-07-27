@@ -1,13 +1,30 @@
 import type { BitsPrimitiveInputAttributes } from '../../internal/attribute-types.js';
 import type { LucideProps } from '@lucide/svelte';
 import type {
-	SelectBaseRootPropsWithoutHTML,
 	SelectMultipleRootPropsWithoutHTML,
+	SelectSharedRootPropsWithoutHTML,
 	SelectSingleRootPropsWithoutHTML,
 } from './select/types.js';
-import type { WithChild, Without } from '../../internal/types.js';
+import type { OnChangeFn, WithChild, WithChildren, Without } from '../../internal/types.js';
 
-export type ComboboxBaseRootPropsWithoutHTML = Omit<SelectBaseRootPropsWithoutHTML, 'autocomplete'> & {
+// Combobox keeps the pre-cell open contract (bindable open + onOpenChange); its
+// open-cell migration is a later slice of the rollout.
+export type ComboboxBaseRootPropsWithoutHTML = WithChildren<
+	Omit<SelectSharedRootPropsWithoutHTML, 'autocomplete'> & {
+		/**
+		 * Whether the combobox popover is open.
+		 *
+		 * @defaultValue `false`
+		 * @bindable
+		 */
+		open?: boolean;
+
+		/**
+		 * A callback function called when the open state changes.
+		 */
+		onOpenChange?: OnChangeFn<boolean>;
+	}
+> & {
 	/**
 	 * A read-only value that can be used to programmatically
 	 * update the input value.

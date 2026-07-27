@@ -2,7 +2,7 @@
 	import { Popover } from "../../src/lib/components/popover/index.js";
 
 	let {
-		open = $bindable(false),
+		open = false,
 		closeDelay = 300,
 		openDelay = 0,
 		openOnHover = true,
@@ -18,13 +18,14 @@
 	}
 </script>
 
-<output data-testid="open">{open ? "open" : "closed"}</output>
-
-<Popover.Root bind:open>
-	<Popover.Trigger {openOnHover} {openDelay} {closeDelay} data-testid="trigger">
-		Trigger
-	</Popover.Trigger>
-	<Popover.Content forceMount preventScroll={false} trapFocus={false} data-testid="content">
-		Content
-	</Popover.Content>
+<Popover.Root {open}>
+	{#snippet children(popover)}
+		<output data-testid="open">{popover.open ? "open" : "closed"}</output>
+		<Popover.Trigger {openOnHover} {openDelay} {closeDelay} data-testid="trigger">
+			Trigger
+		</Popover.Trigger>
+		<Popover.Content forceMount preventScroll={false} trapFocus={false} data-testid="content">
+			Content
+		</Popover.Content>
+	{/snippet}
 </Popover.Root>

@@ -14,7 +14,6 @@
 	const DARK: ThemeColors = { bg: '#171717', border: '#2E2E2E', card: '#262626', muted: '#737373', fg: '#FAFAFA', accent: '#A3A3A3' };
 
 	const theme = getTheme();
-	let selectedMode = $state<Mode | 'system'>(theme.pref ?? 'system');
 </script>
 
 {#snippet themeElements(c: ThemeColors, id: string)}
@@ -94,7 +93,7 @@
 			<Field.Label for="theme-mode">Theme</Field.Label>
 			<Field.Description>{description}</Field.Description>
 			<RadioGroup.Root
-				bind:value={selectedMode}
+				value={theme.pref ?? 'system'}
 				onValueChange={(v) => (theme.pref = v === 'system' ? null : (v as Mode))}
 				class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
 				{@render tile('light', 'Light', LIGHT.border, lightInterior)}

@@ -35,6 +35,12 @@ export type DialogRootPropsWithoutHTML = {
 	 */
 	onOpenChangeComplete?: OnChangeFn<boolean>;
 
+	/**
+	 * A caller-constructed cell (own source and, optionally, a delegate writer)
+	 * used instead of building one from `open`. When given, `open` is ignored.
+	 */
+	state?: DialogState;
+
 	/** Children receive the state cell, typed and guaranteed within the tree. */
 	children?: Snippet<[DialogState]>;
 };

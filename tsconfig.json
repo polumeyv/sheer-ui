@@ -10,7 +10,8 @@
 		"skipLibCheck": true,
 		"module": "esnext",
 		"target": "esnext",
-		"types": ["bun"],
+		// `include` below replaces the generated one, so `.svelte-kit/ambient.d.ts` — which references these — is out of the program.
+		"types": ["bun", "@sveltejs/kit"],
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
+	import { OpenCell } from '../../../internal/open-cell.svelte.js';
 	import type { MenubarMenuProps } from '../types.js';
 	import { MenubarMenuState } from '../menubar.svelte.js';
 	import Menu from '../../menu/components/menu.svelte';
@@ -13,13 +14,20 @@
 		value: boxWith(() => value),
 		onOpenChange: boxWith(() => onOpenChange),
 	});
+
+	// Delegate cell: the menubar root is the source of which menu is open; a
+	// self-close (Escape / dismiss) inside the menu reports back so the root
+	// leaves open-mode. Opens only ever come from the menubar's own triggers.
+	const cell = new OpenCell(
+		() => menuState.open,
+		(open) => {
+			if (!open) menuState.root.onMenuClose();
+		},
+	);
 </script>
 
 <Menu
-	open={menuState.open}
-	onOpenChange={(open) => {
-		if (!open) menuState.root.onMenuClose();
-	}}
+	state={cell}
 	dir={menuState.root.opts.dir.current}
 	_internal_variant="menubar"
 	{...restProps}

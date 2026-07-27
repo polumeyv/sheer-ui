@@ -55,7 +55,6 @@ export const components: ComponentMeta[] = [
 	{ slug: 'link-preview', name: 'Link Preview', description: 'Previews content behind a link when hovering over it.' },
 	{ slug: 'menubar', name: 'Menubar', description: 'A persistent menu bar providing quick access to a consistent set of commands.' },
 	{ slug: 'meter', name: 'Meter', description: 'Displays a value within a known range.' },
-	{ slug: 'native-dialog', name: 'Native Dialog (spike)', description: 'A modal dialog built on the native <dialog> element + showModal, as a CSS/HTML spike that drops the JS overlay stack.' },
 	{ slug: 'navigation-menu', name: 'Navigation Menu', description: 'A collection of links for navigating a site.' },
 	{ slug: 'pagination', name: 'Pagination', description: 'Page navigation with next and previous links.' },
 	{ slug: 'pin-input', name: 'Pin Input', description: 'An accessible one-time-password / pin entry input.' },

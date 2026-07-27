@@ -44,35 +44,27 @@
 		customAnchor: boxWith(() => customAnchor),
 	});
 
-	useNativePopoverLifecycle({
-		anchor: () => customAnchor,
-		open: () => contentState.root.opts.open.current,
-		ref: () => ref,
-		triggerNode: () => contentState.root.triggerNode,
-		onEscapeKeydown: () => contentState.onEscapeKeydown,
-		onInteractOutside: () => contentState.onInteractOutside,
-		onOpenChangeComplete: () => contentState.root.opts.onOpenChangeComplete.current,
-	});
+	const lifecycleProps = useNativePopoverLifecycle(contentState, { anchor: () => customAnchor });
 
 	const mergedProps = $derived(
 		mergeProps(
 			{
 				'data-slot': 'popover-content',
-				'data-anchored': '',
 				class:
 					'bg-popover text-popover-foreground z-50 w-72 rounded-md border p-4 shadow-md outline-hidden transition-[opacity,scale,translate,display,overlay] transition-discrete opacity-0 scale-95 open:opacity-100 open:scale-100 starting:open:opacity-0 starting:open:scale-95',
 			},
 			restProps,
 			contentState.props,
 			{ style },
+			lifecycleProps,
 		),
 	);
 </script>
 
 {#if child}
-	{@render child({ props: mergeProps(mergedProps, { popover: 'manual' }), wrapperProps: {}, ...contentState.snippetProps })}
+	{@render child({ props: mergedProps, wrapperProps: {}, ...contentState.snippetProps })}
 {:else}
-	<div {...mergedProps} bind:this={ref} popover="manual" data-side={side} data-align={align}>
+	<div {...mergedProps} bind:this={ref} data-side={side} data-align={align}>
 		{@render children?.()}
 	</div>
 {/if}

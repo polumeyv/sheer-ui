@@ -35,7 +35,6 @@ export const components = [
 	{"slug":"link-preview","name":"Link Preview","description":"Previews content behind a link when hovering over it."},
 	{"slug":"menubar","name":"Menubar","description":"A persistent menu bar providing quick access to a consistent set of commands."},
 	{"slug":"meter","name":"Meter","description":"Displays a value within a known range."},
-	{"slug":"native-dialog","name":"Native Dialog (spike)","description":"A modal dialog built on the native <dialog> element + showModal, as a CSS/HTML spike that drops the JS overlay stack."},
 	{"slug":"navigation-menu","name":"Navigation Menu","description":"A collection of links for navigating a site."},
 	{"slug":"pagination","name":"Pagination","description":"Page navigation with next and previous links."},
 	{"slug":"pin-input","name":"Pin Input","description":"An accessible one-time-password / pin entry input."},
@@ -174,9 +173,6 @@ export const componentDemos = {
 	],
 	"meter": [
 		{ key: "demo", name: "meter-demo", path: "/src/docs/registry/meter-demo.svelte", sourcePath: "../docs/registry/meter-demo.svelte" },
-	],
-	"native-dialog": [
-		{ key: "demo", name: "native-dialog-demo", path: "/src/docs/registry/native-dialog-demo.svelte", sourcePath: "../docs/registry/native-dialog-demo.svelte" },
 	],
 	"navigation-menu": [
 		{ key: "demo", name: "navigation-menu-demo", path: "/src/docs/registry/navigation-menu-demo.svelte", sourcePath: "../docs/registry/navigation-menu-demo.svelte" },

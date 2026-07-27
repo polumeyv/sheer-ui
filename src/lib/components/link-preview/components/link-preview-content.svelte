@@ -34,15 +34,7 @@
 		onEscapeKeydown: boxWith(() => onEscapeKeydown),
 	});
 
-	useNativePopoverLifecycle({
-		anchor: () => contentState.root.triggerNode,
-		open: () => contentState.root.opts.open.current,
-		ref: () => ref,
-		triggerNode: () => contentState.root.triggerNode,
-		onEscapeKeydown: () => contentState.onEscapeKeydown,
-		onInteractOutside: () => contentState.onInteractOutside,
-		onOpenChangeComplete: () => contentState.root.opts.onOpenChangeComplete.current,
-	});
+	const lifecycleProps = useNativePopoverLifecycle(contentState);
 
 	const mounted = mountedAttachment<HTMLElement>((m) => (contentState.root.contentMounted = m));
 
@@ -50,7 +42,6 @@
 		mergeProps(
 			{
 				'data-slot': 'hover-card-content',
-				'data-anchored': '',
 				class:
 					'bg-popover text-popover-foreground z-50 w-64 rounded-md border p-4 shadow-md outline-none transition-[opacity,scale,translate,display,overlay] transition-discrete opacity-0 scale-95 open:opacity-100 open:scale-100 starting:open:opacity-0 starting:open:scale-95',
 			},
@@ -58,14 +49,15 @@
 			contentState.props,
 			{ style },
 			mounted,
+			lifecycleProps,
 		),
 	);
 </script>
 
 {#if child}
-	{@render child({ props: mergeProps(mergedProps, { popover: 'manual' }), wrapperProps: {}, ...contentState.snippetProps })}
+	{@render child({ props: mergedProps, wrapperProps: {}, ...contentState.snippetProps })}
 {:else}
-	<div {...mergedProps} bind:this={ref} popover="manual" data-side={side} data-align={align}>
+	<div {...mergedProps} bind:this={ref} data-side={side} data-align={align}>
 		{@render children?.()}
 	</div>
 {/if}

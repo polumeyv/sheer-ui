@@ -807,6 +807,37 @@
 	right: anchor(right);
 }
 
+/* Native modal surface — single source for the modal <dialog> adapters (Dialog.Content,
+   Sheet.Content). The skeleton (dialog/components/modal-surface.svelte) tags the element
+   with `data-modal-surface`. Replaces the per-adapter <style> copies of these rules. */
+
+/* A closed <dialog> must stay hidden + non-interactive. Any display utility on the element
+   (Sheet's variant puts `flex` there) overrides the UA `dialog:not([open]){display:none}`,
+   so re-assert it unlayered (wins over layered Tailwind utilities). */
+[data-modal-surface]:not([open]) {
+	display: none;
+}
+
+/* ::backdrop replaces the JS-rendered overlay <div> (was `bg-black/50`). Fades in everywhere
+   via @starting-style; in Chromium it also fades out (overlay/display allow-discrete keep it
+   in the top layer). Firefox/Safari lack `overlay` and snap the close — progressive
+   enhancement. Adapters match the fade to their own motion via `--modal-backdrop-duration`. */
+[data-modal-surface]::backdrop {
+	background-color: rgb(0 0 0 / 0);
+	transition:
+		background-color var(--modal-backdrop-duration, 200ms) ease,
+		overlay var(--modal-backdrop-duration, 200ms) allow-discrete,
+		display var(--modal-backdrop-duration, 200ms) allow-discrete;
+}
+[data-modal-surface][open]::backdrop {
+	background-color: rgb(0 0 0 / 0.5);
+}
+@starting-style {
+	[data-modal-surface][open]::backdrop {
+		background-color: rgb(0 0 0 / 0);
+	}
+}
+
 /* LayerChart defaults for [data-slot=chart] — the static .lc-* overrides that shadcn-svelte
    ships as ~30 arbitrary-variant classes on every chart-container instance. Kept here once
    instead; new overrides from upstream chart pulls land in this block, not the container. */

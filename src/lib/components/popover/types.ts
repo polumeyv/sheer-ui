@@ -6,6 +6,8 @@ import type { PresenceLayerProps } from '../../internal/presence-layer/types.js'
 import type { FocusScopeProps } from '../../internal/focus-scope/types.js';
 import type { ScrollLockProps } from '../../internal/body-scroll-lock.svelte.js';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../internal/types.js';
+import type { Snippet } from 'svelte';
+import type { OpenCell } from '../../internal/open-cell.svelte.js';
 import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attribute-types.js';
 import type { FloatingContentSnippetProps } from '../../internal/types.js';
 import type { PortalProps } from '../../internal/portal/index.js';
@@ -24,22 +26,30 @@ type PopoverFloatingProps = EscapeLayerProps &
 	FocusScopeProps &
 	Omit<ScrollLockProps, 'restoreScrollDelay'>;
 
-export type PopoverRootPropsWithoutHTML = WithChildren<{
+export type PopoverRootPropsWithoutHTML = {
 	/**
-	 * The open state of the popover.
+	 * The derivation source for the popover's open state: the internal cell
+	 * re-derives whenever this prop changes, and interactions (trigger, Escape,
+	 * a snippet-cell write) override it until the next change. Reconcile
+	 * dismissals via onOpenChangeComplete. Plain value — not bindable.
 	 */
 	open?: boolean;
 
 	/**
-	 * A callback that is called when the popover's open state changes.
-	 */
-	onOpenChange?: OnChangeFn<boolean>;
-
-	/**
 	 * A callback that is called when the popover's open state changes and the animation is complete.
+	 * This is an occurrence (animation settled), not a state mirror — depend on the cell instead.
 	 */
 	onOpenChangeComplete?: OnChangeFn<boolean>;
-}>;
+
+	/**
+	 * A caller-constructed cell (own source and, optionally, a delegate writer)
+	 * used instead of building one from `open`. When given, `open` is ignored.
+	 */
+	state?: OpenCell;
+
+	/** Children receive the state cell, typed and guaranteed within the tree. */
+	children?: Snippet<[OpenCell]>;
+};
 
 export type PopoverRootProps = PopoverRootPropsWithoutHTML;
 

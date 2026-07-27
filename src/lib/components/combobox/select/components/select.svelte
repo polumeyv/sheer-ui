@@ -2,6 +2,7 @@
 	import { untrack } from 'svelte';
 	import FloatingLayer from '../../../../internal/floating-layer/components/floating-layer.svelte';
 	import { type WritableBox, boxWith, repairBindable } from '../../../../internal/tools/index.js';
+	import { OpenCell } from '../../../../internal/open-cell.svelte.js';
 	import { SelectRootState } from '../select.svelte.js';
 	import type { SelectRootProps } from '../types.js';
 	import SelectHiddenInput from './select-hidden-input.svelte';
@@ -12,8 +13,9 @@
 		name = '',
 		disabled = false,
 		type,
-		open = $bindable(false),
-		onOpenChange = () => {},
+		open = false,
+		// `state` must not exist as a local name — it would shadow the `$state` rune below.
+		state: givenCell,
 		onOpenChangeComplete = () => {},
 		loop = false,
 		scrollAlignment = 'nearest',
@@ -34,6 +36,15 @@
 
 	let inputValue = $state('');
 
+	// Root owns both the machinery and the cell; `open` (the prop) is the cell's
+	// derivation source, and the children snippet is the only way the cell leaves.
+	// A caller-built `state` cell (with its own source/writer) takes over both roles.
+	// The cell's identity is fixed at mount — swapping `state` later is not supported.
+	// The engine keeps its boxed-open interface (vendored, ADR 0006); the box is a
+	// bridge over the cell, so the cell stays the one owner of `open`.
+	// svelte-ignore state_referenced_locally
+	const select = givenCell ?? new OpenCell(() => open);
+
 	const rootState = SelectRootState.create({
 		type: untrack(() => type),
 		value: boxWith(
@@ -47,11 +58,8 @@
 		disabled: boxWith(() => disabled),
 		required: boxWith(() => required),
 		open: boxWith(
-			() => open,
-			(v) => {
-				open = v;
-				onOpenChange(v);
-			},
+			() => select.open,
+			(v) => (select.open = v),
 		),
 		loop: boxWith(() => loop),
 		scrollAlignment: boxWith(() => scrollAlignment),
@@ -68,7 +76,7 @@
 </script>
 
 <FloatingLayer>
-	{@render children?.()}
+	{@render children?.(select)}
 </FloatingLayer>
 
 {#if Array.isArray(rootState.opts.value.current)}
