@@ -1,9 +1,9 @@
-import type { ColumnDef, CellContext, HeaderContext } from '@tanstack/table-core';
+import type { ColumnDef, CellContext } from '../../internal/table/types.js';
 import { renderComponent, renderSnippet } from './';
 import { createRawSnippet } from 'svelte';
 import { DataTableCheckbox } from './index';
 import DataTableSortButton from './data-table-sort-button.svelte';
-import type { CheckedState } from './data-table.svelte.js';
+import type { CheckedState } from '../menu/utils.js';
 
 // `createRawSnippet`'s `render` returns a raw HTML string (like `{@html}`), so any cell text — which is usually
 // user-controlled (names, emails, …) — must be escaped before interpolation to avoid XSS.
@@ -18,14 +18,14 @@ export function selectColumn<T>(): ColumnDef<T> {
 		id: 'select',
 		header: ({ table }) =>
 			renderComponent(DataTableCheckbox, {
-				checked: table.getIsAllPageRowsSelected(),
-				indeterminate: table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected(),
+				checked: table.isAllPageRowsSelected,
+				indeterminate: table.isSomePageRowsSelected && !table.isAllPageRowsSelected,
 				onCheckedChange: (value: CheckedState) => table.toggleAllPageRowsSelected(!!value),
 				'aria-label': 'Select all',
 			}),
 		cell: ({ row }) =>
 			renderComponent(DataTableCheckbox, {
-				checked: row.getIsSelected(),
+				checked: row.isSelected,
 				onCheckedChange: (value: CheckedState) => row.toggleSelected(!!value),
 				'aria-label': 'Select row',
 			}),

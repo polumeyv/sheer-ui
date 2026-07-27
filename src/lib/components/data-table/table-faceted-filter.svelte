@@ -1,7 +1,7 @@
 <script lang="ts" generics="TData, TValue">
 	import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
 	import CheckIcon from '@lucide/svelte/icons/check';
-	import type { Column } from '@tanstack/table-core';
+	import type { Column } from '../../internal/table/index.js';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { Popover } from '../popover';
 	import * as Command from '../command';
@@ -26,8 +26,8 @@
 		disabled?: boolean;
 	} = $props();
 
-	const facets = $derived(column?.getFacetedUniqueValues());
-	const selectedValues = $derived(new SvelteSet(column?.getFilterValue() as string[]));
+	const facets = $derived(column?.facetedUniqueValues);
+	const selectedValues = $derived(new SvelteSet(column?.filterValue as string[]));
 </script>
 
 <Popover.Root>
@@ -65,7 +65,7 @@
 				<Command.Empty>No results found.</Command.Empty>
 				<Command.Group>
 					{#each options as option (option)}
-						{const isSelected = selectedValues.has(option.value)}
+						{const isSelected = $derived(selectedValues.has(option.value))}
 						<Command.Item
 							onSelect={() => {
 								if (isSelected) {

@@ -101,11 +101,6 @@
 			"svelte": "./src/lib/components/carousel/index.ts",
 			"default": "./src/lib/components/carousel/index.ts"
 		},
-		"./components/carousel-native": {
-			"types": "./src/lib/components/carousel-native/index.ts",
-			"svelte": "./src/lib/components/carousel-native/index.ts",
-			"default": "./src/lib/components/carousel-native/index.ts"
-		},
 		"./components/chart": {
 			"types": "./src/lib/components/chart/index.ts",
 			"svelte": "./src/lib/components/chart/index.ts",
@@ -332,7 +327,6 @@
 		"@lucide/svelte": "^1.18.0",
 		"@polumeyv/utilities": "^0.1.0",
 		"@stripe/stripe-js": "^9.8.0",
-		"@tanstack/table-core": "^8.21.3",
 		"d3-scale": "^4.0.2",
 		"layerchart": "^2.0.1",
 		"overrule": "^0.7.1"

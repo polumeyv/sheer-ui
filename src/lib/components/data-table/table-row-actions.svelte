@@ -1,5 +1,5 @@
 <script lang="ts" generics="TData">
-	import type { Row } from '@tanstack/table-core';
+	import type { Row } from '../../internal/table/index.js';
 	import type { Snippet } from 'svelte';
 	import * as DropdownMenu from '../dropdown-menu';
 	import { Button } from '../button';

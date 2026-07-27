@@ -19,7 +19,7 @@
 </script>
 
 {#if match}
-	{const inner = { iconClass: join(match.iconClass ?? 'text-muted-foreground'), label: match.label }}
+	{const inner = $derived({ iconClass: join(match.iconClass ?? 'text-muted-foreground'), label: match.label })}
 	{#if href}
 		<a {href} class="flex w-25 items-center hover:underline {join(className)}">
 			{#if match.icon}<match.icon class="{inner.iconClass} me-2 size-4 shrink-0" />{/if}

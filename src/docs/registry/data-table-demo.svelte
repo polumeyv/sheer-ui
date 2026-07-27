@@ -8,10 +8,10 @@
 </script>
 
 <script lang="ts">
-	import { type ColumnDef, getCoreRowModel, getSortedRowModel, type SortingState } from '@tanstack/table-core';
 	import * as Table from '../../lib/components/table/index.js';
 	import {
-		createSvelteTable,
+		type ColumnDef,
+		createDataTable,
 		FlexRender,
 		renderComponent,
 		textCell,
@@ -36,41 +36,24 @@
 				renderComponent(SortButton, {
 					label: 'Amount',
 					class: '-ms-3',
-					onclick: () => column.toggleSorting(column.getIsSorted() === 'asc')
+					onclick: () => column.toggleSorting(column.isSorted === 'asc')
 				}),
 			cell: textCell((row) => `$${row.amount.toFixed(2)}`, { bold: true })
 		}
 	];
 
-	let sorting = $state<SortingState>([]);
-
-	const table = createSvelteTable({
-		get data() {
-			return data;
-		},
-		columns,
-		state: {
-			get sorting() {
-				return sorting;
-			}
-		},
-		onSortingChange: (updater) => {
-			sorting = typeof updater === 'function' ? updater(sorting) : updater;
-		},
-		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel()
-	});
+	const table = createDataTable({ data: () => data, columns });
 </script>
 
 <div class="w-full max-w-2xl rounded-md border">
 	<Table.Root>
 		<Table.Header>
-			{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
+			{#each table.headerGroups as headerGroup (headerGroup.id)}
 				<Table.Row>
 					{#each headerGroup.headers as header (header.id)}
 						<Table.Head>
 							{#if !header.isPlaceholder}
-								<FlexRender content={header.column.columnDef.header} context={header.getContext()} />
+								<FlexRender content={header.column.columnDef.header} context={header.context} />
 							{/if}
 						</Table.Head>
 					{/each}
@@ -78,11 +61,11 @@
 			{/each}
 		</Table.Header>
 		<Table.Body>
-			{#each table.getRowModel().rows as row (row.id)}
+			{#each table.rows as row (row.id)}
 				<Table.Row>
-					{#each row.getVisibleCells() as cell (cell.id)}
+					{#each row.visibleCells as cell (cell.id)}
 						<Table.Cell>
-							<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
+							<FlexRender content={cell.column.columnDef.cell} context={cell.context} />
 						</Table.Cell>
 					{/each}
 				</Table.Row>

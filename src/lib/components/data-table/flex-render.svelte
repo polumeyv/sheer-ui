@@ -2,7 +2,7 @@
 	lang="ts"
 	generics="TData, TValue, TContext extends HeaderContext<TData, TValue> | CellContext<TData, TValue>"
 >
-	import type { CellContext, ColumnDefTemplate, HeaderContext } from "@tanstack/table-core";
+	import type { CellContext, ColumnDefTemplate, HeaderContext } from "../../internal/table/types.js";
 	import { RenderComponentConfig, RenderSnippetConfig } from "./render-helpers";
 	import type { Attachment } from "svelte/attachments";
 	type Props = {
@@ -26,13 +26,15 @@
 	{content}
 {:else if content instanceof Function}
 	<!-- It's unlikely that a CellContext will be passed to a Header -->
+	<!-- $derived is load-bearing: a plain declaration tag evaluates once, so signals read inside
+	     content() (e.g. a select-all header reading table.isAllPageRowsSelected) would go untracked. -->
 	<!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
-	{const result = content(context as any)}
+	{const result = $derived(content(context as any))}
 	{#if result instanceof RenderComponentConfig}
-		{const { component: Component, props } = result}
+		{const { component: Component, props } = $derived(result)}
 		<Component {...props} {attach} />
 	{:else if result instanceof RenderSnippetConfig}
-		{const { snippet, params } = result}
+		{const { snippet, params } = $derived(result)}
 		{@render snippet(params)}
 	{:else}
 		{result}

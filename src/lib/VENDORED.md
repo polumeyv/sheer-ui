@@ -21,7 +21,12 @@ Nothing under `internal/` appears in the package.json exports map.
 | `internal/tabbable.ts` | [focus-trap/tabbable](https://github.com/focus-trap/tabbable) `v6.5.0` `src/index.js`, adapted (see file header) | 6.5.0 |
 | `internal/vendor/vaul/` | vaul-svelte (drawer engine; sole consumer `components/drawer`) | untracked — pin on next sync |
 | `internal/vendor/paneforge/` | [svecosystem/paneforge](https://github.com/svecosystem/paneforge) (resizable engine; sole consumer `components/resizable`) | untracked — pin on next sync |
-| `internal/vendor/embla/` | embla-carousel core, TS/Svelte adaptation (sole consumer `components/carousel`) | untracked — pin on next sync |
+| `internal/table/` (rune-native engine; `sorting-fns.ts`, `filter-fns.ts` and the toggle/paging semantics are ported, the `$derived` pipeline in `table.svelte.ts` is locally authored) | [TanStack/table](https://github.com/TanStack/table) `@tanstack/table-core@8.21.3` subset — replaced the npm dependency 2026-07-26; deliberate deviation: sort inference samples the FIRST ten rows (upstream's `slice(10)` drops them) | 8.21.3 |
+
+The embla-carousel vendor (`internal/vendor/embla/` + the embla-backed `components/carousel`) was
+deleted 2026-07-26 with Nic's per-component confirmation: the scroll-snap implementation (formerly
+`carousel-native`, locally authored) is now `components/carousel`. Capability loss accepted:
+embla `opts`/`plugins`/`setApi` and desktop mouse-drag momentum.
 
 All upstreams are MIT. clsx and style-to-object (in the original inline) are gone — `cn()` is a
 plain join via `overrule`. Kept as regular dependencies on purpose: `@floating-ui/dom` (pure TS)

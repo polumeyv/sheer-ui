@@ -1,7 +1,7 @@
 <script lang="ts" generics="TData">
 	import * as DropdownMenu from '../dropdown-menu';
 	import { Button } from '../button';
-	import type { Column } from '@tanstack/table-core';
+	import type { Column } from '../../internal/table/index.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
 	import ArrowDownIcon from '@lucide/svelte/icons/arrow-down';
@@ -11,7 +11,7 @@
 	let { column, title, class: className, ...restProps }: { column: Column<TData>; title: string } & HTMLAttributes<HTMLDivElement> = $props();
 </script>
 
-{#if !column?.getCanSort()}
+{#if !column?.canSort}
 	<div class={className} {...restProps}>
 		{title}
 	</div>
@@ -30,9 +30,9 @@
 						<span>
 							{title}
 						</span>
-						{#if column.getIsSorted() === 'desc'}
+						{#if column.isSorted === 'desc'}
 							<ArrowDownIcon />
-						{:else if column.getIsSorted() === 'asc'}
+						{:else if column.isSorted === 'asc'}
 							<ArrowUpIcon />
 						{:else}
 							<ChevronsUpDownIcon />
