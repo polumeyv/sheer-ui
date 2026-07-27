@@ -9,24 +9,16 @@ type AccordionStateProps = {
 };
 
 /**
- * The browser owns the accordion behavior: each item is a `<details>`, single-open
- * exclusivity comes from the shared `name` attribute, and open/close animation is
- * the `::details-content` transition in ui.css. This state only mirrors the DOM's
- * open set into the bindable `value` prop (ontoggle → report) and back (external
- * writes flow through each item's reactive `open` attribute).
+ * Each item is a `<details>`; this state owns the open set (bindable `value`) and
+ * single-type exclusivity — not the native `name` attribute, which would unrender a
+ * force-closed sibling before its closing transition can play. Items intercept summary
+ * clicks and report intent here; the grid-track animation lives in ui.css.
  */
 export class AccordionState {
 	readonly props: AccordionStateProps;
-	readonly #name: string;
 
-	constructor(props: AccordionStateProps, name: string) {
+	constructor(props: AccordionStateProps) {
 		this.props = props;
-		this.#name = name;
-	}
-
-	/** `name` for the items' `<details>` — set only for single type, where the browser enforces one-open. */
-	get name(): string | undefined {
-		return this.props.type() === 'single' ? this.#name : undefined;
 	}
 
 	includes(item: string): boolean {
@@ -34,7 +26,7 @@ export class AccordionState {
 		return Array.isArray(value) ? value.includes(item) : value === item;
 	}
 
-	/** ontoggle writeback from an item's `<details>` (fires on user toggles and name-group force-closes alike). */
+	/** Open/close intent from an item — intercepted summary clicks and native force-opens alike. */
 	report(item: string, open: boolean): void {
 		const value = this.props.value();
 		if (Array.isArray(value)) {

@@ -101,29 +101,34 @@
 	initial-value: 0;
 }
 
-@supports (interpolate-size: allow-keywords) {
-	:root {
-		interpolate-size: allow-keywords;
+/* Native <details> disclosures (accordion + collapsible): the content slot is a grid
+   whose single row interpolates 0fr↔1fr — works in every engine, unlike ::details-content
+   (Firefox 143+) or interpolate-size height 0↔auto (Chromium-only). data-state carries the
+   visual state; the components hold the `open` attribute through the closing transition so
+   content stays rendered, then drop it when animations settle (JS times the unmount, CSS
+   owns the motion). @starting-style animates the enter from the just-mounted 0fr state. */
+[data-slot='collapsible'] > [data-slot='collapsible-content'],
+[data-slot='accordion-item'] > [data-slot='accordion-content'] {
+	display: grid;
+	grid-template-rows: 0fr;
+	overflow: clip;
+	transition: grid-template-rows var(--tw-duration, 200ms) var(--tw-ease, ease-out);
+}
+
+[data-slot='collapsible'][data-state='open'] > [data-slot='collapsible-content'],
+[data-slot='accordion-item'][data-state='open'] > [data-slot='accordion-content'] {
+	grid-template-rows: 1fr;
+
+	@starting-style {
+		grid-template-rows: 0fr;
 	}
 }
 
-/* Native <details> disclosures (accordion + collapsible): height 0↔auto
-   interpolates via the interpolate-size opt-in above (browsers without it snap,
-   same degradation as the old keyframes); the content-visibility leg keeps
-   content painted through the close so both directions animate — including an
-   accordion sibling force-closed by name-grouping. */
-[data-slot='accordion-item']::details-content,
-[data-slot='collapsible']::details-content {
-	height: 0;
-	overflow: clip;
-	transition:
-		height var(--tw-duration, 200ms) var(--tw-ease, ease-out),
-		content-visibility var(--tw-duration, 200ms) allow-discrete;
-}
-
-[data-slot='accordion-item'][open]::details-content,
-[data-slot='collapsible'][open]::details-content {
-	height: auto;
+/* Each content slot wraps its children in a single element; min-height 0 lets the 0fr
+   track actually collapse it. */
+[data-slot='collapsible-content'] > *,
+[data-slot='accordion-content'] > * {
+	min-height: 0;
 }
 
 @theme inline {

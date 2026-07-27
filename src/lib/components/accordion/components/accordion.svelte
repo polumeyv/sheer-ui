@@ -1,9 +1,6 @@
 <script lang="ts">
 	import { AccordionState, setAccordion } from '../accordion.svelte.js';
 	import type { AccordionRootProps } from '../types.js';
-	import { createId } from '../../../internal/create-id.js';
-
-	const uid = $props.id();
 
 	let {
 		type = 'single',
@@ -14,14 +11,11 @@
 	}: AccordionRootProps = $props();
 
 	setAccordion(
-		new AccordionState(
-			{
-				type: () => type,
-				value: () => value ?? (type === 'single' ? '' : []),
-				setValue: (v) => (value = v),
-			},
-			createId(uid),
-		),
+		new AccordionState({
+			type: () => type,
+			value: () => value ?? (type === 'single' ? '' : []),
+			setValue: (v) => (value = v),
+		}),
 	);
 </script>
 
