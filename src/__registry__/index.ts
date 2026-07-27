@@ -50,10 +50,6 @@ export const Index = {
 		type: "registry:example",
 		files: ["../docs/registry/carousel-demo.svelte"],
 	},
-	"carousel-native-demo": {
-		type: "registry:example",
-		files: ["../docs/registry/carousel-native-demo.svelte"],
-	},
 	"chart-demo": {
 		type: "registry:example",
 		files: ["../docs/registry/chart-demo.svelte"],
@@ -101,6 +97,10 @@ export const Index = {
 	"data-table-demo": {
 		type: "registry:example",
 		files: ["../docs/registry/data-table-demo.svelte"],
+	},
+	"data-table-full": {
+		type: "registry:example",
+		files: ["../docs/registry/data-table-full.svelte"],
 	},
 	"date-field-demo": {
 		type: "registry:example",

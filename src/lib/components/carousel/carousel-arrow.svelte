@@ -15,11 +15,11 @@
 		...restProps
 	}: WithoutChildren<Props> & { direction: 'next' | 'previous' } = $props();
 
-	const emblaCtx = getCarouselContext();
+	const ctx = getCarouselContext();
 
 	const isNext = $derived(direction === 'next');
 	const Icon = $derived(isNext ? ArrowRightIcon : ArrowLeftIcon);
-	const canScroll = $derived(isNext ? emblaCtx.canScrollNext : emblaCtx.canScrollPrev);
+	const canScroll = $derived(isNext ? ctx.canScrollNext : ctx.canScrollPrev);
 	// Full literal class strings per (direction, orientation) so Tailwind's scanner sees them intact.
 	const horizontal = $derived(isNext ? '-inset-e-12 top-1/2 -translate-y-1/2' : '-inset-s-12 top-1/2 -translate-y-1/2');
 	const vertical = $derived(
@@ -33,8 +33,8 @@
 	{size}
 	disabled={!canScroll}
 	aria-disabled={!canScroll}
-	class={join('absolute size-8! rounded-full!', emblaCtx.orientation === 'horizontal' ? horizontal : vertical, className)}
-	onclick={isNext ? emblaCtx.scrollNext : emblaCtx.scrollPrev}
+	class={join('absolute size-8! rounded-full!', ctx.orientation === 'horizontal' ? horizontal : vertical, className)}
+	onclick={isNext ? ctx.scrollNext : ctx.scrollPrev}
 	{...restProps}
 	bind:ref>
 	<Icon class="size-4" />

@@ -1,48 +1,108 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import { type CarouselAPI, type CarouselProps, setCarouselContext } from './carouselState.svelte';
+	import { untrack } from 'svelte';
+	import { on } from 'svelte/events';
+	import type { HTMLAttributes } from 'svelte/elements';
+	import type { Attachment } from 'svelte/attachments';
 	import type { WithElementRef } from '../../internal/utils.js';
+	import { setCarouselContext, setCarouselWiring, type CarouselAlign, type CarouselOrientation } from './carouselState.svelte';
 
 	let {
 		ref = $bindable(null),
-		opts = {},
-		plugins = [],
-		setApi = () => {},
 		orientation = 'horizontal',
+		align = 'start',
 		class: className,
 		children,
 		...restProps
-	}: WithElementRef<CarouselProps> = $props();
+	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
+		orientation?: CarouselOrientation;
+		align?: CarouselAlign;
+	} = $props();
 
-	let api = $state.raw<CarouselAPI | undefined>(undefined);
+	let scroller = $state.raw<HTMLElement | null>(null);
 
-	// The engine's index counter and engine reference are reactive state, so these
-	// read live engine values; no event subscriptions or mirrored state needed.
-	const scrollSnaps = $derived(api?.snapList() ?? []);
-	const selectedIndex = $derived(api?.selectedSnap() ?? 0);
-	const canScrollPrev = $derived(api?.canGoToPrev() ?? false);
-	const canScrollNext = $derived(api?.canGoToNext() ?? false);
+	// Scroll facts, synced from the native scroller on scrollend. Selection is a
+	// scroll fact here, not an engine event: the browser owns physics and snapping.
+	let selectedIndex = $state(0);
+	let snapOffsets = $state.raw<number[]>([]);
+	let atStart = $state(true);
+	let atEnd = $state(true);
 
-	const registerApi = (nextApi: CarouselAPI | undefined) => {
-		if (api === nextApi) return;
+	const horizontal = $derived(orientation === 'horizontal');
 
-		api = nextApi;
-		setApi(api);
-	};
+	const scrollPos = (el: HTMLElement) => (horizontal ? el.scrollLeft : el.scrollTop);
+	const viewSize = (el: HTMLElement) => (horizontal ? el.clientWidth : el.clientHeight);
+	const scrollSize = (el: HTMLElement) => (horizontal ? el.scrollWidth : el.scrollHeight);
 
-	const scrollPrev = () => {
-		api?.goToPrev();
-	};
+	// Snap offset of a slide in scroll coordinates for the configured alignment.
+	// Rect deltas against the current scroll position stay correct under RTL, where
+	// scrollLeft runs negative — but the logical inline-start edge is the RIGHT edge
+	// there, so both the measured edge and the align offset's sign must flip or
+	// `align: center/end` disagrees with where scroll-snap-align actually snaps.
+	function measureOffsets(el: HTMLElement): number[] {
+		const scrollerRect = el.getBoundingClientRect();
+		const pos = scrollPos(el);
+		const rtl = horizontal && getComputedStyle(el).direction === 'rtl';
 
-	const scrollNext = () => {
-		api?.goToNext();
-	};
+		snapOffsets = [...el.children].map((slide) => {
+			const slideRect = slide.getBoundingClientRect();
+			const start =
+				horizontal ?
+					rtl ? slideRect.right - scrollerRect.right
+					:	slideRect.left - scrollerRect.left
+				:	slideRect.top - scrollerRect.top;
+			const size = horizontal ? slideRect.width : slideRect.height;
+			const free = viewSize(el) - size;
+			const alignOffset = align === 'center' ? free / 2 : align === 'end' ? free : 0;
 
-	const scrollTo = (index: number, instant?: boolean) => {
-		api?.goTo(index, instant);
-	};
+			return pos + start + (rtl ? alignOffset : -alignOffset);
+		});
 
-	const handleKeyDown = (event: KeyboardEvent) => {
+		return snapOffsets;
+	}
+
+	function sync() {
+		if (!scroller) return;
+
+		const offsets = measureOffsets(scroller);
+		const pos = scrollPos(scroller);
+
+		let closest = 0;
+		for (let i = 1; i < offsets.length; i++) {
+			if (Math.abs(offsets[i]! - pos) < Math.abs(offsets[closest]! - pos)) closest = i;
+		}
+
+		selectedIndex = closest;
+		atStart = Math.abs(pos) <= 1;
+		atEnd = Math.abs(pos) >= scrollSize(scroller) - viewSize(scroller) - 1;
+	}
+
+	function scrollToIndex(index: number, behavior: ScrollBehavior = 'smooth') {
+		if (!scroller) return;
+
+		const offsets = measureOffsets(scroller);
+		if (!offsets.length) return;
+
+		const clamped = Math.min(Math.max(index, 0), offsets.length - 1);
+
+		// Optimistic, so rapid clicks queue from the pending target and the
+		// arrows disable without waiting for scrollend.
+		selectedIndex = clamped;
+		atStart = Math.abs(offsets[clamped]!) <= 1;
+		atEnd = Math.abs(offsets[clamped]!) >= scrollSize(scroller) - viewSize(scroller) - 1;
+
+		scroller.scrollTo(horizontal ? { left: offsets[clamped], behavior } : { top: offsets[clamped], behavior });
+	}
+
+	function scrollPrev() {
+		scrollToIndex(selectedIndex - 1);
+	}
+
+	function scrollNext() {
+		scrollToIndex(selectedIndex + 1);
+	}
+
+	function handleKeyDown(event: KeyboardEvent) {
 		if (orientation === 'horizontal') {
 			if (event.key === 'ArrowLeft') {
 				event.preventDefault();
@@ -66,37 +126,66 @@
 			event.preventDefault();
 			scrollNext();
 		}
+	}
+
+	const scrollerAttachment: Attachment<HTMLElement> = (node) => {
+		scroller = node;
+		// untrack: sync reads the scroller/index state this attachment writes; tracking
+		// it would make the attachment re-run on its own writes.
+		untrack(sync);
+
+		// scrollend is Baseline; the debounced scroll fallback covers older Safari.
+		const dispose = 'onscrollend' in window ? on(node, 'scrollend', sync) : debouncedScrollFallback(node);
+
+		return () => {
+			dispose();
+			scroller = null;
+		};
 	};
 
-	setCarouselContext({
-		get api() {
-			return api;
-		},
+	function debouncedScrollFallback(node: HTMLElement) {
+		let timer: ReturnType<typeof setTimeout>;
+		const off = on(node, 'scroll', () => {
+			clearTimeout(timer);
+			timer = setTimeout(sync, 150);
+		}, { passive: true });
+
+		return () => {
+			clearTimeout(timer);
+			off();
+		};
+	}
+
+	setCarouselWiring({
 		get orientation() {
 			return orientation;
 		},
-		get options() {
-			return opts;
+		get align() {
+			return align;
 		},
-		get plugins() {
-			return plugins;
+		scroller: scrollerAttachment,
+	});
+
+	// The consumer-facing context: arrows and dot UIs read scroll facts from here.
+	setCarouselContext({
+		get orientation() {
+			return orientation;
 		},
 		get canScrollNext() {
-			return canScrollNext;
+			return !atEnd;
 		},
 		get canScrollPrev() {
-			return canScrollPrev;
+			return !atStart;
 		},
 		get scrollSnaps() {
-			return scrollSnaps;
+			return snapOffsets;
 		},
 		get selectedIndex() {
 			return selectedIndex;
 		},
-		registerApi,
 		scrollPrev,
 		scrollNext,
-		scrollTo,
+		scrollTo: (index: number, jump?: boolean) => scrollToIndex(index, jump ? 'instant' : 'smooth'),
 		handleKeyDown,
 	});
 </script>

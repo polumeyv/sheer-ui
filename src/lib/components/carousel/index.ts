@@ -4,6 +4,8 @@ import Item from './carousel-item.svelte';
 import Next from './carousel-next.svelte';
 import Previous from './carousel-previous.svelte';
 
+export type { CarouselAlign, CarouselOrientation } from './carouselState.svelte';
+
 export {
 	Root,
 	Content,

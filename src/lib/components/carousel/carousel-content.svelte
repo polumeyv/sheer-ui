@@ -1,34 +1,23 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { getCarouselContext, useCarousel } from './carouselState.svelte';
 	import type { WithElementRef } from '../../internal/utils.js';
+	import { getCarouselWiring } from './carouselState.svelte';
 
 	let { ref = $bindable(null), class: className, children, ...restProps }: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
 
-	const carouselCtx = getCarouselContext();
+	const ctx = getCarouselWiring();
 </script>
 
 <div
+	bind:this={ref}
 	data-slot="carousel-content"
-	class="overflow-hidden"
-	{@attach useCarousel(
-		() => ({
-			options: {
-				...carouselCtx.options,
-				axis: carouselCtx.orientation === 'horizontal' ? 'x' : 'y',
-				container: '[data-embla-container]',
-				slides: '[data-embla-slide]',
-			},
-			plugins: carouselCtx.plugins,
-		}),
-		carouselCtx.registerApi,
-	)}>
-	<div
-		bind:this={ref}
-		class={join('flex', carouselCtx.orientation === 'horizontal' ? '-ms-4' : '-mt-4 flex-col', className)}
-		data-embla-container=""
-		{...restProps}>
-		{@render children?.()}
-	</div>
+	class={join(
+		'flex snap-mandatory no-scrollbar',
+		ctx.orientation === 'horizontal' ? 'snap-x gap-4 overflow-x-auto overscroll-x-contain' : 'snap-y flex-col gap-4 overflow-y-auto overscroll-y-contain',
+		className,
+	)}
+	{@attach ctx.scroller}
+	{...restProps}>
+	{@render children?.()}
 </div>

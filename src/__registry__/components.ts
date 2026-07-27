@@ -10,8 +10,7 @@ export const components = [
 	{"slug":"button","name":"Button","description":"Displays a button or a component that looks like a button."},
 	{"slug":"calendar","name":"Calendar","description":"A calendar component that allows users to select a date."},
 	{"slug":"card","name":"Card","description":"Displays a card with header, content, and footer."},
-	{"slug":"carousel","name":"Carousel","description":"A carousel with motion and swipe built using Embla."},
-	{"slug":"carousel-native","name":"Carousel (Native)","description":"A carousel on native scroll snap: the browser owns physics and snapping, selection is read from scrollend."},
+	{"slug":"carousel","name":"Carousel","description":"A carousel on native scroll snap: the browser owns physics and snapping, selection is read from scrollend."},
 	{"slug":"chart","name":"Chart","description":"Visualize data with composable charts built on LayerChart."},
 	{"slug":"checkbox","name":"Checkbox","description":"A control that allows the user to toggle between checked and not checked."},
 	{"slug":"checkbox-native","name":"Checkbox (Native)","description":"A native form checkbox that submits name/value and supports indeterminate."},
@@ -97,9 +96,6 @@ export const componentDemos = {
 	"carousel": [
 		{ key: "demo", name: "carousel-demo", path: "/src/docs/registry/carousel-demo.svelte", sourcePath: "../docs/registry/carousel-demo.svelte" },
 	],
-	"carousel-native": [
-		{ key: "demo", name: "carousel-native-demo", path: "/src/docs/registry/carousel-native-demo.svelte", sourcePath: "../docs/registry/carousel-native-demo.svelte" },
-	],
 	"chart": [
 		{ key: "demo", name: "chart-demo", path: "/src/docs/registry/chart-demo.svelte", sourcePath: "../docs/registry/chart-demo.svelte" },
 	],
@@ -127,6 +123,7 @@ export const componentDemos = {
 	],
 	"data-table": [
 		{ key: "demo", name: "data-table-demo", path: "/src/docs/registry/data-table-demo.svelte", sourcePath: "../docs/registry/data-table-demo.svelte" },
+		{ key: "full", name: "data-table-full", path: "/src/docs/registry/data-table-full.svelte", sourcePath: "../docs/registry/data-table-full.svelte" },
 	],
 	"date-field": [
 		{ key: "demo", name: "date-field-demo", path: "/src/docs/registry/date-field-demo.svelte", sourcePath: "../docs/registry/date-field-demo.svelte" },
