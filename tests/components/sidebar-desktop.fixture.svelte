@@ -2,15 +2,15 @@
 	import * as Sidebar from "../../src/lib/components/sidebar/index.js";
 
 	let {
-		open = $bindable(true),
+		open = true,
 	}: {
 		open?: boolean;
 	} = $props();
 </script>
 
-<output data-testid="open">{String(open)}</output>
-
-<Sidebar.Provider bind:open>
+<Sidebar.Provider {open}>
+	{#snippet children(sidebar)}
+	<output data-testid="open">{String(sidebar.open)}</output>
 	<Sidebar.Root>
 		<Sidebar.Content>
 			<Sidebar.Group>
@@ -28,4 +28,5 @@
 	<Sidebar.Inset>
 		<Sidebar.Trigger data-testid="trigger" />
 	</Sidebar.Inset>
+	{/snippet}
 </Sidebar.Provider>

@@ -1,3 +1,5 @@
+import type { Snippet } from 'svelte';
+import type { OpenCell } from '../../internal/open-cell.svelte.js';
 import type { DismissibleLayerProps } from '../../internal/dismissible-layer/types.js';
 import type { EscapeLayerProps } from '../../internal/escape-layer/types.js';
 import type { FloatingLayerContentProps } from '../../internal/floating-layer/types.js';
@@ -6,18 +8,20 @@ import type { BitsPrimitiveAnchorAttributes, BitsPrimitiveDivAttributes } from '
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../internal/types.js';
 import type { FloatingContentSnippetProps } from '../../internal/types.js';
 
-export type LinkPreviewRootPropsWithoutHTML = WithChildren<{
+export type LinkPreviewRootPropsWithoutHTML = Omit<
+	WithChildren<{
 	/**
-	 * The open state of the link preview.
-	 *
-	 * @defaultValue false
+	 * The derivation source for the link preview's open state: the internal cell
+	 * re-derives whenever this prop changes, and interactions override it until
+	 * the next change. Plain value — not bindable.
 	 */
 	open?: boolean;
 
 	/**
-	 * A callback that will be called when the link preview is opened or closed.
+	 * A caller-constructed cell (own source and, optionally, a delegate writer)
+	 * used instead of building one from `open`. When given, `open` is ignored.
 	 */
-	onOpenChange?: OnChangeFn<boolean>;
+	state?: OpenCell;
 
 	/**
 	 * A callback that will be called when the link preview finishes opening/closing animations.
@@ -52,7 +56,12 @@ export type LinkPreviewRootPropsWithoutHTML = WithChildren<{
 	 * @defaultValue false
 	 */
 	ignoreNonKeyboardFocus?: boolean;
-}>;
+}>,
+	'children'
+> & {
+	/** Children receive the state cell, typed and guaranteed within the tree. */
+	children?: Snippet<[OpenCell]>;
+};
 
 export type LinkPreviewRootProps = LinkPreviewRootPropsWithoutHTML;
 

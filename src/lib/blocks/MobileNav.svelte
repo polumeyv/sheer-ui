@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
+	import { OpenCell } from '../internal/open-cell.svelte.js';
 	import type { ClassValue } from 'svelte/elements';
 	import { Button } from '../components/button';
 	import ArrowUpRight from '@lucide/svelte/icons/arrow-up-right';
@@ -15,22 +16,28 @@
 			variant?: 'default' | 'outline' | 'ghost' | 'card' | 'secondary';
 			size?: 'default' | 'sm' | 'lg' | 'icon';
 		}[];
+		/** Derivation source for the menu's open state. Not bindable. */
 		open?: boolean;
+		/** A caller-constructed cell used instead of building one from `open`. */
+		state?: OpenCell;
 		/** Unique id for the popover. Override if mounting multiple instances. */
 		id?: string;
 		/** Optional extra classes on the trigger button. */
 		class?: ClassValue;
 	}
 
-	let { navLinks, actions = [], open = $bindable(false), id = 'mobile-nav', class: className }: Props = $props();
+	let { navLinks, actions = [], open = false, state: givenCell, id = 'mobile-nav', class: className }: Props = $props();
+
+	// svelte-ignore state_referenced_locally
+	const cell = givenCell ?? new OpenCell(() => open);
 
 	let panel: HTMLDivElement | undefined = $state();
 
 	$effect(() => {
 		if (!panel) return;
-		if (open && !panel.matches(':popover-open')) {
+		if (cell.open && !panel.matches(':popover-open')) {
 			panel.showPopover();
-		} else if (!open && panel.matches(':popover-open')) {
+		} else if (!cell.open && panel.matches(':popover-open')) {
 			panel.hidePopover();
 		}
 	});
@@ -43,8 +50,8 @@
 <button
 	type="button"
 	popovertarget={id}
-	aria-expanded={open}
-	aria-label={open ? 'Close menu' : 'Open menu'}
+	aria-expanded={cell.open}
+	aria-label={cell.open ? 'Close menu' : 'Open menu'}
 	class={join(
 		'hamburger md:hidden inline-grid size-10 place-items-center relative z-50 bg-transparent border-0 cursor-pointer text-current',
 		className,
@@ -58,7 +65,7 @@
 	{id}
 	bind:this={panel}
 	popover="auto"
-	ontoggle={(e) => (open = (e as ToggleEvent).newState === 'open')}
+	ontoggle={(e) => (cell.open = (e as ToggleEvent).newState === 'open')}
 	class="mobile-nav-popover bg-sidebar text-foreground md:hidden">
 	<nav class="flex-1 overflow-y-auto px-8 pt-2">
 		<ul class="list-none p-0 m-0">

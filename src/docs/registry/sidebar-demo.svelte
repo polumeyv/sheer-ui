@@ -7,7 +7,6 @@
 	import SettingsIcon from '@lucide/svelte/icons/settings';
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 
-	let open = $state(true);
 
 	const items = [
 		{ title: 'Home', icon: HouseIcon, active: true },
@@ -19,7 +18,8 @@
 </script>
 
 <div class="relative isolate h-[28rem] w-full overflow-hidden rounded-lg border bg-background transform-gpu">
-	<Sidebar.Provider bind:open class="relative min-h-0! h-full overflow-hidden" style="--sidebar-width: 13rem;">
+	<Sidebar.Provider open class="relative min-h-0! h-full overflow-hidden" style="--sidebar-width: 13rem;">
+		{#snippet children(sidebar)}
 		<Sidebar.Root variant="inset" collapsible="icon" class="absolute! h-full!">
 			<Sidebar.Header>
 				<Sidebar.Menu>
@@ -78,7 +78,7 @@
 				<div class="flex min-w-0 flex-1 items-center justify-between gap-3">
 					<span class="truncate text-sm font-medium">Dashboard</span>
 					<span class="hidden text-xs text-muted-foreground sm:inline">
-						{open ? 'Expanded' : 'Collapsed'}
+						{sidebar.open ? 'Expanded' : 'Collapsed'}
 					</span>
 				</div>
 			</header>
@@ -100,5 +100,6 @@
 				<div class="min-h-40 rounded-md border bg-muted/30"></div>
 			</div>
 		</Sidebar.Inset>
+	{/snippet}
 	</Sidebar.Provider>
 </div>

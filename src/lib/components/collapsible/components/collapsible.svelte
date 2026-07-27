@@ -1,23 +1,30 @@
 <script lang="ts">
 	import { animationsSettled } from '../../../internal/disclosure-close.js';
+	import { OpenCell } from '../../../internal/open-cell.svelte.js';
 	import type { CollapsibleRootProps } from '../types.js';
 
 	let {
-		open = $bindable(false),
+		open = false,
 		disabled = false,
-		onOpenChange = () => {},
+		state: givenCell,
 		ref = $bindable(null),
 		children,
 		...restProps
 	}: CollapsibleRootProps = $props();
 
+	// Cell over the source prop — locally-authored root, so the cell IS the state
+	// (no vendored box to bridge). Interactions write it; the source prop re-derives it.
+	// svelte-ignore state_referenced_locally
+	const cell = givenCell ?? new OpenCell(() => open);
+
 	// `rendered` keeps the `open` attribute through the closing transition so the content
 	// stays in the DOM while 1fr→0fr plays; it drops once the subtree's animations settle.
-	let rendered = $state(open);
+	// svelte-ignore state_referenced_locally
+	let rendered = $state(cell.open);
 	let closeToken = 0;
 
 	$effect.pre(() => {
-		if (open) {
+		if (cell.open) {
 			closeToken++;
 			rendered = true;
 			return;
@@ -35,16 +42,14 @@
 	});
 
 	const setOpen = (next: boolean) => {
-		if (next === open) return;
-		open = next;
-		onOpenChange(open);
+		cell.open = next;
 	};
 </script>
 
 <details
 	{...restProps}
 	data-slot="collapsible"
-	data-state={open ? 'open' : 'closed'}
+	data-state={cell.open ? 'open' : 'closed'}
 	open={rendered}
 	inert={disabled || undefined}
 	onclick={(e) => {
@@ -53,7 +58,7 @@
 		const summary = (e.target as HTMLElement).closest('summary');
 		if (!summary || summary.closest('details') !== e.currentTarget) return;
 		e.preventDefault();
-		setOpen(!open);
+		setOpen(!cell.open);
 	}}
 	ontoggle={(e) => {
 		// Native toggles that bypass the click path (find-in-page, hash reveal).
@@ -61,5 +66,5 @@
 		setOpen(e.currentTarget.open);
 	}}
 	bind:this={ref}>
-	{@render children?.()}
+	{@render children?.(cell)}
 </details>

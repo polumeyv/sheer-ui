@@ -1,3 +1,4 @@
+import type { OpenCell } from '../../internal/open-cell.svelte.js';
 import type { FloatingLayerContentProps } from '../../internal/floating-layer/types.js';
 import type { DismissibleLayerProps } from '../../internal/dismissible-layer/types.js';
 import type { EscapeLayerProps } from '../../internal/escape-layer/types.js';
@@ -66,19 +67,20 @@ export type TooltipProviderProps = TooltipProviderPropsWithoutHTML;
 export type TooltipRootPropsWithoutHTML<Payload = never> = Omit<
 	WithChildren<{
 		/**
-		 * The open state of the tooltip.
-		 *
-		 * @defaultValue false
+		 * The derivation source for the tooltip's open state: the internal cell
+		 * re-derives whenever this prop changes, and interactions override it
+		 * until the next change. Plain value — not bindable.
 		 */
 		open?: boolean;
 
 		/**
-		 * A callback that will be called when the tooltip is opened or closed.
+		 * A caller-constructed cell (own source and, optionally, a delegate writer)
+		 * used instead of building one from `open`. When given, `open` is ignored.
 		 */
-		onOpenChange?: OnChangeFn<boolean>;
+		state?: OpenCell;
 
 		/**
-		 * A callback that will be called when the tooltip is opened or closed.
+		 * A callback that will be called when the tooltip finishes opening/closing animations.
 		 */
 		onOpenChangeComplete?: OnChangeFn<boolean>;
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { type WritableBox, boxWith, repairBindable } from '../../../internal/tools/index.js';
+	import { OpenCell } from '../../../internal/open-cell.svelte.js';
 	import type { ComboboxRootProps } from '../types.js';
 	import FloatingLayer from '../../../internal/floating-layer/components/floating-layer.svelte';
 	import { SelectRootState } from '../select/select.svelte.js';
@@ -12,8 +13,9 @@
 		name = '',
 		disabled = false,
 		type,
-		open = $bindable(false),
-		onOpenChange = () => {},
+		open = false,
+		// `state` must not exist as a local name — it would shadow the `$state` rune.
+		state: givenCell,
 		onOpenChangeComplete = () => {},
 		loop = false,
 		scrollAlignment = 'nearest',
@@ -33,6 +35,11 @@
 	// Combobox owns a mode-specific controlled value.
 	repairBindable(() => value, repairUndefinedControlledValue);
 
+	// Cell over the source prop; the engine keeps its boxed-open interface (vendored,
+	// ADR 0006) — the box is a bridge over the cell, so the cell owns `open`.
+	// svelte-ignore state_referenced_locally
+	const cell = givenCell ?? new OpenCell(() => open);
+
 	const rootState = SelectRootState.create({
 		type: untrack(() => type),
 		value: boxWith(
@@ -46,11 +53,8 @@
 		disabled: boxWith(() => disabled),
 		required: boxWith(() => required),
 		open: boxWith(
-			() => open,
-			(v) => {
-				open = v;
-				onOpenChange(v);
-			},
+			() => cell.open,
+			(v) => (cell.open = v),
 		),
 		loop: boxWith(() => loop),
 		scrollAlignment: boxWith(() => scrollAlignment),
@@ -67,7 +71,7 @@
 </script>
 
 <FloatingLayer>
-	{@render children?.()}
+	{@render children?.(cell)}
 </FloatingLayer>
 
 {#if Array.isArray(rootState.opts.value.current)}

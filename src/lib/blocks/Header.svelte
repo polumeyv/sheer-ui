@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from "../components/button";
+	import { OpenCell } from '../internal/open-cell.svelte.js';
 	import MobileNav from './MobileNav.svelte';
 
 	type NavLink = { href: string; label: string };
@@ -29,16 +30,16 @@
 		mobileId = 'mobile-nav',
 	}: Props = $props();
 
-	let mobileOpen = $state(false);
+	const mobileNav = new OpenCell();
 </script>
 
 <div
 	class="py-4 sticky top-0 justify-center items-center flex z-50 transition-colors duration-500 ease-in-out {showBorder
 		? 'border-b'
-		: ''} {mobileOpen ? 'bg-sidebar' : 'bg-background'}">
+		: ''} {mobileNav.open ? 'bg-sidebar' : 'bg-background'}">
 	<div class="flex w-full relative">
 		<div class="flex w-full justify-between relative z-50 max-w-7xl mx-auto px-8">
-			<a href={brandHref} onclick={() => (mobileOpen = false)} class="text-xl flex items-center relative z-50">{brand}</a>
+			<a href={brandHref} onclick={() => (mobileNav.open = false)} class="text-xl flex items-center relative z-50">{brand}</a>
 			<nav>
 				<div class="flex justify-end justify-self-end gap-2">
 					<ul class="hidden md:flex grow list-none mx-5 gap-2">
@@ -60,7 +61,7 @@
 				</div>
 			</nav>
 
-			<MobileNav {navLinks} actions={mobileActions ?? actions} bind:open={mobileOpen} id={mobileId} />
+			<MobileNav {navLinks} actions={mobileActions ?? actions} state={mobileNav} id={mobileId} />
 		</div>
 	</div>
 </div>

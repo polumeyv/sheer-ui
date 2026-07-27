@@ -4,7 +4,9 @@
 	import { LinkPreview } from '../../lib/components/link-preview/index.js';
 </script>
 
-<p class="text-sm">
+<!-- A <div>, not a <p>: LinkPreview.Content renders in place (native popover, no portal),
+     and its block content inside a <p> is invalid nesting the SSR validator flags. -->
+<div class="text-sm">
 	Built and maintained by the
 	<LinkPreview.Root>
 		<LinkPreview.Trigger>
@@ -29,4 +31,4 @@
 		</LinkPreview.Content>
 	</LinkPreview.Root>
 	team.
-</p>
+</div>

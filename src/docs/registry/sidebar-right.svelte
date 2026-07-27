@@ -9,7 +9,6 @@
 	import PaperclipIcon from '@lucide/svelte/icons/paperclip';
 	import UserIcon from '@lucide/svelte/icons/user';
 
-	let open = $state(true);
 
 	const details = [
 		{ title: 'Assignee', value: 'Maya Chen', icon: UserIcon },
@@ -20,13 +19,14 @@
 </script>
 
 <div class="relative isolate h-[28rem] w-full overflow-hidden rounded-lg border bg-background transform-gpu">
-	<Sidebar.Provider bind:open class="relative min-h-0! h-full overflow-hidden" style="--sidebar-width: 14rem;">
+	<Sidebar.Provider open class="relative min-h-0! h-full overflow-hidden" style="--sidebar-width: 14rem;">
+		{#snippet children(sidebar)}
 		<Sidebar.Inset class="min-h-0 overflow-hidden">
 			<header class="flex h-12 items-center gap-2 border-b px-4">
 				<Sidebar.Trigger />
 				<span class="truncate text-sm font-medium">Project Brief</span>
 				<span class="ml-auto hidden text-xs text-muted-foreground sm:inline">
-					{open ? 'Inspector open' : 'Inspector closed'}
+					{sidebar.open ? 'Inspector open' : 'Inspector closed'}
 				</span>
 			</header>
 			<div class="grid flex-1 content-start gap-3 overflow-auto p-4">
@@ -70,5 +70,6 @@
 			</Sidebar.Content>
 			<Sidebar.Rail />
 		</Sidebar.Root>
+	{/snippet}
 	</Sidebar.Provider>
 </div>

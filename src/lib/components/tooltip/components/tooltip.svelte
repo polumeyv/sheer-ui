@@ -4,13 +4,14 @@
 
 <script lang="ts" generics="T = never">
 	import { boxWith } from '../../../internal/tools/index.js';
+	import { OpenCell } from '../../../internal/open-cell.svelte.js';
 	import type { TooltipRootProps } from '../types.js';
 	import { TooltipRootState } from '../tooltip.svelte.js';
 
 	let {
-		open = $bindable(false),
+		open = false,
 		triggerId = $bindable<string | null>(null),
-		onOpenChange = () => {},
+		state: givenCell,
 		onOpenChangeComplete = () => {},
 		disabled,
 		delayDuration,
@@ -21,13 +22,15 @@
 		children,
 	}: TooltipRootProps<T> = $props();
 
+	// Cell over the source prop; the engine keeps its boxed-open interface (vendored,
+	// ADR 0006) — the box is a bridge over the cell, so the cell owns `open`.
+	// svelte-ignore state_referenced_locally
+	const cell = givenCell ?? new OpenCell(() => open);
+
 	const rootState = TooltipRootState.create({
 		open: boxWith(
-			() => open,
-			(v) => {
-				open = v;
-				onOpenChange(v);
-			},
+			() => cell.open,
+			(v) => (cell.open = v),
 		),
 		triggerId: boxWith(
 			() => triggerId,

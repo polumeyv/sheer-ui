@@ -11,7 +11,6 @@
 	import LifeBuoyIcon from '@lucide/svelte/icons/life-buoy';
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 
-	let open = $state(true);
 
 	const items = [
 		{ title: 'Activity', icon: ActivityIcon, active: true },
@@ -23,7 +22,8 @@
 </script>
 
 <div class="relative isolate h-[28rem] w-full overflow-hidden rounded-lg border bg-background transform-gpu">
-	<Sidebar.Provider bind:open class="relative min-h-0! h-full overflow-hidden" style="--sidebar-width: 13rem;">
+	<Sidebar.Provider open class="relative min-h-0! h-full overflow-hidden" style="--sidebar-width: 13rem;">
+		{#snippet children(sidebar)}
 		<Sidebar.Root variant="floating" collapsible="icon" class="absolute! h-full!">
 			<Sidebar.Header>
 				<Sidebar.Menu>
@@ -65,7 +65,7 @@
 				<Sidebar.Trigger />
 				<span class="truncate text-sm font-medium">Finance Overview</span>
 				<span class="ml-auto hidden text-xs text-muted-foreground sm:inline">
-					{open ? 'Expanded' : 'Collapsed'}
+					{sidebar.open ? 'Expanded' : 'Collapsed'}
 				</span>
 			</header>
 			<div class="grid flex-1 gap-3 overflow-auto p-4">
@@ -86,5 +86,6 @@
 				</div>
 			</div>
 		</Sidebar.Inset>
+	{/snippet}
 	</Sidebar.Provider>
 </div>

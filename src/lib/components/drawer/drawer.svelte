@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { DialogRootState, DialogState } from '../dialog/dialog.svelte.js';
+	import { OpenCell } from '../../internal/open-cell.svelte.js';
 	import { boxWith } from '../../internal/tools/index.js';
 	import type { RootProps } from '../../internal/vendor/vaul/components/drawer/index.js';
 	import { noop } from '@polumeyv/utilities';
@@ -8,8 +9,9 @@
 	import { useDrawerRoot } from '../../internal/vendor/vaul/use-drawer-root.svelte.js';
 
 	let {
-		open = $bindable(false),
-		onOpenChange = noop,
+		open = false,
+		state: givenCell,
+		_internal_onOpenChange = noop,
 		onDrag = noop,
 		onRelease = noop,
 		snapPoints,
@@ -37,19 +39,37 @@
 		autoFocus = false,
 		disablePreventScroll = true,
 		...restProps
-	}: RootProps = $props();
+	}: Omit<RootProps, 'open' | 'onOpenChange'> & {
+		/**
+		 * The derivation source for the drawer's open state: the internal cell
+		 * re-derives whenever this prop changes, and interactions (drag-dismiss,
+		 * a snippet-cell write) override it until the next change. Not bindable.
+		 */
+		open?: boolean;
+		/**
+		 * A caller-constructed cell (own source and, optionally, a delegate writer)
+		 * used instead of building one from `open`. When given, `open` is ignored.
+		 */
+		state?: OpenCell;
+		/** Machine-level open notification for the nested-drawer wiring — not a consumer API. */
+		_internal_onOpenChange?: (open: boolean) => void;
+	} = $props();
 
 	function handleOpenChangeComplete(o: boolean) {
 		rootState.handleOpenChangeComplete(o);
 		onOpenChangeComplete(o);
 	}
 
+	// Consumer cell over the source prop; vaul's machine keeps its boxed-open input
+	// (vendored, ADR 0006) — the box is a bridge over the cell, so the cell owns the
+	// consumer-facing `open` while the machine still drives dismissal internally.
+	// svelte-ignore state_referenced_locally
+	const cell = givenCell ?? new OpenCell(() => open);
+
 	const rootState = useDrawerRoot({
 		open: boxWith(
-			() => open,
-			(o) => {
-				open = o;
-			},
+			() => cell.open,
+			(o) => (cell.open = o),
 		),
 		closeThreshold: boxWith(() => closeThreshold),
 		scrollLockTimeout: boxWith(() => scrollLockTimeout),
@@ -80,7 +100,7 @@
 		snapToSequentialPoint: boxWith(() => snapToSequentialPoint),
 		container: boxWith(() => container),
 		disablePreventScroll: boxWith(() => disablePreventScroll),
-		onOpenChange: boxWith(() => onOpenChange),
+		onOpenChange: boxWith(() => _internal_onOpenChange),
 		onAnimationEnd: boxWith(() => onAnimationEnd),
 	});
 
