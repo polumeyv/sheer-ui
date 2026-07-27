@@ -4,7 +4,6 @@ import { type Getter, type ReadableBox, boxWith } from './tools/index.js';
 import type { Fn } from './types.js';
 import { isIOS } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
-import { useId } from './use-id.js';
 import { SharedState } from './shared-state.svelte.js';
 import { on } from 'svelte/events';
 import { getAbortSignal, onMount, tick, untrack } from 'svelte';
@@ -13,8 +12,8 @@ export interface ScrollBodyOption {
 	padding?: boolean | number;
 	margin?: boolean | number;
 }
-/** A map of lock ids to their `locked` state. */
-const lockMap = new SvelteMap<string, boolean>();
+/** A map of lock instances to their `locked` state. */
+const lockMap = new SvelteMap<BodyScrollLock, boolean>();
 
 let initialBodyStyle: string | null = $state<string | null>(null);
 let stopTouchMoveListener: Fn | null = null;
@@ -63,7 +62,6 @@ const bodyLockStackCount = new SharedState(() => {
 			return;
 		}
 		dom.body.setAttribute('style', initialBodyStyle ?? '');
-		dom.body.style.removeProperty('--scrollbar-width');
 		if (isIOS) {
 			cleanupTouchMoveListener();
 		}
@@ -144,6 +142,9 @@ const bodyLockStackCount = new SharedState(() => {
 			const bodyStyle = dom.win.getComputedStyle(dom.body);
 
 			// check if scrollbar-gutter: stable is already handling scrollbar space
+			// TODO(adopt): nothing in the shared layer sets scrollbar-gutter, so this is always
+			// false except in pro (its layout.css sets it). Set `scrollbar-gutter: stable` on
+			// html in ui.css (92.4% 2026-07) and this measurement branch becomes fallback-only.
 			const hasStableGutter = htmlStyle.scrollbarGutter?.includes('stable') || bodyStyle.scrollbarGutter?.includes('stable');
 
 			// TODO: account for RTL direction, etc.
@@ -159,7 +160,6 @@ const bodyLockStackCount = new SharedState(() => {
 			if (verticalScrollbarWidth > 0 && !hasStableGutter) {
 				dom.body.style.paddingRight = `${config.padding}px`;
 				dom.body.style.marginRight = `${config.margin}px`;
-				dom.body.style.setProperty('--scrollbar-width', `${verticalScrollbarWidth}px`);
 			}
 			dom.body.style.overflow = 'hidden';
 
@@ -214,7 +214,6 @@ const bodyLockStackCount = new SharedState(() => {
 });
 
 export class BodyScrollLock {
-	readonly #id = useId();
 	readonly #initialState: boolean | undefined;
 	readonly #restoreScrollDelay: Getter<number | null> = () => null;
 	readonly #countState: ReturnType<typeof bodyLockStackCount.get>;
@@ -239,15 +238,15 @@ export class BodyScrollLock {
 		// capture initial style before this lock is registered
 		this.#countState.ensureInitialStyleCaptured();
 
-		this.#countState.lockMap.set(this.#id, this.#initialState ?? false);
+		this.#countState.lockMap.set(this, this.#initialState ?? false);
 
 		this.locked = boxWith(
-			() => this.#countState.lockMap.get(this.#id) ?? false,
-			(v) => this.#countState.lockMap.set(this.#id, v),
+			() => this.#countState.lockMap.get(this) ?? false,
+			(v) => this.#countState.lockMap.set(this, v),
 		);
 
 		onMount(() => () => {
-			this.#countState.lockMap.delete(this.#id);
+			this.#countState.lockMap.delete(this);
 
 			// if not the last lock, we don't need to do anything
 			if (isAnyLocked(this.#countState.lockMap)) return;
@@ -267,7 +266,7 @@ export class BodyScrollLock {
 	}
 }
 
-function isAnyLocked(map: Map<string, boolean>) {
+function isAnyLocked(map: Map<BodyScrollLock, boolean>) {
 	for (const [_, value] of map) {
 		if (value) return true;
 	}

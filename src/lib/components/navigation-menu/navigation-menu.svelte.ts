@@ -19,7 +19,8 @@ import {
 import { useDebounce } from '../../internal/tools/index.js';
 import { createContext, tick, untrack, type Snippet } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
-import { type Direction, type Orientation, useId } from '../../internal/index.js';
+import { type Direction, type Orientation } from '../../internal/index.js';
+import { createId } from '../../internal/create-id.js';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '../../internal/attrs.js';
 import { getTabbableCandidates } from '../../internal/tabbable.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment } from '../../internal/types.js';
@@ -294,7 +295,7 @@ export class NavigationMenuListState {
 	static create(opts: NavigationMenuListStateOpts) {
 		return setNavigationMenuList(new NavigationMenuListState(opts, getNavigationMenuProvider()));
 	}
-	wrapperId = simpleBox(useId());
+	wrapperId = simpleBox('');
 	wrapperRef = simpleBox<HTMLElement | null>(null);
 	readonly opts: NavigationMenuListStateOpts;
 	readonly context: NavigationMenuProviderState;
@@ -307,6 +308,7 @@ export class NavigationMenuListState {
 	constructor(opts: NavigationMenuListStateOpts, context: NavigationMenuProviderState) {
 		this.opts = opts;
 		this.context = context;
+		this.wrapperId.current = createId('wrapper', opts.id.current);
 		this.attachment = attachRef(this.opts.ref);
 		this.rovingFocusGroup = new RovingFocusGroup({
 			rootNode: opts.ref,
@@ -421,7 +423,7 @@ export class NavigationMenuTriggerState {
 	}
 	readonly opts: NavigationMenuTriggerStateOpts;
 	readonly attachment: RefAttachment;
-	focusProxyId = simpleBox(useId());
+	focusProxyId = simpleBox('');
 	focusProxyRef = simpleBox<HTMLElement | null>(null);
 	readonly focusProxyAttachment: RefAttachment = attachRef(this.focusProxyRef, (v) => (this.itemContext.focusProxyNode = v));
 	context: NavigationMenuProviderState;
@@ -442,6 +444,7 @@ export class NavigationMenuTriggerState {
 		},
 	) {
 		this.opts = opts;
+		this.focusProxyId.current = createId('focus-proxy', opts.id.current);
 		this.attachment = attachRef(this.opts.ref, (v) => (this.itemContext.triggerNode = v));
 		this.hasPointerMoveOpened = boxAutoReset(false, {
 			afterMs: 300,

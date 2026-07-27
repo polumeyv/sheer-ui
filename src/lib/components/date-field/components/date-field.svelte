@@ -5,6 +5,7 @@
 	import type { DateFieldRootProps } from '../types.js';
 	import { getDefaultDate } from '../../../internal/date-time/utils.js';
 	import { resolveLocaleProp } from '../../../internal/prop-resolvers.js';
+	import { createId } from '../../../internal/create-id.js';
 
 	let {
 		disabled = false,
@@ -64,7 +65,10 @@
 		});
 	});
 
+	const uid = $props.id();
+
 	DateFieldRootState.create({
+		descriptionId: createId('description', uid),
 		value: boxWith(
 			() => value,
 			(v) => {

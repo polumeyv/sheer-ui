@@ -5,14 +5,16 @@
 	import { type DateValue } from '@internationalized/date';
 	import { CalendarRootState } from '../calendar.svelte.js';
 	import type { CalendarRootProps } from '../types.js';
-	import { useId } from '../../../internal/use-id.js';
+	import { createId } from '../../../internal/create-id.js';
 	import { getDefaultDate } from '../../../internal/date-time/utils.js';
 	import { resolveLocaleProp } from '../../../internal/prop-resolvers.js';
+
+	const uid = $props.id();
 
 	let {
 		child,
 		children,
-		id = useId(),
+		id = createId(uid),
 		ref = $bindable(null),
 		value = $bindable(),
 		onValueChange = () => {},

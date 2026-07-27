@@ -10,7 +10,8 @@ import { createContext, getAbortSignal, untrack } from 'svelte';
 import { simpleBox, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '../../internal/tools/index.js';
 import type { ScrollAreaType } from './types.js';
 import type { BitsPointerEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
-import { type Direction, type Orientation, mergeProps, useId } from '../../internal/index.js';
+import { type Direction, type Orientation, mergeProps } from '../../internal/index.js';
+import { createId } from '../../internal/create-id.js';
 import { on } from 'svelte/events';
 import { createBitsAttrs } from '../../internal/attrs.js';
 import { StateMachine } from '../../internal/state-machine.js';
@@ -96,13 +97,14 @@ export class ScrollAreaViewportState {
 	readonly opts: ScrollAreaViewportStateOpts;
 	readonly root: ScrollAreaRootState;
 	readonly attachment: RefAttachment;
-	#contentId = simpleBox(useId());
+	#contentId = simpleBox('');
 	#contentRef = simpleBox<HTMLElement | null>(null);
 	readonly contentAttachment: RefAttachment = attachRef(this.#contentRef, (v) => (this.root.contentNode = v));
 
 	constructor(opts: ScrollAreaViewportStateOpts, root: ScrollAreaRootState) {
 		this.opts = opts;
 		this.root = root;
+		this.#contentId.current = createId('content', opts.id.current);
 		this.attachment = attachRef(opts.ref, (v) => (this.root.viewportNode = v));
 	}
 

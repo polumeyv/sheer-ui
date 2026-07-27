@@ -17,7 +17,6 @@ import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef
 import { isNumberString } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
 import { kbd } from '../../internal/kbd.js';
-import { useId } from '../../internal/use-id.js';
 import type {
 	DateAndTimeSegmentObj,
 	DateOnInvalid,
@@ -158,7 +157,9 @@ interface DateFieldRootStateOpts
 			required: boolean;
 			errorMessageId: string | undefined;
 			isInvalidProp: boolean | undefined;
-		}> {}
+		}> {
+	descriptionId: string;
+}
 
 export class DateFieldRootState {
 	static create(opts: DateFieldRootStateOpts, rangeRoot?: DateRangeFieldRootState) {
@@ -181,7 +182,7 @@ export class DateFieldRootState {
 	onInvalid: DateFieldRootStateOpts['onInvalid'];
 	errorMessageId: DateFieldRootStateOpts['errorMessageId'];
 	isInvalidProp: DateFieldRootStateOpts['isInvalidProp'];
-	descriptionId = useId();
+	readonly descriptionId: string;
 	formatter: Formatter;
 	segmentValues = $state() as SegmentValueObj;
 	announcer: Announcer;
@@ -201,6 +202,7 @@ export class DateFieldRootState {
 
 	constructor(props: DateFieldRootStateOpts, rangeRoot?: DateRangeFieldRootState) {
 		this.rangeRoot = rangeRoot;
+		this.descriptionId = props.descriptionId;
 		/**
 		 * Since the `DateFieldRootState` can be used in two contexts, as a standalone
 		 * field or as a field within a `DateRangeField` component, we handle assigning

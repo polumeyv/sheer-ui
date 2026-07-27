@@ -11,6 +11,7 @@
 	import type { TimeFieldRootProps } from '../types.js';
 	import { getDefaultTime } from '../../../internal/date-time/utils.js';
 	import { resolveLocaleProp } from '../../../internal/prop-resolvers.js';
+	import { createId } from '../../../internal/create-id.js';
 
 	let {
 		disabled = false,
@@ -60,7 +61,10 @@
 		});
 	});
 
+	const uid = $props.id();
+
 	TimeFieldRootState.create({
+		descriptionId: createId('description', uid),
 		value: boxWith(
 			() => value,
 			(v) => {

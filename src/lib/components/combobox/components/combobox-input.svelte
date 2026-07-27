@@ -2,11 +2,13 @@
 	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ComboboxInputProps } from '../types.js';
-	import { useId } from '../../../internal/use-id.js';
+	import { createId } from '../../../internal/create-id.js';
 	import { floatingAnchor } from '../../../internal/floating-layer/index.js';
 	import { SelectInputState } from '../select/select.svelte.js';
 
-	let { id = useId(), ref = $bindable(null), child, defaultValue, clearOnDeselect = false, ...restProps }: ComboboxInputProps = $props();
+	const uid = $props.id();
+
+	let { id = createId(uid), ref = $bindable(null), child, defaultValue, clearOnDeselect = false, ...restProps }: ComboboxInputProps = $props();
 
 	const inputState = SelectInputState.create({
 		id: boxWith(() => id),

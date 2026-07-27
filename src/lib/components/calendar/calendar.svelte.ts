@@ -5,7 +5,7 @@ import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValu
 import type { RangeCalendarRootState } from '../range-calendar/range-calendar.svelte.js';
 import { boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
-import { useId } from '../../internal/use-id.js';
+import { createId } from '../../internal/create-id.js';
 import type { DateMatcher, Month } from '../../internal/index.js';
 import { type Announcer, getAnnouncer } from '../../internal/date-time/announcer.js';
 import { type Formatter, createFormatter } from '../../internal/date-time/formatter.js';
@@ -79,7 +79,7 @@ export class CalendarRootState {
 	readonly opts: CalendarRootStateOpts;
 	readonly visibleMonths = $derived.by(() => this.months.map((month) => month.value));
 	readonly formatter: Formatter;
-	readonly accessibleHeadingId = useId();
+	readonly accessibleHeadingId: string;
 	readonly domContext: DOMContext;
 	readonly attachment: RefAttachment;
 	/** The month anchoring the view. Owned by navigation; the placeholder follow effect snaps it. */
@@ -99,6 +99,7 @@ export class CalendarRootState {
 
 	constructor(opts: CalendarRootStateOpts) {
 		this.opts = opts;
+		this.accessibleHeadingId = createId('heading', opts.id.current);
 		this.attachment = attachRef(this.opts.ref);
 		this.domContext = new DOMContext(opts.ref);
 		this.announcer = getAnnouncer(null);

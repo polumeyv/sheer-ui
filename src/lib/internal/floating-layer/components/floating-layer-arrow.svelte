@@ -3,9 +3,11 @@
 	import { mergeProps } from '../../merge-props.js';
 	import { FloatingArrowState } from '../use-floating-layer.svelte.js';
 	import type { FloatingLayerArrowProps } from '../types.js';
-	import { useId } from '../../use-id.js';
+	import { createId } from '../../create-id.js';
 
-	let { id = useId(), ref = $bindable(null), children, child, width = 10, height = 5, ...restProps }: FloatingLayerArrowProps = $props();
+	const uid = $props.id();
+
+	let { id = createId(uid), ref = $bindable(null), children, child, width = 10, height = 5, ...restProps }: FloatingLayerArrowProps = $props();
 
 	const arrowState = FloatingArrowState.create({
 		id: boxWith(() => id),

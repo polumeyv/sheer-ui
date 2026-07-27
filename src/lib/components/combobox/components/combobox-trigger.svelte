@@ -2,11 +2,13 @@
 	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ComboboxTriggerProps } from '../types.js';
-	import { useId } from '../../../internal/use-id.js';
+	import { createId } from '../../../internal/create-id.js';
 	import { SelectComboTriggerState } from '../select/select.svelte.js';
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 
-	let { id = useId(), ref = $bindable(null), child, children, type = 'button', ...restProps }: ComboboxTriggerProps = $props();
+	const uid = $props.id();
+
+	let { id = createId(uid), ref = $bindable(null), child, children, type = 'button', ...restProps }: ComboboxTriggerProps = $props();
 
 	const triggerState = SelectComboTriggerState.create({
 		id: boxWith(() => id),

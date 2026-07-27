@@ -2,7 +2,7 @@ import type { DateValue } from '@internationalized/date';
 import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import { createContext, onMount } from 'svelte';
 import { DateFieldInputState, DateFieldRootState } from '../date-field/date-field.svelte.js';
-import { useId } from '../../internal/use-id.js';
+import { createId } from '../../internal/create-id.js';
 import type { DateOnInvalid, DateRange, DateRangeValidator, SegmentPart } from '../../internal/index.js';
 import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
@@ -50,7 +50,7 @@ export class DateRangeFieldRootState {
 	readonly opts: DateRangeFieldRootStateOpts;
 	startFieldState: DateFieldRootState | undefined = undefined;
 	endFieldState: DateFieldRootState | undefined = undefined;
-	descriptionId = useId();
+	descriptionId: string;
 	formatter: Formatter;
 	fieldNode = $state<HTMLElement | null>(null);
 	labelNode = $state<HTMLElement | null>(null);
@@ -66,6 +66,7 @@ export class DateRangeFieldRootState {
 
 	constructor(opts: DateRangeFieldRootStateOpts) {
 		this.opts = opts;
+		this.descriptionId = createId('description', opts.id.current);
 		this.valueController = new RangeFieldValueController(opts.value, opts.placeholder);
 		this.formatter = createFormatter({
 			locale: this.opts.locale,
@@ -202,6 +203,7 @@ export class DateRangeFieldInputState {
 				onInvalid: root.opts.onInvalid,
 				errorMessageId: root.opts.errorMessageId,
 				isInvalidProp: boxWith(() => root.isInvalid),
+				descriptionId: createId(`${type}-description`, root.opts.id.current),
 			},
 			root,
 		);

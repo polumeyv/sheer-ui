@@ -4,12 +4,14 @@
 	import { type WithChildren, boxWith, attachRef } from '../../internal/tools/index.js';
 	import { mergeProps } from '../../internal/merge-props.js';
 	import type { WithoutChildrenOrChild } from '../../internal/utils.js';
-	import { useId } from '../../internal/use-id.js';
+	import { createId } from '../../internal/create-id.js';
 	import { getDrawer } from '../../internal/vendor/vaul/context.js';
 	import type { OverlayProps } from '../../internal/vendor/vaul/components/drawer/index.js';
 
+	const uid = $props.id();
+
 	let {
-		id = useId(),
+		id = createId(uid),
 		ref = $bindable(null),
 		class: className,
 		children,

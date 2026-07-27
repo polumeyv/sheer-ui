@@ -7,15 +7,17 @@
 	import { mergeProps } from '../../internal/merge-props.js';
 	import type { ComponentProps } from 'svelte';
 	import type { WithoutChildrenOrChild } from '../../internal/utils.js';
-	import { useId } from '../../internal/use-id.js';
+	import { createId } from '../../internal/create-id.js';
 	import DrawerPortal from './drawer-portal.svelte';
 	import DrawerOverlay from './drawer-overlay.svelte';
 	import { noop } from '@polumeyv/utilities';
 	import { useDrawerContent } from '../../internal/vendor/vaul/use-drawer-content.svelte.js';
 	import type { ContentProps } from '../../internal/vendor/vaul/components/drawer/index.js';
 
+	const uid = $props.id();
+
 	let {
-		id = useId(),
+		id = createId(uid),
 		ref = $bindable(null),
 		class: className,
 		portalProps,

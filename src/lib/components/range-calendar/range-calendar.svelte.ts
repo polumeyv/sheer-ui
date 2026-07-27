@@ -3,7 +3,7 @@ import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValu
 import { getCalendarRoot, setCalendarRoot } from '../calendar/calendar.svelte.js';
 import type { DateRange, Month } from '../../internal/index.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
-import { useId } from '../../internal/use-id.js';
+import { createId } from '../../internal/create-id.js';
 import { boolToStr, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import { type Announcer, getAnnouncer } from '../../internal/date-time/announcer.js';
 import { type Formatter, createFormatter } from '../../internal/date-time/formatter.js';
@@ -92,7 +92,7 @@ export class RangeCalendarRootState {
 	});
 	announcer: Announcer;
 	formatter: Formatter;
-	accessibleHeadingId = useId();
+	accessibleHeadingId: string;
 	focusedValue = $state<DateValue | undefined>(undefined);
 	lastPressedDateValue: DateValue | undefined = undefined;
 	domContext: DOMContext;
@@ -194,6 +194,7 @@ export class RangeCalendarRootState {
 
 	constructor(opts: RangeCalendarRootStateOpts) {
 		this.opts = opts;
+		this.accessibleHeadingId = createId('heading', opts.id.current);
 		this.attachment = attachRef(opts.ref);
 		this.domContext = new DOMContext(opts.ref);
 		this.announcer = getAnnouncer(null);

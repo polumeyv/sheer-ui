@@ -41,5 +41,4 @@ export type {
 } from './date-time/types.js';
 
 export { mergeProps } from './merge-props.js';
-export { useId } from './use-id.js';
 export * from './attribute-types.js';

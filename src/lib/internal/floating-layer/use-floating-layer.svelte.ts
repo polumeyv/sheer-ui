@@ -13,7 +13,6 @@ import {
 	boxWith,
 } from '../tools/index.js';
 import type { Arrayable, WithRefOpts } from '../types.js';
-import { useId } from '../use-id.js';
 import { useFloating } from '../floating-svelte/use-floating.svelte.js';
 import type { Measurable, UseFloatingReturn } from '../floating-svelte/types.js';
 import type { Direction, StyleProperties } from '../index.js';
@@ -114,7 +113,8 @@ export class FloatingContentState {
 	};
 
 	// ids
-	arrowId: Box<string> = simpleBox(useId());
+	// TODO(dead?): zero consumers anywhere in the tree (upstream-bits leftover) — confirm and delete.
+	arrowId: Box<string> = simpleBox('');
 
 	#userStyle = $derived.by(() => styleToString(this.opts.style.current));
 

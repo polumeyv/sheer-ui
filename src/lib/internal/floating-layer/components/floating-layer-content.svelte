@@ -3,7 +3,9 @@
 	import { mergeProps } from '../../merge-props.js';
 	import { FloatingContentState } from '../use-floating-layer.svelte.js';
 	import type { ContentImplProps } from './index.js';
-	import { useId } from '../../use-id.js';
+	import { createId } from '../../create-id.js';
+
+	const uid = $props.id();
 
 	let {
 		content,
@@ -23,7 +25,7 @@
 		strategy = 'fixed',
 		dir = 'ltr',
 		style = {},
-		wrapperId = useId(),
+		wrapperId = createId('floating-wrapper', uid),
 		customAnchor = null,
 		enabled,
 		tooltip = false,

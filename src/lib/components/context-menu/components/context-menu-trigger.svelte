@@ -3,10 +3,12 @@
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ContextMenuTriggerProps } from '../types.js';
 	import { ContextMenuTriggerState } from '../../menu/menu.svelte.js';
-	import { useId } from '../../../internal/use-id.js';
+	import { createId } from '../../../internal/create-id.js';
 	import { setFloatingAnchor } from '../../../internal/floating-layer/index.js';
 
-	let { id = useId(), ref = $bindable(null), child, children, disabled = false, ...restProps }: ContextMenuTriggerProps = $props();
+	const uid = $props.id();
+
+	let { id = createId(uid), ref = $bindable(null), child, children, disabled = false, ...restProps }: ContextMenuTriggerProps = $props();
 
 	const triggerState = ContextMenuTriggerState.create({
 		id: boxWith(() => id),

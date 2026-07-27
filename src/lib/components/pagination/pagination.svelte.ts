@@ -5,7 +5,7 @@ import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } fr
 import { createBitsAttrs } from '../../internal/attrs.js';
 import { kbd } from '../../internal/kbd.js';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
-import { type Orientation, useId } from '../../internal/index.js';
+import { type Orientation } from '../../internal/index.js';
 
 const paginationAttrs = createBitsAttrs({
 	component: 'pagination',
@@ -267,8 +267,7 @@ function getPageItems({ page = 1, totalPages, siblingCount = 1 }: GetPageItemsPr
 	}
 
 	function addEllipsis(): void {
-		const id = useId();
-		pageItems.push({ type: 'ellipsis', key: `ellipsis-${id}` });
+		pageItems.push({ type: 'ellipsis', key: `ellipsis-${pageItems.length}` });
 	}
 
 	let lastNumber = 0;

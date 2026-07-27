@@ -14,7 +14,6 @@ import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef
 import { isNumberString } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
 import { kbd } from '../../internal/kbd.js';
-import { useId } from '../../internal/use-id.js';
 import type {
 	TimeSegmentObj,
 	SegmentPart,
@@ -132,7 +131,9 @@ export interface TimeFieldRootStateOpts<T extends TimeValue = Time>
 			required: boolean;
 			errorMessageId: string | undefined;
 			isInvalidProp: boolean | undefined;
-		}> {}
+		}> {
+	descriptionId: string;
+}
 
 export class TimeFieldRootState<T extends TimeValue = Time> {
 	static create<T extends TimeValue = Time>(opts: TimeFieldRootStateOpts<T>, rangeRoot?: TimeRangeFieldRootState<T>) {
@@ -154,7 +155,7 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 	onInvalid: TimeFieldRootStateOpts<T>['onInvalid'];
 	errorMessageId: TimeFieldRootStateOpts<T>['errorMessageId'];
 	isInvalidProp: TimeFieldRootStateOpts<T>['isInvalidProp'];
-	descriptionId = useId();
+	readonly descriptionId: string;
 	formatter: TimeFormatter;
 	segmentValues = $state() as TimeSegmentObj;
 	announcer: Announcer;
@@ -188,6 +189,7 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 
 	constructor(props: TimeFieldRootStateOpts<T>, rangeRoot?: TimeRangeFieldRootState<T>) {
 		this.rangeRoot = rangeRoot;
+		this.descriptionId = props.descriptionId;
 		/**
 		 * Since the `TimeFieldRootState` can be used in two contexts, as a standalone
 		 * field or as a field within a `TimeRangeField` component, we handle assigning

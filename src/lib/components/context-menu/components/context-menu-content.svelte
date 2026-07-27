@@ -3,12 +3,14 @@
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ContextMenuContentProps } from '../types.js';
 	import { CONTEXT_MENU_TRIGGER_ATTR, MenuContentState } from '../../menu/menu.svelte.js';
-	import { useId } from '../../../internal/use-id.js';
+	import { createId } from '../../../internal/create-id.js';
 	import PopperLayer from '../../../internal/popper-layer/popper-layer.svelte';
 	import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
 
+	const uid = $props.id();
+
 	let {
-		id = useId(),
+		id = createId(uid),
 		child,
 		children,
 		ref = $bindable(null),

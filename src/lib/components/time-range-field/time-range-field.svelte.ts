@@ -3,7 +3,7 @@ import { boxWith, attachRef, DOMContext, type ReadableBoxedValues, type Writable
 import { createContext, onMount } from 'svelte';
 import { TimeFieldRootState } from '../time-field/time-field.svelte.js';
 import { TimeFieldInputState } from '../time-field/time-field.svelte.js';
-import { useId } from '../../internal/use-id.js';
+import { createId } from '../../internal/create-id.js';
 import type { TimeSegmentPart } from '../../internal/index.js';
 import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
@@ -51,7 +51,7 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 	readonly attachment: RefAttachment;
 	startFieldState: TimeFieldRootState | undefined = undefined;
 	endFieldState: TimeFieldRootState | undefined = undefined;
-	descriptionId = useId();
+	descriptionId: string;
 	formatter: TimeFormatter;
 	fieldNode = $state<HTMLElement | null>(null);
 	labelNode = $state<HTMLElement | null>(null);
@@ -86,6 +86,7 @@ export class TimeRangeFieldRootState<T extends TimeValue = Time> {
 
 	constructor(opts: TimeRangeFieldRootStateOpts<T>) {
 		this.opts = opts;
+		this.descriptionId = createId('description', opts.id.current);
 		this.valueController = new RangeFieldValueController(
 			opts.value,
 			boxWith(
@@ -224,6 +225,7 @@ export class TimeRangeFieldInputState {
 				onInvalid: root.opts.onInvalid,
 				errorMessageId: root.opts.errorMessageId,
 				isInvalidProp: boxWith(() => root.isInvalid),
+				descriptionId: createId(`${type}-description`, root.opts.id.current),
 			},
 			root,
 		);
