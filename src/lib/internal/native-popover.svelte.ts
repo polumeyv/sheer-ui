@@ -1,6 +1,7 @@
 import type { Getter } from './tools/index.js';
 import { on } from 'svelte/events';
 import { isFunction, isString } from '@polumeyv/utilities';
+import { animationsSettled } from './disclosure-close.js';
 
 type NativePopoverAnchor = HTMLElement | string | null | undefined | object;
 
@@ -30,8 +31,8 @@ const resolveNativePopoverAnchor = (anchor: NativePopoverAnchor, fallback: HTMLE
 /**
  * Drives a native `popover="manual"` surface from a content state: open/close via
  * showPopover()/hidePopover() (anchored to the trigger, or the `anchor` override),
- * onOpenChangeComplete on the opacity transition's end, and document-level Escape /
- * outside-pointerdown dismissal routed to the state's handlers.
+ * onOpenChangeComplete once the surface's own animations settle, and document-level
+ * Escape / outside-pointerdown dismissal routed to the state's handlers.
  *
  * Returns the anchored-surface prop bag (`popover`, `data-anchored`) — the JS half of
  * the contract whose CSS half lives in ui.css under `[data-anchored]` — so surfaces
@@ -54,15 +55,27 @@ export function useNativePopoverLifecycle(state: NativePopoverContentState, opti
 		source ? (el.showPopover as (options: { source: HTMLElement }) => void).call(el, { source }) : el.showPopover();
 	});
 
+	// Settle-based rather than transitionend so completion still fires when no transition
+	// runs (duration-0 override, reduced motion, jsdom).
+	let prevOpen = open();
+	let completeToken = 0;
 	$effect(() => {
 		const el = ref();
+		const isOpen = open();
+		if (isOpen === prevOpen) return;
+		prevOpen = isOpen;
 		if (!el) return;
-
-		return on(el, 'transitionend', (event) => {
-			if (event.target === el && event.propertyName === 'opacity') state.root.opts.onOpenChangeComplete.current(open());
+		const token = ++completeToken;
+		void animationsSettled(el, { subtree: false }).then(() => {
+			if (token === completeToken) state.root.opts.onOpenChangeComplete.current(isOpen);
 		});
 	});
 
+	// TODO(bug): these document-level listeners don't register in bitsEscapeLayers /
+	// bitsDismissableLayers, so e.g. a Tooltip over an open DropdownMenu closes both on one
+	// Escape. For Popover the root fix is `popover="auto"` (89.8% 2026-07): UA light dismiss +
+	// Escape via the top-layer stack deletes this whole effect. Tooltip/LinkPreview need
+	// `popover="hint"` instead (no Safari as of 2026-07) — until then they stay `manual`.
 	$effect(() => {
 		if (!open()) return;
 
