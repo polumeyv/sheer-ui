@@ -70,7 +70,11 @@ type GetPivotIndicesOpts = {
 	domContext: DOMContext;
 };
 
-export function getPivotIndices({ groupId, dragHandleId, domContext }: GetPivotIndicesOpts): [indexBefore: number, indexAfter: number] | null {
+export function getPivotIndices({
+	groupId,
+	dragHandleId,
+	domContext,
+}: GetPivotIndicesOpts): [indexBefore: number, indexAfter: number] | null {
 	const index = getResizeHandleElementIndex({
 		groupId,
 		id: dragHandleId,
@@ -88,11 +92,7 @@ export function paneDataHelper(panesArray: PaneState[], pane: PaneState, layout:
 
 	const isLastPane = paneIndex === panesArray.length - 1;
 	const pivotIndices: [number, number] | null =
-		paneIndex < 0 || panesArray.length < 2
-			? null
-			: isLastPane
-				? [paneIndex - 1, paneIndex]
-				: [paneIndex, paneIndex + 1];
+		paneIndex < 0 || panesArray.length < 2 ? null : isLastPane ? [paneIndex - 1, paneIndex] : [paneIndex, paneIndex + 1];
 
 	const paneSize = layout[paneIndex];
 
@@ -278,12 +278,7 @@ interface GetDeltaPercentageOpts {
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/movementX
-export function getDeltaPercentage({
-	event,
-	dir,
-	initialDragState,
-	keyboardResizeBy,
-}: GetDeltaPercentageOpts): number {
+export function getDeltaPercentage({ event, dir, initialDragState, keyboardResizeBy }: GetDeltaPercentageOpts): number {
 	if (isKeyDown(event)) {
 		const isHorizontal = dir === 'horizontal';
 
@@ -331,16 +326,8 @@ export function getDeltaPercentage({
 }
 
 export function getResizeEventCursorPosition(dir: Direction, e: ResizeEvent): number | null {
-	const isHorizontal = dir === 'horizontal';
-
-	if (isMouseEvent(e)) {
-		return isHorizontal ? e.clientX : e.clientY;
-	} else if (isTouchEvent(e)) {
-		const firstTouch = e.touches[0];
-		return firstTouch ? (isHorizontal ? firstTouch.screenX : firstTouch.screenY) : null;
-	} else {
-		return null;
-	}
+	const point = isMouseEvent(e) ? e : isTouchEvent(e) ? e.touches[0] : null;
+	return point ? (dir === 'horizontal' ? point.clientX : point.clientY) : null;
 }
 
 interface GetResizeHandlePaneIdsOpts {
