@@ -743,7 +743,6 @@
 }
 
 @utility no-scrollbar {
-	-ms-overflow-style: none;
 	scrollbar-width: none;
 
 	&::-webkit-scrollbar {
@@ -762,7 +761,13 @@
 /* Native overlay anchor positioning — single source for the popover, tooltip, and
    link-preview content surfaces. Tag the content element with `data-anchored`; side/align
    come from `data-side` / `data-align`. Replaces the per-component <style> blocks that
-   each duplicated this. Tailwind has no anchor-positioning utilities, so this is raw CSS. */
+   each duplicated this. Tailwind has no anchor-positioning utilities, so this is raw CSS.
+
+   TODO(bug): bare anchor() relies on showPopover({source}) for the implicit anchor
+   (Chrome 137+); explicit anchor-name on the trigger + position-anchor here works from
+   Chrome 125. And there is no @supports (anchor-name: --x) fallback — the ~18% of
+   browsers without anchor positioning (2026-07) get inset:auto, a mispositioned surface,
+   instead of a defined static fallback. */
 [data-anchored] {
 	position: fixed;
 	inset: auto;

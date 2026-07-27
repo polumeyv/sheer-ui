@@ -56,6 +56,9 @@ export function nativeDialogControllerAttachment(options: NativeDialogController
 			);
 		}
 
+		// TODO(verify): possibly dead — spec says showModal() confines focus; the "sequential
+		// nav lands on <body> for one step" claim behind this wrap has not been reproduced in a
+		// real browser. Verify with trapFocus off in Chrome/Firefox/Safari, then delete if so.
 		if (options.trapFocus) {
 			on(
 				node,

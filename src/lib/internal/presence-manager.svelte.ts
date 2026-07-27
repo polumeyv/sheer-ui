@@ -3,6 +3,13 @@ import { type ReadableBoxedValues } from './tools/index.js';
 import { AnimationsComplete } from './animations-complete.js';
 import type { TransitionState } from './attrs.js';
 
+// TODO(backlog): this module + presence-layer/ + animations-complete.ts + the
+// --tw-enter/exit keyframe system exist to keep elements mounted through exit keyframes.
+// Migrating the remaining consumers (menu, select/combobox popup, navigation-menu,
+// scroll-area) to the dialog/popover recipe — always-mounted + transition-[…,display]
+// transition-discrete + @starting-style (88.9% 2026-07, same bar dialog/sheet already
+// shipped on) — deletes all of it (~230 LoC JS + ~330 lines ui.css).
+
 /**
  * Defers a callback until the element's exit animations have finished. The real
  * implementation is {@link AnimationsComplete}; tests inject a fake to drive the

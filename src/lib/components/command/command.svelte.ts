@@ -1505,6 +1505,8 @@ export class CommandViewportState {
 		this.opts = opts;
 		this.list = list;
 		this.attachment = attachRef(this.opts.ref, (v) => (this.list.root.viewportNode = v));
+		// TODO(dead?): --bits-command-list-height has zero consumers in the monorepo (upstream
+		// bits public var) — confirm nothing external reads it, then delete this whole effect.
 		$effect(() => {
 			const node = this.opts.ref.current;
 			const listNode = this.list.opts.ref.current;

@@ -71,6 +71,10 @@ export class DialogRootState {
 		this.handleOpen = this.handleOpen.bind(this);
 		this.handleClose = this.handleClose.bind(this);
 
+		// TODO(adopt): motion is fully CSS now (@starting-style + allow-discrete), so this
+		// presence machinery survives only to fire onOpenChangeComplete — replace with a
+		// transitionend listener (after fixing native-popover's no-transition hole) and drop
+		// both managers; animations-complete.ts dies once sonner also ports to transitionend.
 		this.contentPresence = new PresenceManager({
 			ref: boxWith(() => this.contentNode),
 			open: boxWith(() => this.cell.open),
