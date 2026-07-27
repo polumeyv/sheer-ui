@@ -763,53 +763,63 @@
    come from `data-side` / `data-align`. Replaces the per-component <style> blocks that
    each duplicated this. Tailwind has no anchor-positioning utilities, so this is raw CSS.
 
-   TODO(bug): bare anchor() relies on showPopover({source}) for the implicit anchor
-   (Chrome 137+); explicit anchor-name on the trigger + position-anchor here works from
-   Chrome 125. And there is no @supports (anchor-name: --x) fallback — the ~18% of
-   browsers without anchor positioning (2026-07) get inset:auto, a mispositioned surface,
-   instead of a defined static fallback. */
-[data-anchored] {
-	position: fixed;
-	inset: auto;
-	margin: 0;
-	overflow: visible;
+   The whole block sits behind @supports: engines without anchor positioning (~18% 2026-07)
+   keep the UA popover default (fixed, inset 0, auto margins → centered on screen) instead of
+   an inset:auto mispositioned surface. TODO(widen): explicit anchor-name on the trigger +
+   position-anchor here would extend anchoring to Chrome 125–136, which lack the
+   showPopover({source}) implicit anchor (137+); needs per-instance names plumbed through the
+   trigger prop bags. */
+@supports (anchor-name: --a) {
+	[data-anchored] {
+		position: fixed;
+		inset: auto;
+		margin: 0;
+		overflow: visible;
 
-	/* default (no data-side): above the trigger, centered */
-	bottom: anchor(top);
-	justify-self: anchor-center;
-	margin-bottom: 0.5rem;
-	position-try-fallbacks: flip-block;
+		/* default (no data-side): above the trigger, centered */
+		bottom: anchor(top);
+		justify-self: anchor-center;
+		margin-bottom: 0.5rem;
+		position-try-fallbacks: flip-block;
+	}
+
+	[data-anchored][data-side='bottom'] {
+		bottom: auto;
+		top: anchor(bottom);
+		margin: 0.5rem 0 0;
+	}
+	[data-anchored][data-side='left'] {
+		bottom: auto;
+		right: anchor(left);
+		left: auto;
+		top: anchor(center);
+		justify-self: initial;
+		margin: 0 0.5rem 0 0;
+	}
+	[data-anchored][data-side='right'] {
+		bottom: auto;
+		left: anchor(right);
+		top: anchor(center);
+		justify-self: initial;
+		margin: 0 0 0 0.5rem;
+	}
+
+	[data-anchored][data-align='start'] {
+		justify-self: initial;
+		left: anchor(left);
+	}
+	[data-anchored][data-align='end'] {
+		justify-self: initial;
+		left: auto;
+		right: anchor(right);
+	}
 }
 
-[data-anchored][data-side='bottom'] {
-	bottom: auto;
-	top: anchor(bottom);
-	margin: 0.5rem 0 0;
-}
-[data-anchored][data-side='left'] {
-	bottom: auto;
-	right: anchor(left);
-	left: auto;
-	top: anchor(center);
-	justify-self: initial;
-	margin: 0 0.5rem 0 0;
-}
-[data-anchored][data-side='right'] {
-	bottom: auto;
-	left: anchor(right);
-	top: anchor(center);
-	justify-self: initial;
-	margin: 0 0 0 0.5rem;
-}
-
-[data-anchored][data-align='start'] {
-	justify-self: initial;
-	left: anchor(left);
-}
-[data-anchored][data-align='end'] {
-	justify-self: initial;
-	left: auto;
-	right: anchor(right);
+/* Reserve the scrollbar gutter permanently (92% 2026-07): overlays that lock body scroll no
+   longer shift the layout, and body-scroll-lock's measurement branch becomes the fallback
+   for engines without support (Safari <18.2). Unlayered on purpose — wins over app resets. */
+html {
+	scrollbar-gutter: stable;
 }
 
 /* Native modal surface — single source for the modal <dialog> adapters (Dialog.Content,

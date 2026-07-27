@@ -141,10 +141,8 @@ const bodyLockStackCount = new SharedState(() => {
 			const htmlStyle = dom.win.getComputedStyle(dom.documentElement);
 			const bodyStyle = dom.win.getComputedStyle(dom.body);
 
-			// check if scrollbar-gutter: stable is already handling scrollbar space
-			// TODO(adopt): nothing in the shared layer sets scrollbar-gutter, so this is always
-			// false except in pro (its layout.css sets it). Set `scrollbar-gutter: stable` on
-			// html in ui.css (92.4% 2026-07) and this measurement branch becomes fallback-only.
+			// ui.css sets `scrollbar-gutter: stable` on html, so the measurement branch below is
+			// the fallback for engines without support (Safari <18.2).
 			const hasStableGutter = htmlStyle.scrollbarGutter?.includes('stable') || bodyStyle.scrollbarGutter?.includes('stable');
 
 			// TODO: account for RTL direction, etc.

@@ -8,7 +8,6 @@ import {
 	type ReadableBoxedValues,
 	type ReadableBox,
 	type RefAttachment,
-	type Box,
 	simpleBox,
 	boxWith,
 } from '../tools/index.js';
@@ -111,10 +110,6 @@ export class FloatingContentState {
 		...attachRef(this.arrowRef),
 		[createAttachmentKey()]: ((node) => this.#measureArrow(node)) satisfies Attachment<HTMLElement>,
 	};
-
-	// ids
-	// TODO(dead?): zero consumers anywhere in the tree (upstream-bits leftover) — confirm and delete.
-	arrowId: Box<string> = simpleBox('');
 
 	#userStyle = $derived.by(() => styleToString(this.opts.style.current));
 
