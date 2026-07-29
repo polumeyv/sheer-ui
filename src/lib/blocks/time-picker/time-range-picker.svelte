@@ -108,7 +108,7 @@
 		if (!value?.end) return fmt(value.start);
 
 		const duration = getTimeDuration(value.start, value.end);
-		const durationText = showDuration ? ` (${formatDuration(duration)})` : '';
+		const durationText = showDuration ? ` (${formatDuration(duration, 'compact')})` : '';
 		return `${fmt(value.start)} - ${fmt(value.end)}${durationText}`;
 	});
 
