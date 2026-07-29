@@ -1,6 +1,6 @@
 import type { Getter } from './tools/index.js';
 import { on } from 'svelte/events';
-import { isFunction, isString } from '@polumeyv/utilities';
+import { isString } from '@polumeyv/utilities';
 import { animationsSettled } from './disclosure-close.js';
 
 type NativePopoverAnchor = HTMLElement | string | null | undefined | object;
@@ -45,7 +45,7 @@ export function useNativePopoverLifecycle(state: NativePopoverContentState, opti
 	$effect(() => {
 		const el = ref();
 		const isOpen = open();
-		if (!el?.isConnected || !isFunction(el.showPopover)) return;
+		if (!el?.isConnected || typeof el.showPopover !== 'function') return;
 		if (isOpen === el.matches(':popover-open')) return; // already in the desired state
 
 		if (!isOpen) return el.hidePopover();

@@ -1,5 +1,4 @@
 import { getDocument } from './tools/index.js';
-import { isSelectableInput } from '@polumeyv/utilities/dom';
 import { getTabbableCandidates } from './tabbable.js';
 
 export type FocusableTarget = HTMLElement;
@@ -16,7 +15,7 @@ function focus(element?: FocusableTarget | null, { select = false } = {}) {
 
 	const didFocus = doc.activeElement === element;
 
-	if (didFocus && element !== previouslyFocusedElement && select && isSelectableInput(element)) {
+	if (didFocus && element !== previouslyFocusedElement && select && element instanceof HTMLInputElement) {
 		element.select();
 	}
 
