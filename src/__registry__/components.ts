@@ -94,6 +94,9 @@ export const componentDemos = {
 	],
 	"carousel": [
 		{ key: "demo", name: "carousel-demo", path: "/src/docs/registry/carousel-demo.svelte", sourcePath: "../docs/registry/carousel-demo.svelte" },
+		{ key: "loop", name: "carousel-loop", path: "/src/docs/registry/carousel-loop.svelte", sourcePath: "../docs/registry/carousel-loop.svelte" },
+		{ key: "sizes", name: "carousel-sizes", path: "/src/docs/registry/carousel-sizes.svelte", sourcePath: "../docs/registry/carousel-sizes.svelte" },
+		{ key: "vertical", name: "carousel-vertical", path: "/src/docs/registry/carousel-vertical.svelte", sourcePath: "../docs/registry/carousel-vertical.svelte" },
 	],
 	"chart": [
 		{ key: "demo", name: "chart-demo", path: "/src/docs/registry/chart-demo.svelte", sourcePath: "../docs/registry/chart-demo.svelte" },

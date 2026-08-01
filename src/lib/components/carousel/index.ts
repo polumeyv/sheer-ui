@@ -3,6 +3,7 @@ import Content from './carousel-content.svelte';
 import Item from './carousel-item.svelte';
 import Next from './carousel-next.svelte';
 import Previous from './carousel-previous.svelte';
+import Dots from './carousel-dots.svelte';
 
 export type { CarouselAlign, CarouselOrientation } from './carouselState.svelte';
 
@@ -12,10 +13,12 @@ export {
 	Item,
 	Previous,
 	Next,
+	Dots,
 	//
 	Root as Carousel,
 	Content as CarouselContent,
 	Item as CarouselItem,
 	Previous as CarouselPrevious,
 	Next as CarouselNext,
+	Dots as CarouselDots,
 };
