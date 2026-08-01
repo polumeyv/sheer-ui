@@ -9,6 +9,9 @@ type NativePopoverAnchor = HTMLElement | string | null | undefined | object;
  * The slice of a content state the lifecycle drives — popover, tooltip, and
  * link-preview content states all expose this shape, so the hook takes the
  * state itself instead of a getter per field.
+ *
+ * `manual` mode requires the two dismissal handlers; `auto` mode requires `dismiss`
+ * (the UA decides *when* to close, the state only has to follow).
  */
 interface NativePopoverContentState {
 	readonly root: {
@@ -21,24 +24,36 @@ interface NativePopoverContentState {
 	readonly opts: {
 		readonly ref: { readonly current: HTMLElement | null };
 	};
-	onEscapeKeydown: (event: KeyboardEvent) => void;
-	onInteractOutside: (event: PointerEvent) => void;
+	onEscapeKeydown?: (event: KeyboardEvent) => void;
+	onInteractOutside?: (event: PointerEvent) => void;
+	dismiss?: () => void;
 }
 
 const resolveNativePopoverAnchor = (anchor: NativePopoverAnchor, fallback: HTMLElement | null | undefined) =>
 	isString(anchor) ? document.querySelector<HTMLElement>(anchor) : anchor instanceof HTMLElement ? anchor : (fallback ?? null);
 
 /**
- * Drives a native `popover="manual"` surface from a content state: open/close via
- * showPopover()/hidePopover() (anchored to the trigger, or the `anchor` override),
- * onOpenChangeComplete once the surface's own animations settle, and document-level
- * Escape / outside-pointerdown dismissal routed to the state's handlers.
+ * Drives a native popover surface from a content state: open/close via
+ * showPopover()/hidePopover() (anchored to the trigger, or the `anchor` override) and
+ * onOpenChangeComplete once the surface's own animations settle.
+ *
+ * `mode: 'auto'` (Popover) hands dismissal to the UA — light dismiss and Escape run
+ * through the browser's top-layer stack, so stacked surfaces close one per Escape —
+ * and syncs UA-initiated closes back into state via the `toggle` event. `manual`
+ * (Tooltip, LinkPreview — they need `popover="hint"`, which Safari lacks as of
+ * 2026-07) keeps document-level Escape / outside-pointerdown listeners; those bypass
+ * bitsEscapeLayers, so a manual surface over a JS-stack menu still closes both on one
+ * Escape.
  *
  * Returns the anchored-surface prop bag (`popover`, `data-anchored`) — the JS half of
  * the contract whose CSS half lives in ui.css under `[data-anchored]` — so surfaces
  * merge it instead of restating it.
  */
-export function useNativePopoverLifecycle(state: NativePopoverContentState, options: { anchor?: Getter<NativePopoverAnchor> } = {}) {
+export function useNativePopoverLifecycle(
+	state: NativePopoverContentState,
+	options: { anchor?: Getter<NativePopoverAnchor>; mode?: 'auto' | 'manual' } = {},
+) {
+	const mode = options.mode ?? 'manual';
 	const ref = () => state.opts.ref.current;
 	const open = () => state.root.opts.open.current;
 
@@ -51,7 +66,8 @@ export function useNativePopoverLifecycle(state: NativePopoverContentState, opti
 		if (!isOpen) return el.hidePopover();
 
 		const source = resolveNativePopoverAnchor(options.anchor?.(), state.root.triggerNode);
-		// `source` gives CSS anchor() a default anchor without requiring position-anchor.
+		// `source` gives CSS anchor() a default anchor without requiring position-anchor, and in `auto`
+		// mode makes the UA exempt the invoker from light dismiss where supported (Chrome 137+).
 		source ? (el.showPopover as (options: { source: HTMLElement }) => void).call(el, { source }) : el.showPopover();
 	});
 
@@ -71,34 +87,41 @@ export function useNativePopoverLifecycle(state: NativePopoverContentState, opti
 		});
 	});
 
-	// TODO(bug): these document-level listeners don't register in bitsEscapeLayers /
-	// bitsDismissableLayers, so e.g. a Tooltip over an open DropdownMenu closes both on one
-	// Escape. For Popover the root fix is `popover="auto"` (89.8% 2026-07): UA light dismiss +
-	// Escape via the top-layer stack deletes this whole effect. Tooltip/LinkPreview need
-	// `popover="hint"` instead (no Safari as of 2026-07) — until then they stay `manual`.
-	$effect(() => {
-		if (!open()) return;
-
-		const offKey = on(document, 'keydown', (event) => {
-			if (event.key === 'Escape') state.onEscapeKeydown(event);
+	if (mode === 'auto') {
+		// The UA closes the popover itself (light dismiss, Escape, another auto popover opening);
+		// `toggle` is where library state finds out and follows.
+		$effect(() => {
+			const el = ref();
+			if (!el) return;
+			return on(el, 'toggle', (event) => {
+				if ((event as ToggleEvent).newState === 'closed' && open()) state.dismiss?.();
+			});
 		});
-		const offPointer = on(
-			document,
-			'pointerdown',
-			(event) => {
-				const target = event.target as Node | null;
-				// inside the popover or its trigger — not an outside interaction
-				if (ref()?.contains(target ?? null) || state.root.triggerNode?.contains(target ?? null)) return;
-				state.onInteractOutside(event);
-			},
-			{ capture: true },
-		);
+	} else {
+		$effect(() => {
+			if (!open()) return;
 
-		return () => {
-			offKey();
-			offPointer();
-		};
-	});
+			const offKey = on(document, 'keydown', (event) => {
+				if (event.key === 'Escape') state.onEscapeKeydown?.(event);
+			});
+			const offPointer = on(
+				document,
+				'pointerdown',
+				(event) => {
+					const target = event.target as Node | null;
+					// inside the popover or its trigger — not an outside interaction
+					if (ref()?.contains(target ?? null) || state.root.triggerNode?.contains(target ?? null)) return;
+					state.onInteractOutside?.(event);
+				},
+				{ capture: true },
+			);
 
-	return { popover: 'manual', 'data-anchored': '' } as const;
+			return () => {
+				offKey();
+				offPointer();
+			};
+		});
+	}
+
+	return { popover: mode, 'data-anchored': '' } as const;
 }

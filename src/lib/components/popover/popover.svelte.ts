@@ -164,6 +164,7 @@ export class PopoverTriggerState {
 	#openTimeout: number | null = null;
 	#closeTimeout: number | null = null;
 	#isHovering = $state(false);
+	#wasOpenOnPointerDown = false;
 
 	constructor(opts: PopoverTriggerStateOpts, root: PopoverRootState) {
 		this.opts = opts;
@@ -174,6 +175,7 @@ export class PopoverTriggerState {
 
 		this.onclick = this.onclick.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);
+		this.onpointerdown = this.onpointerdown.bind(this);
 		this.onpointerenter = this.onpointerenter.bind(this);
 		this.onpointerleave = this.onpointerleave.bind(this);
 
@@ -234,11 +236,22 @@ export class PopoverTriggerState {
 		// we just need to stop any pending open timer
 	}
 
+	onpointerdown(_: BitsPointerEvent) {
+		this.#wasOpenOnPointerDown = this.root.opts.open.current;
+	}
+
 	onclick(e: BitsMouseEvent) {
 		if (this.opts.disabled.current) return;
 		if (e.button !== 0) return;
 
 		this.#clearAllTimeouts();
+
+		// On engines without showPopover({source})'s invoker exemption, the UA light-dismisses the auto
+		// popover at pointerdown — before this click — and the toggle below would instantly reopen it.
+		if (this.#wasOpenOnPointerDown && !this.root.opts.open.current) {
+			this.#wasOpenOnPointerDown = false;
+			return;
+		}
 
 		// if clicked while hovering and popover is open, convert to click-based open
 		if (this.#isHovering && this.root.opts.open.current && this.root.openedViaHover) {
@@ -288,6 +301,7 @@ export class PopoverTriggerState {
 				//
 				onkeydown: this.onkeydown,
 				onclick: this.onclick,
+				onpointerdown: this.onpointerdown,
 				onpointerenter: this.onpointerenter,
 				onpointerleave: this.onpointerleave,
 				...this.attachment,
@@ -299,8 +313,6 @@ interface PopoverContentStateOpts
 	extends
 		WithRefOpts,
 		ReadableBoxedValues<{
-			onInteractOutside: (e: PointerEvent) => void;
-			onEscapeKeydown: (e: KeyboardEvent) => void;
 			customAnchor: string | HTMLElement | null | Measurable;
 		}> {}
 
@@ -354,27 +366,8 @@ export class PopoverContentState {
 		// handled by grace area
 	}
 
-	onInteractOutside = (e: PointerEvent) => {
-		this.opts.onInteractOutside.current(e);
-		if (e.defaultPrevented) return;
-		if (!isElement(e.target)) return;
-
-		const closestTrigger = e.target.closest(popoverAttrs.selector('trigger'));
-		if (closestTrigger && closestTrigger === this.root.triggerNode) return;
-		if (this.opts.customAnchor.current) {
-			if (isElement(this.opts.customAnchor.current)) {
-				if (this.opts.customAnchor.current.contains(e.target)) return;
-			} else if (typeof this.opts.customAnchor.current === 'string') {
-				const el = document.querySelector(this.opts.customAnchor.current);
-				if (el && el.contains(e.target)) return;
-			}
-		}
-		this.root.handleClose();
-	};
-
-	onEscapeKeydown = (e: KeyboardEvent) => {
-		this.opts.onEscapeKeydown.current(e);
-		if (e.defaultPrevented) return;
+	// The UA owns dismissal (`popover="auto"` light dismiss + Escape); this is how state follows.
+	dismiss = () => {
 		this.root.handleClose();
 	};
 
