@@ -833,24 +833,30 @@ html {
 	display: none;
 }
 
-/* ::backdrop replaces the JS-rendered overlay <div> (was `bg-black/50`). Fades in everywhere
-   via @starting-style; in Chromium it also fades out (overlay/display allow-discrete keep it
-   in the top layer). Firefox/Safari lack `overlay` and snap the close — progressive
-   enhancement. Adapters match the fade to their own motion via `--modal-backdrop-duration`. */
-[data-modal-surface]::backdrop {
-	background-color: rgb(0 0 0 / 0);
-	transition:
-		background-color var(--modal-backdrop-duration, 200ms) ease,
-		overlay var(--modal-backdrop-duration, 200ms) allow-discrete,
-		display var(--modal-backdrop-duration, 200ms) allow-discrete;
-}
-[data-modal-surface][open]::backdrop {
-	background-color: rgb(0 0 0 / 0.5);
-}
-@starting-style {
-	[data-modal-surface][open]::backdrop {
+/* ::backdrop replaces the JS-rendered overlay <div> (was `bg-black/50`). Keyframe fade, not an
+   @starting-style / overlay / display transition — WebKit doesn't start those on top-layer
+   changes, which snapped the fade on iOS, and `overlay` is Chromium-only. The exit fade plays on
+   data-[state=closed] while the controller holds the dialog open, so it now runs in every engine
+   (it was Chromium-only before). Adapters match the fade to their own motion via
+   `--modal-backdrop-duration`. */
+@keyframes modal-backdrop-fade-in {
+	from {
 		background-color: rgb(0 0 0 / 0);
 	}
+}
+@keyframes modal-backdrop-fade-out {
+	to {
+		background-color: rgb(0 0 0 / 0);
+	}
+}
+[data-modal-surface]::backdrop {
+	background-color: rgb(0 0 0 / 0.5);
+}
+[data-modal-surface][open][data-state='open']::backdrop {
+	animation: modal-backdrop-fade-in var(--modal-backdrop-duration, 200ms) ease;
+}
+[data-modal-surface][open][data-state='closed']::backdrop {
+	animation: modal-backdrop-fade-out var(--modal-backdrop-duration, 200ms) ease forwards;
 }
 
 /* LayerChart defaults for [data-slot=chart] — the static .lc-* overrides that shadcn-svelte

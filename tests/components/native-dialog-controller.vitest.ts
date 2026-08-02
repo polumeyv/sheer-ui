@@ -42,7 +42,7 @@ afterEach(() => {
 });
 
 describe('native dialog controller', () => {
-	test('synchronizes declarative open state with showModal and close', () => {
+	test('synchronizes declarative open state with showModal and a settle-deferred close', async () => {
 		const { component, dialog } = render();
 		open(component);
 		expect(dialog.open).toBe(true);
@@ -50,18 +50,35 @@ describe('native dialog controller', () => {
 
 		component.setOpen(false);
 		flushSync();
-		expect(dialog.open).toBe(false);
+		// close() waits for the data-[state=closed] exit animation to settle — the dialog must
+		// stay open this frame so the exit can render at all
+		expect(dialog.open).toBe(true);
+		await vi.waitFor(() => expect(dialog.open).toBe(false));
 		expect(dialog.close).toHaveBeenCalledOnce();
 		unmount(component);
 	});
 
-	test.each(['pointerdown', 'click'] as const)('supports the %s backdrop policy', (outsideEvent) => {
+	test.each(['pointerdown', 'click'] as const)('supports the %s backdrop policy', async (outsideEvent) => {
 		const { component, dialog } = render(outsideEvent);
 		open(component);
 		dialog.dispatchEvent(new PointerEvent(outsideEvent, { bubbles: true }));
 		flushSync();
-		expect(dialog.open).toBe(false);
+		// dismissal routes through state immediately; the native close follows after settle
 		expect(component.getCloseCount()).toBe(1);
+		await vi.waitFor(() => expect(dialog.open).toBe(false));
+		unmount(component);
+	});
+
+	test('a permitted cancel suppresses the native instant close and closes through state', async () => {
+		const { component, dialog } = render();
+		open(component);
+		const cancel = new Event('cancel', { cancelable: true });
+		dialog.dispatchEvent(cancel);
+		// always prevented: Escape must never native-close before the exit animation runs
+		expect(cancel.defaultPrevented).toBe(true);
+		flushSync();
+		expect(component.getCloseCount()).toBe(1);
+		await vi.waitFor(() => expect(dialog.open).toBe(false));
 		unmount(component);
 	});
 

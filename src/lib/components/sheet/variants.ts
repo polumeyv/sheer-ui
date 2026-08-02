@@ -1,14 +1,15 @@
 import { declareVariants, type VariantProps } from 'overrule';
 
+// The slide itself lives in sheet-content's <style> as `data-state`-keyed keyframes
+// (with `data-side` selecting the edge); the variant owns box + placement only.
 export const sheetVariants = declareVariants({
-	base: 'bg-background fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
+	base: 'bg-background fixed z-50 flex flex-col gap-4 shadow-lg',
 	variants: {
 		side: {
-			top: 'starting:-translate-y-full data-[state=closed]:-translate-y-full inset-x-0 top-0 h-auto border-b',
-			bottom: 'starting:translate-y-full data-[state=closed]:translate-y-full inset-x-0 bottom-0 h-auto border-t',
-			left: 'starting:-translate-x-full data-[state=closed]:-translate-x-full rtl:starting:translate-x-full rtl:data-[state=closed]:translate-x-full inset-y-0 inset-s-0 h-full w-3/4 border-e sm:max-w-sm',
-			right:
-				'starting:translate-x-full data-[state=closed]:translate-x-full rtl:starting:-translate-x-full rtl:data-[state=closed]:-translate-x-full inset-y-0 inset-e-0 h-full w-3/4 border-s sm:max-w-sm',
+			top: 'inset-x-0 top-0 h-auto border-b',
+			bottom: 'inset-x-0 bottom-0 h-auto border-t',
+			left: 'inset-y-0 inset-s-0 h-full w-3/4 border-e sm:max-w-sm',
+			right: 'inset-y-0 inset-e-0 h-full w-3/4 border-s sm:max-w-sm',
 		},
 	},
 	defaultVariants: {

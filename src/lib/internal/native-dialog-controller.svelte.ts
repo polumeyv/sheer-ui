@@ -1,6 +1,7 @@
 import type { EscapeBehaviorType } from './escape-layer/types.js';
 import type { InteractOutsideBehaviorType } from './dismissible-layer/types.js';
 import { getTabbableCandidates } from './tabbable.js';
+import { animationsSettled } from './disclosure-close.js';
 import type { Getter } from './tools/index.js';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 import { on } from 'svelte/events';
@@ -23,10 +24,27 @@ type NativeDialogControllerOptions = {
  */
 export function nativeDialogControllerAttachment(options: NativeDialogControllerOptions) {
 	const controller = ((node: HTMLDialogElement) => {
+		// Every dismissal routes through options.onClose() → root state → this effect, never
+		// node.close() directly: close() hides the dialog the same frame (`overlay` is
+		// Chromium-only and WebKit doesn't start display/top-layer transitions at all —
+		// bug 275184), so the exit ride is a data-[state=closed] keyframe animation played
+		// while the dialog is still open, and close() fires only once it settles.
+		let pendingClose: AbortController | null = null;
 		$effect(() => {
 			const open = options.open();
-			if (open && !node.open) node.showModal();
-			else if (!open && node.open) node.close();
+			if (open) {
+				pendingClose?.abort();
+				pendingClose = null;
+				if (!node.open) node.showModal();
+			} else if (node.open && !pendingClose) {
+				const pending = new AbortController();
+				pendingClose = pending;
+				void animationsSettled(node, { subtree: false }).then(() => {
+					if (pending.signal.aborted) return;
+					pendingClose = null;
+					if (!options.open() && node.open) node.close();
+				});
+			}
 		});
 
 		const signal = getAbortSignal();
@@ -37,24 +55,26 @@ export function nativeDialogControllerAttachment(options: NativeDialogController
 			const shim = new PointerEvent('pointerdown', { cancelable: true });
 			options.onInteractOutside?.()(shim);
 			if (shim.defaultPrevented || options.interactOutsideBehavior?.() === 'ignore') return;
-			node.close();
+			options.onClose();
 		};
 
 		if (options.outsideEvent === 'pointerdown') on(node, 'pointerdown', handleInteractOutside, { signal });
 		else if (options.outsideEvent === 'click') on(node, 'click', handleInteractOutside, { signal });
 
-		if (options.onEscapeKeydown || options.escapeKeydownBehavior) {
-			on(
-				node,
-				'cancel',
-				(event) => {
-					const shim = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true });
-					options.onEscapeKeydown?.()(shim);
-					if (shim.defaultPrevented || options.escapeKeydownBehavior?.() === 'ignore') event.preventDefault();
-				},
-				{ signal },
-			);
-		}
+		on(
+			node,
+			'cancel',
+			(event) => {
+				// Always prevent the native instant close; a permitted Escape closes through state
+				// so the exit animation runs first.
+				event.preventDefault();
+				const shim = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true });
+				options.onEscapeKeydown?.()(shim);
+				if (shim.defaultPrevented || options.escapeKeydownBehavior?.() === 'ignore') return;
+				options.onClose();
+			},
+			{ signal },
+		);
 
 		// Load-bearing, not redundant with showModal(): verified in Chromium 2026-07-27 —
 		// without this, Tab past the last tabbable parks focus on <body> for one step.

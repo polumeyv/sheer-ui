@@ -27,6 +27,9 @@
 	const controller = nativeDialogControllerAttachment({
 		open: () => open,
 		onClose: () => {
+			// transition-guarded like the real root's handleClose: the deferred native close()
+			// re-fires `close`, which must not double-count a dismissal
+			if (!open) return;
 			closeCount++;
 			open = false;
 		},

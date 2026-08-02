@@ -31,8 +31,6 @@
 	data-slot="dialog-content"
 	class={join(
 		'dialog-content bg-background fixed inset-0 z-50 m-auto h-fit max-h-[calc(100dvh-2rem)] w-full max-w-[calc(100%-2rem)] overflow-y-auto rounded-lg border p-6 shadow-lg sm:max-w-lg',
-		'scale-95 opacity-0 transition-[opacity,scale,display,overlay] transition-discrete duration-200',
-		'open:scale-100 open:opacity-100 starting:open:scale-95 starting:open:opacity-0',
 		className,
 	)}
 	{...restProps}>
@@ -42,14 +40,30 @@
 </ModalSurface>
 
 <style>
-	/* The box + animation ride Tailwind utilities on the element; re-home transition-property here (this
-	   UNLAYERED rule beats the layered Tailwind `transition`) so `display` + `overlay` join `scale`/
-	   `opacity` with allow-discrete — that keeps the box in the top layer long enough for the CLOSE to
-	   animate in Chromium. Firefox/Safari lack `overlay` and snap the close (they still animate the OPEN
-	   via @starting-style) — the same progressive-enhancement trade as Sheet / Popover. The closed-state
-	   display reset and the ::backdrop fade live in ui.css under `[data-modal-surface]`. */
-	:global(.dialog-content) {
-		transition-property: opacity, scale, display, overlay;
-		transition-behavior: allow-discrete;
+	/* Pop is a keyframe animation, not an @starting-style / display / overlay transition: WebKit
+	   doesn't start those on top-layer changes (bug 275184; `overlay` is Chromium-only), so
+	   transitions snapped both directions on iOS. Exit plays REVERSED on [data-state=closed] while
+	   the dialog is still open — the controller defers close() until animations settle. The
+	   closed-state display reset and the ::backdrop fade live in ui.css under [data-modal-surface]. */
+	/* Distinct in/out names on purpose: with a single name, the state flip only UPDATES the
+	   already-finished entry animation (animation-name unchanged → no restart per spec), so the
+	   exit would never play and the deferred close would fire instantly. */
+	@keyframes dialog-pop-in {
+		from {
+			scale: 0.95;
+			opacity: 0;
+		}
+	}
+	@keyframes dialog-pop-out {
+		to {
+			scale: 0.95;
+			opacity: 0;
+		}
+	}
+	:global(.dialog-content[open][data-state='open']) {
+		animation: dialog-pop-in 200ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+	:global(.dialog-content[open][data-state='closed']) {
+		animation: dialog-pop-out 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 	}
 </style>

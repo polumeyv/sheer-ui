@@ -31,7 +31,7 @@
 	} = $props();
 </script>
 
-<ModalSurface bind:ref data-slot="sheet-content" class={join('sheet-dialog', sheetVariants({ side }), className)} {...restProps}>
+<ModalSurface bind:ref data-slot="sheet-content" data-side={side} class={join('sheet-dialog', sheetVariants({ side }), className)} {...restProps}>
 	{@render children?.()}
 	<SheetClose
 		class="ring-offset-background focus-visible:ring-ring absolute inset-e-4 top-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none">
@@ -57,17 +57,52 @@
 		}
 	}
 
-	/* The slide rides the variant's `transition` + duration utilities. Re-home transition-property
-	   here (this UNLAYERED rule beats the layered Tailwind `transition`) so `display` + `overlay`
-	   join `translate` with allow-discrete: that keeps the box in the top layer long enough for the
-	   `data-[state=closed]:translate-…-full` EXIT to animate in Chromium. Firefox/Safari lack
-	   `overlay` and snap the close (they still animate the OPEN via @starting-style) — the same
-	   progressive-enhancement trade as Dialog/Popover. The closed-state display reset and the
-	   ::backdrop fade live in ui.css under `[data-modal-surface]`; the fade duration is stretched
-	   to match the 300ms slide via the custom property. */
+	/* The slide is a keyframe animation, not an @starting-style / display / overlay transition:
+	   WebKit doesn't start those on top-layer changes (bug 275184; `overlay` is Chromium-only), so
+	   transitions snapped both directions on iOS. Keyframes start reliably whenever the element is
+	   newly rendered. Entry plays on [data-state=open]; exit plays REVERSED on [data-state=closed]
+	   while the dialog is still open — the controller defers close() until animations settle —
+	   with `forwards` holding the off-screen end state until the real close hides it. The
+	   closed-state display reset and the ::backdrop fade live in ui.css under
+	   `[data-modal-surface]`; the fade duration matches the 300ms slide via the custom property. */
+	/* Distinct in/out names on purpose: with a single name, the state flip only UPDATES the
+	   already-finished entry animation (animation-name unchanged → no restart per spec), so the
+	   exit would never play and the deferred close would fire instantly. */
+	@keyframes sheet-slide-in {
+		from {
+			translate: var(--sheet-from);
+		}
+	}
+	@keyframes sheet-slide-out {
+		to {
+			translate: var(--sheet-from);
+		}
+	}
 	:global(.sheet-dialog) {
-		transition-property: translate, transform, display, overlay;
-		transition-behavior: allow-discrete;
 		--modal-backdrop-duration: 300ms;
+	}
+	:global(.sheet-dialog[open][data-state='open']) {
+		animation: sheet-slide-in 500ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+	:global(.sheet-dialog[open][data-state='closed']) {
+		animation: sheet-slide-out 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+	}
+	:global(.sheet-dialog[data-side='top']) {
+		--sheet-from: 0 -100%;
+	}
+	:global(.sheet-dialog[data-side='bottom']) {
+		--sheet-from: 0 100%;
+	}
+	:global(.sheet-dialog[data-side='left']) {
+		--sheet-from: -100% 0;
+	}
+	:global(.sheet-dialog[data-side='right']) {
+		--sheet-from: 100% 0;
+	}
+	:global([dir='rtl'] .sheet-dialog[data-side='left']) {
+		--sheet-from: 100% 0;
+	}
+	:global([dir='rtl'] .sheet-dialog[data-side='right']) {
+		--sheet-from: -100% 0;
 	}
 </style>
