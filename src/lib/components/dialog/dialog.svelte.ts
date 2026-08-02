@@ -1,9 +1,9 @@
-import { attachRef, boxWith, type ReadableBoxedValues } from '../../internal/tools/index.js';
+import { attachRef, type ReadableBoxedValues } from '../../internal/tools/index.js';
 import { createContext, onDestroy, untrack } from 'svelte';
-import { createBitsAttrs, boolToStr, getDataOpenClosed, boolToEmptyStrOrUndef, getDataTransitionAttrs } from '../../internal/attrs.js';
+import { createBitsAttrs, boolToStr, getDataOpenClosed, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { kbd } from '../../internal/kbd.js';
-import { PresenceManager } from '../../internal/presence-manager.svelte.js';
+import { useOpenChangeComplete } from '../../internal/use-open-change-complete.svelte.js';
 
 type DialogVariant = 'alert-dialog' | 'dialog';
 
@@ -48,7 +48,6 @@ export class DialogRootState {
 	readonly cell: DialogState;
 	triggerNode = $state<HTMLElement | null>(null);
 	contentNode = $state<HTMLElement | null>(null);
-	overlayNode = $state<HTMLElement | null>(null);
 	descriptionNode = $state<HTMLElement | null>(null);
 	contentId = $state<string | undefined>(undefined);
 	triggerId = $state<string | undefined>(undefined);
@@ -60,8 +59,6 @@ export class DialogRootState {
 	nestedOpenCount = $state(0);
 	readonly depth: number;
 	readonly parent: DialogRootState | null;
-	contentPresence: PresenceManager;
-	overlayPresence: PresenceManager;
 
 	constructor(opts: DialogRootStateOpts, parent: DialogRootState | null) {
 		this.opts = opts;
@@ -71,24 +68,11 @@ export class DialogRootState {
 		this.handleOpen = this.handleOpen.bind(this);
 		this.handleClose = this.handleClose.bind(this);
 
-		// TODO(adopt): motion is fully CSS now (@starting-style + allow-discrete), so this
-		// presence machinery survives only to fire onOpenChangeComplete — replace with a
-		// transitionend listener (after fixing native-popover's no-transition hole) and drop
-		// both managers; animations-complete.ts dies once sonner also ports to transitionend.
-		this.contentPresence = new PresenceManager({
-			ref: boxWith(() => this.contentNode),
-			open: boxWith(() => this.cell.open),
-			enabled: true,
-			onComplete: () => {
-				this.opts.onOpenChangeComplete.current(this.cell.open);
-			},
-		});
-
-		this.overlayPresence = new PresenceManager({
-			ref: boxWith(() => this.overlayNode),
-			open: boxWith(() => this.cell.open),
-			enabled: true,
-		});
+		useOpenChangeComplete(
+			() => this.cell.open,
+			() => this.contentNode,
+			(isOpen) => this.opts.onOpenChangeComplete.current(isOpen),
+		);
 
 		let started = false;
 		$effect(() => {
@@ -352,15 +336,10 @@ export class DialogContentState {
 				tabindex: this.root.opts.variant.current === 'alert-dialog' ? -1 : undefined,
 				'data-nested-open': boolToEmptyStrOrUndef(this.root.nestedOpenCount > 0),
 				'data-nested': boolToEmptyStrOrUndef(this.root.parent !== null),
-				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
 				...this.root.sharedProps,
 				...this.attachment,
 			}) as const,
 	);
-
-	get shouldRender() {
-		return this.root.contentPresence.shouldRender;
-	}
 }
 
 interface DialogOverlayStateOpts extends WithRefOpts {}
@@ -376,7 +355,7 @@ export class DialogOverlayState {
 	constructor(opts: DialogOverlayStateOpts, root: DialogRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref, (v) => (this.root.overlayNode = v));
+		this.attachment = attachRef(this.opts.ref);
 	}
 
 	readonly snippetProps = $derived.by(() => ({ open: this.root.cell.open }));
@@ -393,13 +372,8 @@ export class DialogOverlayState {
 				},
 				'data-nested-open': boolToEmptyStrOrUndef(this.root.nestedOpenCount > 0),
 				'data-nested': boolToEmptyStrOrUndef(this.root.parent !== null),
-				...getDataTransitionAttrs(this.root.overlayPresence.transitionStatus),
 				...this.root.sharedProps,
 				...this.attachment,
 			}) as const,
 	);
-
-	get shouldRender() {
-		return this.root.overlayPresence.shouldRender;
-	}
 }

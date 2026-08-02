@@ -95,10 +95,9 @@
 	// into the root state, in one attachment. The root stays the source of truth, so Trigger /
 	// Close / handleClose stay authoritative.
 	//
-	// NOTE: onOpenChangeComplete is intentionally NOT re-homed here. The Dialog root keeps
-	// `contentPresence`, and DialogContentState sets `contentNode`; that PresenceManager's
-	// AnimationsComplete watches the <dialog>'s getAnimations() and already fires onOpenChangeComplete
-	// after the transition settles — a transitionend listener here would double-fire it.
+	// NOTE: onOpenChangeComplete is intentionally NOT re-homed here. The Dialog root watches
+	// `contentNode` (set by DialogContentState) and fires it once the <dialog>'s animations
+	// settle (useOpenChangeComplete) — a listener here would double-fire it.
 	const controllerAttachment = nativeDialogControllerAttachment({
 		open: () => contentState.root.cell.open,
 		onClose: () => contentState.root.handleClose(),

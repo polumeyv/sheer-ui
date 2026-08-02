@@ -8,7 +8,9 @@ import type { TransitionState } from './attrs.js';
 // Migrating the remaining consumers (menu, select/combobox popup, navigation-menu,
 // scroll-area) to the dialog/popover recipe — always-mounted + transition-[…,display]
 // transition-discrete + @starting-style (88.9% 2026-07, same bar dialog/sheet already
-// shipped on) — deletes all of it (~230 LoC JS + ~330 lines ui.css).
+// shipped on) — deletes most of it (~230 LoC JS + ~330 lines ui.css). The drawer path
+// (dialog-content-headless + dialog-overlay) cannot migrate: vaul's exit is keyframes
+// on [data-state=closed], which display transitions can't hold open.
 
 /**
  * Defers a callback until the element's exit animations have finished. The real

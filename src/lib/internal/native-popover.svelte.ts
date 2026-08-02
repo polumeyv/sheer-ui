@@ -1,7 +1,7 @@
 import type { Getter } from './tools/index.js';
 import { on } from 'svelte/events';
 import { isString } from '@polumeyv/utilities';
-import { animationsSettled } from './disclosure-close.js';
+import { useOpenChangeComplete } from './use-open-change-complete.svelte.js';
 
 type NativePopoverAnchor = HTMLElement | string | null | undefined | object;
 
@@ -71,21 +71,7 @@ export function useNativePopoverLifecycle(
 		source ? (el.showPopover as (options: { source: HTMLElement }) => void).call(el, { source }) : el.showPopover();
 	});
 
-	// Settle-based rather than transitionend so completion still fires when no transition
-	// runs (duration-0 override, reduced motion, jsdom).
-	let prevOpen = open();
-	let completeToken = 0;
-	$effect(() => {
-		const el = ref();
-		const isOpen = open();
-		if (isOpen === prevOpen) return;
-		prevOpen = isOpen;
-		if (!el) return;
-		const token = ++completeToken;
-		void animationsSettled(el, { subtree: false }).then(() => {
-			if (token === completeToken) state.root.opts.onOpenChangeComplete.current(isOpen);
-		});
-	});
+	useOpenChangeComplete(open, ref, (isOpen) => state.root.opts.onOpenChangeComplete.current(isOpen));
 
 	if (mode === 'auto') {
 		// The UA closes the popover itself (light dismiss, Escape, another auto popover opening);

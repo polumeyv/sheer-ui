@@ -9,6 +9,7 @@
 	import { textSelectionAttachment } from '../../../internal/text-selection-layer/use-text-selection-layer.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
 	import { scrollLockAttachment } from '../../../internal/body-scroll-lock.svelte.js';
+	import { PresenceManager } from '../../../internal/presence-manager.svelte.js';
 
 	/**
 	 * Headless JS-overlay dialog content — a presence-gated <div> with the FocusScope / EscapeLayer /
@@ -41,6 +42,14 @@
 			() => ref,
 			(v) => (ref = v),
 		),
+	});
+
+	// Mount gate rides shouldRender, not `open`: it flips a flush later, so vaul's
+	// open-effect snapshots body styles before the scroll lock applies, and the root's
+	// completion watcher sees no contentNode at the open flip (drawer parity).
+	const presence = new PresenceManager({
+		ref: boxWith(() => ref),
+		open: boxWith(() => contentState.root.cell.open),
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, contentState.props));
@@ -93,7 +102,7 @@
 	});
 </script>
 
-{#if contentState.shouldRender || forceMount}
+{#if presence.shouldRender || forceMount}
 	{#if child}
 		{@render child({
 			props: mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection, scrollLock),
