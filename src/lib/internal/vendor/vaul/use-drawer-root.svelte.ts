@@ -11,7 +11,7 @@ import {
 	VELOCITY_THRESHOLD,
 	WINDOW_TOP_OFFSET,
 } from './internal/constants.js';
-import { isMobileFirefox } from './internal/browser.js';
+import { isIOSFirefox } from './internal/browser.js';
 import { isIOS } from '@polumeyv/utilities/dom';
 import { on } from 'svelte/events';
 import { tick, untrack } from 'svelte';
@@ -356,7 +356,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 				} else {
 					drawerNode.style.height = `${Math.max(newDrawerHeight, visualViewportHeight - offsetFromTop)}px`;
 				}
-			} else if (!isMobileFirefox()) {
+			} else if (!isIOSFirefox()) {
 				drawerNode.style.height = `${initialDrawerHeight}px`;
 			}
 
@@ -370,14 +370,8 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 	}
 
 	$effect(() => {
-		const _activeSnapPointIndex = snapPointsState.activeSnapPointIndex;
-		const _snapPoints = opts.snapPoints.current;
-		const _snapPointsOffset = snapPointsState.snapPointsOffset;
-		const _drawerNode = drawerNode;
-		return untrack(() => {
-			if (!window.visualViewport) return;
-			return on(window.visualViewport, 'resize', onVisualViewportChange);
-		});
+		if (!window.visualViewport) return;
+		return on(window.visualViewport, 'resize', onVisualViewportChange);
 	});
 
 	function cancelDrag() {
@@ -604,11 +598,9 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		}
 
 		if (o && !opts.modal.current) {
-			if (typeof window !== 'undefined') {
-				window.requestAnimationFrame(() => {
-					document.body.style.pointerEvents = 'auto';
-				});
-			}
+			window.requestAnimationFrame(() => {
+				document.body.style.pointerEvents = 'auto';
+			});
 		}
 
 		if (!o) {

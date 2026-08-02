@@ -3,15 +3,11 @@ import type { DrawerDirection } from './types.js';
 type StyleValue = string | number | null | undefined;
 type Style = Record<string, StyleValue>;
 
-const toCssProperty = (key: string) =>
-	key.startsWith('--') ? key : key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`).replace(/^ms-/, '-ms-');
-
 export const applyStyle = (element: Element | HTMLElement | null | undefined, style: Style) => {
 	if (!(element instanceof HTMLElement)) return;
 
 	for (const [key, value] of Object.entries(style)) {
-		if (value == null) continue;
-		element.style.setProperty(toCssProperty(key), String(value));
+		if (value != null) Object.assign(element.style, { [key]: String(value) });
 	}
 };
 
@@ -28,16 +24,6 @@ export const assignStyle = (element: HTMLElement | null | undefined, style: Styl
 };
 
 export const isVertical = (direction: DrawerDirection) => direction === 'top' || direction === 'bottom';
-
-export const isInView = (el: HTMLElement) => {
-	const rect = el.getBoundingClientRect();
-	const viewport = window.visualViewport;
-
-	const width = viewport?.width ?? window.innerWidth;
-	const height = viewport?.height ?? window.innerHeight;
-
-	return rect.top >= 0 && rect.left >= 0 && rect.bottom <= height - 40 && rect.right <= width;
-};
 
 export const getTranslate = (element: HTMLElement, direction: DrawerDirection) => {
 	const win = element.ownerDocument.defaultView ?? window;

@@ -134,9 +134,7 @@ export function useDrawerContent(opts: UseDrawerContentProps) {
 
 	function oncontextmenu(e: PointerEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		opts.oncontextmenu.current?.(e);
-		if (lastKnownPointerEvent) {
-			handleOnPointerUp(lastKnownPointerEvent);
-		}
+		handleOnPointerUp(lastKnownPointerEvent);
 	}
 
 	const props = $derived({

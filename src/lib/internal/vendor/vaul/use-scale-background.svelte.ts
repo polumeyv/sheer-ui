@@ -5,19 +5,15 @@ import { getDrawer } from './context.js';
 export function useScaleBackground() {
 	const ctx = getDrawer();
 	let timeoutId: number | null = null;
-	const initialBackgroundColor = typeof document !== 'undefined' ? document.body.style.backgroundColor : '';
+	let initialBackgroundColor: string | undefined;
 
 	const getScale = () => (window.innerWidth - WINDOW_TOP_OFFSET) / window.innerWidth;
 
 	$effect(() => {
-		ctx.open.current;
-		ctx.shouldScaleBackground.current;
-		ctx.setBackgroundColorOnScale.current;
 		if (ctx.open.current && ctx.shouldScaleBackground.current) {
+			initialBackgroundColor ??= document.body.style.backgroundColor;
 			if (timeoutId) clearTimeout(timeoutId);
-			const wrapper =
-				(document.querySelector('[data-vaul-drawer-wrapper]') as HTMLElement) ||
-				(document.querySelector('[data-vaul-drawer-wrapper]') as HTMLElement);
+			const wrapper = document.querySelector<HTMLElement>('[data-vaul-drawer-wrapper]');
 
 			if (!wrapper) return;
 

@@ -254,7 +254,7 @@ export function useSnapPoints({
 			return activeSnapPointIndex;
 		},
 		get snapPointsOffset() {
-			return $state.snapshot(snapPointsOffset);
+			return snapPointsOffset;
 		},
 		getPercentageDragged,
 		onRelease,
