@@ -11,12 +11,16 @@
 		ref = $bindable(null),
 		orientation = 'horizontal',
 		align = 'start',
+		loop = false,
 		class: className,
 		children,
 		...restProps
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
 		orientation?: CarouselOrientation;
 		align?: CarouselAlign;
+		/** Endless scrolling via flex-`order` rotation: the selected slide is re-centered in the
+		 *  strip on every scrollend, so there is always runway on both sides. Needs ≥3 slides. */
+		loop?: boolean;
 	} = $props();
 
 	let scroller = $state.raw<HTMLElement | null>(null);
@@ -44,7 +48,7 @@
 		const pos = scrollPos(el);
 		const rtl = horizontal && getComputedStyle(el).direction === 'rtl';
 
-		snapOffsets = [...el.children].map((slide) => {
+		const measured = [...el.children].map((slide) => {
 			const slideRect = slide.getBoundingClientRect();
 			const start =
 				horizontal ?
@@ -58,7 +62,33 @@
 			return pos + start + (rtl ? alignOffset : -alignOffset);
 		});
 
-		return snapOffsets;
+		// publish only on change — most measurements confirm the same offsets, and every
+		// reassignment invalidates the dot UIs reading `scrollSnaps`
+		if (measured.length !== snapOffsets.length || measured.some((v, i) => v !== snapOffsets[i])) snapOffsets = measured;
+
+		return measured;
+	}
+
+	// Rotate CSS `order` so the selected slide sits mid-strip, then scroll STRAIGHT TO its
+	// post-rotation snap offset — absolute, not a relative delta. The browser reacts to the
+	// reorder on its own (snap-follow, scroll anchoring); a relative compensation stacks on top
+	// of that and oscillates one stride per scrollend, while the absolute target is a fixed
+	// point no matter who scrolls first. DOM order never changes: indices, offsets, and dot
+	// UIs keep speaking child order.
+	function recenter() {
+		if (!scroller) return;
+		const slides = [...scroller.children] as HTMLElement[];
+		const n = slides.length;
+		if (n < 3) return;
+
+		const half = Math.floor(n / 2);
+		for (let i = 0; i < n; i++) {
+			slides[i]!.style.order = String((((i - selectedIndex + half) % n) + n) % n);
+		}
+		const offset = measureOffsets(scroller)[selectedIndex]!;
+		if (Math.abs(scrollPos(scroller) - offset) >= 1) {
+			scroller.scrollTo(horizontal ? { left: offset, behavior: 'instant' } : { top: offset, behavior: 'instant' });
+		}
 	}
 
 	function sync() {
@@ -73,6 +103,12 @@
 		}
 
 		selectedIndex = closest;
+		if (loop) {
+			atStart = false;
+			atEnd = false;
+			recenter();
+			return;
+		}
 		atStart = Math.abs(pos) <= 1;
 		atEnd = Math.abs(pos) >= scrollSize(scroller) - viewSize(scroller) - 1;
 	}
@@ -82,6 +118,15 @@
 
 		const offsets = measureOffsets(scroller);
 		if (!offsets.length) return;
+
+		if (loop) {
+			// Wrap instead of clamp. Rapid clicks past the wrap point animate across the strip once
+			// (recenter hasn't run between clicks) — settles correctly on scrollend.
+			const target = ((index % offsets.length) + offsets.length) % offsets.length;
+			selectedIndex = target;
+			scroller.scrollTo(horizontal ? { left: offsets[target], behavior } : { top: offsets[target], behavior });
+			return;
+		}
 
 		const clamped = Math.min(Math.max(index, 0), offsets.length - 1);
 

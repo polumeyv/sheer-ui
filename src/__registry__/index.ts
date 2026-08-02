@@ -50,6 +50,18 @@ export const Index = {
 		type: "registry:example",
 		files: ["../docs/registry/carousel-demo.svelte"],
 	},
+	"carousel-loop": {
+		type: "registry:example",
+		files: ["../docs/registry/carousel-loop.svelte"],
+	},
+	"carousel-sizes": {
+		type: "registry:example",
+		files: ["../docs/registry/carousel-sizes.svelte"],
+	},
+	"carousel-vertical": {
+		type: "registry:example",
+		files: ["../docs/registry/carousel-vertical.svelte"],
+	},
 	"chart-demo": {
 		type: "registry:example",
 		files: ["../docs/registry/chart-demo.svelte"],

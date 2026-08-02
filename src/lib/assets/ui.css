@@ -936,3 +936,32 @@ html {
 [data-slot='chart'] .lc-layout-svg-g {
 	@apply fill-transparent;
 }
+
+/* Carousel edge treatment: a slide crossing the scroller's clip edge fades out/in instead of
+   hard-cutting its border at the corner. Scroll-driven (compositor, no JS); opacity only —
+   a transform here would skew the rect-based snap-offset measurements in carousel.svelte.
+   Engines without view() timelines keep the plain hard clip. Firefox: not shipped as of 2026-08
+   (flag: layout.css.scroll-driven-animations.enabled) — recheck ~mid-2027. */
+@supports (animation-timeline: view()) {
+	[data-slot='carousel-content'] > [data-slot='carousel-item'] {
+		animation: carousel-edge-fade linear both;
+		animation-timeline: view(inline);
+	}
+	[data-slot='carousel-content'][data-orientation='vertical'] > [data-slot='carousel-item'] {
+		animation-timeline: view(block);
+	}
+}
+@keyframes carousel-edge-fade {
+	entry 0% {
+		opacity: 0.2;
+	}
+	entry 100% {
+		opacity: 1;
+	}
+	exit 0% {
+		opacity: 1;
+	}
+	exit 100% {
+		opacity: 0.2;
+	}
+}
