@@ -27,7 +27,6 @@ export const components = [
 	{"slug":"dropdown-menu","name":"Dropdown Menu","description":"Displays a menu of actions triggered by a button."},
 	{"slug":"empty","name":"Empty","description":"Display an empty state with a heading, description, and actions."},
 	{"slug":"field","name":"Field","description":"Compose accessible form fields from labels, controls, and help text."},
-	{"slug":"heading","name":"Heading","description":"A heading component for page and section titles."},
 	{"slug":"input","name":"Input","description":"Displays a form input field or a component that looks like an input field."},
 	{"slug":"item","name":"Item","description":"A flexible, composable row for displaying content with media and actions."},
 	{"slug":"kbd","name":"Kbd","description":"Display textual user input from a keyboard."},
@@ -152,9 +151,6 @@ export const componentDemos = {
 	],
 	"field": [
 		{ key: "demo", name: "field-demo", path: "/src/docs/registry/field-demo.svelte", sourcePath: "../docs/registry/field-demo.svelte" },
-	],
-	"heading": [
-		{ key: "demo", name: "heading-demo", path: "/src/docs/registry/heading-demo.svelte", sourcePath: "../docs/registry/heading-demo.svelte" },
 	],
 	"input": [
 		{ key: "demo", name: "input-demo", path: "/src/docs/registry/input-demo.svelte", sourcePath: "../docs/registry/input-demo.svelte" },

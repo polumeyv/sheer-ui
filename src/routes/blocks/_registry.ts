@@ -22,6 +22,11 @@ export const blocks: BlockMeta[] = [
 		name: 'Alert Modal',
 		description: 'A store-driven confirm / acknowledge modal built on the native <dialog> element.',
 	},
+	{
+		slug: 'heading',
+		name: 'Heading',
+		description: 'A page heading: title row plus an optional tab nav.',
+	},
 ];
 
 export const blockBySlug = new Map(blocks.map((b) => [b.slug, b]));

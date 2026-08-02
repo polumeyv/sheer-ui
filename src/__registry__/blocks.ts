@@ -11,6 +11,7 @@ export const blocks = [
 	"ErrorPage",
 	"Footer",
 	"Header",
+	"Heading",
 	"MobileNav",
 	"mockups",
 	"PhoneInput",
