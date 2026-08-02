@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import * as Sidebar from '#lib/components/sidebar/index.js';
 	import { components } from './_registry.js';
@@ -14,7 +15,7 @@
 
 <Sidebar.Root>
 	<Sidebar.Header class="gap-2">
-		<a href="/" class="px-2 py-1 text-sm font-semibold">@polumeyv/ui</a>
+		<a href={resolve('')} class="px-2 py-1 text-sm font-semibold">@polumeyv/ui</a>
 		<Sidebar.Input bind:value={query} placeholder="Search..." />
 	</Sidebar.Header>
 	<Sidebar.Content>
@@ -27,7 +28,7 @@
 							<Sidebar.MenuItem>
 								<Sidebar.MenuButton isActive={page.url.pathname === `/blocks/${block.slug}`}>
 									{#snippet child({ props })}
-										<a href="/blocks/{block.slug}" {...props}>{block.name}</a>
+										<a href={resolve(`blocks/${block.slug}`)} {...props}>{block.name}</a>
 									{/snippet}
 								</Sidebar.MenuButton>
 							</Sidebar.MenuItem>
@@ -44,7 +45,7 @@
 						<Sidebar.MenuItem>
 							<Sidebar.MenuButton isActive={page.url.pathname === `/components/${component.slug}`}>
 								{#snippet child({ props })}
-									<a href="/components/{component.slug}" {...props}>{component.name}</a>
+									<a href={resolve(`components/${component.slug}`)} {...props}>{component.name}</a>
 								{/snippet}
 							</Sidebar.MenuButton>
 						</Sidebar.MenuItem>

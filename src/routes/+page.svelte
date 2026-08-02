@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import * as Card from '#lib/components/card/index.js';
 	import { Badge } from '#lib/components/badge';
 	import { components } from './components/_registry.js';
@@ -31,7 +32,7 @@
 			<p class="text-sm text-muted-foreground">Full, app-ready compositions — not the headless components.</p>
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{#each blocks as block (block.slug)}
-					<a href="/blocks/{block.slug}" class="group block">
+					<a href={resolve(`blocks/${block.slug}`)} class="group block">
 						<Card.Root class="h-full gap-2 transition-colors hover:border-primary/50">
 							<Card.Header>
 								<Card.Title class="transition-colors group-hover:text-primary">{block.name}</Card.Title>
@@ -48,7 +49,7 @@
 		<h2 class="text-2xl font-semibold tracking-tight">Components</h2>
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			{#each components as component (component.slug)}
-				<a href="/components/{component.slug}" class="group block">
+				<a href={resolve(`components/${component.slug}`)} class="group block">
 					<Card.Root class="h-full gap-2 transition-colors hover:border-primary/50">
 						<Card.Header>
 							<Card.Title class="flex items-center gap-2 transition-colors group-hover:text-primary">
