@@ -3,7 +3,6 @@
 	import { ScrollAreaScrollbarAutoState, ScrollAreaScrollbarHoverState } from '../scroll-area.svelte.js';
 	import type { _ScrollbarStubProps } from '../types.js';
 	import ScrollAreaScrollbarVisible from './scroll-area-scrollbar-visible.svelte';
-	import PresenceLayer from '../../../internal/presence-layer/presence-layer.svelte';
 
 	let { forceMount = false, ...restProps }: _ScrollbarStubProps = $props();
 
@@ -18,8 +17,6 @@
 	const open = $derived(forceMount || (scrollbarHoverState.isVisible && scrollbarAutoState.isVisible));
 </script>
 
-<PresenceLayer {open} ref={scrollbarAutoState.scrollbar.opts.ref}>
-	{#snippet presence()}
-		<ScrollAreaScrollbarVisible {...mergedProps} />
-	{/snippet}
-</PresenceLayer>
+{#if open}
+	<ScrollAreaScrollbarVisible {...mergedProps} />
+{/if}
