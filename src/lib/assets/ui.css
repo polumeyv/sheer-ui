@@ -5,12 +5,6 @@
 	initial-value: 0s;
 }
 
-@property --tw-animation-direction {
-	syntax: '*';
-	inherits: false;
-	initial-value: normal;
-}
-
 @property --tw-animation-duration {
 	syntax: '*';
 	inherits: false;
@@ -21,18 +15,6 @@
 	syntax: '*';
 	inherits: false;
 	initial-value: none;
-}
-
-@property --tw-animation-iteration-count {
-	syntax: '*';
-	inherits: false;
-	initial-value: 1;
-}
-
-@property --tw-enter-blur {
-	syntax: '*';
-	inherits: false;
-	initial-value: 0;
 }
 
 @property --tw-enter-opacity {
@@ -60,12 +42,6 @@
 }
 
 @property --tw-enter-translate-y {
-	syntax: '*';
-	inherits: false;
-	initial-value: 0;
-}
-
-@property --tw-exit-blur {
 	syntax: '*';
 	inherits: false;
 	initial-value: 0;
@@ -144,15 +120,6 @@
 	--animation-delay-700: 0.7s;
 	--animation-delay-1000: 1s;
 
-	--animation-repeat-0: 0;
-	--animation-repeat-1: 1;
-	--animation-repeat-infinite: infinite;
-
-	--animation-direction-normal: normal;
-	--animation-direction-reverse: reverse;
-	--animation-direction-alternate: alternate;
-	--animation-direction-alternate-reverse: alternate-reverse;
-
 	--animation-fill-mode-none: none;
 	--animation-fill-mode-forwards: forwards;
 	--animation-fill-mode-backwards: backwards;
@@ -184,16 +151,15 @@
 	/* Animations and keyframes */
 
 	--animate-in: enter var(--tw-animation-duration, var(--tw-duration, 150ms)) var(--tw-ease, ease) var(--tw-animation-delay, 0s)
-		var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal) var(--tw-animation-fill-mode, none);
+		1 normal var(--tw-animation-fill-mode, none);
 	--animate-out: exit var(--tw-animation-duration, var(--tw-duration, 150ms)) var(--tw-ease, ease) var(--tw-animation-delay, 0s)
-		var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal) var(--tw-animation-fill-mode, none);
+		1 normal var(--tw-animation-fill-mode, none);
 
 	@keyframes enter {
 		from {
 			opacity: var(--tw-enter-opacity, 1);
 			transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0)
 				scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0));
-			filter: blur(var(--tw-enter-blur, 0));
 		}
 	}
 
@@ -202,7 +168,6 @@
 			opacity: var(--tw-exit-opacity, 1);
 			transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0)
 				scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
-			filter: blur(var(--tw-exit-blur, 0));
 		}
 	}
 
@@ -400,45 +365,9 @@
 	--tw-animation-delay: --value(--animation-delay-*, [duration], 'initial', [*]);
 }
 
-@utility repeat-* {
-	animation-iteration-count: --value(--animation-repeat-*, number, 'initial', [*]);
-	--tw-animation-iteration-count: --value(--animation-repeat-*, number, 'initial', [*]);
-}
-
-@utility direction-* {
-	animation-direction: --value(--animation-direction-*, 'initial', [*]);
-	--tw-animation-direction: --value(--animation-direction-*, 'initial', [*]);
-}
-
 @utility fill-mode-* {
 	animation-fill-mode: --value(--animation-fill-mode-*, 'initial', [*]);
 	--tw-animation-fill-mode: --value(--animation-fill-mode-*, 'initial', [*]);
-}
-
-@utility running {
-	animation-play-state: running;
-}
-@utility paused {
-	animation-play-state: paused;
-}
-@utility play-state-* {
-	animation-play-state: --value('initial', [*]);
-}
-
-@utility blur-in {
-	--tw-enter-blur: 20px;
-}
-@utility blur-in-* {
-	--tw-enter-blur: calc(--value(number) * 1px);
-	--tw-enter-blur: --value(--blur-*, [*]);
-}
-
-@utility blur-out {
-	--tw-exit-blur: 20px;
-}
-@utility blur-out-* {
-	--tw-exit-blur: calc(--value(number) * 1px);
-	--tw-exit-blur: --value(--blur-*, [*]);
 }
 
 @utility fade-in {
@@ -739,14 +668,6 @@
 @custom-variant data-vertical {
 	&:where([data-orientation='vertical']) {
 		@slot;
-	}
-}
-
-@utility no-scrollbar {
-	scrollbar-width: none;
-
-	&::-webkit-scrollbar {
-		display: none;
 	}
 }
 

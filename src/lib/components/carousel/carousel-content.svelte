@@ -15,7 +15,7 @@
 	data-orientation={ctx.orientation}
 	class={join(
 		// [overflow-anchor:none]: scroll anchoring fights the loop mode's `order` rotation
-		'flex snap-mandatory no-scrollbar [overflow-anchor:none]',
+		'flex snap-mandatory scrollbar-none [overflow-anchor:none]',
 		ctx.orientation === 'horizontal' ? 'snap-x gap-4 overflow-x-auto overscroll-x-contain' : 'snap-y flex-col gap-4 overflow-y-auto overscroll-y-contain',
 		className,
 	)}

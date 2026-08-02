@@ -10,7 +10,7 @@
 	bind:this={ref}
 	data-slot="sidebar-content"
 	data-sidebar="content"
-	class={join('no-scrollbar gap-2 flex min-h-0 flex-1 flex-col overflow-auto group-data-[collapsible=icon]:overflow-hidden', className)}
+	class={join('scrollbar-none gap-2 flex min-h-0 flex-1 flex-col overflow-auto group-data-[collapsible=icon]:overflow-hidden', className)}
 	{...restProps}>
 	{@render children?.()}
 </div>

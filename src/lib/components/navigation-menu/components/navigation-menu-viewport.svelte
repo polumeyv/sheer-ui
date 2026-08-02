@@ -55,7 +55,7 @@
 	const mounted = mountedAttachment<HTMLElement>((m) => (viewportState.mounted = m));
 </script>
 
-<div class="absolute start-0 top-full isolate z-50 flex justify-center">
+<div class="absolute inset-s-0 top-full isolate z-50 flex justify-center">
 	<PresenceLayer open={forceMount || viewportState.open} ref={viewportState.opts.ref}>
 		{#snippet presence({ transitionStatus })}
 			{@const presenceProps = getDataTransitionAttrs(transitionStatus)}
