@@ -314,7 +314,7 @@
 	},
 	"peerDependencies": {
 		"svelte": "^5.56.3",
-		"@sveltejs/kit": "^2.65.1",
+		"@sveltejs/kit": "^3.0.0-next.0",
 		"@internationalized/date": "^3.12.0"
 	},
 	"dependencies": {
@@ -328,9 +328,9 @@
 	},
 	"devDependencies": {
 		"@fontsource-variable/inter": "^5.2.8",
-		"@sveltejs/adapter-auto": "^7.0.1",
+		"@sveltejs/adapter-auto": "8.0.0-next.1",
 		"@internationalized/date": "^3.12.2",
-		"@sveltejs/kit": "^2.68.0",
+		"@sveltejs/kit": "3.0.0-next.13",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
 		"@tailwindcss/vite": "^4.3.2",
 		"tailwindcss": "^4.3.2",
@@ -350,5 +350,8 @@
 		"typescript": "^6.0.3",
 		"vite": "^8.1.0",
 		"vitest": "^4.1.9"
+	},
+	"imports": {
+		"#lib/*": "./src/lib/*"
 	}
 }

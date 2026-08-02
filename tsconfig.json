@@ -1,5 +1,5 @@
 {
-	"extends": "./.svelte-kit/tsconfig.json",
+	"extends": "$app/tsconfig",
 	"compilerOptions": {
 		"verbatimModuleSyntax": true,
 		"isolatedModules": true,
@@ -11,7 +11,7 @@
 		"module": "esnext",
 		"target": "esnext",
 		// `include` below replaces the generated one, so `.svelte-kit/ambient.d.ts` — which references these — is out of the program.
-		"types": ["bun", "@sveltejs/kit"],
+		"types": ["bun", "@sveltejs/kit", "$app/types"],
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
