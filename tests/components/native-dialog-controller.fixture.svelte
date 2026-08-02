@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { nativeDialogControllerAttachment } from '$lib/internal/native-dialog-controller.svelte.js';
+	import { nativeDialogControllerAttachment } from '#lib/internal/native-dialog-controller.svelte.js';
 	import { untrack } from 'svelte';
 
 	let {

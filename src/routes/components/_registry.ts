@@ -5,7 +5,7 @@
  * (e.g. `button-demo.svelte`, `button-with-icon.svelte`).
  */
 export type ComponentMeta = {
-	/** URL segment + `src/docs/registry/<slug>-*.svelte` demo prefix + `$lib/components/<slug>` import path */
+	/** URL segment + `src/docs/registry/<slug>-*.svelte` demo prefix + `#lib/components/<slug>` import path */
 	slug: string;
 	/** Display name */
 	name: string;
@@ -26,7 +26,11 @@ export const components: ComponentMeta[] = [
 	{ slug: 'button', name: 'Button', description: 'Displays a button or a component that looks like a button.' },
 	{ slug: 'calendar', name: 'Calendar', description: 'A calendar component that allows users to select a date.' },
 	{ slug: 'card', name: 'Card', description: 'Displays a card with header, content, and footer.' },
-	{ slug: 'carousel', name: 'Carousel', description: 'A carousel on native scroll snap: the browser owns physics and snapping, selection is read from scrollend.' },
+	{
+		slug: 'carousel',
+		name: 'Carousel',
+		description: 'A carousel on native scroll snap: the browser owns physics and snapping, selection is read from scrollend.',
+	},
 	{ slug: 'chart', name: 'Chart', description: 'Visualize data with composable charts built on LayerChart.' },
 	{ slug: 'checkbox', name: 'Checkbox', description: 'A control that allows the user to toggle between checked and not checked.' },
 	{

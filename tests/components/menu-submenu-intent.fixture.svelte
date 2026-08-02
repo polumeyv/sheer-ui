@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MenuSubmenuIntent } from '$lib/components/menu/menu.svelte.js';
+	import { MenuSubmenuIntent } from '#lib/components/menu/menu.svelte.js';
 
 	let { enabled: initialEnabled = true }: { enabled?: boolean } = $props();
 

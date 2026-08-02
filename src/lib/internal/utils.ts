@@ -1,6 +1,6 @@
 // Snippet/ref prop helpers used across the styled bits-ui components (the
 // shadcn-svelte convention). The reactive accessor/box types live in
-// `$lib/internal/tools` and `$lib/internal/types` — these are only the surface props.
+// `#lib/internal/tools` and `#lib/internal/types` — these are only the surface props.
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type WithoutChild<T> = T extends { child?: any } ? Omit<T, 'child'> : T;

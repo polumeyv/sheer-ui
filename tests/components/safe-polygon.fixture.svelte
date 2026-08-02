@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SafePolygon } from '$lib/internal/safe-polygon.svelte.js';
+	import { SafePolygon } from '#lib/internal/safe-polygon.svelte.js';
 
 	let { enabled: initialEnabled = true }: { enabled?: boolean } = $props();
 

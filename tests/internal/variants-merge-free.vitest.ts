@@ -11,12 +11,12 @@
 import { execFileSync } from 'node:child_process';
 import { describe, expect, test } from 'vitest';
 
-import { buttonVariants } from '$lib/components/button/variants.js';
-import { emptyMediaVariants } from '$lib/components/empty/variants.js';
-import { fieldVariants } from '$lib/components/field/variants.js';
-import { inputVariants } from '$lib/components/input/variants.js';
-import { sheetVariants } from '$lib/components/sheet/variants.js';
-import { toggleVariants } from '$lib/components/toggle/variants.js';
+import { buttonVariants } from '#lib/components/button/variants.js';
+import { emptyMediaVariants } from '#lib/components/empty/variants.js';
+import { fieldVariants } from '#lib/components/field/variants.js';
+import { inputVariants } from '#lib/components/input/variants.js';
+import { sheetVariants } from '#lib/components/sheet/variants.js';
+import { toggleVariants } from '#lib/components/toggle/variants.js';
 
 // The .svelte module scripts drag component import chains that construct a
 // MediaQuery at module scope, so stub matchMedia before importing them.
@@ -34,14 +34,12 @@ Object.defineProperty(window, 'matchMedia', {
 	}),
 });
 
-const { alertVariants } = await import('$lib/components/alert/alert.svelte');
-const { badgeVariants } = await import('$lib/components/badge/badge.svelte');
-const { itemMediaVariants } = await import('$lib/components/item/item-media.svelte');
-const { itemVariants } = await import('$lib/components/item/item.svelte');
-const { navigationMenuTriggerStyle } = await import(
-	'$lib/components/navigation-menu/components/navigation-menu-trigger.svelte'
-);
-const { sidebarMenuButtonVariants } = await import('$lib/components/sidebar/sidebar-menu-button.svelte');
+const { alertVariants } = await import('#lib/components/alert/alert.svelte');
+const { badgeVariants } = await import('#lib/components/badge/badge.svelte');
+const { itemMediaVariants } = await import('#lib/components/item/item-media.svelte');
+const { itemVariants } = await import('#lib/components/item/item.svelte');
+const { navigationMenuTriggerStyle } = await import('#lib/components/navigation-menu/components/navigation-menu-trigger.svelte');
+const { sidebarMenuButtonVariants } = await import('#lib/components/sidebar/sidebar-menu-button.svelte');
 
 const BIN = process.env.OVERRULE_BIN ?? 'node_modules/.bin/overrule';
 

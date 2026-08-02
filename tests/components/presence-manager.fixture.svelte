@@ -1,12 +1,8 @@
 <script lang="ts">
-	import { boxWith } from '$lib/internal/tools/index.js';
-	import { PresenceManager, type AfterAnimationsRunner } from '$lib/internal/presence-manager.svelte.js';
+	import { boxWith } from '#lib/internal/tools/index.js';
+	import { PresenceManager, type AfterAnimationsRunner } from '#lib/internal/presence-manager.svelte.js';
 
-	let {
-		open: initialOpen = false,
-		enabled = true,
-		skipExit = false,
-	}: { open?: boolean; enabled?: boolean; skipExit?: boolean } = $props();
+	let { open: initialOpen = false, enabled = true, skipExit = false }: { open?: boolean; enabled?: boolean; skipExit?: boolean } = $props();
 
 	let open = $state(initialOpen);
 	let completeCount = $state(0);

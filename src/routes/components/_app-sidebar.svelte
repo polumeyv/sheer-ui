@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import * as Sidebar from '$lib/components/sidebar/index.js';
+	import * as Sidebar from '#lib/components/sidebar/index.js';
 	import { components } from './_registry.js';
 	import { blocks } from '../blocks/_registry.js';
 
@@ -9,9 +9,7 @@
 	const filtered = $derived(
 		query.trim() ? components.filter((c) => c.name.toLowerCase().includes(query.trim().toLowerCase())) : components,
 	);
-	const filteredBlocks = $derived(
-		query.trim() ? blocks.filter((b) => b.name.toLowerCase().includes(query.trim().toLowerCase())) : blocks,
-	);
+	const filteredBlocks = $derived(query.trim() ? blocks.filter((b) => b.name.toLowerCase().includes(query.trim().toLowerCase())) : blocks);
 </script>
 
 <Sidebar.Root>
@@ -51,7 +49,7 @@
 							</Sidebar.MenuButton>
 						</Sidebar.MenuItem>
 					{:else}
-						<p class="text-muted-foreground px-2 py-1 text-sm">No matches.</p>
+						<p class="px-2 py-1 text-sm text-muted-foreground">No matches.</p>
 					{/each}
 				</Sidebar.Menu>
 			</Sidebar.GroupContent>

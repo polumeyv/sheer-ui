@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Showcase for the heading block: title-only, and title + href-driven tab nav.
-	import Heading from '$lib/blocks/Heading.svelte';
+	import Heading from '#lib/blocks/Heading.svelte';
 
 	const tabs = [
 		{ id: 'services', label: 'Services', href: '#services' },

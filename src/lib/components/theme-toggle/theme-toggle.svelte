@@ -5,6 +5,7 @@
 	import { getTheme } from './theme.svelte.js';
 	import { Button } from '../button';
 
+	/** @type {{ variant?: import('../button').ButtonVariant }} */
 	let { variant = 'ghost' } = $props();
 
 	const theme = getTheme();
@@ -20,7 +21,7 @@
 </script>
 
 <Button onclick={toggleTheme} {variant} size="icon" class="rounded-full!">
-	<span class="stage grid group *:[grid-area:1/1]" data-dark={dark} data-phase={phase} aria-hidden="true">
+	<span class="stage group grid *:[grid-area:1/1]" data-dark={dark} data-phase={phase} aria-hidden="true">
 		<span class="icon sun group-data-dark:opacity-0">
 			<SunIcon class="size-5" />
 		</span>
