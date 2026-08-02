@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { beforeNavigate } from '$app/navigation';
 	import * as Tooltip from '../tooltip';
 	import { join } from 'overrule';
 	import type { WithElementRef } from '../../internal/utils.js';
@@ -6,6 +7,7 @@
 	import { SIDEBAR_COOKIE_MAX_AGE, SIDEBAR_COOKIE_NAME, SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON } from './constants';
 	import { setSidebar, SidebarState } from './context.svelte';
 	import { OpenCell } from '../../internal/open-cell.svelte.js';
+	import { isMobile } from '../../hooks/is-mobile.svelte.js';
 	import type { Snippet } from 'svelte';
 
 	let {
@@ -39,6 +41,9 @@
 			},
 		}),
 	);
+
+	// Closes the mobile sidebar on navigation, since clicking a nav link doesn't dismiss it.
+	beforeNavigate(() => isMobile.current && sidebar.openForViewport && sidebar.setOpen(false));
 </script>
 
 <svelte:window onkeydown={sidebar.handleShortcutKeydown} />
