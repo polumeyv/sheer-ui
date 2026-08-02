@@ -166,11 +166,6 @@
 			"svelte": "./src/lib/components/field/index.ts",
 			"default": "./src/lib/components/field/index.ts"
 		},
-		"./components/heading": {
-			"types": "./src/lib/components/heading/index.ts",
-			"svelte": "./src/lib/components/heading/index.ts",
-			"default": "./src/lib/components/heading/index.ts"
-		},
 		"./components/input": {
 			"types": "./src/lib/components/input/index.ts",
 			"svelte": "./src/lib/components/input/index.ts",

@@ -154,10 +154,6 @@ export const Index = {
 		type: "registry:example",
 		files: ["../docs/registry/field-demo.svelte"],
 	},
-	"heading-demo": {
-		type: "registry:example",
-		files: ["../docs/registry/heading-demo.svelte"],
-	},
 	"input-demo": {
 		type: "registry:example",
 		files: ["../docs/registry/input-demo.svelte"],
