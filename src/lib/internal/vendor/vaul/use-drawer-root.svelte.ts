@@ -55,12 +55,11 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 	let justReleased = $state(false);
 	let overlayNode = $state<HTMLElement | null>(null);
 	let drawerNode = $state<HTMLElement | null>(null);
-	let openTime: Date | null = null;
-	let dragStartTime: Date | null = null;
-	let dragEndTime: Date | null = null;
-	let lastTimeDragPrevented: Date | null = null;
+	let openTime: number | null = null;
+	let dragStartTime: number | null = null;
+	let lastTimeDragPrevented: number | null = null;
 	let isAllowedToDrag = false;
-	let nestedOpenChangeTimer: number | null = null;
+	let nestedTransitionCleanup: (() => void) | null = null;
 	let pointerStart = 0;
 	let keyboardIsOpen = simpleBox(false);
 	let shouldAnimate = $state(!opts.open.current);
@@ -113,7 +112,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		drawerHeight = drawerNode?.getBoundingClientRect().height || 0;
 		drawerWidth = drawerNode?.getBoundingClientRect().width || 0;
 		isDragging = true;
-		dragStartTime = new Date();
+		dragStartTime = event.timeStamp;
 
 		// iOS doesn't trigger mouseUp after scrolling so we need to listen to touched in order to disallow dragging
 		if (isIOS) {
@@ -128,7 +127,8 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		let element = el as HTMLElement;
 		const highlightedText = window.getSelection()?.toString();
 		const swipeAmount = drawerNode ? getTranslate(drawerNode, opts.direction.current) : null;
-		const date = new Date();
+		// performance.now() shares PointerEvent.timeStamp's monotonic time origin, so the two mix safely.
+		const now = performance.now();
 
 		// Fixes https://github.com/emilkowalski/vaul/issues/483
 		if (element.tagName === 'SELECT') return false;
@@ -142,7 +142,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		}
 
 		// Allow scrolling when animating
-		if (openTime && date.getTime() - openTime.getTime() < 500) {
+		if (openTime && now - openTime < TRANSITIONS.DURATION * 1000) {
 			return false;
 		}
 
@@ -158,13 +158,13 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		}
 
 		// Disallow dragging if drawer was scrolled within `scrollLockTimeout`
-		if (lastTimeDragPrevented && date.getTime() - lastTimeDragPrevented.getTime() < opts.scrollLockTimeout.current && swipeAmount === 0) {
-			lastTimeDragPrevented = date;
+		if (lastTimeDragPrevented && now - lastTimeDragPrevented < opts.scrollLockTimeout.current && swipeAmount === 0) {
+			lastTimeDragPrevented = now;
 			return false;
 		}
 
 		if (isDraggingInDirection) {
-			lastTimeDragPrevented = date;
+			lastTimeDragPrevented = now;
 
 			// We are dragging down so we should allow scrolling
 			return false;
@@ -175,7 +175,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 			// Check if the element is scrollable
 			if (element.scrollHeight > element.clientHeight) {
 				if (element.scrollTop !== 0) {
-					lastTimeDragPrevented = new Date();
+					lastTimeDragPrevented = performance.now();
 
 					// The element is scrollable and not scrolled to the top, so don't drag
 					return false;
@@ -380,7 +380,6 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		drawerNode.classList.remove(DRAG_CLASS);
 		isAllowedToDrag = false;
 		isDragging = false;
-		dragEndTime = new Date();
 	}
 
 	function closeDrawer(fromWithin?: boolean) {
@@ -391,12 +390,6 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 			opts.open.current = false;
 			handleOpenChange(false);
 		}
-
-		window.setTimeout(() => {
-			if (opts.snapPoints.current && opts.snapPoints.current.length > 0) {
-				opts.activeSnapPoint.current = opts.snapPoints.current[0]!;
-			}
-		}, TRANSITIONS.DURATION * 1000);
 	}
 
 	function resetDrawer() {
@@ -451,7 +444,6 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		drawerNode.classList.remove(DRAG_CLASS);
 		isAllowedToDrag = false;
 		isDragging = false;
-		dragEndTime = new Date();
 		const swipeAmount = getTranslate(drawerNode, opts.direction.current);
 
 		if (!event || (event.target && !shouldDrag(event.target, false)) || !swipeAmount || Number.isNaN(swipeAmount)) {
@@ -460,7 +452,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 
 		if (dragStartTime === null) return;
 
-		const timeTaken = dragEndTime.getTime() - dragStartTime.getTime();
+		const timeTaken = event.timeStamp - dragStartTime;
 		const distMoved = pointerStart - (isVertical(opts.direction.current) ? event.pageY : event.pageX);
 		const velocity = Math.abs(distMoved) / timeTaken;
 
@@ -518,7 +510,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		return untrack(() => {
 			if (!opts.open.current) return;
 
-			openTime = new Date();
+			openTime = performance.now();
 
 			return assignStyle(document.documentElement, {
 				scrollBehavior: 'auto',
@@ -531,9 +523,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 
 		const initialTranslate = o ? -NESTED_DISPLACEMENT : 0;
 
-		if (nestedOpenChangeTimer) {
-			window.clearTimeout(nestedOpenChangeTimer);
-		}
+		nestedTransitionCleanup?.();
 
 		applyStyle(drawerNode, {
 			transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
@@ -543,15 +533,30 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		});
 
 		if (!o && drawerNode) {
-			nestedOpenChangeTimer = window.setTimeout(() => {
-				const translateValue = getTranslate(drawerNode as HTMLElement, opts.direction.current);
-				applyStyle(drawerNode, {
+			// Freeze the un-scale transition's end state as a plain translate once it actually
+			// finishes; a canceled transition (a new drag grabbed the node) must not be frozen.
+			const node = drawerNode;
+			const offEnd = on(node, 'transitionend', (e) => {
+				if (e.target !== node || e.propertyName !== 'transform') return;
+				cleanup();
+				const translateValue = getTranslate(node, opts.direction.current);
+				applyStyle(node, {
 					transition: 'none',
 					transform: isVertical(opts.direction.current)
 						? `translate3d(0, ${translateValue}px, 0)`
 						: `translate3d(${translateValue}px, 0, 0)`,
 				});
-			}, 500);
+			});
+			const offCancel = on(node, 'transitioncancel', (e) => {
+				if (e.target !== node || e.propertyName !== 'transform') return;
+				cleanup();
+			});
+			const cleanup = () => {
+				offEnd();
+				offCancel();
+				nestedTransitionCleanup = null;
+			};
+			nestedTransitionCleanup = cleanup;
 		}
 	}
 
@@ -610,6 +615,10 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 	}
 
 	function handleOpenChangeComplete(o: boolean) {
+		if (!o && opts.snapPoints.current && opts.snapPoints.current.length > 0) {
+			opts.activeSnapPoint.current = opts.snapPoints.current[0]!;
+		}
+
 		if (!o && !opts.nested.current) {
 			document.body.style.cssText = bodyStyles;
 		}

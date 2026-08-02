@@ -22,7 +22,7 @@ export function useSnapPoints({
 	overlayNode: HTMLElement | null;
 	isReleasing: boolean;
 }> & {
-	setOpenTime: (time: Date) => void;
+	setOpenTime: (time: number) => void;
 } & WritableBoxedValues<{
 		activeSnapPoint: number | string | null | undefined;
 		open: boolean;
@@ -94,7 +94,7 @@ export function useSnapPoints({
 	const activeSnapPointOffset = $derived(activeSnapPointIndex != null ? snapPointsOffset[activeSnapPointIndex] : null);
 
 	const onSnapPointChange = (activeSnapPointIndex: number) =>
-		snapPoints.current && activeSnapPointIndex === snapPointsOffset.length - 1 && setOpenTime(new Date());
+		snapPoints.current && activeSnapPointIndex === snapPointsOffset.length - 1 && setOpenTime(performance.now());
 
 	function snapToPoint(dimension: number) {
 		const newSnapPointIndex = snapPointsOffset?.findIndex((snapPointDim) => snapPointDim === dimension) ?? null;
