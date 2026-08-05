@@ -19,8 +19,8 @@
 <div
 	bind:this={ref}
 	class="text-sidebar-foreground group peer hidden md:block"
-	data-state={sidebar.state}
-	data-collapsible={sidebar.state === 'collapsed' ? collapsible : ''}
+	data-state={sidebar.open ? 'expanded' : 'collapsed'}
+	data-collapsible={sidebar.open ? '' : collapsible}
 	data-variant={variant}
 	data-side={side}
 	data-slot="sidebar">

@@ -27,7 +27,6 @@ export class SidebarState {
 	readonly props: SidebarStateProps;
 	open = $derived.by(() => this.props.open());
 	#openMobile = $state(false);
-	state = $derived.by(() => (this.open ? 'expanded' : 'collapsed'));
 	openForViewport = $derived.by(() => (viewportIsMobile.current ? this.#openMobile : this.open));
 
 	constructor(props: SidebarStateProps) {
@@ -44,11 +43,7 @@ export class SidebarState {
 	};
 
 	setOpen = (value: boolean) => {
-		if (viewportIsMobile.current) {
-			this.#openMobile = value;
-			return;
-		}
-		this.props.setOpen(value);
+		viewportIsMobile.current ? (this.#openMobile = value) : this.props.setOpen(value);
 	};
 
 	toggle = () => {

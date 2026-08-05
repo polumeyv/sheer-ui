@@ -65,7 +65,7 @@
 	});
 
 	const contentProps = $derived(
-		mergeProps({ side: 'right', align: 'center', hidden: sidebar.state !== 'collapsed', class: 'max-md:hidden' }, tooltipContentProps),
+		mergeProps({ side: 'right', align: 'center', hidden: sidebar.open, class: 'max-md:hidden' }, tooltipContentProps),
 	);
 </script>
 
