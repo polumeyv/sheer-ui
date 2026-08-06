@@ -265,6 +265,23 @@ export class FloatingContentState {
 			this.opts.onPlaced?.current();
 		});
 
+		// Mirror the content's computed z-index onto the wrapper (upstream bits-ui behavior): the wrapper
+		// is the element that stacks against the page, and at z-index auto it loses to positioned elements
+		// that come later in the DOM when the layer renders inline (e.g. a dropdown inside the mobile
+		// sidebar sheet, where the sheet's own items paint over the menu).
+		$effect(() => {
+			const contentNode = this.contentRef.current;
+			if (!contentNode || !this.opts.enabled.current) return;
+			const win = getWindow(contentNode);
+			const rafId = win.requestAnimationFrame(() => {
+				// avoid applying stale values when refs change quickly
+				if (this.contentRef.current !== contentNode || !this.opts.enabled.current) return;
+				const zIndex = win.getComputedStyle(contentNode).zIndex;
+				if (zIndex !== this.contentZIndex) this.contentZIndex = zIndex;
+			});
+			return () => win.cancelAnimationFrame(rafId);
+		});
+
 		// Feed the rendered wrapper element into useFloating. Without this the floating element
 		// stays null, computePosition never runs, and the content is stuck off-screen.
 		$effect(() => {
