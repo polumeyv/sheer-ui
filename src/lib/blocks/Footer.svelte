@@ -25,8 +25,8 @@
 
 <Separator />
 
-<footer class="p-10 max-w-7xl mx-auto w-full mb-10">
-	<div class="p-5 flex flex-col gap-5">
+<footer class="px-8 py-10 max-w-7xl mx-auto w-full mb-10">
+	<div class="flex flex-col gap-5">
 		<div class="flex flex-col gap-15 lg:flex-row w-full justify-between lg:items-end">
 			<div class="flex flex-col gap-2 justify-end">
 				<a class="text-sm text-muted-foreground font-bold tracking-wide transition-colors duration-300 hover:text-foreground" href={brandHref}>BY POLUMEYV</a>
@@ -36,7 +36,7 @@
 				<div
 					class="flex flex-col md:flex-row md:items-center md:mb-0 mb-8 md:h-6 gap-5 text-sm text-muted-foreground [&:has(a:hover)_a:not(:hover)]:text-muted-foreground/40">
 					{#if navLinks.length > 0}
-						<div class="flex gap-5">
+						<div class="flex flex-wrap gap-5">
 							{#each navLinks as link (link.href)}
 								<a href={link.href} class="transition-colors duration-300 hover:text-foreground!">{link.label}</a>
 							{/each}
@@ -46,7 +46,7 @@
 						<Separator orientation="vertical" class="hidden md:block" />
 					{/if}
 					{#if legalLinks.length > 0}
-						<div class="flex gap-5">
+						<div class="flex flex-wrap gap-5">
 							{#each legalLinks as link (link.href)}
 								<a href={link.href} class="transition-colors duration-300 hover:text-foreground!">{link.label}</a>
 							{/each}

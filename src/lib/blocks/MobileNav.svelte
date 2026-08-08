@@ -170,23 +170,22 @@
 		padding: 0;
 		border: none;
 		overflow: hidden;
+		/* Rendered even while closed (overriding the UA popover display:none): WebKit lacks `overlay` and
+		   yanks a closing popover to display:none instantly, so the exit animation must not involve display.
+		   visibility (delayed to the transition's end) does the hiding instead. */
+		display: flex;
+		flex-direction: column;
+		visibility: hidden;
 		clip-path: inset(0 0 100% 0);
 		transition:
 			clip-path 500ms ease-in-out,
-			display 500ms allow-discrete,
-			overlay 500ms allow-discrete;
+			visibility 0s 500ms;
 	}
 
 	.mobile-nav-popover:popover-open {
-		display: flex;
-		flex-direction: column;
+		visibility: visible;
 		clip-path: inset(0 0 0 0);
-	}
-
-	@starting-style {
-		.mobile-nav-popover:popover-open {
-			clip-path: inset(0 0 100% 0);
-		}
+		transition: clip-path 500ms ease-in-out;
 	}
 
 	:global(html:has(.mobile-nav-popover:popover-open)) {
