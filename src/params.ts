@@ -1,4 +1,4 @@
-import { defineParams } from '@sveltejs/kit';
+import { defineParams } from '@sveltejs/kit/params';
 import { blocks } from './__registry__/blocks.js';
 
 type BlockName = (typeof blocks)[number];
