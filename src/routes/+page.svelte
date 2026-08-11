@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import * as Card from '#lib/components/card/index.js';
-	import { Badge } from '#lib/components/badge';
+	import { Badge } from '#lib/components/badge/index.js';
 	import { components } from './components/_registry.js';
 	import { slugsWithDemos } from './components/_demos.js';
 	import { blocks } from './blocks/_registry.js';

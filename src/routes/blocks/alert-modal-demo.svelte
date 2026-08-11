@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Showcase for the alert-modal block: the real <AlertModal /> singleton driven by its store.
 	import AlertModal from '#lib/blocks/alert-modal/AlertModal.svelte';
-	import { alertModal } from '#lib/blocks/alert-modal/alert-modal.svelte';
+	import { alertModal } from '#lib/blocks/alert-modal/alert-modal.svelte.js';
 	import { Button } from '#lib/components/button/index.js';
 </script>
 
