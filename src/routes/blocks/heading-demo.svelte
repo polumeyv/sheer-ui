@@ -10,5 +10,8 @@
 
 <div class="flex w-full flex-col gap-10">
 	<Heading title="Get in Touch" />
-	<Heading title="Catalog" {tabs} activeTab="services" />
+	<section id="services">
+		<Heading title="Catalog" {tabs} activeTab="services" />
+	</section>
+	<section id="products" class="text-sm text-muted-foreground">Products section anchor</section>
 </div>
