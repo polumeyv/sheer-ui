@@ -65,14 +65,14 @@
 		<div
 			class={join(
 				'hidden absolute z-50 size-2.5 rotate-45 rounded-xs bg-foreground supports-[container-type:anchored]:block',
-				'group-data-[side=top]/tooltip:-bottom-[0.3rem] group-data-[side=top]/tooltip:left-1/2 group-data-[side=top]/tooltip:-translate-x-1/2',
-				'group-data-[side=bottom]/tooltip:-top-[0.3rem] group-data-[side=bottom]/tooltip:left-1/2 group-data-[side=bottom]/tooltip:-translate-x-1/2',
-				'group-data-[side=left]/tooltip:-right-[0.3rem] group-data-[side=left]/tooltip:top-1/2 group-data-[side=left]/tooltip:-translate-y-1/2',
-				'group-data-[side=right]/tooltip:-left-[0.3rem] group-data-[side=right]/tooltip:top-1/2 group-data-[side=right]/tooltip:-translate-y-1/2',
-				'[@container_anchored(fallback:_flip-block)]:group-data-[side=top]/tooltip:bottom-auto [@container_anchored(fallback:_flip-block)]:group-data-[side=top]/tooltip:-top-[0.3rem]',
-				'[@container_anchored(fallback:_flip-block)]:group-data-[side=bottom]/tooltip:top-auto [@container_anchored(fallback:_flip-block)]:group-data-[side=bottom]/tooltip:-bottom-[0.3rem]',
-				'[@container_anchored(fallback:_flip-inline)]:group-data-[side=left]/tooltip:right-auto [@container_anchored(fallback:_flip-inline)]:group-data-[side=left]/tooltip:-left-[0.3rem]',
-				'[@container_anchored(fallback:_flip-inline)]:group-data-[side=right]/tooltip:left-auto [@container_anchored(fallback:_flip-inline)]:group-data-[side=right]/tooltip:-right-[0.3rem]',
+				'group-data-[side=top]/tooltip:bottom-[-0.3rem] group-data-[side=top]/tooltip:left-1/2 group-data-[side=top]/tooltip:-translate-x-1/2',
+				'group-data-[side=bottom]/tooltip:top-[-0.3rem] group-data-[side=bottom]/tooltip:left-1/2 group-data-[side=bottom]/tooltip:-translate-x-1/2',
+				'group-data-[side=left]/tooltip:right-[-0.3rem] group-data-[side=left]/tooltip:top-1/2 group-data-[side=left]/tooltip:-translate-y-1/2',
+				'group-data-[side=right]/tooltip:left-[-0.3rem] group-data-[side=right]/tooltip:top-1/2 group-data-[side=right]/tooltip:-translate-y-1/2',
+				'[@container_anchored(fallback:_flip-block)]:group-data-[side=top]/tooltip:bottom-auto [@container_anchored(fallback:_flip-block)]:group-data-[side=top]/tooltip:top-[-0.3rem]',
+				'[@container_anchored(fallback:_flip-block)]:group-data-[side=bottom]/tooltip:top-auto [@container_anchored(fallback:_flip-block)]:group-data-[side=bottom]/tooltip:bottom-[-0.3rem]',
+				'[@container_anchored(fallback:_flip-inline)]:group-data-[side=left]/tooltip:right-auto [@container_anchored(fallback:_flip-inline)]:group-data-[side=left]/tooltip:left-[-0.3rem]',
+				'[@container_anchored(fallback:_flip-inline)]:group-data-[side=right]/tooltip:left-auto [@container_anchored(fallback:_flip-inline)]:group-data-[side=right]/tooltip:right-[-0.3rem]',
 				arrowClasses,
 			)}
 		></div>
