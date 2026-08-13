@@ -14,7 +14,6 @@ import { createContext, onMount, untrack } from 'svelte';
 import type { DateRangeFieldRootState } from '../date-range-field/date-range-field.svelte.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, WithRefOpts, RefAttachment } from '../../internal/types.js';
 import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
-import { isNumberString } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
 import { kbd } from '../../internal/kbd.js';
 import type {
@@ -842,7 +841,7 @@ abstract class BaseNumericSegmentState {
 			return;
 		}
 
-		if (isNumberString(e.key)) {
+		if (e.key.length === 1 && e.key >= '0' && e.key <= '9') {
 			this.#handleNumberKey(e);
 			return;
 		}
@@ -1110,7 +1109,7 @@ class DateFieldYearSegmentState extends BaseNumericSegmentState {
 			return;
 		}
 
-		if (isNumberString(e.key)) {
+		if (e.key.length === 1 && e.key >= '0' && e.key <= '9') {
 			this.#handleYearNumberKey(e);
 			return;
 		}
@@ -1245,7 +1244,7 @@ class DateFieldHourSegmentState extends BaseNumericSegmentState {
 	// Override to handle special hour logic
 	override onkeydown(e: BitsKeyboardEvent) {
 		// Add special handling for hour display with dayPeriod
-		if (isNumberString(e.key)) {
+		if (e.key.length === 1 && e.key >= '0' && e.key <= '9') {
 			const oldUpdateSegment = this.root.updateSegment.bind(this.root);
 			// oxlint-disable-next-line no-explicit-any
 			this.root.updateSegment = (part: any, cb: any) => {

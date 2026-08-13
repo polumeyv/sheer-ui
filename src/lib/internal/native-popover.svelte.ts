@@ -1,6 +1,5 @@
 import type { Getter } from './tools/index.js';
 import { on } from 'svelte/events';
-import { isString } from '@polumeyv/utilities';
 import { useOpenChangeComplete } from './use-open-change-complete.svelte.js';
 
 type NativePopoverAnchor = HTMLElement | string | null | undefined | object;
@@ -30,7 +29,11 @@ interface NativePopoverContentState {
 }
 
 const resolveNativePopoverAnchor = (anchor: NativePopoverAnchor, fallback: HTMLElement | null | undefined) =>
-	isString(anchor) ? document.querySelector<HTMLElement>(anchor) : anchor instanceof HTMLElement ? anchor : (fallback ?? null);
+	typeof anchor === 'string'
+		? document.querySelector<HTMLElement>(anchor)
+		: anchor instanceof HTMLElement
+			? anchor
+			: (fallback ?? null);
 
 /**
  * Drives a native popover surface from a content state: open/close via

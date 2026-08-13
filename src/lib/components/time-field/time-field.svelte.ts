@@ -11,7 +11,6 @@ import {
 import { createContext, onMount, untrack } from 'svelte';
 import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
-import { isNumberString } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/utilities/env';
 import { kbd } from '../../internal/kbd.js';
 import type {
@@ -731,7 +730,7 @@ abstract class BaseTimeSegmentState {
 			return;
 		}
 
-		if (isNumberString(e.key)) {
+		if (e.key.length === 1 && e.key >= '0' && e.key <= '9') {
 			this.#handleNumberKey(e);
 			return;
 		}
@@ -977,7 +976,7 @@ class TimeFieldHourSegmentState extends BaseTimeSegmentState {
 	override onkeydown(e: BitsKeyboardEvent) {
 		const oldUpdateSegment = this.root.updateSegment.bind(this.root);
 
-		if (isNumberString(e.key)) {
+		if (e.key.length === 1 && e.key >= '0' && e.key <= '9') {
 			this.root.hourInputDayPeriodHint = this.root.hourCycle === 24 ? null : this.root.segmentValues.dayPeriod;
 			this.root.updateSegment = <T extends EditableTimeSegmentPart>(part: T, cb: Updater<TimeSegmentObj[T]>): void => {
 				oldUpdateSegment(part, cb);

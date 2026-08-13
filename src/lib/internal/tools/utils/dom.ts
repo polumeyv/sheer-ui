@@ -1,15 +1,15 @@
-import { isObject } from '@polumeyv/utilities';
-
 const ELEMENT_NODE = 1;
 const DOCUMENT_NODE = 9;
 const DOCUMENT_FRAGMENT_NODE = 11;
 
-const hasNodeType = (node: unknown): node is { nodeType: number } => isObject(node) && typeof node.nodeType === 'number';
+const hasNodeType = (node: unknown): node is { nodeType: number } =>
+	typeof node === 'object' && node !== null && 'nodeType' in node && typeof node.nodeType === 'number';
 const isNode = (node: unknown): node is Node => hasNodeType(node);
 const isElement = (node: unknown): node is Element => hasNodeType(node) && node.nodeType === ELEMENT_NODE;
 const isDocument = (node: unknown): node is Document => hasNodeType(node) && node.nodeType === DOCUMENT_NODE;
 const isShadowRoot = (node: unknown): node is ShadowRoot => hasNodeType(node) && node.nodeType === DOCUMENT_FRAGMENT_NODE && 'host' in node;
-const isWindow = (node: unknown): node is Window => isObject(node) && node === node.window;
+const isWindow = (node: unknown): node is Window =>
+	typeof node === 'object' && node !== null && 'window' in node && node === node.window;
 
 type Target = Node | EventTarget | null | undefined;
 
