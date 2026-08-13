@@ -2,14 +2,13 @@ const ELEMENT_NODE = 1;
 const DOCUMENT_NODE = 9;
 const DOCUMENT_FRAGMENT_NODE = 11;
 
-const hasNodeType = (node: unknown): node is { nodeType: number } =>
-	typeof node === 'object' && node !== null && 'nodeType' in node && typeof node.nodeType === 'number';
+const isObject = (node: unknown): node is Record<string, unknown> =>
+	typeof node === 'object' && node !== null && !Array.isArray(node);
+const hasNodeType = (node: unknown): node is { nodeType: number } => isObject(node) && typeof node.nodeType === 'number';
 const isNode = (node: unknown): node is Node => hasNodeType(node);
 const isElement = (node: unknown): node is Element => hasNodeType(node) && node.nodeType === ELEMENT_NODE;
 const isDocument = (node: unknown): node is Document => hasNodeType(node) && node.nodeType === DOCUMENT_NODE;
 const isShadowRoot = (node: unknown): node is ShadowRoot => hasNodeType(node) && node.nodeType === DOCUMENT_FRAGMENT_NODE && 'host' in node;
-const isWindow = (node: unknown): node is Window =>
-	typeof node === 'object' && node !== null && 'window' in node && node === node.window;
 
 type Target = Node | EventTarget | null | undefined;
 
@@ -31,9 +30,8 @@ export function contains(parent: Target, child: Target) {
 	return false;
 }
 
-export function getDocument(node: Element | Window | Node | Document | null | undefined) {
+export function getDocument(node: Node | null) {
 	if (isDocument(node)) return node;
-	if (isWindow(node)) return node.document;
 	return node?.ownerDocument ?? document;
 }
 
