@@ -239,7 +239,6 @@ interface GetPageItemsProps {
  * Credit: https://github.com/melt-ui/melt-ui
  */
 function getPageItems({ page = 1, totalPages, siblingCount = 1 }: GetPageItemsProps): PageItem[] {
-	const pageItems: PageItem[] = [];
 	const pagesToShow = new Set([1, totalPages]);
 	const firstItemWithSiblings = 3 + siblingCount;
 	const lastItemWithSiblings = totalPages - 2 - siblingCount;
@@ -262,23 +261,15 @@ function getPageItems({ page = 1, totalPages, siblingCount = 1 }: GetPageItemsPr
 		}
 	}
 
-	function addPage(value: number): void {
-		pageItems.push({ type: 'page', value, key: `page-${value}` });
-	}
-
-	function addEllipsis(): void {
-		pageItems.push({ type: 'ellipsis', key: `ellipsis-${pageItems.length}` });
-	}
-
-	let lastNumber = 0;
-
-	for (const p of Array.from(pagesToShow).sort((a, b) => a - b)) {
-		if (p - lastNumber > 1) {
-			addEllipsis();
+	// A gap directly after page 1 is the leading ellipsis; any other gap is the trailing one.
+	// These keys are stable across navigation, so the each-block reuses the ellipsis nodes.
+	function* emit(): Generator<PageItem> {
+		let lastNumber = 0;
+		for (const value of [...pagesToShow].sort((a, b) => a - b)) {
+			if (value - lastNumber > 1) yield { type: 'ellipsis', key: lastNumber === 1 ? 'ellipsis-lead' : 'ellipsis-trail' };
+			yield { type: 'page', value, key: `page-${value}` };
+			lastNumber = value;
 		}
-		addPage(p);
-		lastNumber = p;
 	}
-
-	return pageItems;
+	return [...emit()];
 }
