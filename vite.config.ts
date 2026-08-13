@@ -15,9 +15,7 @@ export default defineConfig({
 			adapter: adapter(),
 			preprocess: vitePreprocess({ script: true }),
 			// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
-			vitePlugin: {
-				dynamicCompileOptions: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : { runes: true }),
-			},
+			dynamicCompileOptions: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : { runes: true }),
 			compilerOptions: {
 				// The vendored bits-ui code intentionally reads $state at init in places; upstream
 				// ships with these warnings too. Everything outside lib/bits keeps the full surface.
