@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import { animationsSettled } from '../../../internal/disclosure-close.js';
+	import { animationsSettled } from '../../../internal/use-open-change-complete.svelte.js';
 	import { useAccordion } from '../accordion.svelte.js';
 	import type { AccordionItemProps } from '../types.js';
 

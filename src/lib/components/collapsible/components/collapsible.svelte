@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { animationsSettled } from '../../../internal/disclosure-close.js';
+	import { animationsSettled } from '../../../internal/use-open-change-complete.svelte.js';
 	import { OpenCell } from '../../../internal/open-cell.svelte.js';
 	import type { CollapsibleRootProps } from '../types.js';
 
