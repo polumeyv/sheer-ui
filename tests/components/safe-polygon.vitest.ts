@@ -18,9 +18,9 @@ function rect(left: number, top: number, right: number, bottom: number) {
 	};
 }
 
-function render() {
-	const target = document.createElement('div');
-	document.body.append(target);
+function render(ownerDocument = document) {
+	const target = ownerDocument.createElement('div');
+	ownerDocument.body.append(target);
 	const component = mount(SafePolygonFixture, { target }) as unknown as {
 		setEnabled: (value: boolean) => void;
 	};
@@ -39,7 +39,7 @@ function render() {
 	}
 
 	function pointerMove(clientX: number, clientY: number) {
-		document.dispatchEvent(new PointerEvent('pointermove', { clientX, clientY, bubbles: true }));
+		ownerDocument.dispatchEvent(new PointerEvent('pointermove', { clientX, clientY, bubbles: true }));
 		flushSync();
 	}
 
@@ -112,6 +112,29 @@ describe('SafePolygon', () => {
 			expect(exitCount()).toBe(0);
 		} finally {
 			unmount(component);
+		}
+	});
+
+		test('tracks pointer movement on the trigger owning document', () => {
+		const iframe = document.createElement('iframe');
+		document.body.append(iframe);
+		const foreignDocument = iframe.contentDocument;
+		if (!foreignDocument) throw new Error('Expected iframe document');
+
+		const { component, trigger, exitCount, pointerMove } = render(foreignDocument);
+		try {
+			trigger.dispatchEvent(new PointerEvent('pointerleave', { clientX: 50, clientY: 10, relatedTarget: foreignDocument.body, bubbles: true }));
+			flushSync();
+
+			document.dispatchEvent(new PointerEvent('pointermove', { clientX: -500, clientY: -500, bubbles: true }));
+			flushSync();
+			expect(exitCount()).toBe(0);
+
+			pointerMove(-500, -500);
+			expect(exitCount()).toBe(1);
+		} finally {
+			unmount(component);
+			iframe.remove();
 		}
 	});
 });

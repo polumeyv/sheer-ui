@@ -1,4 +1,4 @@
-import { type Getter, getDocument } from './tools/index.js';
+import type { Getter } from './tools/index.js';
 import { on } from 'svelte/events';
 import { isElement } from '@polumeyv/utilities/dom';
 import {
@@ -101,7 +101,7 @@ export class SafePolygon {
 			}
 			this.#trackedTriggerNode = triggerNode;
 
-			const doc = getDocument(triggerNode);
+			const doc = triggerNode.ownerDocument;
 
 			return [
 				on(doc, 'pointermove', (e) => this.#onPointerMove([e.clientX, e.clientY], triggerNode, contentNode)),

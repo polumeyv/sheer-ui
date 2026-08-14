@@ -354,8 +354,6 @@ export function isFocusableNode(node: Element, options: TabbableOptions = {}) {
 	return isNodeMatchingSelectorFocusable(options, node as TabbableElement);
 }
 
-import { getDocument } from './tools/index.js';
-
 function getTabbableOptions() {
 	return {
 		getShadowRoot: true,
@@ -392,7 +390,7 @@ export function getTabbableFrom(currentNode: HTMLElement, direction: 'next' | 'p
 	if (!isTabbable(currentNode)) {
 		return getTabbableFromFocusable(currentNode, direction);
 	}
-	const doc = getDocument(currentNode);
+	const doc = currentNode.ownerDocument;
 	const allTabbable = getTabbableCandidates(doc.body);
 	if (direction === 'prev') allTabbable.reverse();
 	const activeIndex = allTabbable.indexOf(currentNode);
@@ -402,7 +400,7 @@ export function getTabbableFrom(currentNode: HTMLElement, direction: 'next' | 'p
 }
 
 export function getTabbableFromFocusable(currentNode: HTMLElement, direction: 'next' | 'prev') {
-	const doc = getDocument(currentNode);
+	const doc = currentNode.ownerDocument;
 	if (!isFocusable(currentNode)) return doc.body;
 
 	// find all focusable nodes, since some elements may be focusable but not tabbable

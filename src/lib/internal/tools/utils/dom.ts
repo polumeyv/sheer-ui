@@ -30,11 +30,6 @@ export function contains(parent: Target, child: Target) {
 	return false;
 }
 
-export function getDocument(node: Node | null) {
-	if (isDocument(node)) return node;
-	return node?.ownerDocument ?? document;
-}
-
 export function getWindow(node: Node | ShadowRoot | Document | null | undefined) {
 	if (isShadowRoot(node)) return getWindow(node.host);
 	if (isDocument(node)) return node.defaultView ?? window;

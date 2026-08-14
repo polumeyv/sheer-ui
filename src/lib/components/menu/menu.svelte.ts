@@ -1,7 +1,6 @@
 import {
 	attachRef,
 	DOMContext,
-	getDocument,
 	getWindow,
 	type ReadableBoxedValues,
 	type WritableBoxedValues,
@@ -418,8 +417,7 @@ export class MenuSubmenuIntent {
 
 	#attachDocMove() {
 		if (this.#cleanupDocMove) return;
-		const doc = getDocument(this.#opts.triggerNode() ?? this.#opts.contentNode());
-		if (!doc) return;
+		const doc = (this.#opts.triggerNode() ?? this.#opts.contentNode())?.ownerDocument ?? document;
 		const remove = on(doc, 'pointermove', this.#onDocMove, { capture: true });
 		this.#cleanupDocMove = () => {
 			remove();

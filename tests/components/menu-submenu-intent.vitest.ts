@@ -22,9 +22,9 @@ function pointerEvent(type: string, clientX: number, clientY: number, extra: Poi
 	return new PointerEvent(type, { clientX, clientY, pointerType: 'mouse', bubbles: true, ...extra });
 }
 
-function render() {
-	const target = document.createElement('div');
-	document.body.append(target);
+function render(ownerDocument = document) {
+	const target = ownerDocument.createElement('div');
+	ownerDocument.body.append(target);
 	const component = mount(MenuSubmenuIntentFixture, { target }) as unknown as {
 		setEnabled: (value: boolean) => void;
 	};
@@ -40,7 +40,7 @@ function render() {
 	// jsdom doesn't define elementFromPoint at all (needs real layout), so vi.spyOn can't wrap it --
 	// #isPointerInDescendantSubContent uses it purely to check for a deeper nested submenu under the
 	// cursor, which none of these tests exercise, so "nothing there" is the correct stand-in.
-	document.elementFromPoint = vi.fn().mockReturnValue(null);
+	ownerDocument.elementFromPoint = vi.fn().mockReturnValue(null);
 
 	function exitCount() {
 		return Number(target.querySelector('[data-testid="exit-count"]')?.textContent);
@@ -49,7 +49,7 @@ function render() {
 		return target.querySelector('[data-testid="in-transit"]')?.textContent === 'true';
 	}
 	function docPointerMove(clientX: number, clientY: number) {
-		document.dispatchEvent(pointerEvent('pointermove', clientX, clientY));
+		ownerDocument.dispatchEvent(pointerEvent('pointermove', clientX, clientY));
 		flushSync();
 	}
 	function engageTowardContent() {
@@ -131,6 +131,27 @@ describe('MenuSubmenuIntent', () => {
 			expect(exitCount()).toBe(0);
 		} finally {
 			unmount(component);
+		}
+	});
+
+		test('tracks submenu intent on the trigger owning document', () => {
+		const iframe = document.createElement('iframe');
+		document.body.append(iframe);
+		const foreignDocument = iframe.contentDocument;
+		if (!foreignDocument) throw new Error('Expected iframe document');
+
+		const { component, engageTowardContent, docPointerMove, exitCount } = render(foreignDocument);
+		try {
+			engageTowardContent();
+			document.dispatchEvent(pointerEvent('pointermove', -500, -500));
+			flushSync();
+			expect(exitCount()).toBe(0);
+
+			docPointerMove(-500, -500);
+			expect(exitCount()).toBe(1);
+		} finally {
+			unmount(component);
+			iframe.remove();
 		}
 	});
 });

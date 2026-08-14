@@ -1,6 +1,5 @@
 import { boxWith } from '../runed/box.svelte.js';
 import type { Box } from '../types.js';
-import { getDocument } from './dom.js';
 
 function getActiveElement(rootNode: Document | ShadowRoot): HTMLElement | null {
 	let activeElement = rootNode.activeElement as HTMLElement | null;
@@ -29,7 +28,7 @@ export class DOMContext {
 	}
 
 	getDocument = () => {
-		return getDocument(this.root);
+		return this.element.current?.ownerDocument ?? document;
 	};
 
 	getWindow = () => {

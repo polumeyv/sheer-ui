@@ -1,4 +1,3 @@
-import { getDocument } from './tools/index.js';
 import { getTabbableCandidates } from './tabbable.js';
 
 export type FocusableTarget = HTMLElement;
@@ -6,7 +5,7 @@ export type FocusableTarget = HTMLElement;
 function focus(element?: FocusableTarget | null, { select = false } = {}) {
 	if (!element) return false;
 
-	const doc = getDocument(element);
+	const doc = element.ownerDocument;
 	if (doc.activeElement === element) return false;
 
 	const previouslyFocusedElement = doc.activeElement;

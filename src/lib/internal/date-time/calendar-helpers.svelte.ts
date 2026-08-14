@@ -1,5 +1,5 @@
 import { type DateValue, endOfMonth, isSameDay, isSameMonth, startOfMonth } from '@internationalized/date';
-import { type ReadableBox, type WritableBox, getDocument, srOnlyStylesString } from '../tools/index.js';
+import { type ReadableBox, type WritableBox, srOnlyStylesString } from '../tools/index.js';
 import { tick, untrack } from 'svelte';
 import {
 	getDaysInMonth,
@@ -222,7 +222,7 @@ type CreateAccessibleHeadingProps = { calendarNode: HTMLElement; label: string; 
 
 /** Creates a visually-hidden accessible heading for the calendar. Returns a cleanup fn. */
 export function createAccessibleHeading({ calendarNode, label, accessibleHeadingId }: CreateAccessibleHeadingProps) {
-	const doc = getDocument(calendarNode);
+	const doc = calendarNode.ownerDocument;
 	const div = doc.createElement('div');
 	div.style.cssText = srOnlyStylesString;
 
@@ -311,7 +311,7 @@ export type CalendarParts =
 	| 'year-select';
 
 export function pickerOpenFocus(e: Event) {
-	const doc = getDocument(e.target as HTMLElement);
+	const doc = (e.target as HTMLElement).ownerDocument;
 	const nodeToFocus = doc.querySelector<HTMLElement>('[data-bits-day][data-focused]');
 	if (!nodeToFocus) return;
 	e.preventDefault();
