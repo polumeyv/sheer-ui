@@ -3,12 +3,12 @@ import {
 	arraysAreEqual,
 	backward,
 	chunk,
+	findWrapped,
 	forward,
 	getNextMatch,
 	isValidIndex,
 	next,
-	prev,
-	wrapArray
+	prev
 } from './arrays';
 
 describe('arraysAreEqual', () => {
@@ -150,21 +150,28 @@ describe('backward', () => {
 	});
 });
 
-describe('wrapArray', () => {
-	test('rotates from the provided start index', () => {
-		expect(wrapArray(['a', 'b', 'c', 'd'], 2)).toEqual(['c', 'd', 'a', 'b']);
+describe('findWrapped', () => {
+	test('visits elements in rotation order from the start index', () => {
+		const visited: string[] = [];
+		findWrapped(['a', 'b', 'c', 'd'], 2, (v) => (visited.push(v), false));
+		expect(visited).toEqual(['c', 'd', 'a', 'b']);
+	});
+
+	test('returns the first satisfying element, wrapping past the end', () => {
+		expect(findWrapped(['a', 'b', 'c', 'd'], 2, (v) => v === 'b')).toBe('b');
 	});
 
 	test('keeps order for a zero start index', () => {
-		expect(wrapArray(['a', 'b', 'c'], 0)).toEqual(['a', 'b', 'c']);
+		expect(findWrapped(['a', 'b', 'c'], 0, () => true)).toBe('a');
 	});
 
 	test('wraps start indexes beyond the array length', () => {
-		expect(wrapArray(['a', 'b', 'c'], 4)).toEqual(['b', 'c', 'a']);
+		expect(findWrapped(['a', 'b', 'c'], 4, () => true)).toBe('b');
 	});
 
-	test('returns an empty array for empty input', () => {
-		expect(wrapArray([], 2)).toEqual([]);
+	test('returns undefined for empty input or no match', () => {
+		expect(findWrapped([], 2, () => true)).toBeUndefined();
+		expect(findWrapped(['a'], 0, () => false)).toBeUndefined();
 	});
 });
 

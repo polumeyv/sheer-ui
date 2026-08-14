@@ -3,7 +3,6 @@ import type { InteractOutsideBehaviorType } from '../../internal/dismissible-lay
 import type { Direction } from '../../internal/index.js';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '../../internal/attrs.js';
 import { kbd } from '../../internal/kbd.js';
-import { wrapArray } from '../../internal/arrays.js';
 import type { OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { createContext, onMount, tick, untrack } from 'svelte';
 import type { FocusEventHandler, KeyboardEventHandler, PointerEventHandler } from 'svelte/elements';
@@ -352,7 +351,7 @@ export class MenubarContentState {
 		if (isKeydownInsideSubMenu && isPrevKey) return;
 
 		const items = this.root.getTriggers().filter((trigger) => !trigger.disabled);
-		let candidates = items.map((item) => ({
+		const candidates = items.map((item) => ({
 			value: item.getAttribute('data-menu-value')!,
 			triggerId: item.id ?? '',
 		}));
@@ -366,8 +365,7 @@ export class MenubarContentState {
 		const currentIndex = candidateValues.indexOf(openMenuValue);
 		if (currentIndex === -1) return;
 
-		candidates = this.root.opts.loop.current ? wrapArray(candidates, currentIndex + 1) : candidates.slice(currentIndex + 1);
-		const [nextValue] = candidates;
+		const nextValue = this.root.opts.loop.current ? candidates[(currentIndex + 1) % candidates.length] : candidates[currentIndex + 1];
 		if (nextValue) {
 			this.menu.root.onMenuOpen(nextValue.value, nextValue.triggerId);
 			e.preventDefault();

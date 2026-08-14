@@ -217,11 +217,9 @@ export function getNextMatch(values: string[], search: string, currentMatch?: st
 		 */
 		if (spacedMatches.length > 0) {
 			const currentMatchIndex = currentMatch ? values.indexOf(currentMatch) : -1;
-			let wrappedMatches = wrapArray(spacedMatches, Math.max(currentMatchIndex, 0));
 
-			// return the first match that is not the current one.
-			const nextMatch = wrappedMatches.find((match) => match !== currentMatch);
-			// fallback to current if no other is found.
+			// the first match that is not the current one, falling back to current if no other is found.
+			const nextMatch = findWrapped(spacedMatches, Math.max(currentMatchIndex, 0), (match) => match !== currentMatch);
 			return nextMatch || currentMatch;
 		}
 	}
@@ -231,18 +229,25 @@ export function getNextMatch(values: string[], search: string, currentMatch?: st
 	const normalizedLowerSearch = normalizedSearch.toLowerCase();
 
 	const currentMatchIndex = currentMatch ? values.indexOf(currentMatch) : -1;
-	let wrappedValues = wrapArray(values, Math.max(currentMatchIndex, 0));
 	const excludeCurrentMatch = normalizedSearch.length === 1;
-	if (excludeCurrentMatch) wrappedValues = wrappedValues.filter((v) => v !== currentMatch);
-
-	const nextMatch = wrappedValues.find((value) => value?.toLowerCase().startsWith(normalizedLowerSearch));
+	const nextMatch = findWrapped(
+		values,
+		Math.max(currentMatchIndex, 0),
+		(value) => (!excludeCurrentMatch || value !== currentMatch) && value.toLowerCase().startsWith(normalizedLowerSearch),
+	);
 
 	return nextMatch !== currentMatch ? nextMatch : undefined;
 }
 
 /**
- * Wraps an array around itself at a given start index
- * Example: `wrapArray(['a', 'b', 'c', 'd'], 2) === ['c', 'd', 'a', 'b']`
+ * Circular find: scans `array` from `startIndex` (wrapping past the end) and returns the first element
+ * satisfying `predicate`. What every caller of the old rotate-copy (`wrapArray`) actually consumed —
+ * same visit order, without allocating the rotation.
  */
-export const wrapArray = <T>(array: T[], startIndex: number) =>
-	array.map((_, index) => array[(startIndex + index) % array.length]) as T[];
+export const findWrapped = <T>(array: T[], startIndex: number, predicate: (item: T) => boolean): T | undefined => {
+	for (let step = 0; step < array.length; step++) {
+		const item = array[(startIndex + step) % array.length]!;
+		if (predicate(item)) return item;
+	}
+	return undefined;
+};
