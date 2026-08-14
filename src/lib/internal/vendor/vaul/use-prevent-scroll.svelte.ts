@@ -2,7 +2,7 @@
 
 import { isIOS } from '@polumeyv/utilities/dom';
 import { BROWSER } from '@polumeyv/env';
-import { isWebKit } from './internal/browser.js';
+import { isWebKit } from './browser.js';
 import { SharedState } from '../../shared-state.svelte.js';
 import { BodyScrollLock } from '../../body-scroll-lock.svelte.js';
 import { on } from 'svelte/events';

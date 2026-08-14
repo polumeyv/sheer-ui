@@ -5,8 +5,8 @@
 	import { mergeProps } from '../../internal/merge-props.js';
 	import type { WithoutChildrenOrChild } from '../../internal/utils.js';
 	import { createId } from '../../internal/create-id.js';
-	import { getDrawer } from '../../internal/vendor/vaul/context.js';
-	import type { OverlayProps } from '../../internal/vendor/vaul/components/drawer/index.js';
+	import { getDrawer } from '../../internal/vendor/vaul/use-drawer-root.svelte.js';
+	import type { DrawerOverlayProps as OverlayProps } from '../../internal/vendor/vaul/types.js';
 
 	const uid = $props.id();
 

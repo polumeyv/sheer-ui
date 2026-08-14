@@ -1,5 +1,5 @@
 import type { Box, Getter } from '../../tools/index.js';
-import { needsIOSFixedBodyScrollLock } from './internal/browser.js';
+import { needsIOSFixedBodyScrollLock } from './browser.js';
 import { untrack } from 'svelte';
 import { scrollY } from 'svelte/reactivity/window';
 

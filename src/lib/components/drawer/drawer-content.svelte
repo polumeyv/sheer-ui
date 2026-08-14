@@ -12,7 +12,7 @@
 	import DrawerOverlay from './drawer-overlay.svelte';
 	import { noop } from '@polumeyv/utilities';
 	import { useDrawerContent } from '../../internal/vendor/vaul/use-drawer-content.svelte.js';
-	import type { ContentProps } from '../../internal/vendor/vaul/components/drawer/index.js';
+	import type { DrawerContentProps as ContentProps } from '../../internal/vendor/vaul/types.js';
 
 	const uid = $props.id();
 
