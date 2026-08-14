@@ -1,5 +1,5 @@
 import { isAnySegmentPart } from './helpers.js';
-import { isHTMLElement } from '@polumeyv/utilities/dom';
+import { isHTMLElement } from '../../tools/utils/dom.js';
 import { kbd } from '../../kbd.js';
 
 const navigate = (e: KeyboardEvent, neighbors: { prev: HTMLElement | null; next: HTMLElement | null }) => {

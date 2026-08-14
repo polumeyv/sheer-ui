@@ -1,6 +1,6 @@
 import type { Getter } from './tools/index.js';
 import { on } from 'svelte/events';
-import { isElement } from '@polumeyv/utilities/dom';
+import { isElement } from './tools/utils/dom.js';
 import {
 	AXIS_VERTICAL,
 	DIR_POS,

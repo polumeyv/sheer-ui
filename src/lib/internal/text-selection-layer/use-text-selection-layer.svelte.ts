@@ -14,7 +14,7 @@ import { createAttachmentKey } from 'svelte/attachments';
 import type { PointerHandler, TextSelectionLayerImplProps } from './types.js';
 import { createLayerStack } from '../layer-stack.js';
 import { globalSingleton } from '../global-singleton.js';
-import { isHTMLElement } from '@polumeyv/utilities/dom';
+import { isHTMLElement } from '../tools/utils/dom.js';
 
 interface TextSelectionLayerStateOpts extends ReadableBoxedValues<
 	Required<Omit<TextSelectionLayerImplProps, 'children' | 'preventOverflowTextSelection' | 'ref'>> & {

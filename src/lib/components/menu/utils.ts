@@ -1,6 +1,6 @@
 import { kbd, SELECTION_KEYS } from "../../internal/kbd.js";
 import type { Direction } from "../../internal/index.js";
-import { isHTMLElement } from '@polumeyv/utilities/dom';
+import { isHTMLElement } from '../../internal/tools/utils/dom.js';
 import type { MenuContentState } from './menu.svelte.js';
 
 export type CheckedState = boolean | "indeterminate";

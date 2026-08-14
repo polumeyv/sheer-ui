@@ -1,3 +1,5 @@
+import { BROWSER } from '@polumeyv/env';
+
 const ELEMENT_NODE = 1;
 const DOCUMENT_NODE = 9;
 const DOCUMENT_FRAGMENT_NODE = 11;
@@ -6,9 +8,21 @@ const isObject = (node: unknown): node is Record<string, unknown> =>
 	typeof node === 'object' && node !== null && !Array.isArray(node);
 const hasNodeType = (node: unknown): node is { nodeType: number } => isObject(node) && typeof node.nodeType === 'number';
 const isNode = (node: unknown): node is Node => hasNodeType(node);
-const isElement = (node: unknown): node is Element => hasNodeType(node) && node.nodeType === ELEMENT_NODE;
+export const isElement = (node: unknown): node is Element => hasNodeType(node) && node.nodeType === ELEMENT_NODE;
 const isDocument = (node: unknown): node is Document => hasNodeType(node) && node.nodeType === DOCUMENT_NODE;
 const isShadowRoot = (node: unknown): node is ShadowRoot => hasNodeType(node) && node.nodeType === DOCUMENT_FRAGMENT_NODE && 'host' in node;
+
+export const isHTMLElement = (node: unknown): node is HTMLElement =>
+	isElement(node) && node.namespaceURI === 'http://www.w3.org/1999/xhtml';
+
+export const isElementOrSVGElement = (node: unknown): node is Element | SVGElement => isElement(node);
+
+export const isIOS =
+	BROWSER &&
+	!!window.navigator.userAgent &&
+	(/iP(ad|hone|od)/.test(window.navigator.userAgent) ||
+		// iPad Pro Gen3 reports as Macintosh, so fall back to touch-point sniffing.
+		(window.navigator.maxTouchPoints > 2 && /iPad|Macintosh/.test(window.navigator.userAgent)));
 
 type Target = Node | EventTarget | null | undefined;
 

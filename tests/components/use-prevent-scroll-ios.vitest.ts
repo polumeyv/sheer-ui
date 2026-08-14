@@ -5,8 +5,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 // so the only reliable way to force the iOS branch in a test is to replace the whole module —
 // vi.mock calls are hoisted above imports, which sidesteps import-order/caching issues.
 // (isWebKit needs no forcing: jsdom's default UA carries AppleWebKit.)
-vi.mock('@polumeyv/utilities/dom', async (importOriginal) => {
-	const actual = await importOriginal<typeof import('@polumeyv/utilities/dom')>();
+vi.mock('../../src/lib/internal/tools/utils/dom.js', async (importOriginal) => {
+	const actual = await importOriginal<typeof import('../../src/lib/internal/tools/utils/dom.js')>();
 	return { ...actual, isIOS: true };
 });
 

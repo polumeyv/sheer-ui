@@ -15,7 +15,7 @@ import type { DismissibleLayerImplProps, InteractOutsideBehaviorType, InteractOu
 import { type EventCallback } from '../tools/utils/events.js';
 import { createLayerStack } from '../layer-stack.js';
 import { globalSingleton } from '../global-singleton.js';
-import { isElementOrSVGElement } from '@polumeyv/utilities/dom';
+import { isElementOrSVGElement } from '../tools/utils/dom.js';
 import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '../../components/menu/menu.svelte.js';
 import { realScheduler, type Scheduler, type Debounced } from './scheduler.js';
 

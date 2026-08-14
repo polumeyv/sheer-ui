@@ -27,7 +27,7 @@ import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, BitsPointerEven
 import { kbd } from '../../internal/kbd.js';
 import { on } from 'svelte/events';
 import { useArrowNavigation } from '../../internal/use-arrow-navigation.js';
-import { isElement } from '@polumeyv/utilities/dom';
+import { isElement } from '../../internal/tools/utils/dom.js';
 import type { FocusEventHandler, KeyboardEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
 import { observeResize, observeResizeMany } from '../../internal/svelte-resize-observer.svelte.js';

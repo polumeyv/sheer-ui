@@ -22,7 +22,7 @@ import type {
 	RefAttachment,
 	WithRefOpts,
 } from '../../internal/types.js';
-import { isElement, isElementOrSVGElement, isHTMLElement } from '@polumeyv/utilities/dom';
+import { isElement, isElementOrSVGElement, isHTMLElement } from '../../internal/tools/utils/dom.js';
 import { kbd, FIRST_LAST_KEYS, LAST_KEYS, SELECTION_KEYS } from '../../internal/kbd.js';
 import {
 	createBitsAttrs,
