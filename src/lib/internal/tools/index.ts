@@ -18,5 +18,5 @@ export type {
 	WithRefProps,
 	WritableBoxedValues,
 } from './types.js';
-export { repairBindable, useDebounce } from './runed/index.js';
+export { repairBindable } from './runed/index.js';
 export * from './utils/index.js';

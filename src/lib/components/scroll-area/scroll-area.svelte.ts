@@ -5,7 +5,7 @@
  * Incredible thought must have went into solving all the intricacies of this component.
  */
 
-import { useDebounce } from '../../internal/tools/index.js';
+import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';
 import { createContext, getAbortSignal, untrack } from 'svelte';
 import { simpleBox, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '../../internal/tools/index.js';
 import type { ScrollAreaType } from './types.js';
@@ -258,7 +258,7 @@ export class ScrollAreaScrollbarScrollState {
 		this.scrollbar = scrollbar;
 		this.root = scrollbar.root;
 
-		const debounceScrollend = useDebounce(() => this.machine.dispatch('SCROLL_END'), 100);
+		const debounceScrollend = createEffectTimeout(() => this.machine.dispatch('SCROLL_END'), () => 100);
 
 		$effect(() => {
 			const _state = this.machine.state.current;
@@ -280,7 +280,7 @@ export class ScrollAreaScrollbarScrollState {
 				const hasScrollInDirectionChanged = prevScrollPos !== scrollPos;
 				if (hasScrollInDirectionChanged) {
 					this.machine.dispatch('SCROLL');
-					debounceScrollend();
+					debounceScrollend.start();
 				}
 				prevScrollPos = scrollPos;
 			};
@@ -323,15 +323,15 @@ export class ScrollAreaScrollbarAutoState {
 		this.scrollbar = scrollbar;
 		this.root = scrollbar.root;
 
-		const handleResize = useDebounce(() => {
+		const handleResize = createEffectTimeout(() => {
 			const viewportNode = this.root.viewportNode;
 			if (!viewportNode) return;
 			const isOverflowX = viewportNode.offsetWidth < viewportNode.scrollWidth;
 			const isOverflowY = viewportNode.offsetHeight < viewportNode.scrollHeight;
 			this.isVisible = this.scrollbar.isHorizontal ? isOverflowX : isOverflowY;
-		}, 10);
+		}, () => 10);
 
-		observeResizeMany(() => [this.root.viewportNode, this.root.contentNode], handleResize);
+		observeResizeMany(() => [this.root.viewportNode, this.root.contentNode], handleResize.start);
 	}
 
 	readonly props = $derived.by(
@@ -640,7 +640,7 @@ export class ScrollAreaScrollbarSharedState {
 		this.root = scrollbarState.root;
 		this.scrollbarVis = scrollbarState.scrollbarVis;
 		this.scrollbar = scrollbarState.scrollbarVis.scrollbar;
-		this.handleResize = useDebounce(() => this.scrollbarState.onResize(), 10);
+		this.handleResize = createEffectTimeout(() => this.scrollbarState.onResize(), () => 10).start;
 		this.handleThumbPositionChange = this.scrollbarState.onThumbPositionChange;
 		this.handleWheelScroll = this.scrollbarState.onWheelScroll;
 		this.handleThumbPointerDown = this.scrollbarState.onThumbPointerDown;
@@ -757,12 +757,12 @@ export class ScrollAreaThumbImplState {
 	readonly attachment: RefAttachment;
 	readonly #root: ScrollAreaRootState;
 	#removeUnlinkedScrollListener = $state<() => void>();
-	readonly #debounceScrollEnd = useDebounce(() => {
+	readonly #debounceScrollEnd = createEffectTimeout(() => {
 		if (this.#removeUnlinkedScrollListener) {
 			this.#removeUnlinkedScrollListener();
 			this.#removeUnlinkedScrollListener = undefined;
 		}
-	}, 100);
+	}, () => 100);
 
 	constructor(opts: ScrollAreaThumbImplStateOpts, scrollbarState: ScrollAreaScrollbarSharedState) {
 		this.opts = opts;
@@ -774,7 +774,7 @@ export class ScrollAreaThumbImplState {
 			const viewportNode = this.#root.viewportNode;
 			if (!viewportNode) return;
 			const handleScroll = () => {
-				this.#debounceScrollEnd();
+				this.#debounceScrollEnd.start();
 				if (!this.#removeUnlinkedScrollListener) {
 					const listener = addUnlinkedScrollListener(viewportNode, this.scrollbarState.handleThumbPositionChange);
 					this.#removeUnlinkedScrollListener = listener;

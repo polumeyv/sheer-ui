@@ -5,6 +5,7 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Attachment } from 'svelte/attachments';
 	import type { WithElementRef } from '../../internal/utils.js';
+	import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';
 	import { setCarouselContext, setCarouselWiring, type CarouselAlign, type CarouselOrientation } from './carouselState.svelte';
 
 	let {
@@ -189,14 +190,11 @@
 	};
 
 	function debouncedScrollFallback(node: HTMLElement) {
-		let timer: ReturnType<typeof setTimeout>;
-		const off = on(node, 'scroll', () => {
-			clearTimeout(timer);
-			timer = setTimeout(sync, 150);
-		}, { passive: true });
+		const debouncedSync = createEffectTimeout(sync, () => 150);
+		const off = on(node, 'scroll', debouncedSync.start, { passive: true });
 
 		return () => {
-			clearTimeout(timer);
+			debouncedSync.stop();
 			off();
 		};
 	}

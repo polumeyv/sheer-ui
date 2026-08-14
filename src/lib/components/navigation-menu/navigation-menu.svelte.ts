@@ -16,7 +16,7 @@ import {
 	simpleBox,
 	boxWith,
 } from '../../internal/tools/index.js';
-import { useDebounce } from '../../internal/tools/index.js';
+import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';
 import { createContext, tick, untrack, type Snippet } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
 import { type Direction, type Orientation } from '../../internal/index.js';
@@ -164,7 +164,7 @@ export class NavigationMenuRootState {
 		});
 	}
 
-	#debouncedFn = useDebounce(
+	#debouncedFn = createEffectTimeout(
 		(val: string | undefined, itemState: NavigationMenuItemState | null) => {
 			// passing `undefined` meant to reset the debounce timer
 			if (typeof val === 'string') {
@@ -175,23 +175,23 @@ export class NavigationMenuRootState {
 	);
 
 	#onTriggerEnter = (itemValue: string, itemState: NavigationMenuItemState | null) => {
-		this.#debouncedFn(itemValue, itemState);
+		this.#debouncedFn.start(itemValue, itemState);
 	};
 
 	#onTriggerLeave = () => {
 		this.isDelaySkipped.current = false;
-		this.#debouncedFn('', null);
+		this.#debouncedFn.start('', null);
 	};
 
 	#onContentEnter = () => {
-		this.#debouncedFn(undefined, null);
+		this.#debouncedFn.start(undefined, null);
 	};
 
 	#onContentLeave = () => {
 		if (this.provider.activeItem && this.provider.activeItem.opts.openOnHover.current === false) {
 			return;
 		}
-		this.#debouncedFn('', null);
+		this.#debouncedFn.start('', null);
 	};
 
 	#onItemSelect = (itemValue: string, itemState: NavigationMenuItemState | null) => {
