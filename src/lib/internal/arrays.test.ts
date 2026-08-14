@@ -3,12 +3,12 @@ import {
 	arraysAreEqual,
 	backward,
 	chunk,
+	findWrapped,
 	forward,
 	getNextMatch,
 	isValidIndex,
 	next,
-	prev,
-	wrapArray
+	prev
 } from './arrays';
 
 describe('arraysAreEqual', () => {
@@ -150,21 +150,28 @@ describe('backward', () => {
 	});
 });
 
-describe('wrapArray', () => {
-	test('rotates from the provided start index', () => {
-		expect(wrapArray(['a', 'b', 'c', 'd'], 2)).toEqual(['c', 'd', 'a', 'b']);
+describe('findWrapped', () => {
+	test('visits elements in rotation order from the start index', () => {
+		const visited: string[] = [];
+		findWrapped(['a', 'b', 'c', 'd'], 2, (v) => (visited.push(v), false));
+		expect(visited).toEqual(['c', 'd', 'a', 'b']);
+	});
+
+	test('returns the first satisfying element, wrapping past the end', () => {
+		expect(findWrapped(['a', 'b', 'c', 'd'], 2, (v) => v === 'b')).toBe('b');
 	});
 
 	test('keeps order for a zero start index', () => {
-		expect(wrapArray(['a', 'b', 'c'], 0)).toEqual(['a', 'b', 'c']);
+		expect(findWrapped(['a', 'b', 'c'], 0, () => true)).toBe('a');
 	});
 
 	test('wraps start indexes beyond the array length', () => {
-		expect(wrapArray(['a', 'b', 'c'], 4)).toEqual(['b', 'c', 'a']);
+		expect(findWrapped(['a', 'b', 'c'], 4, () => true)).toBe('b');
 	});
 
-	test('returns an empty array for empty input', () => {
-		expect(wrapArray([], 2)).toEqual([]);
+	test('returns undefined for empty input or no match', () => {
+		expect(findWrapped([], 2, () => true)).toBeUndefined();
+		expect(findWrapped(['a'], 0, () => false)).toBeUndefined();
 	});
 });
 
@@ -195,5 +202,114 @@ describe('getNextMatch', () => {
 		expect(getNextMatch(['New York', 'New Jersey', 'Newark'], 'new ', undefined)).toBe(
 			'New York'
 		);
+	});
+});
+
+// Differential proof for the wrapArray → findWrapped rewrite: the pre-rewrite implementation,
+// verbatim, driven against the live one over randomized inputs.
+const oldWrapArray = <T,>(array: T[], startIndex: number) =>
+	array.map((_, index) => array[(startIndex + index) % array.length]) as T[];
+
+function oldGetNextMatch(values: string[], search: string, currentMatch?: string): string | undefined {
+	const lowerSearch = search.toLowerCase();
+
+	if (lowerSearch.endsWith(' ')) {
+		const searchWithoutSpace = lowerSearch.slice(0, -1);
+		const matchesWithoutSpace = values.filter((value) => value.toLowerCase().startsWith(searchWithoutSpace));
+		if (matchesWithoutSpace.length <= 1) {
+			return oldGetNextMatch(values, searchWithoutSpace, currentMatch);
+		}
+
+		const currentMatchLowercase = currentMatch?.toLowerCase();
+		if (
+			currentMatchLowercase &&
+			currentMatchLowercase.startsWith(searchWithoutSpace) &&
+			currentMatchLowercase.charAt(searchWithoutSpace.length) === ' ' &&
+			search.trim() === searchWithoutSpace
+		) {
+			return currentMatch;
+		}
+
+		const spacedMatches = values.filter((value) => value.toLowerCase().startsWith(lowerSearch));
+		if (spacedMatches.length > 0) {
+			const currentMatchIndex = currentMatch ? values.indexOf(currentMatch) : -1;
+			const wrappedMatches = oldWrapArray(spacedMatches, Math.max(currentMatchIndex, 0));
+			const nextMatch = wrappedMatches.find((match) => match !== currentMatch);
+			return nextMatch || currentMatch;
+		}
+	}
+
+	const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
+	const normalizedSearch = isRepeated ? search[0]! : search;
+	const normalizedLowerSearch = normalizedSearch.toLowerCase();
+
+	const currentMatchIndex = currentMatch ? values.indexOf(currentMatch) : -1;
+	let wrappedValues = oldWrapArray(values, Math.max(currentMatchIndex, 0));
+	const excludeCurrentMatch = normalizedSearch.length === 1;
+	if (excludeCurrentMatch) wrappedValues = wrappedValues.filter((v) => v !== currentMatch);
+
+	const nextMatch = wrappedValues.find((value) => value?.toLowerCase().startsWith(normalizedLowerSearch));
+
+	return nextMatch !== currentMatch ? nextMatch : undefined;
+}
+
+// mulberry32 — deterministic cases, reproducible failures.
+const makeRng = (seed: number) => () => {
+	seed = (seed + 0x6d2b79f5) | 0;
+	let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+	t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+	return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+
+describe('findWrapped rewrite differentials', () => {
+	const pool = [
+		'New York', 'New Jersey', 'Newark', 'New', 'new york',
+		'Alpha', 'Alpine', 'Apple', 'Apricot', 'ap', 'a', '',
+		'Beta', 'Banana', 'aa', 'n ', ' lead'
+	];
+	const alphabet = ['a', 'n', 'e', 'w', 'p', ' ', 'A', 'N'];
+
+	test('getNextMatch matches the pre-rewrite implementation over randomized inputs', () => {
+		const rand = makeRng(0xc0ffee);
+		const pick = <T,>(items: T[]) => items[Math.floor(rand() * items.length)]!;
+
+		for (let caseIndex = 0; caseIndex < 20000; caseIndex++) {
+			const values = Array.from({ length: 1 + Math.floor(rand() * 8) }, () => pick(pool));
+
+			const searchKind = rand();
+			let search: string;
+			if (searchKind < 0.35) {
+				const base = pick(values);
+				search = base.slice(0, 1 + Math.floor(rand() * Math.max(base.length, 1)));
+			} else if (searchKind < 0.5) {
+				search = pick(alphabet).repeat(1 + Math.floor(rand() * 3));
+			} else {
+				search = Array.from({ length: 1 + Math.floor(rand() * 4) }, () => pick(alphabet)).join('');
+			}
+			if (rand() < 0.3) search += ' ';
+
+			const matchKind = rand();
+			const currentMatch = matchKind < 0.4 ? pick(values) : matchKind < 0.5 ? 'not-in-values' : undefined;
+
+			const expected = oldGetNextMatch(values, search, currentMatch);
+			const actual = getNextMatch(values, search, currentMatch);
+			if (actual !== expected) {
+				throw new Error(
+					`divergence: values=${JSON.stringify(values)} search=${JSON.stringify(search)} currentMatch=${JSON.stringify(currentMatch)} old=${JSON.stringify(expected)} new=${JSON.stringify(actual)}`
+				);
+			}
+		}
+	});
+
+	test('menubar next-candidate expressions match the pre-rewrite wrapArray/slice forms', () => {
+		for (let length = 1; length <= 8; length++) {
+			const candidates = Array.from({ length }, (_, i) => `item-${i}`);
+			for (let currentIndex = 0; currentIndex < length; currentIndex++) {
+				expect(candidates[(currentIndex + 1) % candidates.length]).toBe(
+					oldWrapArray(candidates, currentIndex + 1)[0]!
+				);
+				expect(candidates[currentIndex + 1]).toBe(candidates.slice(currentIndex + 1)[0]!);
+			}
+		}
 	});
 });
