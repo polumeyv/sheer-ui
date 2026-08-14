@@ -322,7 +322,6 @@
 		"@lucide/svelte": "^1.18.0",
 		"@polumeyv/env": "catalog:infra",
 		"@polumeyv/utilities": "catalog:infra",
-		"@stripe/stripe-js": "^9.8.0",
 		"d3-scale": "^4.0.2",
 		"layerchart": "^2.0.1",
 		"overrule": "^0.7.1"
