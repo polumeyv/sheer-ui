@@ -16,7 +16,7 @@ import type { Formatter } from './formatter.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '../attrs.js';
 import { chunk, isValidIndex } from '../arrays.js';
 import { isHTMLElement } from '../tools/utils/dom.js';
-import { BROWSER } from '@polumeyv/env';
+import { BROWSER } from 'esm-env';
 import { kbd, SELECTION_KEYS } from '../kbd.js';
 import type { DateMatcher, Month } from '../index.js';
 

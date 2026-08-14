@@ -3,7 +3,7 @@ import { type Attachment, createAttachmentKey } from 'svelte/attachments';
 import { type Getter, type ReadableBox, boxWith } from './tools/index.js';
 import type { Fn } from './types.js';
 import { isIOS } from './tools/utils/dom.js';
-import { BROWSER } from '@polumeyv/env';
+import { BROWSER } from 'esm-env';
 import { SharedState } from './shared-state.svelte.js';
 import { on } from 'svelte/events';
 import { getAbortSignal, onMount, tick, untrack } from 'svelte';

@@ -69,8 +69,8 @@ our side, not upstream's.
 ## Local deviations from upstream (carried forward from the original)
 
 - Bare imports rewritten to local relative paths (`bits-ui`, `svelte-toolbelt`, `runed`,
-  `tabbable` → in-tree; `esm-env` → the `@polumeyv/env` workspace package); other specifiers are
-  relative with explicit extensions — new shadcn pulls need the same rewrite.
+  `tabbable` → in-tree; `esm-env` stays as-is); other specifiers are relative with explicit
+  extensions — new shadcn pulls need the same rewrite.
 - `override` modifiers added in state files (`noImplicitOverride` is on here, plus
   `noUncheckedIndexedAccess` fixes from the 07-03 source-consumption migration).
 - runed's `Context` class replaced with Svelte's native `createContext` (5.40+).

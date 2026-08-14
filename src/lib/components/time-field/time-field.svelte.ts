@@ -11,7 +11,7 @@ import {
 import { createContext, onMount, untrack } from 'svelte';
 import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
-import { BROWSER } from '@polumeyv/env';
+import { BROWSER } from 'esm-env';
 import { kbd } from '../../internal/kbd.js';
 import type {
 	TimeSegmentObj,

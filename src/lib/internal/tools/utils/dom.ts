@@ -1,4 +1,4 @@
-import { BROWSER } from '@polumeyv/env';
+import { BROWSER } from 'esm-env';
 
 const ELEMENT_NODE = 1;
 const DOCUMENT_NODE = 9;
