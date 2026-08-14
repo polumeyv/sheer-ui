@@ -1,4 +1,4 @@
-import { BROWSER } from '@polumeyv/utilities/env';
+import { BROWSER } from '@polumeyv/env';
 import type {
 	EditableTimeSegmentPart,
 	HourCycle,

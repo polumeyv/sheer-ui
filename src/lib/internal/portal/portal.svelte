@@ -27,7 +27,7 @@
 
 <script lang="ts">
 	import { resolvePortalToProp } from '../prop-resolvers.js';
-	import { BROWSER, DEV } from '@polumeyv/utilities/env';
+	import { BROWSER, DEV } from '@polumeyv/env';
 
 	let { to: toProp, children, disabled }: PortalProps = $props();
 

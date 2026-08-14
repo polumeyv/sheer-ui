@@ -14,7 +14,7 @@ import { createContext, onMount, untrack } from 'svelte';
 import type { DateRangeFieldRootState } from '../date-range-field/date-range-field.svelte.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, WithRefOpts, RefAttachment } from '../../internal/types.js';
 import { createBitsAttrs, boolToStr, boolToStrTrueOrUndef, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
-import { BROWSER } from '@polumeyv/utilities/env';
+import { BROWSER } from '@polumeyv/env';
 import { kbd } from '../../internal/kbd.js';
 import type {
 	DateAndTimeSegmentObj,

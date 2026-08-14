@@ -1,5 +1,5 @@
 import { type DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
-import { DEV } from '@polumeyv/utilities/env';
+import { DEV } from '@polumeyv/env';
 import { createContext, onMount, untrack } from 'svelte';
 import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import type { RangeCalendarRootState } from '../range-calendar/range-calendar.svelte.js';

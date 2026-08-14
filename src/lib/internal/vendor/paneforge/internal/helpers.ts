@@ -1,6 +1,6 @@
 import type { PaneState } from '../paneforge.svelte.js';
 import type { DOMContext } from '../../../tools/index.js';
-import { BROWSER } from '@polumeyv/utilities/env';
+import { BROWSER } from '@polumeyv/env';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
 import type { Direction, DragState, PaneConstraints, ResizeEvent } from './types.js';
 import { calculateAriaValues } from './utils/aria.js';

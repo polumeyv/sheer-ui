@@ -1,6 +1,6 @@
 import { srOnlyStylesString } from '../tools/index.js';
 import { isHTMLElement } from '@polumeyv/utilities/dom';
-import { BROWSER } from '@polumeyv/utilities/env';
+import { BROWSER } from '@polumeyv/env';
 
 type AnnouncementKind = 'assertive' | 'polite';
 type AriaNotifyDocument = Document & {
