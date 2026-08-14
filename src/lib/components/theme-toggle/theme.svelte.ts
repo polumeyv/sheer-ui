@@ -13,7 +13,7 @@
 import { MediaQuery } from 'svelte/reactivity';
 import { on } from 'svelte/events';
 import { createContext } from 'svelte';
-import { BROWSER } from '@polumeyv/utilities/env';
+import { BROWSER } from '@polumeyv/env';
 
 export type Mode = 'light' | 'dark';
 

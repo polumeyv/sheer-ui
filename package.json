@@ -320,6 +320,7 @@
 	"dependencies": {
 		"@floating-ui/dom": "^1.7.1",
 		"@lucide/svelte": "^1.18.0",
+		"@polumeyv/env": "catalog:infra",
 		"@polumeyv/utilities": "catalog:infra",
 		"@stripe/stripe-js": "^9.8.0",
 		"d3-scale": "^4.0.2",

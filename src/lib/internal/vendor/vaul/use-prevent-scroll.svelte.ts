@@ -1,7 +1,7 @@
 // This code comes from https://github.com/adobe/react-spectrum/blob/main/packages/react-aria/src/overlays/usePreventScroll.ts
 
 import { isIOS } from '@polumeyv/utilities/dom';
-import { BROWSER } from '@polumeyv/utilities/env';
+import { BROWSER } from '@polumeyv/env';
 import { isWebKit } from './internal/browser.js';
 import { SharedState } from '../../shared-state.svelte.js';
 import { BodyScrollLock } from '../../body-scroll-lock.svelte.js';

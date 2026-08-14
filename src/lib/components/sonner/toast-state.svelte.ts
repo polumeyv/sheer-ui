@@ -1,4 +1,4 @@
-import { BROWSER } from '@polumeyv/utilities/env';
+import { BROWSER } from '@polumeyv/env';
 import type { ExternalToast, HeightT, PromiseData, PromiseT, AnyComponent, ToastT, ToastTypes } from './types.js';
 import { untrack } from 'svelte';
 
