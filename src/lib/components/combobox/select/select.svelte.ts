@@ -21,7 +21,7 @@ import type {
 	WithRefOpts,
 	RefAttachment,
 } from '../../../internal/types.js';
-import { isIOS } from '@polumeyv/utilities/dom';
+import { isIOS } from '../../../internal/tools/utils/dom.js';
 import { createBitsAttrs } from '../../../internal/attrs.js';
 import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
 import { DataTypeahead } from '../../../internal/data-typeahead.svelte.js';

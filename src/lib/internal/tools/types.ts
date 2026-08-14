@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Snippet } from 'svelte';
 import type * as CSS from 'csstype';
-import type { ReadableBox, WritableBox } from './runed/box.svelte.js';
+import type { ReadableBox, WritableBox } from './box.svelte.js';
 import { BROWSER } from '@polumeyv/env';
 
 export type Getter<T> = () => T;

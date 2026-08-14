@@ -1,7 +1,7 @@
 import { attachRef, DOMContext, type WritableBoxedValues, type ReadableBoxedValues, simpleBox } from '../../internal/tools/index.js';
 import { on } from 'svelte/events';
 import { createContext, onMount, untrack } from 'svelte';
-import { isElement } from '@polumeyv/utilities/dom';
+import { isElement } from '../../internal/tools/utils/dom.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import type { OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import type { FocusEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';

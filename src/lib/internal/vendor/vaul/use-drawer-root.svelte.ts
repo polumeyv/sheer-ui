@@ -12,7 +12,7 @@ import {
 	WINDOW_TOP_OFFSET,
 } from './constants.js';
 import { isIOSFirefox } from './browser.js';
-import { isIOS } from '@polumeyv/utilities/dom';
+import { isIOS } from '../../tools/utils/dom.js';
 import { on } from 'svelte/events';
 import { createContext, tick, untrack } from 'svelte';
 import { assignStyle, applyStyle, dampenValue, getTranslate, isVertical } from './helpers.js';

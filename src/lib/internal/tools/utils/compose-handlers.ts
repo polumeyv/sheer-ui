@@ -1,7 +1,7 @@
 import { chain } from 'overrule/props';
 
 import type { EventCallback } from './events.js';
-import type { ReadableBox } from '../runed/box.svelte.js';
+import type { ReadableBox } from '../box.svelte.js';
 
 /**
  * Composes event handlers into a single function that can be called with an event.

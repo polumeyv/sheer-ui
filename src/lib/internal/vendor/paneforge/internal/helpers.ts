@@ -1,7 +1,7 @@
 import type { PaneState } from '../paneforge.svelte.js';
 import type { DOMContext } from '../../../tools/index.js';
 import { BROWSER } from '@polumeyv/env';
-import { isHTMLElement } from '@polumeyv/utilities/dom';
+import { isHTMLElement } from '../../../tools/utils/dom.js';
 import type { Direction, DragState, PaneConstraints, ResizeEvent } from './types.js';
 import { calculateAriaValues } from './utils/aria.js';
 import { areNumbersAlmostEqual } from './utils/compare.js';

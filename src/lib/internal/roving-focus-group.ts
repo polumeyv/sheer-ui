@@ -1,7 +1,7 @@
 import { type Box, type ReadableBox, simpleBox } from './tools/index.js';
 import { getDirectionalKeys, kbd } from './kbd.js';
 import type { Direction, Orientation } from './index.js';
-import { isHTMLElement } from '@polumeyv/utilities/dom';
+import { isHTMLElement } from './tools/utils/dom.js';
 import { BROWSER } from '@polumeyv/env';
 
 type RovingFocusGroupOptions = (
