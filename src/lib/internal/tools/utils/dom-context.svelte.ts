@@ -1,4 +1,4 @@
-import { boxWith } from '../runed/box.svelte.js';
+import { boxWith } from '../box.svelte.js';
 import type { Box } from '../types.js';
 
 function getActiveElement(rootNode: Document | ShadowRoot): HTMLElement | null {

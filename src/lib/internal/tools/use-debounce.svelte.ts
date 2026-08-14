@@ -1,4 +1,4 @@
-import { get, type MaybeGetter } from '../types.js';
+import { get, type MaybeGetter } from './types.js';
 
 type UseDebounceReturn<Args extends unknown[], Return> = ((this: unknown, ...args: Args) => Promise<Return>) & {
 	cancel: () => void;

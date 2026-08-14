@@ -1,3 +1,5 @@
+import { untrack } from 'svelte';
+
 const BoxSymbol = Symbol('box');
 const isWritableSymbol = Symbol('is-writable');
 
@@ -83,6 +85,19 @@ export function bindableWith<T>(get: () => T, set: (v: T) => void, notify?: (v: 
 	return boxWith(get, (v) => {
 		set(v);
 		notify?.(v);
+	});
+}
+
+/**
+ * Repair a bindable value synchronously for setup/SSR, then repair it again
+ * before DOM updates whenever the tracked source changes.
+ */
+export function repairBindable(track: () => unknown, repair: () => void) {
+	repair();
+
+	$effect.pre(() => {
+		track();
+		untrack(repair);
 	});
 }
 

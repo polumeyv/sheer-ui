@@ -2,10 +2,11 @@ export {
 	bindableWith,
 	boxWith,
 	boxAutoReset,
+	repairBindable,
 	simpleBox,
 	type WritableBox,
 	type ReadableBox,
-} from './runed/box.svelte.js';
+} from './box.svelte.js';
 export { get } from './types.js';
 export type {
 	AnyFn,
@@ -18,5 +19,5 @@ export type {
 	WithRefProps,
 	WritableBoxedValues,
 } from './types.js';
-export { repairBindable, useDebounce } from './runed/index.js';
+export { useDebounce } from './use-debounce.svelte.js';
 export * from './utils/index.js';
