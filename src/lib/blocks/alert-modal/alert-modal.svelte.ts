@@ -77,5 +77,5 @@ export class AlertModalState {
 export const alertModal = new AlertModalState();
 
 // Session-expiry recovery used to live here (isSessionExpired / recoverSession / watchSessionRejections). It's gone:
-// the server gate (@polumeyv/lib/kit idpSessionGate) now redirects dead-session requests — navigations and remote
+// the server gate (@polumeyv/kit idpSessionGate) now redirects dead-session requests — navigations and remote
 // calls alike — straight to the IdP, so a logged-out user never surfaces a session error inside the app.
