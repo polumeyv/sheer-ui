@@ -1,5 +1,4 @@
 import { type Getter, type RefAttachment } from '../tools/index.js';
-import { FocusScopeManager } from './focus-scope-manager.js';
 import { getFocusableCandidates, getTabbableCandidates, isFocusable } from '../tabbable.js';
 import { on } from 'svelte/events';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
@@ -16,8 +15,68 @@ export interface FocusScopeAttachmentOpts extends FocusScopeOpts {
 	enabled: Getter<boolean>;
 }
 
+/**
+ * Per-document scope stack + focus memory. The active scope is the top of the stack;
+ * an occluded scope needs no paused flag — its handlers gate on isActiveScope at
+ * event time, so activeness is derived from stack position, never synced.
+ */
+class FocusScopeManager {
+	static #instances = new WeakMap<Document, FocusScopeManager>();
+	#scopeStack: FocusScope[] = [];
+	#focusHistory = new WeakMap<FocusScope, HTMLElement>();
+	#preFocusHistory = new WeakMap<FocusScope, HTMLElement>();
+	#document: Document;
+
+	constructor(doc: Document) {
+		this.#document = doc;
+	}
+
+	static getInstance(doc: Document) {
+		let instance = this.#instances.get(doc);
+		if (!instance) {
+			instance = new FocusScopeManager(doc);
+			this.#instances.set(doc, instance);
+		}
+		return instance;
+	}
+
+	register(scope: FocusScope) {
+		// capture the currently focused element before this scope becomes active
+		const activeElement = this.#document.activeElement as HTMLElement;
+		if (activeElement && activeElement !== this.#document.body) {
+			this.#preFocusHistory.set(scope, activeElement);
+		}
+
+		this.#scopeStack = this.#scopeStack.filter((s) => s !== scope);
+		this.#scopeStack.unshift(scope);
+	}
+
+	unregister(scope: FocusScope) {
+		this.#scopeStack = this.#scopeStack.filter((s) => s !== scope);
+	}
+
+	isActiveScope(scope: FocusScope): boolean {
+		return this.#scopeStack[0] === scope;
+	}
+
+	setFocusMemory(scope: FocusScope, element: HTMLElement) {
+		this.#focusHistory.set(scope, element);
+	}
+
+	getFocusMemory(scope: FocusScope): HTMLElement | undefined {
+		return this.#focusHistory.get(scope);
+	}
+
+	getPreFocusMemory(scope: FocusScope): HTMLElement | undefined {
+		return this.#preFocusHistory.get(scope);
+	}
+
+	clearPreFocusMemory(scope: FocusScope) {
+		this.#preFocusHistory.delete(scope);
+	}
+}
+
 class FocusScope {
-	#paused = false;
 	#container: HTMLElement | null = null;
 	#manager: FocusScopeManager | null = null;
 	#trapCleanupFns: Array<() => void> = [];
@@ -25,18 +84,6 @@ class FocusScope {
 
 	constructor(opts: FocusScopeOpts) {
 		this.#opts = opts;
-	}
-
-	get paused() {
-		return this.#paused;
-	}
-
-	pause() {
-		this.#paused = true;
-	}
-
-	resume() {
-		this.#paused = false;
 	}
 
 	#cleanup() {
@@ -125,7 +172,7 @@ class FocusScope {
 		const doc = container.ownerDocument;
 
 		const handleFocus = (e: FocusEvent) => {
-			if (this.#paused || !this.#manager?.isActiveScope(this)) return;
+			if (!this.#manager?.isActiveScope(this)) return;
 
 			const target = e.target as HTMLElement;
 			if (!target) return;
@@ -151,7 +198,7 @@ class FocusScope {
 		};
 
 		const handleKeydown = (e: KeyboardEvent) => {
-			if (!this.#opts.loop() || this.#paused || e.key !== 'Tab') return;
+			if (!this.#opts.loop() || e.key !== 'Tab') return;
 			if (!this.#manager?.isActiveScope(this)) return;
 
 			const tabbables = this.#getTabbables();
