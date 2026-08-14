@@ -1,7 +1,7 @@
 import type { ReadableBoxedValues, WritableBoxedValues } from '../../tools/index.js';
 import type { DrawerDirection, Getters } from './types.js';
 import { applyStyle, isVertical } from './helpers.js';
-import { TRANSITIONS, VELOCITY_THRESHOLD } from './internal/constants.js';
+import { VELOCITY_THRESHOLD } from './constants.js';
 import { untrack } from 'svelte';
 import { innerWidth, innerHeight } from 'svelte/reactivity/window';
 
@@ -38,12 +38,16 @@ export function useSnapPoints({
 
 	const activeSnapPointIndex = $derived(snapPoints.current?.findIndex((snapPoint) => snapPoint === activeSnapPoint.current));
 
+	// At-or-above fadeFromIndex (upstream's snapToPoint fades the overlay for any
+	// target >= fadeFromIndex, not just the exact point); drives the overlay's
+	// data-vaul-snap-points-overlay attribute, whose stylesheet rules own the fade.
 	const shouldFade = $derived(
 		(snapPoints.current &&
 			snapPoints.current.length > 0 &&
 			(fadeFromIndex.current || fadeFromIndex.current === 0) &&
 			!Number.isNaN(fadeFromIndex.current) &&
-			snapPoints.current[fadeFromIndex.current] === activeSnapPoint.current) ||
+			activeSnapPointIndex !== undefined &&
+			activeSnapPointIndex >= fadeFromIndex.current) ||
 			!snapPoints.current,
 	);
 
@@ -101,27 +105,13 @@ export function useSnapPoints({
 		onSnapPointChange(newSnapPointIndex);
 
 		applyStyle(drawerNode(), {
-			transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
 			transform: isVertical(direction.current) ? `translate3d(0, ${dimension}px, 0)` : `translate3d(${dimension}px, 0, 0)`,
 		});
-
-		if (
-			snapPointsOffset &&
-			newSnapPointIndex !== snapPointsOffset.length - 1 &&
-			fadeFromIndex.current !== undefined &&
-			newSnapPointIndex !== fadeFromIndex.current &&
-			newSnapPointIndex < fadeFromIndex.current
-		) {
-			applyStyle(overlayNode(), {
-				transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-				opacity: '0',
-			});
-		} else {
-			applyStyle(overlayNode(), {
-				transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-				opacity: '1',
-			});
-		}
+		// Hand the fade back to the data-vaul-snap-points-overlay stylesheet rules:
+		// clear the drag-time inline opacity and let the activeSnapPoint write below
+		// flip the attribute (via shouldFade); stylesheet transitions animate both nodes.
+		drawerNode()?.style.removeProperty('transition');
+		overlayNode()?.style.removeProperty('opacity');
 
 		activeSnapPoint.current = snapPoints.current?.[Math.max(newSnapPointIndex, 0)];
 	}
@@ -160,15 +150,8 @@ export function useSnapPoints({
 		const dir = direction.current;
 		const currentPosition =
 			dir === 'bottom' || dir === 'right' ? (activeSnapPointOffset ?? 0) - draggedDistance : (activeSnapPointOffset ?? 0) + draggedDistance;
-		const isOverlaySnapPoint = activeSnapPointIndex === fadeFromIndex.current - 1;
 		const isFirst = activeSnapPointIndex === 0;
 		const hasDraggedUp = draggedDistance > 0;
-
-		if (isOverlaySnapPoint) {
-			applyStyle(overlayNode(), {
-				transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-			});
-		}
 
 		if (!snapToSequentialPoint.current && velocity > 2 && !hasDraggedUp) {
 			if (dismissible) {

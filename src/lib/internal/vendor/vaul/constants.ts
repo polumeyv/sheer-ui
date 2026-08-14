@@ -1,3 +1,4 @@
+// Mirrored as --vaul-duration/--vaul-ease in drawer.svelte's stylesheet — keep in sync.
 export const TRANSITIONS = {
 	DURATION: 0.5,
 	EASE: [0.32, 0.72, 0, 1],

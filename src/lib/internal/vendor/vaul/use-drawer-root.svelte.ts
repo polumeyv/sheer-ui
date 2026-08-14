@@ -10,13 +10,16 @@ import {
 	TRANSITIONS,
 	VELOCITY_THRESHOLD,
 	WINDOW_TOP_OFFSET,
-} from './internal/constants.js';
-import { isIOSFirefox } from './internal/browser.js';
+} from './constants.js';
+import { isIOSFirefox } from './browser.js';
 import { isIOS } from '@polumeyv/utilities/dom';
 import { on } from 'svelte/events';
-import { tick, untrack } from 'svelte';
+import { createContext, tick, untrack } from 'svelte';
 import { assignStyle, applyStyle, dampenValue, getTranslate, isVertical } from './helpers.js';
-import { setDrawer } from './context.js';
+
+export type DrawerContext = ReturnType<typeof useDrawerRoot>;
+const [getDrawer, setDrawer] = createContext<DrawerContext>();
+export { getDrawer };
 
 type UseDrawerRootProps = ReadableBoxedValues<{
 	closeThreshold: number;
@@ -227,16 +230,11 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		}
 
 		if (!isAllowedToDrag && !shouldDrag(event.target!, isDraggingInDirection)) return;
+		// The class suppresses the stylesheet transitions on both nodes while dragging.
 		drawerNode.classList.add(DRAG_CLASS);
+		overlayNode?.classList.add(DRAG_CLASS);
 		// If shouldDrag gave true once after pressing down on the drawer, we set isAllowedToDrag to true and it will remain true until we let go, there's no reason to disable dragging mid way, ever, and that's the solution to it
 		isAllowedToDrag = true;
-		assignStyle(drawerNode, {
-			transition: 'none',
-		});
-
-		assignStyle(overlayNode, {
-			transition: 'none',
-		});
 
 		if (opts.snapPoints.current) {
 			snapPointsState.onDrag({ draggedDistance });
@@ -263,7 +261,6 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 
 			applyStyle(overlayNode, {
 				opacity: `${opacityValue}`,
-				transition: 'none',
 			});
 		}
 
@@ -378,6 +375,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		if (!isDragging || !drawerNode) return;
 
 		drawerNode.classList.remove(DRAG_CLASS);
+		overlayNode?.classList.remove(DRAG_CLASS);
 		isAllowedToDrag = false;
 		isDragging = false;
 	}
@@ -400,13 +398,12 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 
 		applyStyle(drawerNode, {
 			transform: 'translate3d(0, 0, 0)',
-			transition: `transform ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
 		});
-
-		applyStyle(overlayNode, {
-			transition: `opacity ${TRANSITIONS.DURATION}s cubic-bezier(${TRANSITIONS.EASE.join(',')})`,
-			opacity: '1',
-		});
+		// Clear inline values so the stylesheet transitions and rest-state opacity take
+		// back over (a nested-close freeze can leave an inline `transition: none` behind).
+		drawerNode.style.removeProperty('transition');
+		overlayNode?.style.removeProperty('opacity');
+		overlayNode?.style.removeProperty('transition');
 
 		if (opts.shouldScaleBackground.current && currentSwipeAmount && currentSwipeAmount > 0 && opts.open.current) {
 			applyStyle(wrapper, {
@@ -442,6 +439,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		if (!isDragging || !drawerNode) return;
 
 		drawerNode.classList.remove(DRAG_CLASS);
+		overlayNode?.classList.remove(DRAG_CLASS);
 		isAllowedToDrag = false;
 		isDragging = false;
 		const swipeAmount = getTranslate(drawerNode, opts.direction.current);
@@ -645,39 +643,43 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		drawerNode = node;
 	}
 
-	return setDrawer({
-		...opts,
+	// Only what descendants (getDrawer) and the root component actually read; the
+	// machine's remaining locals stay private.
+	const ctx = {
+		open: opts.open,
+		snapPoints: opts.snapPoints,
+		modal: opts.modal,
+		direction: opts.direction,
+		shouldScaleBackground: opts.shouldScaleBackground,
+		setBackgroundColorOnScale: opts.setBackgroundColorOnScale,
+		noBodyStyles: opts.noBodyStyles,
+		handleOnly: opts.handleOnly,
+		container: opts.container,
+		autoFocus: opts.autoFocus,
 		keyboardIsOpen,
-		closeDrawer,
 		setDrawerNode,
 		setOverlayNode,
+		onPress,
 		onDrag,
+		onRelease,
 		onNestedDrag,
 		onNestedOpenChange,
 		onNestedRelease,
-		onRelease,
-		onPress,
 		onDialogOpenChange,
+		handleOpenChangeComplete,
 		get shouldAnimate() {
 			return shouldAnimate;
-		},
-		get isDragging() {
-			return isDragging;
-		},
-		get overlayNode() {
-			return overlayNode;
-		},
-		get drawerNode() {
-			return drawerNode;
-		},
-		get snapPointsOffset() {
-			return snapPointsState.snapPointsOffset;
 		},
 		get shouldFade() {
 			return snapPointsState.shouldFade;
 		},
-		restorePositionSetting,
-		handleOpenChange,
-		handleOpenChangeComplete,
-	});
+		get snapPointsOffset() {
+			return snapPointsState.snapPointsOffset;
+		},
+		get activeSnapPointIndex() {
+			return snapPointsState.activeSnapPointIndex;
+		},
+	};
+	setDrawer(ctx);
+	return ctx;
 }
