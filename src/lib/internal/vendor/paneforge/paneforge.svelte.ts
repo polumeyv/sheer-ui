@@ -22,7 +22,6 @@ import {
 	updateResizeHandleAriaValues,
 	validatePaneGroupLayout,
 } from './internal/helpers.js';
-import { noop } from '@polumeyv/utilities';
 import { isKeyDown, isMouseEvent, isTouchEvent } from './internal/utils/is.js';
 import { adjustLayoutByDelta } from './internal/utils/adjust-layout.js';
 import { arraysAreEqual as areArraysEqual } from '../../arrays.js';
@@ -460,7 +459,7 @@ export class PaneGroupState {
 
 		const unsubHandlers = handles.map((handle) => {
 			const handleId = handle.getAttribute('data-pane-resizer-id');
-			if (!handleId) return noop;
+			if (!handleId) return () => {};
 
 			const [idBefore, idAfter] = getResizeHandlePaneIds({
 				groupId,
@@ -469,7 +468,7 @@ export class PaneGroupState {
 				domContext: this.domContext,
 			});
 
-			if (idBefore == null || idAfter == null) return noop;
+			if (idBefore == null || idAfter == null) return () => {};
 
 			const onKeydown = (e: KeyboardEvent) => {
 				if (e.defaultPrevented || e.key !== 'Enter') return;

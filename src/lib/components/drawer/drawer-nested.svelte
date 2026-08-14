@@ -3,14 +3,13 @@ import DrawerRoot from './drawer.svelte';
 import type { DrawerRootProps as RootProps } from '../../internal/vendor/vaul/types.js';
 import { OpenCell } from '../../internal/open-cell.svelte.js';
 import { getDrawer } from '../../internal/vendor/vaul/use-drawer-root.svelte.js';
-import { noop } from '@polumeyv/utilities';
 
 let {
 	shouldScaleBackground = true,
 	open = false,
 	state: givenCell,
 	activeSnapPoint = $bindable(null),
-	onDrag = noop,
+	onDrag = () => {},
 	...restProps
 }: Omit<RootProps, 'nested' | 'onRelease' | 'onClose' | 'open' | 'onOpenChange'> & {
 	/** Derivation source for the nested drawer's open state. Not bindable. */

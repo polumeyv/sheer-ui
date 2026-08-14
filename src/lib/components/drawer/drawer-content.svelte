@@ -10,7 +10,6 @@
 	import { createId } from '../../internal/create-id.js';
 	import DrawerPortal from './drawer-portal.svelte';
 	import DrawerOverlay from './drawer-overlay.svelte';
-	import { noop } from '@polumeyv/utilities';
 	import { useDrawerContent } from '../../internal/vendor/vaul/use-drawer-content.svelte.js';
 	import type { DrawerContentProps as ContentProps } from '../../internal/vendor/vaul/types.js';
 
@@ -21,14 +20,14 @@
 		ref = $bindable(null),
 		class: className,
 		portalProps,
-		onOpenAutoFocus = noop,
-		onInteractOutside = noop,
-		onFocusOutside = noop,
-		oncontextmenu = noop,
-		onpointerdown = noop,
-		onpointerup = noop,
-		onpointerout = noop,
-		onpointermove = noop,
+		onOpenAutoFocus = () => {},
+		onInteractOutside = () => {},
+		onFocusOutside = () => {},
+		oncontextmenu = () => {},
+		onpointerdown = () => {},
+		onpointerup = () => {},
+		onpointerout = () => {},
+		onpointermove = () => {},
 		children,
 		...restProps
 	}: WithChildren<WithoutChildrenOrChild<ContentProps>> & {
@@ -41,12 +40,12 @@
 			() => ref,
 			(v) => (ref = v),
 		),
-		oncontextmenu: boxWith(() => oncontextmenu ?? noop),
+		oncontextmenu: boxWith(() => oncontextmenu ?? (() => {})),
 		onInteractOutside: boxWith(() => onInteractOutside),
-		onpointerdown: boxWith(() => onpointerdown ?? noop),
-		onpointermove: boxWith(() => onpointermove ?? noop),
-		onpointerout: boxWith(() => onpointerout ?? noop),
-		onpointerup: boxWith(() => onpointerup ?? noop),
+		onpointerdown: boxWith(() => onpointerdown ?? (() => {})),
+		onpointermove: boxWith(() => onpointermove ?? (() => {})),
+		onpointerout: boxWith(() => onpointerout ?? (() => {})),
+		onpointerup: boxWith(() => onpointerup ?? (() => {})),
 		onOpenAutoFocus: boxWith(() => onOpenAutoFocus),
 		onFocusOutside: boxWith(() => onFocusOutside),
 	});

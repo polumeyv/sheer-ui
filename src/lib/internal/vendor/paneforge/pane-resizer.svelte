@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { boxWith } from '../../tools/index.js';
 	import { mergeProps } from '../../merge-props.js';
-	import { noop } from '@polumeyv/utilities';
 	import type { PaneResizerProps } from './types.js';
 	import { PaneResizerState } from './paneforge.svelte.js';
 
@@ -11,7 +10,7 @@
 		id = uid,
 		ref = $bindable(null),
 		disabled = false,
-		onDraggingChange = noop,
+		onDraggingChange = () => {},
 		tabindex = 0,
 		child,
 		children,

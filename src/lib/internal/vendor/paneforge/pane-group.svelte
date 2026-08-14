@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { boxWith } from '../../tools/index.js';
 	import { mergeProps } from '../../merge-props.js';
-	import { noop } from '@polumeyv/utilities';
 	import type { PaneGroupProps } from './types.js';
 	import { defaultStorage, PaneGroupState } from './paneforge.svelte.js';
 
@@ -12,7 +11,7 @@
 		direction,
 		id = uid,
 		keyboardResizeBy = null,
-		onLayoutChange = noop,
+		onLayoutChange = () => {},
 		storage = defaultStorage,
 		ref = $bindable(null),
 		child,

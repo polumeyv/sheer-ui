@@ -4,16 +4,15 @@
 	import { OpenCell } from '../../internal/open-cell.svelte.js';
 	import { boxWith } from '../../internal/tools/index.js';
 	import type { DrawerRootProps as RootProps } from '../../internal/vendor/vaul/types.js';
-	import { noop } from '@polumeyv/utilities';
 	import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT } from '../../internal/vendor/vaul/constants.js';
 	import { useDrawerRoot } from '../../internal/vendor/vaul/use-drawer-root.svelte.js';
 
 	let {
 		open = false,
 		state: givenCell,
-		_internal_onOpenChange = noop,
-		onDrag = noop,
-		onRelease = noop,
+		_internal_onOpenChange = () => {},
+		onDrag = () => {},
+		onRelease = () => {},
 		snapPoints,
 		shouldScaleBackground = true,
 		setBackgroundColorOnScale = true,
@@ -23,18 +22,18 @@
 		handleOnly = false,
 		fadeFromIndex = snapPoints && snapPoints.length - 1,
 		activeSnapPoint = $bindable(snapPoints?.[0] ?? null),
-		onActiveSnapPointChange = noop,
+		onActiveSnapPointChange = () => {},
 		fixed = false,
 		modal = true,
-		onClose = noop,
+		onClose = () => {},
 		nested = false,
 		noBodyStyles = false,
 		direction = 'bottom',
 		snapToSequentialPoint = false,
 		preventScrollRestoration = false,
 		repositionInputs = true,
-		onAnimationEnd = noop,
-		onOpenChangeComplete = noop,
+		onAnimationEnd = () => {},
+		onOpenChangeComplete = () => {},
 		container = null,
 		autoFocus = false,
 		disablePreventScroll = true,
