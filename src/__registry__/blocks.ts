@@ -16,7 +16,6 @@ export const blocks = [
 	"mockups",
 	"PhoneInput",
 	"Section",
-	"stripe-payment-field",
 	"tab-nav",
 	"time-picker",
 	"user-avatar",
