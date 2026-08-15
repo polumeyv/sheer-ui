@@ -16,7 +16,7 @@
 	],
 	"scripts": {
 		"registry:build": "bun scripts/build-registry.ts",
-		"dev": "bun run registry:build && bunx --bun vite dev --host 127.0.0.1 --port 4273 --strictPort",
+		"dev": "bun run registry:build && bun --bun node_modules/.bin/vite dev --host 127.0.0.1 --port 4273 --strictPort",
 		"build": "bun run registry:build && bunx --bun vite build",
 		"preview": "bunx --bun vite preview",
 		"prepare": "svelte-kit sync || echo ''",
