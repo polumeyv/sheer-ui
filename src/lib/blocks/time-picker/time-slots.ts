@@ -34,8 +34,8 @@ export function generateTimeSlots(startHour: number, endHour: number, interval: 
 	// `elapsed` bounds the loop in minutes (so endHour === 24 works); `minutesToTime` wraps at midnight
 	// and zero-pads for us.
 	for (let elapsed = 0; elapsed < span; elapsed += interval) {
-		const value = minutesToTime(startHour * 60 + elapsed);
-		slots.push({ value, label: formatTimeDisplay(value) });
+		const min = startHour * 60 + elapsed;
+		slots.push({ value: minutesToTime(min), label: formatTimeDisplay(min) });
 	}
 	return slots;
 }
