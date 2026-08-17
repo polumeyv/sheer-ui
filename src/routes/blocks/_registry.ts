@@ -4,8 +4,7 @@
  * read from here; each entry's `slug` names its `<slug>-demo.svelte` showcase in this directory.
  *
  * Blocks are few and each has a single live showcase, so this is a static list — unlike the
- * generator-driven component registry (the build-registry demo scan would reject a non-component
- * slug outright).
+ * glob-driven component demos in `../components/_demos` (which reject a non-component slug outright).
  */
 export type BlockMeta = {
 	/** URL segment + `<slug>-demo.svelte` showcase prefix */

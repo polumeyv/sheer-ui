@@ -15,15 +15,14 @@
 		"**/*.css"
 	],
 	"scripts": {
-		"registry:build": "bun scripts/build-registry.ts",
-		"dev": "bun run registry:build && bun --bun node_modules/.bin/vite dev --host 127.0.0.1 --port 4273 --strictPort",
-		"build": "bun run registry:build && bunx --bun vite build",
+		"dev": "bun --bun node_modules/.bin/vite dev --host 127.0.0.1 --port 4273 --strictPort",
+		"build": "bunx --bun vite build",
 		"preview": "bunx --bun vite preview",
 		"prepare": "svelte-kit sync || echo ''",
-		"check": "bun run registry:build && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test": "bun test && bun run test:components",
-		"test:components": "bun run registry:build && svelte-kit sync && bunx vitest run --config vitest.config.ts"
+		"test:components": "svelte-kit sync && bunx vitest run --config vitest.config.ts"
 	},
 	"exports": {
 		"./blocks": {
