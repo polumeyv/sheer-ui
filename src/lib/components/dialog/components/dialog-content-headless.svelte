@@ -74,9 +74,8 @@
 			if (e.defaultPrevented) return;
 			contentState.root.handleClose();
 		},
-		onFocusOutside: () => restProps.onFocusOutside ?? (() => {}),
+		onFocusOutside: () => restProps.onFocusOutside,
 		enabled: () => contentState.root.cell.open,
-		isValidEvent: () => () => false,
 	});
 
 	const textSelection = textSelectionAttachment({

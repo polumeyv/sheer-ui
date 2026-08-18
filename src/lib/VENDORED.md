@@ -82,6 +82,12 @@ our side, not upstream's.
 - Menu and Select input modality is a boolean field on each root state. Menu roots own capture-phase
   document listeners through `<svelte:document>` instead of routing browser-only lifecycle through
   `SharedState`.
+- `dismissible-layer/` drifts twice: its timers run through an injected `Timers` seam
+  (`scheduler.ts`, defaulting to the real globals) so the 1ms/10ms/20ms windows are testable, and
+  `isValidEvent` collapses upstream's three context-menu branches into `return e.button === 0`
+  (same truth table, verified over every trigger/content/button combination). Its handler and
+  predicate opts (`onInteractOutside`, `onFocusOutside`, `isValidEvent`) are optional here rather
+  than upstream's `Required<>` boxes, so callers omit them instead of passing no-ops.
 - `state_referenced_locally` warnings (14) from vendored files are upstream's; svelte-check prints
   them.
 

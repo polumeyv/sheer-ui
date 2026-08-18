@@ -65,8 +65,8 @@
 	const dismissible = interactOutsideAttachment({
 		id: () => id,
 		interactOutsideBehavior: () => interactOutsideBehavior,
-		onInteractOutside: () => onInteractOutside ?? (() => {}),
-		onFocusOutside: () => onFocusOutside ?? (() => {}),
+		onInteractOutside: () => onInteractOutside,
+		onFocusOutside: () => onFocusOutside,
 		enabled: () => enabled,
 		isValidEvent: () => isValidEvent,
 	});

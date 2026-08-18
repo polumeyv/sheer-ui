@@ -1,11 +1,11 @@
-import { flushSync, mount, unmount } from 'svelte';
+import { flushSync, mount, tick, unmount } from 'svelte';
 import { afterEach, describe, expect, test } from 'vitest';
 import DismissableLayerFixture from './dismissable-layer.fixture.svelte';
 
 // Exercises the real $effect/onMount-driven dismissible layer (use-dismissable-layer.svelte.ts)
 // against the shared bitsDismissableLayers stack. Every timer the layer uses — the 1ms
 // registration gate, the 10ms interact-outside debounce, and the 20ms reset — is routed through
-// an injected Scheduler seam (scheduler.ts); the fixture injects a manual clock so the fragile
+// an injected timer seam (scheduler.ts); the fixture injects a manual clock so the fragile
 // timing is deterministic, exactly mirroring how presence-manager.vitest.ts drives PresenceManager
 // through its injected AfterAnimationsRunner.
 
@@ -146,6 +146,25 @@ describe('dismissible (interact-outside) layer', () => {
 			// ...so the consumer can veto independently.
 			received!.preventDefault();
 			expect(received!.defaultPrevented).toBe(true);
+		} finally {
+			unmount(component);
+		}
+	});
+
+	test('(h) the optional opts are genuinely optional: an outside focusin with no onFocusOutside is a no-op', async () => {
+		// The fixture supplies neither onFocusOutside nor isValidEvent, so this drives both absent paths:
+		// the focusin handler must not fault, and the pointerdown validity check falls back to the built-in.
+		const { component, target } = render();
+		try {
+			component.advance(1);
+
+			q(target, 'outside').dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+			await tick(); // #handleFocus defers its outside check through tick()
+			flushSync();
+
+			firePointerDown(q(target, 'outside'));
+			component.advance(10);
+			expect(component.dismissA()).toBe(1);
 		} finally {
 			unmount(component);
 		}
