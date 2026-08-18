@@ -66,8 +66,7 @@
 	import { onMount, untrack } from 'svelte';
 	import { isAction, type SwipeDirection, type ToastClasses, type ToastProps } from './types.js';
 	import { toastState } from './toast-state.svelte.js';
-	import { AnimationsComplete } from '../../internal/animations-complete.js';
-	import { boxWith } from '../../internal/tools/index.js';
+	import { createSettleRunner } from '../../internal/animations-settled.svelte.js';
 	import type { DragEventHandler, PointerEventHandler } from 'svelte/elements';
 	import { on } from 'svelte/events';
 	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
@@ -208,11 +207,8 @@
 		if (toast.updated) untrack(measure);
 	});
 
-	const exitAnimations = new AnimationsComplete({
-		ref: boxWith(() => toastRef ?? null),
-		// Defers past the style recalc that starts the exit transition, so getAnimations() can see it.
-		deferToTick: boxWith(() => true),
-	});
+	// Two frames: the second defers past the style recalc that starts the exit transition, so getAnimations() can see it.
+	const exitSettle = createSettleRunner({ subtree: false, frames: 2 });
 
 	function deleteToast() {
 		if (removed) return;
@@ -221,7 +217,7 @@
 		offsetBeforeRemove = offset;
 
 		toastState.removeHeight(toast.id);
-		exitAnimations.run(() => {
+		exitSettle.run(toastRef ?? null, () => {
 			toastState.remove(toast.id);
 		});
 	}

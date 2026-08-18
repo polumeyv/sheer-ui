@@ -51,11 +51,12 @@ Two edges only a cold install reveals, both previously borrowed from the mono ro
 ## Locally-authored (not vendored)
 
 Modules written here, marked by their `.test.ts` siblings: `internal/layer-stack.ts`,
-`internal/hover-intent-geometry.ts`, `internal/arrays.ts`, `internal/animations-complete.ts`,
-`internal/tools/utils/attach-ref.ts`. The shared `internal/native-dialog-controller.svelte.ts`,
-`internal/typeahead.svelte.ts` and `internal/date-time/field/range-field.svelte.ts` are also local
-consolidation Modules, covered through their dialog, typeahead and range-field integration suites. A
-future upstream diff touching these is drift on our side, not upstream's.
+`internal/hover-intent-geometry.ts`, `internal/arrays.ts`, `internal/animations-settled.svelte.ts`
+(absorbed `internal/use-open-change-complete.svelte.ts`), `internal/tools/utils/attach-ref.ts`. The
+shared `internal/native-dialog-controller.svelte.ts`, `internal/typeahead.svelte.ts` and
+`internal/date-time/field/range-field.svelte.ts` are also local consolidation Modules, covered through
+their dialog, typeahead and range-field integration suites. A future upstream diff touching these is
+drift on our side, not upstream's.
 
 ## Local deviations from upstream (carried forward from the original)
 

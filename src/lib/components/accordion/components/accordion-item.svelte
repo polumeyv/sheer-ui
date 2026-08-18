@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import { animationsSettled } from '../../../internal/animations-settled.svelte.js';
+	import { createSettleRunner } from '../../../internal/animations-settled.svelte.js';
 	import { useAccordion } from '../accordion.svelte.js';
 	import type { AccordionItemProps } from '../types.js';
 
@@ -14,23 +14,21 @@
 	// single-type exclusivity; it drops once the subtree's animations settle.
 	// svelte-ignore state_referenced_locally -- initial value only; later changes flow through the effect below.
 	let rendered = $state(accordion.includes(value));
-	let closeToken = 0;
+	const closeSettle = createSettleRunner();
 
 	$effect.pre(() => {
 		if (open) {
-			closeToken++;
+			closeSettle.cancel();
 			rendered = true;
 			return;
 		}
 		if (!rendered) return;
-		const token = ++closeToken;
-		const el = ref;
-		if (!el) {
+		if (!ref) {
 			rendered = false;
 			return;
 		}
-		void animationsSettled(el).then(() => {
-			if (token === closeToken) rendered = false;
+		closeSettle.run(ref, () => {
+			rendered = false;
 		});
 	});
 </script>

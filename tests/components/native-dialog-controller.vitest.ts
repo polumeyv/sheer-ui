@@ -58,6 +58,22 @@ describe('native dialog controller', () => {
 		unmount(component);
 	});
 
+	test('reopening before the exit settles supersedes the pending native close', async () => {
+		const { component, dialog } = render();
+		open(component);
+
+		component.setOpen(false);
+		flushSync();
+		component.setOpen(true);
+		flushSync();
+
+		await new Promise(requestAnimationFrame);
+		await new Promise(requestAnimationFrame);
+		expect(dialog.open).toBe(true);
+		expect(dialog.close).not.toHaveBeenCalled();
+		unmount(component);
+	});
+
 	test.each(['pointerdown', 'click'] as const)('supports the %s backdrop policy', async (outsideEvent) => {
 		const { component, dialog } = render(outsideEvent);
 		open(component);
