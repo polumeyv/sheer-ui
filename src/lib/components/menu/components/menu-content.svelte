@@ -2,10 +2,9 @@
 	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { MenuContentProps } from '../types.js';
-	import { MenuContentState } from '../menu.svelte.js';
+	import { CONTEXT_MENU_TRIGGER_ATTR, MenuContentState } from '../menu.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
 	import PopperLayer from '../../../internal/popper-layer/popper-layer.svelte';
-	import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
 
 	const uid = $props.id();
 
@@ -15,13 +14,14 @@
 		children,
 		ref = $bindable(null),
 		loop = true,
+		isStatic = false,
 		onInteractOutside = () => {},
 		onEscapeKeydown = () => {},
 		onCloseAutoFocus: onCloseAutoFocusProp = () => {},
 		forceMount = false,
 		style,
 		...restProps
-	}: MenuContentProps = $props();
+	}: MenuContentProps & { isStatic?: boolean } = $props();
 
 	const contentState = MenuContentState.create({
 		id: boxWith(() => id),
@@ -33,24 +33,17 @@
 		onCloseAutoFocus: boxWith(() => onCloseAutoFocusProp),
 	});
 
-	const mergedProps = $derived(
-		mergeProps(
-			{
-				'data-slot': 'menubar-content',
-				class:
-					'bg-popover text-popover-foreground transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[side=bottom]:starting:-translate-y-2 data-[side=top]:starting:translate-y-2 data-[side=left]:starting:translate-x-2 data-[side=right]:starting:-translate-x-2 z-50 min-w-[12rem] origin-(--bits-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-md',
-			},
-			restProps,
-			contentState.props,
-			{
-				style: { outline: 'none' },
-			},
-		),
-	);
+	const isContextMenu = $derived(contentState.parentMenu.root.opts.variant.current === 'context-menu');
+
+	const mergedProps = $derived(mergeProps({ isValidEvent }, restProps, contentState.props));
 
 	function handleInteractOutside(e: PointerEvent) {
-		contentState.handleInteractOutside(e);
-		if (e.defaultPrevented) return;
+		// a context-menu trigger is the whole right-clickable region, so the engine's
+		// trigger deferral would preventDefault every outside click landing inside it
+		if (!isContextMenu) {
+			contentState.handleInteractOutside(e);
+			if (e.defaultPrevented) return;
+		}
 		onInteractOutside(e);
 		if (e.defaultPrevented) return;
 		// don't close if the interaction is with a submenu content or items
@@ -66,6 +59,17 @@
 		if (e.defaultPrevented) return;
 		contentState.parentMenu.onClose();
 	}
+
+	function isValidEvent(e: PointerEvent) {
+		if (!isContextMenu) return false;
+		if ('button' in e && e.button === 2) {
+			const target = e.target as HTMLElement;
+			if (!target) return false;
+			const isAnotherContextTrigger = target.closest(`[${CONTEXT_MENU_TRIGGER_ATTR}]`) !== contentState.parentMenu.triggerNode;
+			return isAnotherContextTrigger;
+		}
+		return false;
+	}
 </script>
 
 <PopperLayer
@@ -75,15 +79,19 @@
 	open={contentState.parentMenu.opts.open.current}
 	onInteractOutside={handleInteractOutside}
 	onEscapeKeydown={handleEscapeKeydown}
-	trapFocus
+	{isStatic}
 	{loop}
 	{forceMount}
 	{id}
 	shouldRender={contentState.shouldRender}>
 	{#snippet popper({ props, wrapperProps })}
-		{@const finalProps = mergeProps(props, { style: { outline: 'none', ...getFloatingContentCSSVars('menu') } }, { style })}
+		{@const finalProps = mergeProps(props, { style })}
 		{#if child}
 			{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
+		{:else if isStatic}
+			<div {...finalProps}>
+				{@render children?.()}
+			</div>
 		{:else}
 			<div {...wrapperProps}>
 				<div {...finalProps}>
