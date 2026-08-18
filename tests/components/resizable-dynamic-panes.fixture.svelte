@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Pane, PaneGroup, PaneResizer } from '../../src/lib/internal/vendor/paneforge/index.js';
+	import { Pane, PaneGroup, PaneResizer } from '../../src/lib/internal/paneforge/index.js';
 
 	let group = $state<ReturnType<typeof PaneGroup> | null>(null);
 	let showThird = $state(false);

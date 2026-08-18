@@ -1,6 +1,6 @@
 import { type ComponentProps } from 'svelte';
-import { attachRef, type ReadableBoxedValues, type WithRefProps } from '../../tools/index.js';
-import * as DrawerPrimitive from '../../../components/dialog/index.js';
+import { attachRef, type ReadableBoxedValues, type WithRefProps } from '../tools/index.js';
+import * as DrawerPrimitive from '../../components/dialog/index.js';
 import { BORDER_RADIUS, TRANSITIONS, WINDOW_TOP_OFFSET } from './constants.js';
 import { assignStyle, isVertical } from './helpers.js';
 import { getDrawer } from './use-drawer-root.svelte.js';

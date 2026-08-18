@@ -19,13 +19,13 @@ Nothing under `internal/` appears in the package.json exports map.
 | `internal/` engine core (`tools/utils`, `date-time/`, `floating-svelte/`, flat helpers) + the behavior primitives (`portal/`, `floating-layer/`, `popper-layer/`, `dismissible-layer/`, `presence-layer/`, `escape-layer/`, `focus-scope/`, `scroll-lock/`, `text-selection-layer/`, `prop-resolvers.ts`) + component state engines in `components/*/**.svelte.ts` | [huntabyte/bits-ui](https://github.com/huntabyte/bits-ui) tag `bits-ui@2.18.1`, `packages/bits-ui/src/lib` (the behavior primitives are upstream's `bits/utilities`, moved here 2026-07-04) | 2.18.1 |
 | `internal/tools/` (`box`, `use-debounce`) | [svecosystem/runed](https://github.com/svecosystem/runed) `runed@0.35.1` subset + svelte-toolbelt `v0.10.6` derivations (`box`) | 0.35.1 / 0.10.6 |
 | `internal/tabbable.ts` | [focus-trap/tabbable](https://github.com/focus-trap/tabbable) `v6.5.0` `src/index.js`, adapted (see file header) | 6.5.0 |
-| `internal/vendor/vaul/` | vaul-svelte (drawer engine; sole consumer `components/drawer`) | untracked — pin on next sync |
-| `internal/vendor/paneforge/` | [svecosystem/paneforge](https://github.com/svecosystem/paneforge) (resizable engine; sole consumer `components/resizable`) | untracked — pin on next sync |
+| `internal/vaul/` | vaul-svelte (drawer engine; sole consumer `components/drawer`) | untracked — pin on next sync |
+| `internal/paneforge/` | [svecosystem/paneforge](https://github.com/svecosystem/paneforge) (resizable engine; sole consumer `components/resizable`) | untracked — pin on next sync |
 | `internal/table/` (rune-native engine; `sorting-fns.ts`, `filter-fns.ts` and the toggle/paging semantics are ported, the `$derived` pipeline in `table.svelte.ts` is locally authored) | [TanStack/table](https://github.com/TanStack/table) `@tanstack/table-core@8.21.3` subset — replaced the npm dependency 2026-07-26; deliberate deviation: sort inference samples the FIRST ten rows (upstream's `slice(10)` drops them) | 8.21.3 |
 
-The embla-carousel vendor (`internal/vendor/embla/` + the embla-backed `components/carousel`) was
-deleted 2026-07-26 with Nic's per-component confirmation: the scroll-snap implementation (formerly
-`carousel-native`, locally authored) is now `components/carousel`. Capability loss accepted:
+The embla-carousel engine and the embla-backed `components/carousel` were deleted 2026-07-26 with
+Nic's per-component confirmation: the scroll-snap implementation (formerly `carousel-native`,
+locally authored) is now `components/carousel`. Capability loss accepted:
 embla `opts`/`plugins`/`setApi` and desktop mouse-drag momentum.
 
 All upstreams are MIT. clsx and style-to-object (in the original inline) are gone — `cn()` is a

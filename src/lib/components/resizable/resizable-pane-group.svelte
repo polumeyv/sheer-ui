@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as ResizablePrimitive from '../../internal/vendor/paneforge/index.js';
+	import * as ResizablePrimitive from '../../internal/paneforge/index.js';
 	import { join } from 'overrule';
 
 	let {

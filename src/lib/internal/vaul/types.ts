@@ -1,11 +1,11 @@
-import type { BitsPrimitiveDivAttributes } from "../../attribute-types.js";
+import type { BitsPrimitiveDivAttributes } from "../attribute-types.js";
 import type {
 	DialogContentPropsWithoutHTML,
 	DialogOverlayPropsWithoutHTML,
 	DialogRootProps,
-} from "../../../components/dialog/types.js";
-import type { WithChildren, Without } from "../../types.js";
-import type { WithoutChildrenOrChild } from "../../utils.js";
+} from "../../components/dialog/types.js";
+import type { WithChildren, Without } from "../types.js";
+import type { WithoutChildrenOrChild } from "../utils.js";
 
 export type DrawerDirection = "left" | "right" | "top" | "bottom";
 

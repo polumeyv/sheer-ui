@@ -1,8 +1,8 @@
 <script lang="ts">
 import DrawerRoot from './drawer.svelte';
-import type { DrawerRootProps as RootProps } from '../../internal/vendor/vaul/types.js';
+import type { DrawerRootProps as RootProps } from '../../internal/vaul/types.js';
 import { OpenCell } from '../../internal/open-cell.svelte.js';
-import { getDrawer } from '../../internal/vendor/vaul/use-drawer-root.svelte.js';
+import { getDrawer } from '../../internal/vaul/use-drawer-root.svelte.js';
 
 let {
 	shouldScaleBackground = true,

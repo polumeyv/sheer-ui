@@ -1,4 +1,4 @@
-import type { ReadableBoxedValues, WritableBoxedValues } from '../../tools/index.js';
+import type { ReadableBoxedValues, WritableBoxedValues } from '../tools/index.js';
 import type { DrawerDirection, Getters } from './types.js';
 import { applyStyle, isVertical } from './helpers.js';
 import { VELOCITY_THRESHOLD } from './constants.js';

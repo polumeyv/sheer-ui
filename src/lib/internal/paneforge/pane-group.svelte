@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { boxWith } from '../../tools/index.js';
-	import { mergeProps } from '../../merge-props.js';
+	import { boxWith } from '../tools/index.js';
+	import { mergeProps } from '../merge-props.js';
 	import type { PaneGroupProps } from './types.js';
 	import { defaultStorage, PaneGroupState } from './paneforge.svelte.js';
 
