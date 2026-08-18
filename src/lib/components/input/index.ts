@@ -1,12 +1,4 @@
-import { inputVariants, type InputVariant } from './variants';
-import FileInput from './file-input.svelte';
-import Root from './input.svelte';
+export { default as Root, default as Input } from './input.svelte';
+export { default as FileInput } from './file-input.svelte';
 
-export {
-	Root,
-	FileInput,
-	inputVariants,
-	type InputVariant,
-	//
-	Root as Input,
-};
+export { inputVariants, type InputVariant } from './variants';

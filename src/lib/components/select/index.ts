@@ -1,5 +1,3 @@
-import Root from './select.svelte';
-import Option from './select-option.svelte';
-import OptGroup from './select-opt-group.svelte';
-
-export { Root, Option, OptGroup, Root as Select, Option as SelectOption, OptGroup as SelectOptGroup };
+export { default as Root, default as Select } from './select.svelte';
+export { default as Option, default as SelectOption } from './select-option.svelte';
+export { default as OptGroup, default as SelectOptGroup } from './select-opt-group.svelte';

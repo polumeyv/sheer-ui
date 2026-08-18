@@ -1,25 +1,7 @@
-import Root from './breadcrumb.svelte';
-import Ellipsis from './breadcrumb-ellipsis.svelte';
-import Item from './breadcrumb-item.svelte';
-import Link from './breadcrumb-link.svelte';
-import List from './breadcrumb-list.svelte';
-import Page from './breadcrumb-page.svelte';
-import Separator from './breadcrumb-separator.svelte';
-
-export {
-	Root,
-	Ellipsis,
-	Item,
-	Separator,
-	Link,
-	List,
-	Page,
-	//
-	Root as Breadcrumb,
-	Ellipsis as BreadcrumbEllipsis,
-	Item as BreadcrumbItem,
-	Separator as BreadcrumbSeparator,
-	Link as BreadcrumbLink,
-	List as BreadcrumbList,
-	Page as BreadcrumbPage,
-};
+export { default as Root, default as Breadcrumb } from './breadcrumb.svelte';
+export { default as Ellipsis, default as BreadcrumbEllipsis } from './breadcrumb-ellipsis.svelte';
+export { default as Item, default as BreadcrumbItem } from './breadcrumb-item.svelte';
+export { default as Separator, default as BreadcrumbSeparator } from './breadcrumb-separator.svelte';
+export { default as Link, default as BreadcrumbLink } from './breadcrumb-link.svelte';
+export { default as List, default as BreadcrumbList } from './breadcrumb-list.svelte';
+export { default as Page, default as BreadcrumbPage } from './breadcrumb-page.svelte';

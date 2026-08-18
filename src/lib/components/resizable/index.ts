@@ -1,15 +1,5 @@
-import Handle from './resizable-handle.svelte';
-import PaneGroup from './resizable-pane-group.svelte';
-import { Pane } from '../../internal/paneforge/index.js';
-
-export {
-	PaneGroup,
-	Pane,
-	Handle,
-	//
-	PaneGroup as ResizablePaneGroup,
-	Pane as ResizablePane,
-	Handle as ResizableHandle,
-};
+export { default as PaneGroup, default as ResizablePaneGroup } from './resizable-pane-group.svelte';
+export { default as Handle, default as ResizableHandle } from './resizable-handle.svelte';
+export { Pane, Pane as ResizablePane } from '../../internal/paneforge/index.js';
 
 export type { PaneGroupProps, PaneProps, PaneResizerProps } from '../../internal/paneforge/index.js';

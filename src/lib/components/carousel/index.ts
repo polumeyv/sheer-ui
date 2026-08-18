@@ -1,24 +1,8 @@
-import Root from './carousel.svelte';
-import Content from './carousel-content.svelte';
-import Item from './carousel-item.svelte';
-import Next from './carousel-next.svelte';
-import Previous from './carousel-previous.svelte';
-import Dots from './carousel-dots.svelte';
+export { default as Root, default as Carousel } from './carousel.svelte';
+export { default as Content, default as CarouselContent } from './carousel-content.svelte';
+export { default as Item, default as CarouselItem } from './carousel-item.svelte';
+export { default as Previous, default as CarouselPrevious } from './carousel-previous.svelte';
+export { default as Next, default as CarouselNext } from './carousel-next.svelte';
+export { default as Dots, default as CarouselDots } from './carousel-dots.svelte';
 
 export type { CarouselAlign, CarouselOrientation } from './carouselState.svelte';
-
-export {
-	Root,
-	Content,
-	Item,
-	Previous,
-	Next,
-	Dots,
-	//
-	Root as Carousel,
-	Content as CarouselContent,
-	Item as CarouselItem,
-	Previous as CarouselPrevious,
-	Next as CarouselNext,
-	Dots as CarouselDots,
-};

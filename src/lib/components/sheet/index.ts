@@ -1,37 +1,13 @@
-import Root from '../dialog/components/dialog.svelte';
-import Close from './components/sheet-close.svelte';
-import Content from './components/sheet-content.svelte';
-import Description from './components/sheet-description.svelte';
-import Overlay from './components/sheet-overlay.svelte';
-import Title from './components/sheet-title.svelte';
-import Trigger from './components/sheet-trigger.svelte';
-import Portal from '../../internal/portal/portal.svelte';
-import Footer from './components/sheet-footer.svelte';
-import Header from './components/sheet-header.svelte';
-
-export {
-	Root,
-	Close,
-	Trigger,
-	Portal,
-	Overlay,
-	Content,
-	Header,
-	Footer,
-	Title,
-	Description,
-	//
-	Root as Sheet,
-	Close as SheetClose,
-	Trigger as SheetTrigger,
-	Portal as SheetPortal,
-	Overlay as SheetOverlay,
-	Content as SheetContent,
-	Header as SheetHeader,
-	Footer as SheetFooter,
-	Title as SheetTitle,
-	Description as SheetDescription,
-};
+export { default as Root, default as Sheet } from '../dialog/components/dialog.svelte';
+export { default as Close, default as SheetClose } from './components/sheet-close.svelte';
+export { default as Trigger, default as SheetTrigger } from './components/sheet-trigger.svelte';
+export { default as Portal, default as SheetPortal } from '../../internal/portal/portal.svelte';
+export { default as Overlay, default as SheetOverlay } from './components/sheet-overlay.svelte';
+export { default as Content, default as SheetContent } from './components/sheet-content.svelte';
+export { default as Header, default as SheetHeader } from './components/sheet-header.svelte';
+export { default as Footer, default as SheetFooter } from './components/sheet-footer.svelte';
+export { default as Title, default as SheetTitle } from './components/sheet-title.svelte';
+export { default as Description, default as SheetDescription } from './components/sheet-description.svelte';
 
 export { sheetVariants, type Side } from './variants.js';
 
