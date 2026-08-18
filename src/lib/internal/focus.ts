@@ -1,42 +1,14 @@
-import { getTabbableCandidates } from './tabbable.js';
-
-export type FocusableTarget = HTMLElement;
-
-function focus(element?: FocusableTarget | null, { select = false } = {}) {
-	if (!element) return false;
-
-	const doc = element.ownerDocument;
-	if (doc.activeElement === element) return false;
-
-	const previouslyFocusedElement = doc.activeElement;
-
-	element.focus({ preventScroll: true });
-
-	const didFocus = doc.activeElement === element;
-
-	if (didFocus && element !== previouslyFocusedElement && select && element instanceof HTMLInputElement) {
-		element.select();
-	}
-
-	return didFocus;
-}
-
-export function focusFirst(candidates: HTMLElement[], { select = false } = {}, getActiveElement: () => Element | null) {
+export function focusFirst(candidates: HTMLElement[], getActiveElement: () => Element | null) {
 	const previouslyFocusedElement = getActiveElement();
 
 	for (const candidate of candidates) {
-		focus(candidate, { select });
+		// focus already sits where we want it, so don't walk past it into the next candidate
+		if (candidate === previouslyFocusedElement) return true;
 
-		if (getActiveElement() !== previouslyFocusedElement) {
-			return true;
-		}
+		candidate.focus({ preventScroll: true });
+
+		if (getActiveElement() !== previouslyFocusedElement) return true;
 	}
 
 	return false;
-}
-
-export function getTabbableEdges(container: HTMLElement) {
-	const candidates = getTabbableCandidates(container);
-
-	return [candidates[0], candidates.at(-1)] as const;
 }

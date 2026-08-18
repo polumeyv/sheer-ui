@@ -23,6 +23,7 @@ import { type Direction, type Orientation } from '../../internal/index.js';
 import { createId } from '../../internal/create-id.js';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '../../internal/attrs.js';
 import { getTabbableCandidates } from '../../internal/tabbable.js';
+import { focusFirst } from '../../internal/focus.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment } from '../../internal/types.js';
 import { kbd } from '../../internal/kbd.js';
 import { on } from 'svelte/events';
@@ -1057,16 +1058,6 @@ export class NavigationMenuViewportState {
 }
 
 //
-
-function focusFirst(candidates: HTMLElement[], getActiveElement: () => HTMLElement | null) {
-	const previouslyFocusedElement = getActiveElement();
-	return candidates.some((candidate) => {
-		// if focus is already where we want to go, we don't want to keep going through the candidates
-		if (candidate === previouslyFocusedElement) return true;
-		candidate.focus();
-		return getActiveElement() !== previouslyFocusedElement;
-	});
-}
 
 function removeFromTabOrder(candidates: HTMLElement[]) {
 	candidates.forEach((candidate) => {

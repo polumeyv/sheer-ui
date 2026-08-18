@@ -70,7 +70,7 @@ describe('getDocument caller behavior', () => {
 		const candidate = doc.createElement('button');
 		doc.body.append(candidate);
 
-		expect(focusFirst([candidate], {}, () => doc.activeElement)).toBe(true);
+		expect(focusFirst([candidate], () => doc.activeElement)).toBe(true);
 		expect(doc.activeElement).toBe(candidate);
 	});
 

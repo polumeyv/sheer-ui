@@ -778,7 +778,7 @@ export class MenuContentState {
 		if (LAST_KEYS.includes(e.key)) {
 			candidateNodes.reverse();
 		}
-		focusFirst(candidateNodes, { select: false }, () => this.domContext.getActiveElement());
+		focusFirst(candidateNodes, () => this.domContext.getActiveElement());
 	}
 
 	onblur(e: BitsFocusEvent) {
