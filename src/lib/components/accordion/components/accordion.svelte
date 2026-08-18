@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { AccordionState, setAccordion } from '../accordion.svelte.js';
 	import { emptySelection } from '../../../internal/selection.svelte.js';
 	import type { AccordionRootProps } from '../types.js';
@@ -13,7 +14,7 @@
 
 	setAccordion(
 		new AccordionState({
-			type: () => type,
+			type: untrack(() => type),
 			value: () => value ?? emptySelection(type),
 			setValue: (v) => (value = v),
 		}),

@@ -1,9 +1,11 @@
 import { createContext } from 'svelte';
+import { bindableWith } from '../../internal/tools/index.js';
+import { type SelectionType, SelectionValue } from '../../internal/selection.svelte.js';
 
-export type AccordionType = 'single' | 'multiple';
+export type AccordionType = SelectionType;
 
 type AccordionStateProps = {
-	type: () => AccordionType;
+	type: AccordionType;
 	value: () => string | string[];
 	setValue: (value: string | string[]) => void;
 };
@@ -15,28 +17,19 @@ type AccordionStateProps = {
  * clicks and report intent here; the grid-track animation lives in ui.css.
  */
 export class AccordionState {
-	readonly props: AccordionStateProps;
+	readonly #selection: SelectionValue;
 
 	constructor(props: AccordionStateProps) {
-		this.props = props;
+		this.#selection = new SelectionValue(props.type, bindableWith(props.value, props.setValue));
 	}
 
 	includes(item: string): boolean {
-		const value = this.props.value();
-		return Array.isArray(value) ? value.includes(item) : value === item;
+		return this.#selection.includes(item);
 	}
 
 	/** Open/close intent from an item — intercepted summary clicks and native force-opens alike. */
 	report(item: string, open: boolean): void {
-		const value = this.props.value();
-		if (Array.isArray(value)) {
-			if (open && !value.includes(item)) this.props.setValue([...value, item]);
-			else if (!open && value.includes(item)) this.props.setValue(value.filter((v) => v !== item));
-		} else if (open) {
-			if (value !== item) this.props.setValue(item);
-		} else if (value === item) {
-			this.props.setValue('');
-		}
+		if (open !== this.#selection.includes(item)) this.#selection.toggle(item);
 	}
 }
 
