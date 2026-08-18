@@ -81,6 +81,8 @@ future upstream diff touching these is drift on our side, not upstream's.
   current in-repository usage.
 - One `internal/typeahead.svelte.ts` where upstream keeps `DataTypeahead` and `DOMTypeahead`
   separate; the candidate → search-text projection is a constructor parameter.
+- `internal/roving-focus-group.ts` takes a candidate-node source as well as an attribute or a
+  selector, so upstream's `use-arrow-navigation` (its only caller navigated a tabbable walk) is gone.
 - Menu and Select input modality is a boolean field on each root state. Menu roots own capture-phase
   document listeners through `<svelte:document>` instead of routing browser-only lifecycle through
   `SharedState`.
