@@ -83,6 +83,10 @@ future upstream diff touching these is drift on our side, not upstream's.
   (same truth table, verified over every trigger/content/button combination). Its handler and
   predicate opts (`onInteractOutside`, `onFocusOutside`, `isValidEvent`) are optional here rather
   than upstream's `Required<>` boxes, so callers omit them instead of passing no-ops.
+- The menu family has one Content implementation. Upstream ships eight files (Content and
+  ContentStatic per family, plus the sub-content pair); here `menu/components/menu-content.svelte`
+  and `menu-sub-content.svelte` take an `isStatic` prop, the `-static` files are type adapters over
+  them, and dropdown-menu/context-menu/menubar Content are styled adapters.
 - `state_referenced_locally` warnings from vendored files are upstream's; svelte-check prints them.
 
 ## Syncing upstream fixes
