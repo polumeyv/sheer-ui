@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { AccordionState, setAccordion } from '../accordion.svelte.js';
+	import { emptySelection } from '../../../internal/selection.svelte.js';
 	import type { AccordionRootProps } from '../types.js';
 
 	let {
 		type = 'single',
-		value = $bindable(type === 'single' ? '' : []),
+		value = $bindable(emptySelection(type)),
 		ref = $bindable(null),
 		children,
 		...restProps
@@ -13,7 +14,7 @@
 	setAccordion(
 		new AccordionState({
 			type: () => type,
-			value: () => value ?? (type === 'single' ? '' : []),
+			value: () => value ?? emptySelection(type),
 			setValue: (v) => (value = v),
 		}),
 	);

@@ -5,6 +5,7 @@
 	import type { ComboboxRootProps } from '../types.js';
 	import FloatingLayer from '../../../internal/floating-layer/components/floating-layer.svelte';
 	import { SelectRootState } from '../select/select.svelte.js';
+	import { emptySelection } from '../../../internal/selection.svelte.js';
 	import ListboxHiddenInput from '../select/components/select-hidden-input.svelte';
 
 	let {
@@ -28,8 +29,7 @@
 
 	function repairUndefinedControlledValue() {
 		if (value !== undefined) return;
-		const defaultValue = type === 'single' ? '' : [];
-		value = defaultValue;
+		value = emptySelection(type);
 	}
 
 	// Combobox owns a mode-specific controlled value.
