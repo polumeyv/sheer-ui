@@ -1,9 +1,5 @@
-import { afterEach, describe, expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import { createAccessibleHeading } from "../../src/lib/internal/date-time/calendar-helpers.svelte.js";
-
-afterEach(() => {
-	document.body.innerHTML = "";
-});
 
 describe("calendar accessible heading", () => {
 	test("creates a hidden polite h2 heading for month view announcements", () => {

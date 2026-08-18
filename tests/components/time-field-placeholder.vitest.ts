@@ -1,31 +1,8 @@
 import { Time } from "@internationalized/date";
-import { flushSync, mount, unmount } from "svelte";
+import { flushSync } from "svelte";
 import { describe, expect, test } from "vitest";
+import { render, text } from "../harness.js";
 import TimeFieldPlaceholderFixture from "./time-field-placeholder.fixture.svelte";
-
-type FixtureProps = Partial<{
-	placeholder: Time;
-	value: Time;
-	granularity: "hour" | "minute" | "second";
-	hourCycle: 12 | 24;
-	name: string;
-}>;
-
-function renderFixture(props: FixtureProps = {}) {
-	const target = document.createElement("div");
-	document.body.append(target);
-
-	const component = mount(TimeFieldPlaceholderFixture, { props, target });
-	flushSync();
-
-	return { component, target };
-}
-
-function read(testId: "placeholder" | "value") {
-	const node = document.body.querySelector(`[data-testid="${testId}"]`);
-	if (!node) throw new Error(`Expected ${testId} readout to render`);
-	return node.textContent;
-}
 
 function getSegment(part: "hour" | "minute" | "second") {
 	const node = document.body.querySelector<HTMLElement>(`[data-part="${part}"]`);
@@ -47,131 +24,96 @@ function getForm() {
 	return form;
 }
 
-function cleanup(component: ReturnType<typeof mount>) {
-	unmount(component);
-	document.body.innerHTML = "";
-}
-
 describe("TimeField placeholder", () => {
 	test("assigns a deterministic default when initial placeholder is undefined", () => {
-		const { component } = renderFixture();
+		render(TimeFieldPlaceholderFixture);
 
-		try {
-			expect(read("placeholder")).toBe("00:00:00");
-			expect(read("value")).toBe("undefined");
-		} finally {
-			cleanup(component);
-		}
+		expect(text("placeholder")).toBe("00:00:00");
+		expect(text("value")).toBe("undefined");
 	});
 
 	test("preserves an explicit initial placeholder", () => {
-		const { component } = renderFixture({
+		render(TimeFieldPlaceholderFixture, {
 			placeholder: new Time(13, 45, 30),
 		});
 
-		try {
-			expect(read("placeholder")).toBe("13:45:30");
-			expect(read("value")).toBe("undefined");
-		} finally {
-			cleanup(component);
-		}
+		expect(text("placeholder")).toBe("13:45:30");
+		expect(text("value")).toBe("undefined");
 	});
 
 	test("repairs the deterministic default when bound placeholder is reset to undefined", () => {
-		const { component } = renderFixture();
+		const { component } = render(TimeFieldPlaceholderFixture);
 
-		try {
-			expect(read("placeholder")).toBe("00:00:00");
+		expect(text("placeholder")).toBe("00:00:00");
 
-			component.setPlaceholder(new Time(8, 5, 6));
-			flushSync();
-			expect(read("placeholder")).toBe("08:05:06");
+		component.setPlaceholder(new Time(8, 5, 6));
+		flushSync();
+		expect(text("placeholder")).toBe("08:05:06");
 
-			component.setPlaceholder(undefined);
-			flushSync();
-			expect(read("placeholder")).toBe("00:00:00");
-		} finally {
-			cleanup(component);
-		}
+		component.setPlaceholder(undefined);
+		flushSync();
+		expect(text("placeholder")).toBe("00:00:00");
 	});
 
 	test("syncs placeholder to the selected value", () => {
-		const { component } = renderFixture({
+		render(TimeFieldPlaceholderFixture, {
 			placeholder: new Time(1, 2, 3),
 			value: new Time(13, 45, 30),
 		});
 
-		try {
-			expect(read("placeholder")).toBe("13:45:30");
-			expect(read("value")).toBe("13:45:30");
-		} finally {
-			cleanup(component);
-		}
+		expect(text("placeholder")).toBe("13:45:30");
+		expect(text("value")).toBe("13:45:30");
 	});
 
 	test("partial segment interaction does not submit placeholder as form data", () => {
-		const { component } = renderFixture({
+		render(TimeFieldPlaceholderFixture, {
 			placeholder: new Time(9, 15, 30),
 			granularity: "second",
 			hourCycle: 24,
 			name: "appointmentTime",
 		});
 
-		try {
-			const hour = getSegment("hour");
-			hour.dispatchEvent(new KeyboardEvent("keydown", { key: "1", bubbles: true }));
-			flushSync();
+		const hour = getSegment("hour");
+		hour.dispatchEvent(new KeyboardEvent("keydown", { key: "1", bubbles: true }));
+		flushSync();
 
-			expect(read("placeholder")).toBe("09:15:30");
-			expect(read("value")).toBe("undefined");
-			expect(getHiddenInput()?.value).toBe("");
-			expect(new FormData(getForm()).get("appointmentTime")).toBe("");
-		} finally {
-			cleanup(component);
-		}
+		expect(text("placeholder")).toBe("09:15:30");
+		expect(text("value")).toBe("undefined");
+		expect(getHiddenInput()?.value).toBe("");
+		expect(new FormData(getForm()).get("appointmentTime")).toBe("");
 	});
 
 	test("respects hour, minute, and second granularity", () => {
-		const { component: hourComponent } = renderFixture({
+		const hour = render(TimeFieldPlaceholderFixture, {
 			placeholder: new Time(9, 15, 30),
 			granularity: "hour",
 			hourCycle: 24,
 		});
 
-		try {
-			expect(hasSegment("hour")).toBe(true);
-			expect(hasSegment("minute")).toBe(false);
-			expect(hasSegment("second")).toBe(false);
-		} finally {
-			cleanup(hourComponent);
-		}
+		expect(hasSegment("hour")).toBe(true);
+		expect(hasSegment("minute")).toBe(false);
+		expect(hasSegment("second")).toBe(false);
+		hour.unmount();
 
-		const { component: minuteComponent } = renderFixture({
+		const minute = render(TimeFieldPlaceholderFixture, {
 			placeholder: new Time(9, 15, 30),
 			granularity: "minute",
 			hourCycle: 24,
 		});
 
-		try {
-			expect(hasSegment("hour")).toBe(true);
-			expect(hasSegment("minute")).toBe(true);
-			expect(hasSegment("second")).toBe(false);
-		} finally {
-			cleanup(minuteComponent);
-		}
+		expect(hasSegment("hour")).toBe(true);
+		expect(hasSegment("minute")).toBe(true);
+		expect(hasSegment("second")).toBe(false);
+		minute.unmount();
 
-		const { component: secondComponent } = renderFixture({
+		render(TimeFieldPlaceholderFixture, {
 			placeholder: new Time(9, 15, 30),
 			granularity: "second",
 			hourCycle: 24,
 		});
 
-		try {
-			expect(hasSegment("hour")).toBe(true);
-			expect(hasSegment("minute")).toBe(true);
-			expect(hasSegment("second")).toBe(true);
-		} finally {
-			cleanup(secondComponent);
-		}
+		expect(hasSegment("hour")).toBe(true);
+		expect(hasSegment("minute")).toBe(true);
+		expect(hasSegment("second")).toBe(true);
 	});
 });

@@ -1,39 +1,9 @@
-import { flushSync, mount, unmount } from "svelte";
-import { afterEach, describe, expect, test } from "vitest";
+import { flushSync } from "svelte";
+import { describe, expect, test } from "vitest";
+import { click, render } from "../harness.js";
+import SidebarDesktopFixture from "./sidebar-desktop.fixture.svelte";
 
-function installDesktopViewport() {
-	Object.defineProperty(window, "innerWidth", {
-		configurable: true,
-		value: 1024,
-	});
-
-	Object.defineProperty(window, "matchMedia", {
-		configurable: true,
-		value: (query: string) => ({
-			matches: query.includes("max-width") ? false : true,
-			media: query,
-			onchange: null,
-			addEventListener: () => {},
-			removeEventListener: () => {},
-			addListener: () => {},
-			removeListener: () => {},
-			dispatchEvent: () => false,
-		}),
-	});
-}
-
-async function renderFixture() {
-	installDesktopViewport();
-	const { default: SidebarDesktopFixture } = await import("./sidebar-desktop.fixture.svelte");
-
-	const target = document.createElement("div");
-	document.body.append(target);
-
-	const component = mount(SidebarDesktopFixture, { target });
-	flushSync();
-
-	return { component };
-}
+Object.defineProperty(window, "innerWidth", { configurable: true, value: 1024 });
 
 function getDesktopSidebar() {
 	const node = document.body.querySelector<HTMLElement>('[data-slot="sidebar"][data-state]');
@@ -41,63 +11,39 @@ function getDesktopSidebar() {
 	return node;
 }
 
-function getTrigger() {
-	const node = document.body.querySelector<HTMLButtonElement>('[data-testid="trigger"]');
-	if (!node) throw new Error("Expected sidebar trigger to render");
-	return node;
-}
-
-afterEach(() => {
-	document.body.innerHTML = "";
-});
-
 describe("Sidebar desktop behavior", () => {
-	test("renders the desktop branch on wider screens", async () => {
-		const { component } = await renderFixture();
+	test("renders the desktop branch on wider screens", () => {
+		render(SidebarDesktopFixture);
 
-		try {
-			expect(getDesktopSidebar().dataset.state).toBe("expanded");
-			expect(document.body.querySelector('[data-mobile="true"]')).toBeNull();
-		} finally {
-			unmount(component);
-		}
+		expect(getDesktopSidebar().dataset.state).toBe("expanded");
+		expect(document.body.querySelector('[data-mobile="true"]')).toBeNull();
 	});
 
-	test("trigger toggles the desktop open state on wider screens", async () => {
-		const { component } = await renderFixture();
+	test("trigger toggles the desktop open state on wider screens", () => {
+		render(SidebarDesktopFixture);
 
-		try {
-			getTrigger().click();
-			flushSync();
-			expect(getDesktopSidebar().dataset.state).toBe("collapsed");
+		click("trigger");
+		expect(getDesktopSidebar().dataset.state).toBe("collapsed");
 
-			getTrigger().click();
-			flushSync();
-			expect(getDesktopSidebar().dataset.state).toBe("expanded");
-		} finally {
-			unmount(component);
-		}
+		click("trigger");
+		expect(getDesktopSidebar().dataset.state).toBe("expanded");
 	});
 
-	test("keyboard shortcut toggles once and does not steal editable shortcuts", async () => {
-		const { component } = await renderFixture();
+	test("keyboard shortcut toggles once and does not steal editable shortcuts", () => {
+		render(SidebarDesktopFixture);
 
-		try {
-			window.dispatchEvent(new KeyboardEvent("keydown", { key: "b", ctrlKey: true }));
-			flushSync();
-			expect(getDesktopSidebar().dataset.state).toBe("collapsed");
+		window.dispatchEvent(new KeyboardEvent("keydown", { key: "b", ctrlKey: true }));
+		flushSync();
+		expect(getDesktopSidebar().dataset.state).toBe("collapsed");
 
-			window.dispatchEvent(new KeyboardEvent("keydown", { key: "b", ctrlKey: true, repeat: true }));
-			flushSync();
-			expect(getDesktopSidebar().dataset.state).toBe("collapsed");
+		window.dispatchEvent(new KeyboardEvent("keydown", { key: "b", ctrlKey: true, repeat: true }));
+		flushSync();
+		expect(getDesktopSidebar().dataset.state).toBe("collapsed");
 
-			const input = document.createElement("input");
-			document.body.append(input);
-			input.dispatchEvent(new KeyboardEvent("keydown", { key: "b", ctrlKey: true, bubbles: true }));
-			flushSync();
-			expect(getDesktopSidebar().dataset.state).toBe("collapsed");
-		} finally {
-			unmount(component);
-		}
+		const input = document.createElement("input");
+		document.body.append(input);
+		input.dispatchEvent(new KeyboardEvent("keydown", { key: "b", ctrlKey: true, bubbles: true }));
+		flushSync();
+		expect(getDesktopSidebar().dataset.state).toBe("collapsed");
 	});
 });

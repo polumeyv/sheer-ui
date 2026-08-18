@@ -1,5 +1,6 @@
-import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { flushSync } from 'svelte';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { render } from '../harness.js';
 import Fixture from './use-floating-reactivity.fixture.svelte';
 
 // Mocked so positioning is synchronous-ish + deterministic, and so we can count re-positions.
@@ -38,18 +39,10 @@ beforeEach(() => {
 	});
 });
 
-afterEach(() => {
-	vi.restoreAllMocks();
-	document.body.innerHTML = '';
-});
-
 describe('useFloating effect reactivity (const-arrow + && refactor)', () => {
 	// `const reset = () => void (!openOption && floating.current === null && (isPositioned = false));`
 	test('reset effect tracks `open` and clears isPositioned reactively', async () => {
-		const target = document.createElement('div');
-		document.body.append(target);
-		const c = mount(Fixture, { target });
-		flushSync();
+		const { component: c } = render(Fixture);
 		await settle();
 
 		expect(c.isPositionedNow()).toBe(true);
@@ -62,7 +55,6 @@ describe('useFloating effect reactivity (const-arrow + && refactor)', () => {
 		flushSync();
 
 		expect(c.isPositionedNow()).toBe(false);
-		unmount(c);
 	});
 
 	// `const trackWhileMountedDeps = () => [middlewareOption, placementOption, strategyOption, sideOffsetOption, alignOffsetOption, openOption] as const;`
@@ -71,10 +63,7 @@ describe('useFloating effect reactivity (const-arrow + && refactor)', () => {
 			update();
 			return () => {};
 		});
-		const target = document.createElement('div');
-		document.body.append(target);
-		const c = mount(Fixture, { props: { whileMounted }, target });
-		flushSync();
+		const { component: c } = render(Fixture, { whileMounted });
 		await settle();
 		await settle(); // isPositioned settles, then hasWhileMountedPosition flips true
 
@@ -88,6 +77,5 @@ describe('useFloating effect reactivity (const-arrow + && refactor)', () => {
 		await settle();
 
 		expect(floatingMocks.computePosition.mock.calls.length).toBeGreaterThan(before);
-		unmount(c);
 	});
 });

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { createAccessibleHeading, pickerOpenFocus } from '../../src/lib/internal/date-time/calendar-helpers.svelte.js';
 import { focusFirst } from '../../src/lib/internal/focus.js';
 import { getTabbableFrom, getTabbableFromFocusable } from '../../src/lib/internal/tabbable.js';
@@ -10,10 +10,6 @@ function foreignDocument() {
 	if (!iframe.contentDocument) throw new Error('Expected iframe document');
 	return iframe.contentDocument;
 }
-
-afterEach(() => {
-	document.body.innerHTML = '';
-});
 
 describe('getDocument caller behavior', () => {
 	test('getTabbableFrom searches the current element owning document', () => {

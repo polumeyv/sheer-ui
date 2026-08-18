@@ -1,16 +1,7 @@
-import { flushSync, mount, unmount } from "svelte";
+import { flushSync } from "svelte";
 import { describe, expect, test } from "vitest";
+import { render } from "../harness.js";
 import DateFieldNameFixture from "./date-field-name.fixture.svelte";
-
-function renderFixture() {
-	const target = document.createElement("div");
-	document.body.append(target);
-
-	const component = mount(DateFieldNameFixture, { target });
-	flushSync();
-
-	return { component, target };
-}
 
 function getDateFieldInput() {
 	return document.body.querySelector<HTMLInputElement>("input[aria-hidden='true']");
@@ -24,66 +15,46 @@ function getForm() {
 
 describe("DateField name", () => {
 	test("renders the initial name on the hidden input", () => {
-		const { component } = renderFixture();
+		render(DateFieldNameFixture);
 
-		try {
-			expect(getDateFieldInput()?.name).toBe("birthday");
-		} finally {
-			unmount(component);
-			document.body.innerHTML = "";
-		}
+		expect(getDateFieldInput()?.name).toBe("birthday");
 	});
 
 	test("propagates dynamic name changes", () => {
-		const { component } = renderFixture();
+		const { component } = render(DateFieldNameFixture);
 
-		try {
-			component.setName("appointment");
-			flushSync();
+		component.setName("appointment");
+		flushSync();
 
-			expect(getDateFieldInput()?.name).toBe("appointment");
-		} finally {
-			unmount(component);
-			document.body.innerHTML = "";
-		}
+		expect(getDateFieldInput()?.name).toBe("appointment");
 	});
 
 	test("removes the hidden input when name is empty or undefined", () => {
-		const { component } = renderFixture();
+		const { component } = render(DateFieldNameFixture);
 
-		try {
-			component.setName("");
-			flushSync();
-			expect(getDateFieldInput()).toBeNull();
+		component.setName("");
+		flushSync();
+		expect(getDateFieldInput()).toBeNull();
 
-			component.setName("birthday");
-			flushSync();
-			expect(getDateFieldInput()?.name).toBe("birthday");
+		component.setName("birthday");
+		flushSync();
+		expect(getDateFieldInput()?.name).toBe("birthday");
 
-			component.setName(undefined);
-			flushSync();
-			expect(getDateFieldInput()).toBeNull();
-		} finally {
-			unmount(component);
-			document.body.innerHTML = "";
-		}
+		component.setName(undefined);
+		flushSync();
+		expect(getDateFieldInput()).toBeNull();
 	});
 
 	test("uses the current name in form submission payloads", () => {
-		const { component } = renderFixture();
+		const { component } = render(DateFieldNameFixture);
 
-		try {
-			expect(new FormData(getForm()).get("birthday")).toBe("2024-02-03");
+		expect(new FormData(getForm()).get("birthday")).toBe("2024-02-03");
 
-			component.setName("appointment");
-			flushSync();
+		component.setName("appointment");
+		flushSync();
 
-			const formData = new FormData(getForm());
-			expect(formData.get("birthday")).toBeNull();
-			expect(formData.get("appointment")).toBe("2024-02-03");
-		} finally {
-			unmount(component);
-			document.body.innerHTML = "";
-		}
+		const formData = new FormData(getForm());
+		expect(formData.get("birthday")).toBeNull();
+		expect(formData.get("appointment")).toBe("2024-02-03");
 	});
 });

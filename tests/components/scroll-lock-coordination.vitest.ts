@@ -1,5 +1,6 @@
-import { flushSync, mount, unmount } from 'svelte';
+import { flushSync } from 'svelte';
 import { afterEach, describe, expect, test, vi } from 'vitest';
+import { render } from '../harness.js';
 import ScrollLockCoordinationFixture from './scroll-lock-coordination.fixture.svelte';
 
 // Proves the fix for the scroll-lock unification: Drawer's usePreventScroll and Dialog/Sheet's
@@ -7,71 +8,54 @@ import ScrollLockCoordinationFixture from './scroll-lock-coordination.fixture.sv
 // doesn't prematurely unlock the body. Before this change, these were two fully independent
 // systems that could each release the body scroll while the other still needed it locked.
 
-function render(props: { dialogLocked?: boolean; drawerEnabled?: boolean } = {}) {
-	const target = document.createElement('div');
-	document.body.append(target);
-	const component = mount(ScrollLockCoordinationFixture, { props, target });
-	flushSync();
-	return component;
-}
-
 function isBodyLocked() {
 	return document.body.style.overflow === 'hidden';
 }
 
 afterEach(() => {
-	document.body.innerHTML = '';
 	document.body.removeAttribute('style');
 	vi.useRealTimers();
 });
 
 describe('scroll-lock coordination (Drawer + Dialog-family)', () => {
 	test('either lock alone locks the body', () => {
-		const dialogOnly = render({ dialogLocked: true });
+		const dialogOnly = render(ScrollLockCoordinationFixture, { dialogLocked: true });
 		expect(isBodyLocked()).toBe(true);
-		unmount(dialogOnly);
+		dialogOnly.unmount();
 		document.body.removeAttribute('style');
 
-		const drawerOnly = render({ drawerEnabled: true });
+		const drawerOnly = render(ScrollLockCoordinationFixture, { drawerEnabled: true });
 		expect(isBodyLocked()).toBe(true);
-		unmount(drawerOnly);
+		drawerOnly.unmount();
 	});
 
 	test('the drawer releasing does not unlock the body while the dialog-family lock is still active', () => {
 		vi.useFakeTimers();
-		const component = render({ dialogLocked: true, drawerEnabled: true });
-		try {
-			expect(isBodyLocked()).toBe(true);
+		const { component } = render(ScrollLockCoordinationFixture, { dialogLocked: true, drawerEnabled: true });
+		expect(isBodyLocked()).toBe(true);
 
-			// Drawer closes/disables its lock -- the shared lockMap still has the dialog's entry
-			component.setDrawerEnabled(false);
-			flushSync();
-			vi.advanceTimersByTime(50); // past BodyScrollLock's cleanup-scheduling delay
-			flushSync();
+		// Drawer closes/disables its lock -- the shared lockMap still has the dialog's entry
+		component.setDrawerEnabled(false);
+		flushSync();
+		vi.advanceTimersByTime(50); // past BodyScrollLock's cleanup-scheduling delay
+		flushSync();
 
-			expect(isBodyLocked()).toBe(true);
-		} finally {
-			unmount(component);
-		}
+		expect(isBodyLocked()).toBe(true);
 	});
 
 	test('the body only unlocks once both the drawer and the dialog-family lock release', () => {
 		vi.useFakeTimers();
-		const component = render({ dialogLocked: true, drawerEnabled: true });
-		try {
-			component.setDrawerEnabled(false);
-			flushSync();
-			vi.advanceTimersByTime(50);
-			flushSync();
-			expect(isBodyLocked()).toBe(true); // dialog still holds it
+		const { component } = render(ScrollLockCoordinationFixture, { dialogLocked: true, drawerEnabled: true });
+		component.setDrawerEnabled(false);
+		flushSync();
+		vi.advanceTimersByTime(50);
+		flushSync();
+		expect(isBodyLocked()).toBe(true); // dialog still holds it
 
-			component.setDialogLocked(false);
-			flushSync();
-			vi.advanceTimersByTime(50);
-			flushSync();
-			expect(isBodyLocked()).toBe(false); // last lock released
-		} finally {
-			unmount(component);
-		}
+		component.setDialogLocked(false);
+		flushSync();
+		vi.advanceTimersByTime(50);
+		flushSync();
+		expect(isBodyLocked()).toBe(false); // last lock released
 	});
 });

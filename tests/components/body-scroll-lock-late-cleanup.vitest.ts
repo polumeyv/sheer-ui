@@ -1,11 +1,11 @@
-import { flushSync, mount, tick, unmount } from 'svelte';
+import { tick } from 'svelte';
 import { afterEach, describe, expect, test, vi } from 'vitest';
+import { render } from '../harness.js';
 import ScrollLockFixture from './body-scroll-lock-late-cleanup.fixture.svelte';
 
 afterEach(() => {
 	vi.unstubAllGlobals();
 	vi.useRealTimers();
-	document.body.innerHTML = '';
 	document.body.removeAttribute('style');
 });
 
@@ -13,12 +13,9 @@ describe('BodyScrollLock delayed cleanup', () => {
 	test('does not depend on global document after unmount', async () => {
 		vi.useFakeTimers();
 		const originalDocument = document;
-		const target = originalDocument.createElement('div');
-		originalDocument.body.append(target);
-		const component = mount(ScrollLockFixture, { target });
-		flushSync();
+		const { unmount } = render(ScrollLockFixture);
 
-		unmount(component);
+		unmount();
 		vi.stubGlobal('document', undefined);
 
 		await tick();

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import {
 	getFocusableCandidates,
 	getTabbableCandidates,
@@ -23,10 +23,6 @@ function getById(root: ParentNode, id: string) {
 	if (!node) throw new Error(`Expected node ${id} to exist`);
 	return node;
 }
-
-afterEach(() => {
-	document.body.innerHTML = "";
-});
 
 describe("internal tabbable", () => {
 	test("sorts positive tabindex nodes before normal source-order tabbables", () => {

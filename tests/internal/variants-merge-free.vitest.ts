@@ -18,22 +18,6 @@ import { inputVariants } from '#lib/components/input/variants.js';
 import { sheetVariants } from '#lib/components/sheet/variants.js';
 import { toggleVariants } from '#lib/components/toggle/variants.js';
 
-// The .svelte module scripts drag component import chains that construct a
-// MediaQuery at module scope, so stub matchMedia before importing them.
-Object.defineProperty(window, 'matchMedia', {
-	configurable: true,
-	value: (query: string) => ({
-		matches: false,
-		media: query,
-		onchange: null,
-		addEventListener: () => {},
-		removeEventListener: () => {},
-		addListener: () => {},
-		removeListener: () => {},
-		dispatchEvent: () => false,
-	}),
-});
-
 const { alertVariants } = await import('#lib/components/alert/alert.svelte');
 const { badgeVariants } = await import('#lib/components/badge/badge.svelte');
 const { itemMediaVariants } = await import('#lib/components/item/item-media.svelte');

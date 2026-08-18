@@ -1,41 +1,7 @@
-import { flushSync, mount, unmount } from "svelte";
+import { flushSync } from "svelte";
 import { afterEach, describe, expect, test, vi } from "vitest";
+import { el, render } from "../harness.js";
 import FocusScopeFixture from "./focus-scope.fixture.svelte";
-
-function renderFixture(
-	props: Partial<{
-		enabled: boolean;
-		trapFocus: boolean;
-		onOpenAutoFocus: (event: Event) => void;
-		onCloseAutoFocus: (event: Event) => void;
-	}> = {}
-) {
-	const target = document.createElement("div");
-	document.body.append(target);
-
-	const component = mount(FocusScopeFixture, { props, target });
-	flushSync();
-
-	return { component, target };
-}
-
-function getBeforeButton() {
-	const node = document.body.querySelector<HTMLButtonElement>('[data-testid="before"]');
-	if (!node) throw new Error("Expected before button to render");
-	return node;
-}
-
-function getScope() {
-	const node = document.body.querySelector<HTMLElement>('[data-testid="scope"]');
-	if (!node) throw new Error("Expected focus scope to render");
-	return node;
-}
-
-function getInsideButton() {
-	const node = document.body.querySelector<HTMLButtonElement>('[data-testid="inside"]');
-	if (!node) throw new Error("Expected inside button to render");
-	return node;
-}
 
 function runAnimationFrame() {
 	vi.advanceTimersByTime(16);
@@ -44,87 +10,70 @@ function runAnimationFrame() {
 
 afterEach(() => {
 	vi.useRealTimers();
-	document.body.innerHTML = "";
 });
 
 describe("FocusScope lifecycle", () => {
 	test("enabled scope mounts on the container and runs open autofocus", () => {
 		vi.useFakeTimers();
 		const onOpenAutoFocus = vi.fn();
-		const { component } = renderFixture({ enabled: true, onOpenAutoFocus });
+		render(FocusScopeFixture, { enabled: true, onOpenAutoFocus });
 
-		try {
-			expect(onOpenAutoFocus).toHaveBeenCalledTimes(1);
-			runAnimationFrame();
-			expect(document.activeElement).toBe(getInsideButton());
-		} finally {
-			unmount(component);
-		}
+		expect(onOpenAutoFocus).toHaveBeenCalledTimes(1);
+		runAnimationFrame();
+		expect(document.activeElement).toBe(el("inside"));
 	});
 
 	test("disabled scope does not mount until enabled and tears down when disabled", () => {
 		vi.useFakeTimers();
 		const onOpenAutoFocus = vi.fn();
 		const onCloseAutoFocus = vi.fn();
-		const { component } = renderFixture({
+		const { component } = render(FocusScopeFixture, {
 			enabled: false,
 			onOpenAutoFocus,
 			onCloseAutoFocus,
 		});
 
-		try {
-			getBeforeButton().focus();
-			expect(onOpenAutoFocus).not.toHaveBeenCalled();
+		el("before").focus();
+		expect(onOpenAutoFocus).not.toHaveBeenCalled();
 
-			component.setEnabled(true);
-			flushSync();
-			expect(onOpenAutoFocus).toHaveBeenCalledTimes(1);
-			runAnimationFrame();
-			expect(document.activeElement).toBe(getInsideButton());
+		component.setEnabled(true);
+		flushSync();
+		expect(onOpenAutoFocus).toHaveBeenCalledTimes(1);
+		runAnimationFrame();
+		expect(document.activeElement).toBe(el("inside"));
 
-			component.setEnabled(false);
-			flushSync();
-			expect(onCloseAutoFocus).toHaveBeenCalledTimes(1);
-			expect(document.activeElement).toBe(getBeforeButton());
-		} finally {
-			unmount(component);
-		}
+		component.setEnabled(false);
+		flushSync();
+		expect(onCloseAutoFocus).toHaveBeenCalledTimes(1);
+		expect(document.activeElement).toBe(el("before"));
 	});
 
 	test("unmount cleanup runs close autofocus", () => {
 		vi.useFakeTimers();
 		const onCloseAutoFocus = vi.fn();
-		const { component } = renderFixture({ enabled: true, onCloseAutoFocus });
+		const { component } = render(FocusScopeFixture, { enabled: true, onCloseAutoFocus });
 
-		try {
-			runAnimationFrame();
-			component.hideScope();
-			flushSync();
+		runAnimationFrame();
+		component.hideScope();
+		flushSync();
 
-			expect(onCloseAutoFocus).toHaveBeenCalledTimes(1);
-		} finally {
-			unmount(component);
-		}
+		expect(onCloseAutoFocus).toHaveBeenCalledTimes(1);
 	});
 
 	test("trap listeners respond to trapFocus changes while mounted", () => {
 		vi.useFakeTimers();
-		const { component } = renderFixture({ enabled: true, trapFocus: false });
+		const { component } = render(FocusScopeFixture, { enabled: true, trapFocus: false });
 
-		try {
-			runAnimationFrame();
-			getInsideButton().focus();
-			getBeforeButton().focus();
-			expect(document.activeElement).toBe(getBeforeButton());
+		runAnimationFrame();
+		el("inside").focus();
+		el("before").focus();
+		expect(document.activeElement).toBe(el("before"));
 
-			component.setTrapFocus(true);
-			flushSync();
+		component.setTrapFocus(true);
+		flushSync();
 
-			getInsideButton().focus();
-			getBeforeButton().focus();
-			expect(getScope().contains(document.activeElement)).toBe(true);
-		} finally {
-			unmount(component);
-		}
+		el("inside").focus();
+		el("before").focus();
+		expect(el("scope").contains(document.activeElement)).toBe(true);
 	});
 });

@@ -1,18 +1,11 @@
-import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, describe, expect, test } from 'vitest';
+import { flushSync } from 'svelte';
+import { describe, expect, test } from 'vitest';
+import { render } from '../harness.js';
 import DataTableRenderFixture from './data-table-render.fixture.svelte';
-
-let component: ReturnType<typeof mount> | undefined;
 
 function renderFixture() {
 	const renders: string[] = [];
-	const target = document.createElement('div');
-	document.body.append(target);
-	component = mount(DataTableRenderFixture, {
-		props: { onNameCellRender: (id: string) => renders.push(id) },
-		target,
-	});
-	flushSync();
+	render(DataTableRenderFixture, { onNameCellRender: (id: string) => renders.push(id) });
 	return { renders };
 }
 
@@ -27,12 +20,6 @@ function getCheckbox(scope: ParentNode) {
 	if (!checkbox) throw new Error('Expected a checkbox to render');
 	return checkbox;
 }
-
-afterEach(() => {
-	if (component) unmount(component);
-	component = undefined;
-	document.body.innerHTML = '';
-});
 
 describe('FlexRender branches', () => {
 	test('string header, component cell and snippet cell all render', () => {

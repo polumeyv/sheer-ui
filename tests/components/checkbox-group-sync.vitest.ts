@@ -1,50 +1,12 @@
-import { flushSync, mount, unmount } from "svelte";
+import { flushSync } from "svelte";
 import { describe, expect, test } from "vitest";
+import { click, el, render, text } from "../harness.js";
 import CheckboxGroupSyncFixture from "./checkbox-group-sync.fixture.svelte";
-
-type FixtureProps = Partial<{
-	standaloneChecked: boolean;
-	groupValue: string[];
-	dynamicValue: string;
-	groupDisabled: boolean;
-}>;
-
-function renderFixture(props: FixtureProps = {}) {
-	const target = document.createElement("div");
-	document.body.append(target);
-
-	const component = mount(CheckboxGroupSyncFixture, { props, target });
-	flushSync();
-
-	return { component, target };
-}
-
-function readOutput(testId: string) {
-	const node = document.body.querySelector(`[data-testid="${testId}"]`);
-	if (!node) throw new Error(`Expected ${testId} readout to render`);
-	return node.textContent;
-}
-
-function getNode(testId: string) {
-	const node = document.body.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
-	if (!node) throw new Error(`Expected ${testId} to render`);
-	return node;
-}
 
 function getForm() {
 	const form = document.body.querySelector<HTMLFormElement>("form");
 	if (!form) throw new Error("Expected form to render");
 	return form;
-}
-
-function click(testId: string) {
-	getNode(testId).click();
-	flushSync();
-}
-
-function cleanup(component: ReturnType<typeof mount>) {
-	unmount(component);
-	document.body.innerHTML = "";
 }
 
 // NOTE: this exercises the bits `Checkbox` (a styled <button role="checkbox">). As of commit
@@ -54,120 +16,96 @@ function cleanup(component: ReturnType<typeof mount>) {
 // variant for real form submission).
 describe("Checkbox group synchronization", () => {
 	test("standalone checkbox toggles checked state and submits no form payload", () => {
-		const { component } = renderFixture();
+		render(CheckboxGroupSyncFixture);
 
-		try {
-			expect(readOutput("standalone-checked")).toBe("false");
-			expect(new FormData(getForm()).get("standalone")).toBeNull();
+		expect(text("standalone-checked")).toBe("false");
+		expect(new FormData(getForm()).get("standalone")).toBeNull();
 
-			click("standalone");
+		click("standalone");
 
-			expect(readOutput("standalone-checked")).toBe("true");
-			expect(new FormData(getForm()).get("standalone")).toBeNull();
+		expect(text("standalone-checked")).toBe("true");
+		expect(new FormData(getForm()).get("standalone")).toBeNull();
 
-			click("standalone");
+		click("standalone");
 
-			expect(readOutput("standalone-checked")).toBe("false");
-			expect(new FormData(getForm()).get("standalone")).toBeNull();
-		} finally {
-			cleanup(component);
-		}
+		expect(text("standalone-checked")).toBe("false");
+		expect(new FormData(getForm()).get("standalone")).toBeNull();
 	});
 
 	test("group initial value checks matching items", () => {
-		const { component } = renderFixture({
+		render(CheckboxGroupSyncFixture, {
 			groupValue: ["alpha"],
 			dynamicValue: "alpha",
 		});
 
-		try {
-			expect(readOutput("group-value")).toBe("[alpha]");
-			expect(readOutput("dynamic-checked")).toBe("true");
-			expect(readOutput("beta-checked")).toBe("false");
-			expect(new FormData(getForm()).getAll("choices")).toEqual([]);
-		} finally {
-			cleanup(component);
-		}
+		expect(text("group-value")).toBe("[alpha]");
+		expect(text("dynamic-checked")).toBe("true");
+		expect(text("beta-checked")).toBe("false");
+		expect(new FormData(getForm()).getAll("choices")).toEqual([]);
 	});
 
 	test("external group value changes update bound item checked state", () => {
-		const { component } = renderFixture({
+		const { component } = render(CheckboxGroupSyncFixture, {
 			groupValue: ["alpha"],
 			dynamicValue: "alpha",
 		});
 
-		try {
-			component.setGroupValue(["beta"]);
-			flushSync();
+		component.setGroupValue(["beta"]);
+		flushSync();
 
-			expect(readOutput("group-value")).toBe("[beta]");
-			expect(readOutput("dynamic-checked")).toBe("false");
-			expect(readOutput("beta-checked")).toBe("true");
-			// onValueChange reports child-initiated changes only; parent writes must not echo.
-			expect(readOutput("group-change-count")).toBe("0");
-		} finally {
-			cleanup(component);
-		}
+		expect(text("group-value")).toBe("[beta]");
+		expect(text("dynamic-checked")).toBe("false");
+		expect(text("beta-checked")).toBe("true");
+		// onValueChange reports child-initiated changes only; parent writes must not echo.
+		expect(text("group-change-count")).toBe("0");
 	});
 
 	test("item toggles update group value and parent bind:value observes the sync", () => {
-		const { component } = renderFixture({
+		render(CheckboxGroupSyncFixture, {
 			groupValue: ["alpha"],
 			dynamicValue: "alpha",
 		});
 
-		try {
-			click("beta");
+		click("beta");
 
-			expect(readOutput("group-value")).toBe("[alpha,beta]");
-			expect(readOutput("beta-checked")).toBe("true");
-			expect(readOutput("group-change-count")).toBe("1");
+		expect(text("group-value")).toBe("[alpha,beta]");
+		expect(text("beta-checked")).toBe("true");
+		expect(text("group-change-count")).toBe("1");
 
-			click("dynamic");
+		click("dynamic");
 
-			expect(readOutput("group-value")).toBe("[beta]");
-			expect(readOutput("dynamic-checked")).toBe("false");
-			expect(readOutput("checked-change-count")).toBe("4");
-		} finally {
-			cleanup(component);
-		}
+		expect(text("group-value")).toBe("[beta]");
+		expect(text("dynamic-checked")).toBe("false");
+		expect(text("checked-change-count")).toBe("4");
 	});
 
 	test("dynamic item value changes resync checked state from group value", () => {
-		const { component } = renderFixture({
+		const { component } = render(CheckboxGroupSyncFixture, {
 			groupValue: ["beta"],
 			dynamicValue: "alpha",
 		});
 
-		try {
-			expect(readOutput("dynamic-checked")).toBe("false");
+		expect(text("dynamic-checked")).toBe("false");
 
-			component.setDynamicValue("beta");
-			flushSync();
+		component.setDynamicValue("beta");
+		flushSync();
 
-			expect(readOutput("dynamic-checked")).toBe("true");
-		} finally {
-			cleanup(component);
-		}
+		expect(text("dynamic-checked")).toBe("true");
 	});
 
 	test("group disabled state prevents item toggles and keeps form payload stable", () => {
-		const { component } = renderFixture({
+		render(CheckboxGroupSyncFixture, {
 			groupValue: ["alpha"],
 			dynamicValue: "alpha",
 			groupDisabled: true,
 		});
 
-		try {
-			expect(getNode("dynamic")).toHaveProperty("disabled", true);
+		expect(el("dynamic")).toHaveProperty("disabled", true);
 
-			click("dynamic");
+		click("dynamic");
 
-			expect(readOutput("group-value")).toBe("[alpha]");
-			expect(readOutput("dynamic-checked")).toBe("true");
-			expect(new FormData(getForm()).getAll("choices")).toEqual([]);
-		} finally {
-			cleanup(component);
-		}
+		expect(text("group-value")).toBe("[alpha]");
+		expect(text("dynamic-checked")).toBe("true");
+		expect(new FormData(getForm()).getAll("choices")).toEqual([]);
 	});
 });

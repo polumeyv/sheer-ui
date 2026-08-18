@@ -1,5 +1,5 @@
 import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import SafePolygonFixture from './safe-polygon.fixture.svelte';
 
 function rect(left: number, top: number, right: number, bottom: number) {
@@ -45,11 +45,6 @@ function render(ownerDocument = document) {
 
 	return { component, target, trigger, content, exitCount, pointerMove };
 }
-
-afterEach(() => {
-	document.body.innerHTML = '';
-	vi.restoreAllMocks();
-});
 
 describe('SafePolygon', () => {
 	test('leaving the trigger directly toward the content does not start tracking (no exit call)', () => {

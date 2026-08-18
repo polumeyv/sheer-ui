@@ -1,5 +1,5 @@
-import { flushSync, mount, unmount } from "svelte";
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
+import { render } from "../harness.js";
 
 const cases = [
 	{
@@ -39,56 +39,13 @@ const cases = [
 	},
 ] as const;
 
-beforeEach(() => {
-	Object.defineProperty(window, "matchMedia", {
-		configurable: true,
-		value: (query: string) => ({
-			matches: query.includes("max-width") ? false : true,
-			media: query,
-			onchange: null,
-			addEventListener: () => {},
-			removeEventListener: () => {},
-			addListener: () => {},
-			removeListener: () => {},
-			dispatchEvent: () => false,
-		}),
-	});
-
-	class ResizeObserverStub {
-		observe() {}
-		unobserve() {}
-		disconnect() {}
-	}
-
-	Object.defineProperty(window, "ResizeObserver", {
-		configurable: true,
-		value: ResizeObserverStub,
-	});
-	Object.defineProperty(globalThis, "ResizeObserver", {
-		configurable: true,
-		value: ResizeObserverStub,
-	});
-});
-
-afterEach(() => {
-	document.body.innerHTML = "";
-});
-
 describe("registry demos", () => {
 	for (const demo of cases) {
 		test(`${demo.name} renders its primary component`, async () => {
 			const { default: Demo } = await demo.load();
-			const target = document.createElement("div");
-			document.body.append(target);
+			render(Demo);
 
-			const component = mount(Demo, { target });
-			flushSync();
-
-			try {
-				expect(document.body.querySelector(demo.selector)).not.toBeNull();
-			} finally {
-				unmount(component);
-			}
+			expect(document.body.querySelector(demo.selector)).not.toBeNull();
 		});
 	}
 });

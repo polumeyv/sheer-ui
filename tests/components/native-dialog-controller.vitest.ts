@@ -1,16 +1,13 @@
-import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { flushSync } from 'svelte';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { el, render } from '../harness.js';
 import NativeDialogControllerFixture from './native-dialog-controller.fixture.svelte';
 
-type Fixture = ReturnType<typeof render>['component'];
+type Fixture = ReturnType<typeof renderDialog>['component'];
 
-function render(outsideEvent: 'pointerdown' | 'click' = 'pointerdown') {
-	const target = document.createElement('div');
-	document.body.append(target);
-	const component = mount(NativeDialogControllerFixture, { props: { outsideEvent }, target });
-	flushSync();
-	const dialog = target.querySelector<HTMLDialogElement>('[data-testid="dialog"]')!;
-	return { component, dialog, target };
+function renderDialog(outsideEvent: 'pointerdown' | 'click' = 'pointerdown') {
+	const rendered = render(NativeDialogControllerFixture, { outsideEvent });
+	return { ...rendered, dialog: el<HTMLDialogElement>('dialog') };
 }
 
 const open = (component: Fixture) => {
@@ -20,30 +17,11 @@ const open = (component: Fixture) => {
 
 beforeEach(() => {
 	if (!globalThis.PointerEvent) Object.defineProperty(globalThis, 'PointerEvent', { configurable: true, value: MouseEvent });
-	Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
-		configurable: true,
-		value: vi.fn(function (this: HTMLDialogElement) {
-			this.open = true;
-		}),
-	});
-	Object.defineProperty(HTMLDialogElement.prototype, 'close', {
-		configurable: true,
-		value: vi.fn(function (this: HTMLDialogElement) {
-			if (!this.open) return;
-			this.open = false;
-			this.dispatchEvent(new Event('close'));
-		}),
-	});
-});
-
-afterEach(() => {
-	document.body.innerHTML = '';
-	vi.restoreAllMocks();
 });
 
 describe('native dialog controller', () => {
 	test('synchronizes declarative open state with showModal and a settle-deferred close', async () => {
-		const { component, dialog } = render();
+		const { component, dialog } = renderDialog();
 		open(component);
 		expect(dialog.open).toBe(true);
 		expect(dialog.showModal).toHaveBeenCalledOnce();
@@ -55,22 +33,20 @@ describe('native dialog controller', () => {
 		expect(dialog.open).toBe(true);
 		await vi.waitFor(() => expect(dialog.open).toBe(false));
 		expect(dialog.close).toHaveBeenCalledOnce();
-		unmount(component);
 	});
 
 	test.each(['pointerdown', 'click'] as const)('supports the %s backdrop policy', async (outsideEvent) => {
-		const { component, dialog } = render(outsideEvent);
+		const { component, dialog } = renderDialog(outsideEvent);
 		open(component);
 		dialog.dispatchEvent(new PointerEvent(outsideEvent, { bubbles: true }));
 		flushSync();
 		// dismissal routes through state immediately; the native close follows after settle
 		expect(component.getCloseCount()).toBe(1);
 		await vi.waitFor(() => expect(dialog.open).toBe(false));
-		unmount(component);
 	});
 
 	test('a permitted cancel suppresses the native instant close and closes through state', async () => {
-		const { component, dialog } = render();
+		const { component, dialog } = renderDialog();
 		open(component);
 		const cancel = new Event('cancel', { cancelable: true });
 		dialog.dispatchEvent(cancel);
@@ -79,11 +55,10 @@ describe('native dialog controller', () => {
 		flushSync();
 		expect(component.getCloseCount()).toBe(1);
 		await vi.waitFor(() => expect(dialog.open).toBe(false));
-		unmount(component);
 	});
 
 	test('preserves callback vetoes and ignore policies', () => {
-		const { component, dialog } = render();
+		const { component, dialog } = renderDialog();
 		open(component);
 		component.setVetoOutside(true);
 		dialog.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
@@ -104,14 +79,13 @@ describe('native dialog controller', () => {
 		const ignored = new Event('cancel', { cancelable: true });
 		dialog.dispatchEvent(ignored);
 		expect(ignored.defaultPrevented).toBe(true);
-		unmount(component);
 	});
 
 	test('wraps sequential focus only while trapping is enabled', () => {
-		const { component, dialog, target } = render();
+		const { component, dialog } = renderDialog();
 		open(component);
-		const first = target.querySelector<HTMLButtonElement>('[data-testid="first"]')!;
-		const last = target.querySelector<HTMLButtonElement>('[data-testid="last"]')!;
+		const first = el<HTMLButtonElement>('first');
+		const last = el<HTMLButtonElement>('last');
 
 		last.focus();
 		const forward = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true });
@@ -125,13 +99,12 @@ describe('native dialog controller', () => {
 		dialog.dispatchEvent(untrapped);
 		expect(untrapped.defaultPrevented).toBe(false);
 		expect(document.activeElement).toBe(last);
-		unmount(component);
 	});
 
 	test('removes event listeners when the attachment is destroyed', () => {
-		const { component, dialog } = render();
+		const { component, dialog, unmount } = renderDialog();
 		open(component);
-		unmount(component);
+		unmount();
 		dialog.dispatchEvent(new Event('close'));
 		expect(component.getCloseCount()).toBe(0);
 	});

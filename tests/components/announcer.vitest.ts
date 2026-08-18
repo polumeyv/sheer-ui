@@ -2,12 +2,10 @@ import { describe, expect, test, vi, afterEach } from "vitest";
 import { getAnnouncer } from "../../src/lib/internal/date-time/announcer.js";
 
 afterEach(() => {
-	document.body.innerHTML = "";
 	Object.defineProperty(document, "ariaNotify", {
 		configurable: true,
 		value: undefined,
 	});
-	vi.restoreAllMocks();
 });
 
 describe("date-time announcer", () => {
