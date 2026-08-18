@@ -1,5 +1,5 @@
 import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
-import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '../../internal/attrs.js';
+import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef, getToggleDataState } from '../../internal/attrs.js';
 import type { BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
 
 export const toggleAttrs = createBitsAttrs({
@@ -53,5 +53,3 @@ export class ToggleRootState {
 			}) as const,
 	);
 }
-
-export const getToggleDataState = (condition: boolean): 'on' | 'off' => condition ? 'on' : 'off';

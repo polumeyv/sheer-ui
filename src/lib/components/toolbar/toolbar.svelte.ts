@@ -1,11 +1,11 @@
 import { createContext } from 'svelte';
-import { type WritableBox, type WritableBoxedValues, type ReadableBoxedValues, attachRef } from '../../internal/tools/index.js';
-import { createBitsAttrs, getAriaChecked, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '../../internal/attrs.js';
-import { kbd } from '../../internal/kbd.js';
+import { type ReadableBox, type ReadableBoxedValues, type WritableBox, attachRef, boxWith } from '../../internal/tools/index.js';
+import { createBitsAttrs, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '../../internal/attrs.js';
 import type { Orientation } from '../../internal/index.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import type { BitsKeyboardEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
 import { RovingFocusItem } from '../../internal/roving-focus-item.svelte.js';
+import { type SelectionGroup, type SelectionType, SelectionValue, setSelectionGroup } from '../../internal/selection.svelte.js';
 
 export const toolbarAttrs = createBitsAttrs({
 	component: 'toolbar',
@@ -13,7 +13,7 @@ export const toolbarAttrs = createBitsAttrs({
 });
 
 const [getToolbarRoot, setToolbarRoot] = createContext<ToolbarRootState>();
-const [getToolbarGroup, setToolbarGroup] = createContext<ToolbarGroup>();
+
 interface ToolbarRootStateOpts
 	extends
 		WithRefOpts,
@@ -54,22 +54,45 @@ export class ToolbarRootState {
 	);
 }
 
-interface ToolbarGroupBaseStateOpts
+interface ToolbarGroupStateOpts
 	extends
 		WithRefOpts,
 		ReadableBoxedValues<{
 			disabled: boolean;
-		}> {}
+		}> {
+	type: SelectionType;
+	value: WritableBox<string | string[]>;
+}
 
-abstract class ToolbarGroupBaseState {
-	readonly opts: ToolbarGroupBaseStateOpts;
+export class ToolbarGroupState implements SelectionGroup {
+	static create(opts: ToolbarGroupStateOpts) {
+		const group = new ToolbarGroupState(opts, getToolbarRoot());
+		setSelectionGroup(group);
+		return group;
+	}
+	readonly opts: ToolbarGroupStateOpts;
 	readonly root: ToolbarRootState;
+	readonly selection: SelectionValue;
+	readonly disabled: ReadableBox<boolean>;
+	readonly orientation: ReadableBox<Orientation>;
+	readonly rovingFocus = boxWith(() => true);
+	readonly rovingFocusGroup: RovingFocusGroup;
+	readonly itemAttrs = { [toolbarAttrs.item]: '', [toolbarAttrs['group-item']]: '' } as const;
 	readonly attachment: RefAttachment;
 
-	constructor(opts: ToolbarGroupBaseStateOpts, root: ToolbarRootState) {
+	constructor(opts: ToolbarGroupStateOpts, root: ToolbarRootState) {
 		this.opts = opts;
 		this.root = root;
+		this.selection = new SelectionValue(opts.type, opts.value);
+		this.disabled = opts.disabled;
+		this.orientation = root.opts.orientation;
+		this.rovingFocusGroup = root.rovingFocusGroup;
 		this.attachment = attachRef(this.opts.ref);
+	}
+
+	// The toolbar's tab stop belongs to the whole toolbar, so selecting an item leaves it put.
+	toggleItem(item: string) {
+		this.selection.toggle(item);
 	}
 
 	readonly props = $derived.by(
@@ -81,186 +104,6 @@ abstract class ToolbarGroupBaseState {
 				'data-orientation': this.root.opts.orientation.current,
 				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
 				...this.attachment,
-			}) as const,
-	);
-}
-
-interface ToolbarGroupSingleStateOpts
-	extends
-		ToolbarGroupBaseStateOpts,
-		WritableBoxedValues<{
-			value: string;
-		}> {}
-
-class ToolbarGroupSingleState extends ToolbarGroupBaseState {
-	override readonly opts: ToolbarGroupSingleStateOpts;
-	override readonly root: ToolbarRootState;
-	readonly isMulti = false as const;
-	readonly anyPressed = $derived.by(() => this.opts.value.current !== '');
-
-	constructor(opts: ToolbarGroupSingleStateOpts, root: ToolbarRootState) {
-		super(opts, root);
-
-		this.opts = opts;
-		this.root = root;
-	}
-
-	includesItem(item: string) {
-		return this.opts.value.current === item;
-	}
-
-	toggleItem(item: string) {
-		if (this.includesItem(item)) {
-			this.opts.value.current = '';
-		} else {
-			this.opts.value.current = item;
-		}
-	}
-}
-
-interface ToolbarGroupMultipleStateOpts
-	extends
-		ToolbarGroupBaseStateOpts,
-		WritableBoxedValues<{
-			value: string[];
-		}> {}
-
-class ToolbarGroupMultipleState extends ToolbarGroupBaseState {
-	override readonly opts: ToolbarGroupMultipleStateOpts;
-	override readonly root: ToolbarRootState;
-	readonly isMulti = true as const;
-	readonly anyPressed = $derived.by(() => this.opts.value.current.length > 0);
-
-	constructor(opts: ToolbarGroupMultipleStateOpts, root: ToolbarRootState) {
-		super(opts, root);
-
-		this.opts = opts;
-		this.root = root;
-	}
-
-	includesItem(item: string) {
-		return this.opts.value.current.includes(item);
-	}
-
-	toggleItem(item: string) {
-		if (this.includesItem(item)) {
-			this.opts.value.current = this.opts.value.current.filter((v) => v !== item);
-		} else {
-			this.opts.value.current = [...this.opts.value.current, item];
-		}
-	}
-}
-
-type ToolbarGroup = ToolbarGroupSingleState | ToolbarGroupMultipleState;
-
-interface ToolbarGroupRootOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			disabled: boolean;
-		}> {
-	type: 'single' | 'multiple';
-	value: WritableBox<string> | WritableBox<string[]>;
-}
-
-export class ToolbarGroupState {
-	static create(opts: ToolbarGroupRootOpts): ToolbarGroup {
-		const { type, ...rest } = opts;
-		const rootState = getToolbarRoot();
-		const groupState =
-			type === 'single'
-				? new ToolbarGroupSingleState(rest as ToolbarGroupSingleStateOpts, rootState)
-				: new ToolbarGroupMultipleState(rest as ToolbarGroupMultipleStateOpts, rootState);
-
-		return setToolbarGroup(groupState);
-	}
-}
-
-//
-// ITEM
-//
-
-interface ToolbarGroupItemStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			value: string;
-			disabled: boolean;
-		}> {}
-
-export class ToolbarGroupItemState {
-	static create(opts: ToolbarGroupItemStateOpts) {
-		const group = getToolbarGroup();
-		return new ToolbarGroupItemState(opts, group, group.root);
-	}
-	readonly opts: ToolbarGroupItemStateOpts;
-	readonly group: ToolbarGroup;
-	readonly root: ToolbarRootState;
-	readonly rovingItem: RovingFocusItem;
-	readonly #isDisabled = $derived.by(() => this.opts.disabled.current || this.group.opts.disabled.current);
-
-	constructor(opts: ToolbarGroupItemStateOpts, group: ToolbarGroup, root: ToolbarRootState) {
-		this.opts = opts;
-		this.group = group;
-		this.root = root;
-		this.rovingItem = new RovingFocusItem({
-			group: this.root.rovingFocusGroup,
-			ref: this.opts.ref,
-		});
-
-		this.onclick = this.onclick.bind(this);
-		this.onkeydown = this.onkeydown.bind(this);
-	}
-
-	#toggleItem() {
-		if (this.#isDisabled) return;
-		this.group.toggleItem(this.opts.value.current);
-	}
-
-	onclick(_: BitsMouseEvent) {
-		if (this.#isDisabled) return;
-		this.#toggleItem();
-	}
-
-	onkeydown(e: BitsKeyboardEvent) {
-		if (this.#isDisabled) return;
-		if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
-			e.preventDefault();
-			this.#toggleItem();
-			return;
-		}
-
-		this.rovingItem.handleKeydown(e);
-	}
-
-	readonly isPressed = $derived.by(() => this.group.includesItem(this.opts.value.current));
-
-	readonly #ariaChecked = $derived.by(() => {
-		return this.group.isMulti ? undefined : getAriaChecked(this.isPressed, false);
-	});
-
-	readonly #ariaPressed = $derived.by(() => {
-		return this.group.isMulti ? boolToStr(this.isPressed) : undefined;
-	});
-
-	readonly props = $derived.by(
-		() =>
-			({
-				id: this.opts.id.current,
-				role: this.group.isMulti ? undefined : 'radio',
-				'data-orientation': this.root.opts.orientation.current,
-				'data-disabled': boolToEmptyStrOrUndef(this.#isDisabled),
-				'data-state': getToggleItemDataState(this.isPressed),
-				'data-value': this.opts.value.current,
-				'aria-pressed': this.#ariaPressed,
-				'aria-checked': this.#ariaChecked,
-				[toolbarAttrs.item]: '',
-				[toolbarAttrs['group-item']]: '',
-				disabled: boolToTrueOrUndef(this.#isDisabled),
-				//
-				onclick: this.onclick,
-				onkeydown: this.onkeydown,
-				...this.rovingItem.props,
 			}) as const,
 	);
 }
@@ -365,9 +208,3 @@ export class ToolbarButtonState {
 			}) as const,
 	);
 }
-
-//
-// HELPERS
-//
-
-const getToggleItemDataState = (condition: boolean) => condition ? 'on' : 'off';

@@ -53,9 +53,10 @@ Two edges only a cold install reveals, both previously borrowed from the mono ro
 Modules written here, marked by their `.test.ts` siblings: `internal/layer-stack.ts`,
 `internal/hover-intent-geometry.ts`, `internal/arrays.ts`, `internal/animations-complete.ts`,
 `internal/tools/utils/attach-ref.ts`. The shared `internal/native-dialog-controller.svelte.ts`,
-`internal/typeahead.svelte.ts` and `internal/date-time/field/range-field.svelte.ts` are also local
-consolidation Modules, covered through their dialog, typeahead and range-field integration suites. A
-future upstream diff touching these is drift on our side, not upstream's.
+`internal/typeahead.svelte.ts`, `internal/date-time/field/range-field.svelte.ts` and
+`internal/selection.svelte.ts` are also local consolidation Modules, covered through their dialog,
+typeahead, range-field and selection-group integration suites. A future upstream diff touching these
+is drift on our side, not upstream's.
 
 ## Local deviations from upstream (carried forward from the original)
 
@@ -84,6 +85,8 @@ future upstream diff touching these is drift on our side, not upstream's.
   predicate opts (`onInteractOutside`, `onFocusOutside`, `isValidEvent`) are optional here rather
   than upstream's `Required<>` boxes, so callers omit them instead of passing no-ops.
 - `state_referenced_locally` warnings from vendored files are upstream's; svelte-check prints them.
+- `internal/attrs.ts` carries `getToggleDataState`, which upstream does not have: it was pulled up from
+  `components/toggle`, where three copies of it lived.
 
 ## Syncing upstream fixes
 

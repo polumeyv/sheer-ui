@@ -1,20 +1,16 @@
-import { createContext } from 'svelte';
-import { type WritableBox, type ReadableBoxedValues, type WritableBoxedValues, attachRef } from '../../internal/tools/index.js';
-import { createBitsAttrs, getAriaChecked, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '../../internal/attrs.js';
-import { kbd } from '../../internal/kbd.js';
+import { type ReadableBox, type ReadableBoxedValues, type WritableBox, attachRef } from '../../internal/tools/index.js';
+import { createBitsAttrs, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import type { Orientation } from '../../internal/index.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
-import { RovingFocusItem } from '../../internal/roving-focus-item.svelte.js';
+import { type SelectionGroup, type SelectionType, SelectionValue, setSelectionGroup } from '../../internal/selection.svelte.js';
 
 export const toggleGroupAttrs = createBitsAttrs({
 	component: 'toggle-group',
 	parts: ['root', 'item'],
 });
 
-const [getToggleGroupRoot, setToggleGroupRoot] = createContext<ToggleGroup>();
-
-interface ToggleGroupBaseStateOpts
+interface ToggleGroupRootStateOpts
 	extends
 		WithRefOpts,
 		ReadableBoxedValues<{
@@ -22,15 +18,32 @@ interface ToggleGroupBaseStateOpts
 			rovingFocus: boolean;
 			loop: boolean;
 			orientation: Orientation;
-		}> {}
+		}> {
+	type: SelectionType;
+	value: WritableBox<string | string[]>;
+}
 
-abstract class ToggleGroupBaseState {
-	readonly opts: ToggleGroupBaseStateOpts;
+export class ToggleGroupRootState implements SelectionGroup {
+	static create(opts: ToggleGroupRootStateOpts) {
+		const root = new ToggleGroupRootState(opts);
+		setSelectionGroup(root);
+		return root;
+	}
+	readonly opts: ToggleGroupRootStateOpts;
+	readonly selection: SelectionValue;
+	readonly disabled: ReadableBox<boolean>;
+	readonly orientation: ReadableBox<Orientation>;
+	readonly rovingFocus: ReadableBox<boolean>;
 	readonly rovingFocusGroup: RovingFocusGroup;
+	readonly itemAttrs = { [toggleGroupAttrs.item]: '' } as const;
 	readonly attachment: RefAttachment;
 
-	constructor(opts: ToggleGroupBaseStateOpts) {
+	constructor(opts: ToggleGroupRootStateOpts) {
 		this.opts = opts;
+		this.selection = new SelectionValue(opts.type, opts.value);
+		this.disabled = opts.disabled;
+		this.orientation = opts.orientation;
+		this.rovingFocus = opts.rovingFocus;
 		this.attachment = attachRef(this.opts.ref);
 		this.rovingFocusGroup = new RovingFocusGroup({
 			candidateAttr: toggleGroupAttrs.item,
@@ -38,6 +51,11 @@ abstract class ToggleGroupBaseState {
 			loop: opts.loop,
 			orientation: opts.orientation,
 		});
+	}
+
+	// Selecting hands the tab stop to the item; toolbar's group deliberately leaves it put.
+	toggleItem(item: string, id: string) {
+		if (this.selection.toggle(item)) this.rovingFocusGroup.setCurrentTabStopId(id);
 	}
 
 	readonly props = $derived.by(
@@ -52,184 +70,3 @@ abstract class ToggleGroupBaseState {
 			}) as const,
 	);
 }
-
-interface ToggleGroupSingleStateOpts
-	extends
-		ToggleGroupBaseStateOpts,
-		WritableBoxedValues<{
-			value: string;
-		}> {}
-
-class ToggleGroupSingleState extends ToggleGroupBaseState {
-	override readonly opts: ToggleGroupSingleStateOpts;
-	isMulti = false;
-	readonly anyPressed = $derived.by(() => this.opts.value.current !== '');
-
-	constructor(opts: ToggleGroupSingleStateOpts) {
-		super(opts);
-		this.opts = opts;
-	}
-
-	includesItem(item: string) {
-		return this.opts.value.current === item;
-	}
-
-	toggleItem(item: string, id: string) {
-		if (this.includesItem(item)) {
-			this.opts.value.current = '';
-		} else {
-			this.opts.value.current = item;
-			this.rovingFocusGroup.setCurrentTabStopId(id);
-		}
-	}
-}
-
-//
-// MULTIPLE
-//
-
-interface ToggleGroupMultipleStateOpts
-	extends
-		ToggleGroupBaseStateOpts,
-		WritableBoxedValues<{
-			value: string[];
-		}> {}
-
-class ToggleGroupMultipleState extends ToggleGroupBaseState {
-	override readonly opts: ToggleGroupMultipleStateOpts;
-	isMulti = true;
-	readonly anyPressed = $derived.by(() => this.opts.value.current.length > 0);
-
-	constructor(opts: ToggleGroupMultipleStateOpts) {
-		super(opts);
-
-		this.opts = opts;
-	}
-
-	includesItem(item: string) {
-		return this.opts.value.current.includes(item);
-	}
-
-	toggleItem(item: string, id: string) {
-		if (this.includesItem(item)) {
-			this.opts.value.current = this.opts.value.current.filter((v) => v !== item);
-		} else {
-			this.opts.value.current = [...this.opts.value.current, item];
-			this.rovingFocusGroup.setCurrentTabStopId(id);
-		}
-	}
-}
-
-type ToggleGroup = ToggleGroupSingleState | ToggleGroupMultipleState;
-
-interface ToggleGroupRootOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			disabled: boolean;
-			rovingFocus: boolean;
-			loop: boolean;
-			orientation: Orientation;
-		}> {
-	type: 'single' | 'multiple';
-	value: WritableBox<string> | WritableBox<string[]>;
-}
-
-export class ToggleGroupRootState {
-	static create(opts: ToggleGroupRootOpts): ToggleGroup {
-		const { type, ...rest } = opts;
-		const rootState =
-			type === 'single'
-				? new ToggleGroupSingleState(rest as ToggleGroupSingleStateOpts)
-				: new ToggleGroupMultipleState(rest as ToggleGroupMultipleStateOpts);
-		return setToggleGroupRoot(rootState);
-	}
-}
-
-interface ToggleGroupItemStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			value: string;
-			disabled: boolean;
-		}> {}
-
-export class ToggleGroupItemState {
-	static create(opts: ToggleGroupItemStateOpts) {
-		return new ToggleGroupItemState(opts, getToggleGroupRoot());
-	}
-	readonly opts: ToggleGroupItemStateOpts;
-	readonly root: ToggleGroup;
-	readonly rovingItem: RovingFocusItem;
-	readonly #isDisabled = $derived.by(() => this.opts.disabled.current || this.root.opts.disabled.current);
-	readonly isPressed = $derived.by(() => this.root.includesItem(this.opts.value.current));
-
-	readonly #ariaChecked = $derived.by(() => {
-		return this.root.isMulti ? undefined : getAriaChecked(this.isPressed, false);
-	});
-
-	readonly #ariaPressed = $derived.by(() => {
-		return this.root.isMulti ? boolToStr(this.isPressed) : undefined;
-	});
-
-	constructor(opts: ToggleGroupItemStateOpts, root: ToggleGroup) {
-		this.opts = opts;
-		this.root = root;
-		this.rovingItem = new RovingFocusItem({
-			group: this.root.rovingFocusGroup,
-			ref: this.opts.ref,
-			enabled: this.root.opts.rovingFocus,
-		});
-
-		this.onclick = this.onclick.bind(this);
-		this.onkeydown = this.onkeydown.bind(this);
-	}
-
-	#toggleItem() {
-		if (this.#isDisabled) return;
-		this.root.toggleItem(this.opts.value.current, this.opts.id.current);
-	}
-
-	onclick(_: BitsMouseEvent) {
-		if (this.#isDisabled) return;
-		this.root.toggleItem(this.opts.value.current, this.opts.id.current);
-	}
-
-	onkeydown(e: BitsKeyboardEvent) {
-		if (this.#isDisabled) return;
-		if (e.key === kbd.ENTER || e.key === kbd.SPACE) {
-			e.preventDefault();
-			this.#toggleItem();
-			return;
-		}
-		if (!this.root.opts.rovingFocus.current) return;
-
-		this.rovingItem.handleKeydown(e);
-	}
-
-	readonly snippetProps = $derived.by(() => ({
-		pressed: this.isPressed,
-	}));
-
-	readonly props = $derived.by(
-		() =>
-			({
-				id: this.opts.id.current,
-				role: this.root.isMulti ? undefined : 'radio',
-				'data-orientation': this.root.opts.orientation.current,
-				'data-disabled': boolToEmptyStrOrUndef(this.#isDisabled),
-				'data-state': getToggleItemDataState(this.isPressed),
-				'data-value': this.opts.value.current,
-				'aria-pressed': this.#ariaPressed,
-				'aria-checked': this.#ariaChecked,
-				disabled: boolToTrueOrUndef(this.#isDisabled),
-				[toggleGroupAttrs.item]: '',
-				//
-				onclick: this.onclick,
-				onkeydown: this.onkeydown,
-				...this.rovingItem.props,
-			}) as const,
-	);
-}
-
-const getToggleItemDataState = (condition: boolean) => condition ? 'on' : 'off';

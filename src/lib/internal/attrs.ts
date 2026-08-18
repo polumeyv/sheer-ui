@@ -8,6 +8,8 @@ export const boolToTrueOrUndef = (condition: boolean): true | undefined => condi
 
 export const getDataOpenClosed = (condition: boolean): 'open' | 'closed' => condition ? 'open' : 'closed';
 
+export const getToggleDataState = (condition: boolean): 'on' | 'off' => condition ? 'on' : 'off';
+
 export type TransitionState = 'starting' | 'ending' | 'idle' | undefined;
 
 export function getDataTransitionAttrs(state: TransitionState): {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { type WritableBox, boxWith } from '../../../internal/tools/index.js';
+	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToolbarGroupProps } from '../types.js';
 	import { ToolbarGroupState } from '../toolbar.svelte.js';
@@ -50,7 +50,7 @@
 				// @ts-expect-error - we know
 				onValueChange(v);
 			},
-		) as WritableBox<string> | WritableBox<string[]>,
+		),
 		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),

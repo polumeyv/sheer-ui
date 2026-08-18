@@ -14,7 +14,7 @@
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { type WritableBox, boxWith } from '../../../internal/tools/index.js';
+	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToggleGroupRootProps } from '../types.js';
 	import { ToggleGroupRootState } from '../toggle-group.svelte.js';
@@ -71,7 +71,7 @@
 				// @ts-expect-error - we know
 				onValueChange(v);
 			},
-		) as WritableBox<string> | WritableBox<string[]>,
+		),
 		disabled: boxWith(() => disabled),
 		loop: boxWith(() => loop),
 		orientation: boxWith(() => orientation),

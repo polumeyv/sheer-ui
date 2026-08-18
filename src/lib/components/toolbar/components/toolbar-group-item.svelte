@@ -2,7 +2,7 @@
 	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToolbarGroupItemProps } from '../types.js';
-	import { ToolbarGroupItemState } from '../toolbar.svelte.js';
+	import { SelectionItemState } from '../../../internal/selection.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
 	import { toggleVariants, type ToggleSize, type ToggleVariant } from '../../toggle/variants.js';
 
@@ -24,7 +24,7 @@
 		size?: ToggleSize;
 	} = $props();
 
-	const groupItemState = ToolbarGroupItemState.create({
+	const itemState = SelectionItemState.create({
 		id: boxWith(() => id),
 		value: boxWith(() => value),
 		disabled: boxWith(() => disabled ?? false),
@@ -41,16 +41,16 @@
 				class: toggleVariants({ variant, size }),
 			},
 			restProps,
-			groupItemState.props,
+			itemState.props,
 			{ type },
 		),
 	);
 </script>
 
 {#if child}
-	{@render child({ props: mergedProps, pressed: groupItemState.isPressed })}
+	{@render child({ props: mergedProps, ...itemState.snippetProps })}
 {:else}
 	<button {...mergedProps}>
-		{@render children?.({ pressed: groupItemState.isPressed })}
+		{@render children?.(itemState.snippetProps)}
 	</button>
 {/if}
