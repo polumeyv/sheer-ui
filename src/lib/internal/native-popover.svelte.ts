@@ -1,6 +1,6 @@
 import type { Getter } from './tools/index.js';
 import { on } from 'svelte/events';
-import { useOpenChangeComplete } from './use-open-change-complete.svelte.js';
+import { useOpenChangeComplete } from './animations-settled.svelte.js';
 
 type NativePopoverAnchor = HTMLElement | string | null | undefined | object;
 

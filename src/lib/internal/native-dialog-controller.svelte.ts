@@ -1,7 +1,7 @@
 import type { EscapeBehaviorType } from './escape-layer/types.js';
 import type { InteractOutsideBehaviorType } from './dismissible-layer/types.js';
 import { getTabbableCandidates } from './tabbable.js';
-import { animationsSettled } from './use-open-change-complete.svelte.js';
+import { animationsSettled } from './animations-settled.svelte.js';
 import type { Getter } from './tools/index.js';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 import { on } from 'svelte/events';
