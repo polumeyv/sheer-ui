@@ -5,7 +5,6 @@ import {
 	type WritableBoxedValues,
 	attachRef,
 	boxWith,
-	DOMContext,
 } from '../../internal/tools/index.js';
 import { kbd } from '../../internal/kbd.js';
 import { createBitsAttrs, boolToStr, getDataOpenClosed } from '../../internal/attrs.js';
@@ -22,6 +21,7 @@ import { isElement } from '../../internal/tools/utils/dom.js';
 import type { Measurable } from '../../internal/floating-svelte/types.js';
 import { SafePolygon } from '../../internal/safe-polygon.svelte.js';
 import { isTabbable } from '../../internal/tabbable.js';
+import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';
 
 const popoverAttrs = createBitsAttrs({
 	component: 'popover',
@@ -54,8 +54,11 @@ export class PopoverRootState {
 	hoverCooldown = $state(false);
 	#closeDelaySource = $state<ReadableBox<number>>(boxWith(() => 0));
 	closeDelay = $derived.by(() => this.#closeDelaySource.current);
-	#closeTimeout: number | null = null;
-	#domContext: DOMContext | null = null;
+	#closeTimer = createEffectTimeout(() => {
+		if (this.openedViaHover && !this.hasInteractedWithContent) {
+			this.opts.open.current = false;
+		}
+	}, () => this.closeDelay);
 
 	constructor(opts: PopoverRootStateOpts) {
 		this.opts = opts;
@@ -66,40 +69,29 @@ export class PopoverRootState {
 				if (!isOpen) {
 					this.openedViaHover = false;
 					this.hasInteractedWithContent = false;
-					this.#clearCloseTimeout();
+					this.#closeTimer.stop();
 				}
 			});
 		});
-	}
-
-	setDomContext(ctx: DOMContext) {
-		this.#domContext = ctx;
 	}
 
 	setCloseDelaySource(source: ReadableBox<number>) {
 		this.#closeDelaySource = source;
 	}
 
-	#clearCloseTimeout() {
-		if (this.#closeTimeout !== null && this.#domContext) {
-			this.#domContext.clearTimeout(this.#closeTimeout);
-			this.#closeTimeout = null;
-		}
-	}
-
 	toggleOpen() {
-		this.#clearCloseTimeout();
+		this.#closeTimer.stop();
 		this.opts.open.current = !this.opts.open.current;
 	}
 
 	handleClose() {
-		this.#clearCloseTimeout();
+		this.#closeTimer.stop();
 		if (!this.opts.open.current) return;
 		this.opts.open.current = false;
 	}
 
 	handleHoverOpen() {
-		this.#clearCloseTimeout();
+		this.#closeTimer.stop();
 		if (this.opts.open.current) return;
 		this.openedViaHover = true;
 		this.opts.open.current = true;
@@ -117,27 +109,22 @@ export class PopoverRootState {
 		if (!this.opts.open.current) return;
 		if (!this.openedViaHover || this.hasInteractedWithContent) return;
 
-		this.#clearCloseTimeout();
-
 		if (this.closeDelay <= 0) {
+			this.#closeTimer.stop();
 			this.opts.open.current = false;
-		} else if (this.#domContext) {
-			this.#closeTimeout = this.#domContext.setTimeout(() => {
-				if (this.openedViaHover && !this.hasInteractedWithContent) {
-					this.opts.open.current = false;
-				}
-				this.#closeTimeout = null;
-			}, this.closeDelay);
+			return;
 		}
+
+		this.#closeTimer.start();
 	}
 
 	cancelDelayedClose() {
-		this.#clearCloseTimeout();
+		this.#closeTimer.stop();
 	}
 
 	markInteraction() {
 		this.hasInteractedWithContent = true;
-		this.#clearCloseTimeout();
+		this.#closeTimer.stop();
 	}
 }
 
@@ -159,10 +146,8 @@ export class PopoverTriggerState {
 	readonly opts: PopoverTriggerStateOpts;
 	readonly root: PopoverRootState;
 	readonly attachment: RefAttachment;
-	readonly domContext: DOMContext;
 
-	#openTimeout: number | null = null;
-	#closeTimeout: number | null = null;
+	#openTimer = createEffectTimeout(() => this.root.handleHoverOpen(), () => this.opts.openDelay.current);
 	#isHovering = $state(false);
 	#wasOpenOnPointerDown = false;
 
@@ -170,8 +155,6 @@ export class PopoverTriggerState {
 		this.opts = opts;
 		this.root = root;
 		this.attachment = attachRef(this.opts.ref, (v) => (this.root.triggerNode = v));
-		this.domContext = new DOMContext(opts.ref);
-		this.root.setDomContext(this.domContext);
 
 		this.onclick = this.onclick.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);
@@ -182,45 +165,22 @@ export class PopoverTriggerState {
 		this.root.setCloseDelaySource(this.opts.closeDelay);
 	}
 
-	#clearOpenTimeout() {
-		if (this.#openTimeout !== null) {
-			this.domContext.clearTimeout(this.#openTimeout);
-			this.#openTimeout = null;
-		}
-	}
-
-	#clearCloseTimeout() {
-		if (this.#closeTimeout !== null) {
-			this.domContext.clearTimeout(this.#closeTimeout);
-			this.#closeTimeout = null;
-		}
-	}
-
-	#clearAllTimeouts() {
-		this.#clearOpenTimeout();
-		this.#clearCloseTimeout();
-	}
-
 	onpointerenter(e: BitsPointerEvent) {
 		if (this.opts.disabled.current) return;
 		if (!this.opts.openOnHover.current) return;
 		if (e.pointerType === 'touch') return;
 
 		this.#isHovering = true;
-		this.#clearCloseTimeout();
 		this.root.cancelDelayedClose();
 
 		if (this.root.opts.open.current || this.root.hoverCooldown) return;
 
-		const delay = this.opts.openDelay.current;
-		if (delay <= 0) {
+		if (this.opts.openDelay.current <= 0) {
 			this.root.handleHoverOpen();
-		} else {
-			this.#openTimeout = this.domContext.setTimeout(() => {
-				this.root.handleHoverOpen();
-				this.#openTimeout = null;
-			}, delay);
+			return;
 		}
+
+		this.#openTimer.start();
 	}
 
 	onpointerleave(e: BitsPointerEvent) {
@@ -229,7 +189,7 @@ export class PopoverTriggerState {
 		if (e.pointerType === 'touch') return;
 
 		this.#isHovering = false;
-		this.#clearOpenTimeout();
+		this.#openTimer.stop();
 		this.root.hoverCooldown = false;
 
 		// let GraceArea handle the close - it will call handleHoverClose via onPointerExit
@@ -244,7 +204,7 @@ export class PopoverTriggerState {
 		if (this.opts.disabled.current) return;
 		if (e.button !== 0) return;
 
-		this.#clearAllTimeouts();
+		this.#openTimer.stop();
 
 		// On engines without showPopover({source})'s invoker exemption, the UA light-dismisses the auto
 		// popover at pointerdown — before this click — and the toggle below would instantly reopen it.
@@ -278,7 +238,7 @@ export class PopoverTriggerState {
 		if (this.opts.disabled.current) return;
 		if (!(e.key === kbd.ENTER || e.key === kbd.SPACE)) return;
 		e.preventDefault();
-		this.#clearAllTimeouts();
+		this.#openTimer.stop();
 		this.root.toggleOpen();
 	}
 
