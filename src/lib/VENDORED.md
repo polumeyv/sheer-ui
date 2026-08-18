@@ -61,10 +61,10 @@ Three edges only a cold install reveals, each of which had been quietly borrowin
 
 Modules written here, marked by their `.test.ts` siblings: `internal/layer-stack.ts`,
 `internal/hover-intent-geometry.ts`, `internal/arrays.ts`, `internal/animations-complete.ts`,
-`internal/tools/utils/attach-ref.ts`. The shared `internal/native-dialog-controller.svelte.ts` and
-`internal/date-time/field/range-field.svelte.ts` are also local consolidation Modules, covered through
-their dialog and range-field integration suites. A future upstream diff touching these is drift on
-our side, not upstream's.
+`internal/tools/utils/attach-ref.ts`. The shared `internal/native-dialog-controller.svelte.ts`,
+`internal/typeahead.svelte.ts` and `internal/date-time/field/range-field.svelte.ts` are also local
+consolidation Modules, covered through their dialog, typeahead and range-field integration suites. A
+future upstream diff touching these is drift on our side, not upstream's.
 
 ## Local deviations from upstream (carried forward from the original)
 
@@ -79,6 +79,8 @@ our side, not upstream's.
   was their sole consumer. Namespace-producing barrels (`export * as`) remain because they preserve
   type members as well as runtime values; non-entry source inventory is retained independently of
   current in-repository usage.
+- One `internal/typeahead.svelte.ts` where upstream keeps `DataTypeahead` and `DOMTypeahead`
+  separate; the candidate → search-text projection is a constructor parameter.
 - Menu and Select input modality is a boolean field on each root state. Menu roots own capture-phase
   document listeners through `<svelte:document>` instead of routing browser-only lifecycle through
   `SharedState`.

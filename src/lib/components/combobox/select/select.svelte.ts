@@ -24,8 +24,7 @@ import type {
 import { isIOS } from '../../../internal/tools/utils/dom.js';
 import { createBitsAttrs } from '../../../internal/attrs.js';
 import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
-import { DataTypeahead } from '../../../internal/data-typeahead.svelte.js';
-import { DOMTypeahead } from '../../../internal/dom-typeahead.svelte.js';
+import { Typeahead, textContentOf } from '../../../internal/typeahead.svelte.js';
 import { PresenceManager } from '../../../internal/presence-manager.svelte.js';
 import { DEV } from 'esm-env';
 import type { SelectValueSnippetProps } from './types.js';
@@ -683,8 +682,8 @@ export class SelectTriggerState {
 	readonly opts: SelectTriggerStateOpts;
 	readonly root: SelectRoot;
 	readonly attachment: RefAttachment;
-	readonly #domTypeahead: DOMTypeahead;
-	readonly #dataTypeahead: DataTypeahead;
+	readonly #typeahead: Typeahead<HTMLElement>;
+	readonly #labelTypeahead: Typeahead<string>;
 
 	constructor(opts: SelectTriggerStateOpts, root: SelectRoot) {
 		this.opts = opts;
@@ -692,17 +691,18 @@ export class SelectTriggerState {
 		this.attachment = attachRef(opts.ref, (v) => (this.root.triggerNode = v));
 		this.root.domContext = new DOMContext(opts.ref);
 
-		this.#domTypeahead = new DOMTypeahead({
-			getCurrentItem: () => this.root.highlightedNode,
+		this.#typeahead = new Typeahead({
+			getSearchText: textContentOf,
+			getCurrentCandidate: () => this.root.highlightedNode,
 			onMatch: (node) => {
 				this.root.setHighlightedNode(node);
 			},
-			getActiveElement: () => this.root.domContext.getActiveElement(),
 			getWindow: () => this.root.domContext.getWindow(),
 		});
 
-		this.#dataTypeahead = new DataTypeahead({
-			getCurrentItem: () => {
+		this.#labelTypeahead = new Typeahead({
+			getSearchText: (label) => label,
+			getCurrentCandidate: () => {
 				if (this.root.isMulti) return '';
 				return this.root.currentLabel;
 			},
@@ -713,8 +713,6 @@ export class SelectTriggerState {
 				if (!matchedItem) return;
 				this.root.opts.value.current = matchedItem.value;
 			},
-			enabled: () => !this.root.isMulti && this.root.dataTypeaheadEnabled,
-			candidateValues: () => (this.root.isMulti ? [] : this.root.candidateLabels),
 			getWindow: () => this.root.domContext.getWindow(),
 		});
 
@@ -726,8 +724,8 @@ export class SelectTriggerState {
 
 	#handleOpen() {
 		this.root.opts.open.current = true;
-		this.#dataTypeahead.resetTypeahead();
-		this.#domTypeahead.resetTypeahead();
+		this.#labelTypeahead.reset();
+		this.#typeahead.reset();
 	}
 
 	#handlePointerOpen(_: PointerEvent) {
@@ -771,7 +769,7 @@ export class SelectTriggerState {
 				e.preventDefault();
 				this.root.handleOpen();
 			} else if (!this.root.isMulti && this.root.dataTypeaheadEnabled) {
-				this.#dataTypeahead.handleTypeaheadSearch(e.key);
+				this.#labelTypeahead.handleKey(e.key, this.root.candidateLabels);
 				return;
 			}
 
@@ -801,7 +799,7 @@ export class SelectTriggerState {
 				// if we're currently "typing ahead", we don't want to select the item
 				// just yet as the item the user is trying to get to may have a space in it,
 				// so we defer handling the close for this case until further down
-				(e.key === kbd.SPACE && this.#domTypeahead.search === '')) &&
+				(e.key === kbd.SPACE && this.#typeahead.search === '')) &&
 			!e.isComposing
 		) {
 			e.preventDefault();
@@ -848,7 +846,7 @@ export class SelectTriggerState {
 		if (e.key === kbd.TAB) return;
 
 		if (!isModifierKey && (isCharacterKey || isSpaceKey)) {
-			const matchedNode = this.#domTypeahead.handleTypeaheadSearch(e.key, candidateNodes);
+			const matchedNode = this.#typeahead.handleKey(e.key, candidateNodes);
 			if (!matchedNode && isSpaceKey) {
 				e.preventDefault();
 				this.#handleKeyboardSelection();

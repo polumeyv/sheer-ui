@@ -35,7 +35,7 @@ import {
 import type { Direction } from '../../internal/index.js';
 import { getTabbableFrom, isTabbable } from '../../internal/tabbable.js';
 import type { KeyboardEventHandler, PointerEventHandler, MouseEventHandler } from 'svelte/elements';
-import { DOMTypeahead } from '../../internal/dom-typeahead.svelte.js';
+import { Typeahead, textContentOf } from '../../internal/typeahead.svelte.js';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
 import { PresenceManager } from '../../internal/presence-manager.svelte.js';
 import { arraysAreEqual } from '../../internal/arrays.js';
@@ -591,7 +591,7 @@ export class MenuContentState {
 	readonly attachment: RefAttachment;
 	search = $state('');
 	#timer = 0;
-	#handleTypeaheadSearch: DOMTypeahead['handleTypeaheadSearch'];
+	#typeahead: Typeahead<HTMLElement>;
 	#isSub: boolean;
 
 	constructor(opts: MenuContentStateOpts, parentMenu: MenuMenuState) {
@@ -629,10 +629,12 @@ export class MenuContentState {
 			},
 		});
 
-		this.#handleTypeaheadSearch = new DOMTypeahead({
-			getActiveElement: () => this.domContext.getActiveElement(),
+		this.#typeahead = new Typeahead({
+			getSearchText: textContentOf,
+			getCurrentCandidate: () => this.domContext.getActiveElement(),
+			onMatch: (node) => node.focus(),
 			getWindow: () => this.domContext.getWindow(),
-		}).handleTypeaheadSearch;
+		});
 		this.rovingFocusGroup = new RovingFocusGroup({
 			rootNode: boxWith(() => this.parentMenu.contentNode),
 			candidateAttr: this.parentMenu.root.getBitsAttr('item'),
@@ -763,7 +765,7 @@ export class MenuContentState {
 
 		if (isKeydownInside) {
 			if (!isModifierKey && isCharacterKey) {
-				this.#handleTypeaheadSearch(e.key, candidateNodes);
+				this.#typeahead.handleKey(e.key, candidateNodes);
 			}
 		}
 
