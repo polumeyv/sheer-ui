@@ -24,6 +24,20 @@ export function getDataTransitionAttrs(state: TransitionState): {
 export const getAriaChecked = (checked: boolean, indeterminate: boolean): 'true' | 'false' | 'mixed' =>
 	indeterminate ? 'mixed' : checked ? 'true' : 'false';
 
+/** The attributes a widget with a bounded value emits; a null value reads as no current value. */
+export function valueRangeProps(value: number | null, min: number, max: number) {
+	const current = value ?? undefined;
+	return {
+		value,
+		'aria-valuemin': min,
+		'aria-valuemax': max,
+		'aria-valuenow': current,
+		'data-value': current,
+		'data-min': min,
+		'data-max': max,
+	};
+}
+
 export type BitsAttrsConfig<T extends readonly string[]> = {
 	component: string;
 	parts: T;

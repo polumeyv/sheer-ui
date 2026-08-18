@@ -84,9 +84,12 @@ is drift on our side, not upstream's.
   (same truth table, verified over every trigger/content/button combination). Its handler and
   predicate opts (`onInteractOutside`, `onFocusOutside`, `isValidEvent`) are optional here rather
   than upstream's `Required<>` boxes, so callers omit them instead of passing no-ops.
-- `state_referenced_locally` warnings from vendored files are upstream's; svelte-check prints them.
 - `internal/attrs.ts` carries `getToggleDataState`, which upstream does not have: it was pulled up from
   `components/toggle`, where three copies of it lived.
+- `state_referenced_locally` warnings from vendored files are upstream's; svelte-check prints them.
+- `internal/attrs.ts` carries two helpers upstream does not have: `getToggleDataState`, pulled up from
+  `components/toggle` where three copies of it lived, and `valueRangeProps`, the attribute set progress
+  and meter emit identically.
 
 ## Syncing upstream fixes
 

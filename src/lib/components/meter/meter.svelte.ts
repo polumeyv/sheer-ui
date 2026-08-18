@@ -1,6 +1,6 @@
 import { attachRef, type ReadableBoxedValues } from '../../internal/tools/index.js';
 import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
-import { createBitsAttrs } from '../../internal/attrs.js';
+import { createBitsAttrs, valueRangeProps } from '../../internal/attrs.js';
 
 const meterAttrs = createBitsAttrs({
 	component: 'meter',
@@ -32,14 +32,8 @@ export class MeterRootState {
 	readonly props = $derived.by(
 		() =>
 			({
+				...valueRangeProps(this.opts.value.current, this.opts.min.current, this.opts.max.current),
 				role: 'meter',
-				value: this.opts.value.current,
-				'aria-valuemin': this.opts.min.current,
-				'aria-valuemax': this.opts.max.current,
-				'aria-valuenow': this.opts.value.current,
-				'data-value': this.opts.value.current,
-				'data-max': this.opts.max.current,
-				'data-min': this.opts.min.current,
 				[meterAttrs.root]: '',
 				...this.attachment,
 			}) as const,

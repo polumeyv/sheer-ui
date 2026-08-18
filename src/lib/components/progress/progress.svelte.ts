@@ -1,5 +1,5 @@
 import { attachRef, type ReadableBoxedValues } from '../../internal/tools/index.js';
-import { createBitsAttrs } from '../../internal/attrs.js';
+import { boolToEmptyStrOrUndef, createBitsAttrs, valueRangeProps } from '../../internal/attrs.js';
 import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
 
 const progressAttrs = createBitsAttrs({
@@ -36,21 +36,15 @@ export class ProgressRootState {
 		this.attachment = attachRef(this.opts.ref);
 	}
 
+	readonly percent = $derived.by(() => getProgressPercent(this.opts.value.current, this.opts.min.current, this.opts.max.current));
+
 	readonly props = $derived.by(() => {
 		const value = this.opts.value.current;
-		const percent = getProgressPercent(value, this.opts.min.current, this.opts.max.current);
-		const isIndeterminate = value === null;
 		return {
+			...valueRangeProps(value, this.opts.min.current, this.opts.max.current),
 			role: 'progressbar',
-			value,
-			'aria-valuemin': this.opts.min.current,
-			'aria-valuemax': this.opts.max.current,
-			'aria-valuenow': isIndeterminate ? undefined : value,
-			'data-value': isIndeterminate ? undefined : value,
-			'data-state': value === null ? 'indeterminate' : percent === 100 ? 'loaded' : 'loading',
-			'data-max': this.opts.max.current,
-			'data-min': this.opts.min.current,
-			'data-indeterminate': isIndeterminate ? '' : undefined,
+			'data-state': value === null ? 'indeterminate' : this.percent === 100 ? 'loaded' : 'loading',
+			'data-indeterminate': boolToEmptyStrOrUndef(value === null),
 			[progressAttrs.root]: '',
 			...this.attachment,
 		} as const;

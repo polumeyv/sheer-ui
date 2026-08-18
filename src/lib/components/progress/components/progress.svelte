@@ -2,7 +2,7 @@
 	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ProgressRootProps } from '../types.js';
-	import { getProgressPercent, ProgressRootState } from '../progress.svelte.js';
+	import { ProgressRootState } from '../progress.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
 
 	const uid = $props.id();
@@ -39,7 +39,6 @@
 			rootState.props,
 		),
 	);
-	const percent = $derived(getProgressPercent(value, min, max));
 </script>
 
 {#if child}
@@ -49,7 +48,7 @@
 		<div
 			data-slot="progress-indicator"
 			class="bg-primary h-full w-full flex-1 transition-all"
-			style="transform: translateX(-{100 - (percent ?? 0)}%)">
+			style="transform: translateX(-{100 - (rootState.percent ?? 0)}%)">
 		</div>
 		{@render children?.()}
 	</div>
