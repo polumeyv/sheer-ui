@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { DateValue } from "@internationalized/date";
 	import * as DateRangeField from "../../src/lib/components/date-range-field/index.js";
-	import type { DateRange } from "../../src/lib/shared/date/types.js";
+	import type { DateRange } from "../../src/lib/internal/date-time/types.js";
 
 	let {
 		placeholder = $bindable(),

@@ -2,14 +2,14 @@ import { Time } from "@internationalized/date";
 import { flushSync } from "svelte";
 import { describe, expect, test } from "vitest";
 import { render, text } from "../harness.js";
-import type { TimeRange } from "../../src/lib/shared/date/types.js";
+import type { TimeEndpoints } from "../../src/lib/internal/date-time/types.js";
 import TimeRangeFieldPlaceholderFixture from "./time-range-field-placeholder.fixture.svelte";
 
 function time(hour: number, minute = 0, second = 0) {
 	return new Time(hour, minute, second);
 }
 
-function range(start: Time | undefined, end: Time | undefined): TimeRange<Time> {
+function range(start: Time | undefined, end: Time | undefined): TimeEndpoints<Time> {
 	return { start, end };
 }
 

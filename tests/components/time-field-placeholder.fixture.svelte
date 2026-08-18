@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TimeValue, TimeGranularity, HourCycle } from "../../src/lib/shared/date/types.js";
+	import type { TimeValue, TimeGranularity, HourCycle } from "../../src/lib/internal/date-time/types.js";
 	import * as TimeField from "../../src/lib/components/time-field/index.js";
 
 	let {

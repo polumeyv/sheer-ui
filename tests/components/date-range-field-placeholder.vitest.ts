@@ -2,7 +2,7 @@ import { parseDate } from "@internationalized/date";
 import { flushSync } from "svelte";
 import { describe, expect, test } from "vitest";
 import { el, render, text } from "../harness.js";
-import type { DateRange } from "../../src/lib/shared/date/types.js";
+import type { DateRange } from "../../src/lib/internal/date-time/types.js";
 import DateRangeFieldPlaceholderFixture from "./date-range-field-placeholder.fixture.svelte";
 
 function range(start: string | undefined, end: string | undefined): DateRange {

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type {
 		HourCycle,
+		TimeEndpoints,
 		TimeGranularity,
-		TimeRange,
 		TimeValue,
-	} from "../../src/lib/shared/date/types.js";
+	} from "../../src/lib/internal/date-time/types.js";
 	import * as TimeRangeField from "../../src/lib/components/time-range-field/index.js";
 
 	let {
@@ -16,7 +16,7 @@
 		endName = "endTime",
 	}: {
 		placeholder?: TimeValue;
-		value?: TimeRange;
+		value?: TimeEndpoints;
 		granularity?: TimeGranularity;
 		hourCycle?: HourCycle;
 		startName?: string;
@@ -27,7 +27,7 @@
 		return time?.toString() ?? "undefined";
 	}
 
-	function formatRange(range: TimeRange | undefined) {
+	function formatRange(range: TimeEndpoints | undefined) {
 		if (!range) return "undefined";
 		return `{start:${formatTime(range.start)},end:${formatTime(range.end)}}`;
 	}
@@ -36,7 +36,7 @@
 		placeholder = next;
 	}
 
-	export function setValue(next: TimeRange | undefined) {
+	export function setValue(next: TimeEndpoints | undefined) {
 		value = next;
 	}
 </script>
