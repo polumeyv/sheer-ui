@@ -73,7 +73,6 @@
 			contentImplState.onFocusOutside(e);
 		},
 		enabled: () => true,
-		isValidEvent: () => () => false,
 	});
 </script>
 

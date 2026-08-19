@@ -2,7 +2,7 @@
 	import { flushSync } from 'svelte';
 	import { simpleBox, boxWith, attachRef } from '#lib/internal/tools/index.js';
 	import { DismissibleLayerState } from '#lib/internal/dismissible-layer/use-dismissable-layer.svelte.js';
-	import { makeDebounce, type Scheduler, type TimerHandle } from '#lib/internal/dismissible-layer/scheduler.js';
+	import { type Timers, type TimerHandle } from '#lib/internal/dismissible-layer/scheduler.js';
 	import type { InteractOutsideBehaviorType } from '#lib/internal/dismissible-layer/types.js';
 
 	let {
@@ -41,16 +41,12 @@
 			const id = handle as unknown as number;
 			scheduled = scheduled.filter((s) => s.id !== id);
 		};
-		// debounce reuses the exact production factory over the fake primitives, so the 10ms/20ms
-		// windows collapse and cancel identically — only the clock is fake.
-		const scheduler: Scheduler = {
-			setTimeout: setTimeoutFn,
-			clearTimeout: clearTimeoutFn,
-			debounce: makeDebounce({ setTimeout: setTimeoutFn, clearTimeout: clearTimeoutFn }),
-		};
+		// The layer's debounce runs over these fake primitives, so the 10ms/20ms windows collapse
+		// and cancel identically — only the clock is fake.
+		const timers: Timers = { setTimeout: setTimeoutFn, clearTimeout: clearTimeoutFn };
 
 		return {
-			scheduler,
+			timers,
 			/** Advance the clock, firing due timers in (fireAt, insertion) order — including any a timer schedules while running. */
 			advance(ms: number) {
 				const target = now + ms;
@@ -93,8 +89,6 @@
 		bEnabled = v;
 	}
 
-	const noopValid = () => false;
-
 	const aRef = simpleBox<HTMLElement | null>(null);
 	const aHandler = (e: PointerEvent) => {
 		aCount += 1;
@@ -105,10 +99,8 @@
 		interactOutsideBehavior: boxWith(() => aBehavior),
 		onInteractOutside: boxWith(() => aHandler),
 		enabled: boxWith(() => aEnabled),
-		onFocusOutside: boxWith(() => () => {}),
-		isValidEvent: boxWith(() => noopValid),
 		ref: aRef,
-		scheduler: clock.scheduler,
+		timers: clock.timers,
 	});
 
 	const bRef = simpleBox<HTMLElement | null>(null);
@@ -120,10 +112,8 @@
 		interactOutsideBehavior: boxWith(() => bBehavior),
 		onInteractOutside: boxWith(() => bHandler),
 		enabled: boxWith(() => bEnabled),
-		onFocusOutside: boxWith(() => () => {}),
-		isValidEvent: boxWith(() => noopValid),
 		ref: bRef,
-		scheduler: clock.scheduler,
+		timers: clock.timers,
 	});
 </script>
 

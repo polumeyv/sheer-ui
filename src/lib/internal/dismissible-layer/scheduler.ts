@@ -5,7 +5,7 @@
  * few timers: a 1ms registration gate, a 10ms interact-outside debounce, and a 20ms reset. That
  * timing is the fragile part, so — mirroring the {@link AfterAnimationsRunner} seam that
  * `PresenceManager` injects — the timers are funnelled through this small contract. The default
- * adapter {@link realScheduler} is the real global timers, byte-for-byte the behaviour before the
+ * adapter {@link realTimers} is the real global timers, byte-for-byte the behaviour before the
  * seam existed; tests inject a manual/fake clock to drive the windows deterministically.
  */
 
@@ -17,43 +17,32 @@ export interface Debounced<T extends (...args: any[]) => any> {
 	destroy(): void;
 }
 
-/** The minimal timer surface the dismissible layer needs. */
-export interface Scheduler {
+/** The whole timer surface the dismissible layer needs; `debounce` is built on top of it. */
+export interface Timers {
 	setTimeout(fn: () => void, ms: number): TimerHandle;
 	clearTimeout(handle: TimerHandle | undefined): void;
-	// oxlint-disable-next-line no-explicit-any -- variadic debounce, matches the original signature
-	debounce<T extends (...args: any[]) => any>(fn: T, wait?: number): Debounced<T>;
 }
 
 /**
- * Builds the `debounce` factory over a pair of timer primitives. This is the *same* logic the
- * layer has always used — only `setTimeout`/`clearTimeout` are parameterised — so the real and
- * fake adapters run identical debounce code; a fake clock just supplies fake time.
+ * The layer's debounce — the *same* logic it has always used, with the timer pair parameterised,
+ * so the real and fake clocks run identical code and a fake clock just supplies fake time.
  */
-export function makeDebounce(timers: Pick<Scheduler, 'setTimeout' | 'clearTimeout'>) {
-	// oxlint-disable-next-line no-explicit-any -- variadic debounce, matches the original signature
-	return function debounce<T extends (...args: any[]) => any>(fn: T, wait = 500): Debounced<T> {
-		let timeout: TimerHandle | undefined;
+// oxlint-disable-next-line no-explicit-any -- variadic debounce, matches the original signature
+export function debounce<T extends (...args: any[]) => any>(timers: Timers, fn: T, wait: number): Debounced<T> {
+	let timeout: TimerHandle | undefined;
 
-		const debounced = ((...args: Parameters<T>) => {
-			timers.clearTimeout(timeout);
-			timeout = timers.setTimeout(() => fn(...args), wait);
-		}) as Debounced<T>;
+	const debounced = ((...args: Parameters<T>) => {
+		timers.clearTimeout(timeout);
+		timeout = timers.setTimeout(() => fn(...args), wait);
+	}) as Debounced<T>;
 
-		debounced.destroy = () => timers.clearTimeout(timeout);
+	debounced.destroy = () => timers.clearTimeout(timeout);
 
-		return debounced;
-	};
+	return debounced;
 }
 
-const realTimers: Pick<Scheduler, 'setTimeout' | 'clearTimeout'> = {
+/** Default adapter. Wrapped, not referenced: a detached `window.setTimeout` throws Illegal invocation. */
+export const realTimers: Timers = {
 	setTimeout: (fn, ms) => setTimeout(fn, ms),
 	clearTimeout: (handle) => clearTimeout(handle),
-};
-
-/** Default adapter: the real global timers, exactly as the layer used before this seam. */
-export const realScheduler: Scheduler = {
-	setTimeout: realTimers.setTimeout,
-	clearTimeout: realTimers.clearTimeout,
-	debounce: makeDebounce(realTimers),
 };

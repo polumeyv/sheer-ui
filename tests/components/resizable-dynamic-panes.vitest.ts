@@ -5,8 +5,8 @@ import {
 	getDragOffsetPercentage,
 	getPivotIndices,
 	getResizeHandleElementIndex,
-} from "../../src/lib/internal/vendor/paneforge/internal/helpers.js";
-import { adjustLayoutByDelta } from "../../src/lib/internal/vendor/paneforge/internal/utils/adjust-layout.js";
+} from "../../src/lib/internal/paneforge/internal/helpers.js";
+import { adjustLayoutByDelta } from "../../src/lib/internal/paneforge/internal/utils/adjust-layout.js";
 import ResizableDynamicPanesFixture from "./resizable-dynamic-panes.fixture.svelte";
 
 function createDomContext(root: ParentNode) {

@@ -10,8 +10,8 @@
 	import { createId } from '../../internal/create-id.js';
 	import DrawerPortal from './drawer-portal.svelte';
 	import DrawerOverlay from './drawer-overlay.svelte';
-	import { useDrawerContent } from '../../internal/vendor/vaul/use-drawer-content.svelte.js';
-	import type { DrawerContentProps as ContentProps } from '../../internal/vendor/vaul/types.js';
+	import { useDrawerContent } from '../../internal/vaul/use-drawer-content.svelte.js';
+	import type { DrawerContentProps as ContentProps } from '../../internal/vaul/types.js';
 
 	const uid = $props.id();
 

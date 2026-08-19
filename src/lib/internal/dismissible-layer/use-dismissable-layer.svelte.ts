@@ -17,7 +17,7 @@ import { createLayerStack } from '../layer-stack.js';
 import { globalSingleton } from '../global-singleton.js';
 import { isElementOrSVGElement } from '../tools/utils/dom.js';
 import { CONTEXT_MENU_CONTENT_ATTR, CONTEXT_MENU_TRIGGER_ATTR } from '../../components/menu/menu.svelte.js';
-import { realScheduler, type Scheduler, type Debounced } from './scheduler.js';
+import { debounce, realTimers, type Timers, type Debounced } from './scheduler.js';
 
 const isPointerOutsideRect = ({ clientX: x, clientY: y }: PointerEvent, node: HTMLElement) =>
 	(({ left, right, top, bottom }) => x < left || x > right || y < top || y > bottom)(node.getBoundingClientRect());
@@ -28,10 +28,16 @@ const dismissableLayers = globalSingleton('bitsDismissableLayers', () =>
 	),
 );
 
-interface DismissibleLayerStateOpts extends ReadableBoxedValues<Required<Omit<DismissibleLayerImplProps, 'children' | 'ref'>>> {
+interface DismissibleLayerStateOpts
+	extends ReadableBoxedValues<Required<Pick<DismissibleLayerImplProps, 'enabled' | 'id' | 'interactOutsideBehavior'>>> {
 	ref: WritableBox<HTMLElement | null>;
-	/** Timer seam; defaults to {@link realScheduler} (the real global timers). Tests inject a fake clock. */
-	scheduler?: Scheduler;
+	// `onInteractOutside` stays a required key (a layer that notifies nobody is pointless) but may
+	// resolve to undefined; the other two are extras the layer no-ops without.
+	onInteractOutside: ReadableBox<EventCallback<PointerEvent> | undefined>;
+	onFocusOutside?: ReadableBox<((event: FocusEvent) => void) | undefined>;
+	isValidEvent?: ReadableBox<((e: PointerEvent, node: HTMLElement) => boolean) | undefined>;
+	/** Timer seam; defaults to {@link realTimers} (the real global timers). Tests inject a fake clock. */
+	timers?: Timers;
 }
 
 export class DismissibleLayerState {
@@ -39,7 +45,7 @@ export class DismissibleLayerState {
 		return new DismissibleLayerState(opts);
 	}
 	readonly opts: DismissibleLayerStateOpts;
-	#interactOutsideProp: ReadableBox<EventCallback<PointerEvent>>;
+	#interactOutsideProp: DismissibleLayerStateOpts['onInteractOutside'];
 	#behaviorType: ReadableBox<InteractOutsideBehaviorType>;
 	#interceptedEvents: Record<string, boolean> = {
 		pointerdown: false,
@@ -48,24 +54,24 @@ export class DismissibleLayerState {
 	#isFocusInsideDOMTree = false;
 	#onFocusOutside: DismissibleLayerStateOpts['onFocusOutside'];
 	#unsubClickListener = () => {};
-	#scheduler: Scheduler;
+	#timers: Timers;
 	#handleInteractOutside: Debounced<(e: PointerEvent) => void>;
 	#resetState: Debounced<() => void>;
 
 	constructor(opts: DismissibleLayerStateOpts) {
 		this.opts = opts;
-		this.#scheduler = opts.scheduler ?? realScheduler;
+		this.#timers = opts.timers ?? realTimers;
 
 		this.#behaviorType = opts.interactOutsideBehavior;
 		this.#interactOutsideProp = opts.onInteractOutside;
 		this.#onFocusOutside = opts.onFocusOutside;
 
-		this.#handleInteractOutside = this.#scheduler.debounce((e: PointerEvent) => {
+		this.#handleInteractOutside = debounce(this.#timers, (e: PointerEvent) => {
 			if (!this.opts.ref.current) {
 				this.#unsubClickListener();
 				return;
 			}
-			const isEventValid = this.opts.isValidEvent.current(e, this.opts.ref.current) || isValidEvent(e, this.opts.ref.current);
+			const isEventValid = this.opts.isValidEvent?.current?.(e, this.opts.ref.current) || isValidEvent(e, this.opts.ref.current);
 
 			if (!this.#isResponsibleLayer || this.#isAnyEventIntercepted() || !isEventValid) {
 				this.#unsubClickListener();
@@ -91,11 +97,11 @@ export class DismissibleLayerState {
 					once: true,
 				});
 			} else {
-				this.#interactOutsideProp.current(event);
+				this.#interactOutsideProp.current?.(event);
 			}
 		}, 10);
 
-		this.#resetState = this.#scheduler.debounce(() => {
+		this.#resetState = debounce(this.#timers, () => {
 			for (const eventType in this.#interceptedEvents) {
 				this.#interceptedEvents[eventType] = false;
 			}
@@ -115,7 +121,7 @@ export class DismissibleLayerState {
 			// Minted here, passed into the timeout: a stale timeout firing after this run
 			// was superseded adds listeners against an aborted signal, i.e. not at all.
 			const signal = getAbortSignal();
-			this.#scheduler.setTimeout(() => {
+			this.#timers.setTimeout(() => {
 				if (!this.opts.ref.current || signal.aborted) return;
 				dismissableLayers.register(this, this.#behaviorType);
 				this.#addEventListeners(signal);
@@ -138,7 +144,7 @@ export class DismissibleLayerState {
 			if (!this.opts.ref.current || this.#isTargetWithinLayer(event.target as HTMLElement)) return;
 
 			if (event.target && !this.#isFocusInsideDOMTree) {
-				this.#onFocusOutside.current?.(event);
+				this.#onFocusOutside?.current?.(event);
 			}
 		});
 	};
@@ -156,7 +162,7 @@ export class DismissibleLayerState {
 		if (event.defaultPrevented) {
 			event = createWrappedEvent(e);
 		}
-		this.#interactOutsideProp.current(e as PointerEvent);
+		this.#interactOutsideProp.current?.(e as PointerEvent);
 	};
 
 	#markInterceptedEvent = (e: PointerEvent) => {
@@ -208,10 +214,10 @@ export class DismissibleLayerState {
 export function interactOutsideAttachment(opts: {
 	id: Getter<string>;
 	interactOutsideBehavior: Getter<InteractOutsideBehaviorType>;
-	onInteractOutside: Getter<InteractOutsideEventHandler>;
-	onFocusOutside: Getter<(event: FocusEvent) => void>;
+	onInteractOutside: Getter<InteractOutsideEventHandler | undefined>;
+	onFocusOutside?: Getter<((event: FocusEvent) => void) | undefined>;
 	enabled: Getter<boolean>;
-	isValidEvent: Getter<(e: PointerEvent, node: HTMLElement) => boolean>;
+	isValidEvent?: Getter<((e: PointerEvent, node: HTMLElement) => boolean) | undefined>;
 }): { props: { onfocuscapture: () => void; onblurcapture: () => void }; attachment: RefAttachment<HTMLElement> } {
 	const ref = simpleBox<HTMLElement | null>(null);
 	const state = DismissibleLayerState.create({
@@ -219,8 +225,8 @@ export function interactOutsideAttachment(opts: {
 		interactOutsideBehavior: boxWith(opts.interactOutsideBehavior),
 		onInteractOutside: boxWith(opts.onInteractOutside),
 		enabled: boxWith(opts.enabled),
-		onFocusOutside: boxWith(opts.onFocusOutside),
-		isValidEvent: boxWith(opts.isValidEvent),
+		onFocusOutside: boxWith(() => opts.onFocusOutside?.()),
+		isValidEvent: boxWith(() => opts.isValidEvent?.()),
 		ref,
 	});
 	return { props: state.props, attachment: attachRef(ref) };
@@ -231,16 +237,13 @@ function isValidEvent(e: PointerEvent, node: HTMLElement): boolean {
 	if (!isElementOrSVGElement(target)) return false;
 
 	const targetIsContextMenuTrigger = Boolean(target.closest(`[${CONTEXT_MENU_TRIGGER_ATTR}]`));
-	const nodeIsContextMenu = Boolean(node.closest(`[${CONTEXT_MENU_CONTENT_ATTR}]`));
 
-	if ('button' in e && e.button > 0 && !targetIsContextMenuTrigger) return false;
-	if ('button' in e && e.button === 0 && targetIsContextMenuTrigger && nodeIsContextMenu) {
-		return true;
-	}
-	if (targetIsContextMenuTrigger && nodeIsContextMenu) return false;
+	// A context menu re-triggering over its own content: only the primary button counts.
+	if (targetIsContextMenuTrigger && node.closest(`[${CONTEXT_MENU_CONTENT_ATTR}]`)) return e.button === 0;
+	// Secondary buttons never dismiss, unless they landed on a context-menu trigger.
+	if (e.button > 0 && !targetIsContextMenuTrigger) return false;
 
-	const isValid = target.ownerDocument.documentElement.contains(target) && !node.contains(target) && isPointerOutsideRect(e, node);
-	return isValid;
+	return target.ownerDocument.documentElement.contains(target) && !node.contains(target) && isPointerOutsideRect(e, node);
 }
 
 export type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>;
@@ -249,13 +252,8 @@ function createWrappedEvent(e: PointerEvent | MouseEvent): PointerEvent {
 	const capturedCurrentTarget = e.currentTarget;
 	const capturedTarget = e.target;
 
-	let newEvent: PointerEvent;
-
-	if (e instanceof PointerEvent) {
-		newEvent = new PointerEvent(e.type, e);
-	} else {
-		newEvent = new PointerEvent('pointerdown', e);
-	}
+	// A `click` is already a PointerEvent in modern browsers; a synthetic MouseEvent replays as pointerdown.
+	const newEvent = new PointerEvent(e instanceof PointerEvent ? e.type : 'pointerdown', e);
 
 	// track the prevented state separately
 	let isPrevented = false;

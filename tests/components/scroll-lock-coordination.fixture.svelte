@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { BodyScrollLock } from '#lib/internal/body-scroll-lock.svelte.js';
-	import { usePreventScroll } from '#lib/internal/vendor/vaul/use-prevent-scroll.svelte.js';
+	import { usePreventScroll } from '#lib/internal/vaul/use-prevent-scroll.svelte.js';
 
 	let {
 		dialogLocked: initialDialogLocked = false,

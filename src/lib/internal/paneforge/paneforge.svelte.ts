@@ -7,7 +7,7 @@ import {
 	type WithRefProps,
 	attachRef,
 	DOMContext,
-} from '../../tools/index.js';
+} from '../tools/index.js';
 import {
 	callPaneCallbacks,
 	findPaneDataIndex,
@@ -24,7 +24,7 @@ import {
 } from './internal/helpers.js';
 import { isKeyDown, isMouseEvent, isTouchEvent } from './internal/utils/is.js';
 import { adjustLayoutByDelta } from './internal/utils/adjust-layout.js';
-import { arraysAreEqual as areArraysEqual } from '../../arrays.js';
+import { arraysAreEqual as areArraysEqual } from '../arrays.js';
 import { areNumbersAlmostEqual } from './internal/utils/compare.js';
 import { computePaneFlexBoxStyle, getCursorStyle, resetGlobalCursorStyle, setGlobalCursorStyle } from './internal/utils/style.js';
 import type {

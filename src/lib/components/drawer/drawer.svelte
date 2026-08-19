@@ -3,9 +3,9 @@
 	import { DialogRootState, DialogState } from '../dialog/dialog.svelte.js';
 	import { OpenCell } from '../../internal/open-cell.svelte.js';
 	import { boxWith } from '../../internal/tools/index.js';
-	import type { DrawerRootProps as RootProps } from '../../internal/vendor/vaul/types.js';
-	import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT } from '../../internal/vendor/vaul/constants.js';
-	import { useDrawerRoot } from '../../internal/vendor/vaul/use-drawer-root.svelte.js';
+	import type { DrawerRootProps as RootProps } from '../../internal/vaul/types.js';
+	import { CLOSE_THRESHOLD, SCROLL_LOCK_TIMEOUT } from '../../internal/vaul/constants.js';
+	import { useDrawerRoot } from '../../internal/vaul/use-drawer-root.svelte.js';
 
 	let {
 		open = false,
@@ -127,7 +127,7 @@
 {@render restProps.children?.()}
 
 <style global>
-	/* Mirrors TRANSITIONS in internal/vendor/vaul/constants.ts — keep the two in sync. */
+	/* Mirrors TRANSITIONS in internal/vaul/constants.ts — keep the two in sync. */
 	:global([data-vaul-drawer]),
 	:global([data-vaul-overlay]) {
 		--vaul-duration: 0.5s;

@@ -1,4 +1,4 @@
-import { simpleBox, type ReadableBoxedValues, type WritableBoxedValues } from '../../tools/index.js';
+import { simpleBox, type ReadableBoxedValues, type WritableBoxedValues } from '../tools/index.js';
 import type { DrawerDirection } from './types.js';
 import { useSnapPoints } from './use-snap-points.svelte.js';
 import { isInput, usePreventScroll } from './use-prevent-scroll.svelte.js';
@@ -12,7 +12,7 @@ import {
 	WINDOW_TOP_OFFSET,
 } from './constants.js';
 import { isIOSFirefox } from './browser.js';
-import { isIOS } from '../../tools/utils/dom.js';
+import { isIOS } from '../tools/utils/dom.js';
 import { on } from 'svelte/events';
 import { createContext, tick, untrack } from 'svelte';
 import { assignStyle, applyStyle, dampenValue, getTranslate, isVertical } from './helpers.js';

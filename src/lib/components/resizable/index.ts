@@ -1,6 +1,6 @@
 import Handle from './resizable-handle.svelte';
 import PaneGroup from './resizable-pane-group.svelte';
-import { Pane } from '../../internal/vendor/paneforge/index.js';
+import { Pane } from '../../internal/paneforge/index.js';
 
 export {
 	PaneGroup,
@@ -12,4 +12,4 @@ export {
 	Handle as ResizableHandle,
 };
 
-export type { PaneGroupProps, PaneProps, PaneResizerProps } from '../../internal/vendor/paneforge/index.js';
+export type { PaneGroupProps, PaneProps, PaneResizerProps } from '../../internal/paneforge/index.js';

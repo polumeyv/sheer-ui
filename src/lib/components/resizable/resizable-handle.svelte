@@ -1,6 +1,6 @@
 <script lang="ts">
 	import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
-	import * as ResizablePrimitive from '../../internal/vendor/paneforge/index.js';
+	import * as ResizablePrimitive from '../../internal/paneforge/index.js';
 	import { join } from 'overrule';
 	import type { WithoutChildrenOrChild } from '../../internal/utils.js';
 
