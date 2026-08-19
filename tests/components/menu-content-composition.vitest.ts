@@ -4,20 +4,18 @@ import MenuContentCompositionFixture from './menu-content-composition.fixture.sv
 
 type Family = 'context-menu' | 'dropdown-menu' | 'menubar';
 
-const families: { family: Family; dataSlot: string; minWidth: string; cssVar: string }[] = [
+const families: { family: Family; dataSlot: string; minWidth: string }[] = [
 	{
 		family: 'dropdown-menu',
 		dataSlot: 'dropdown-menu-content',
 		minWidth: 'min-w-[8rem]',
-		cssVar: '--bits-dropdown-menu-content-transform-origin',
 	},
 	{
 		family: 'context-menu',
 		dataSlot: 'context-menu-content',
 		minWidth: 'min-w-[8rem]',
-		cssVar: '--bits-context-menu-content-transform-origin',
 	},
-	{ family: 'menubar', dataSlot: 'menubar-content', minWidth: 'min-w-[12rem]', cssVar: '--bits-menu-content-transform-origin' },
+	{ family: 'menubar', dataSlot: 'menubar-content', minWidth: 'min-w-[12rem]' },
 ];
 
 function render(props: { family: Family; isStatic?: boolean; onInteractOutside?: (e: PointerEvent) => void }) {
@@ -46,13 +44,18 @@ function readOpen() {
 }
 
 describe('menu family Content composition', () => {
-	test.each(families)('$family Content keeps its own slot, class and css vars', ({ family, dataSlot, minWidth, cssVar }) => {
+	test.each(families)('$family Content keeps its own slot and class, and reads the floating vars off the wrapper', ({ family, dataSlot, minWidth }) => {
 		const component = render({ family });
 
 		try {
 			const content = getContent(dataSlot);
 			expect(content.className).toContain(minWidth);
-			expect(content.getAttribute('style')).toContain(cssVar);
+			// No per-family alias vars any more: the class reads --bits-floating-* directly, which
+			// the floating wrapper (an ancestor) sets.
+			expect(content.className).toContain('origin-(--bits-floating-transform-origin)');
+			expect(content.getAttribute('style') ?? '').not.toContain('--bits-');
+			const wrapper = content.closest<HTMLElement>('[data-bits-floating-content-wrapper]');
+			expect(wrapper?.getAttribute('style')).toContain('--bits-floating-transform-origin');
 		} finally {
 			cleanup(component);
 		}

@@ -89,6 +89,10 @@ drift on our side, not upstream's.
   `menu/components/menu-content.svelte` and `menu-sub-content.svelte` take an `isStatic` prop, the
   per-family `-static` files are type adapters over them, and dropdown-menu/context-menu/menubar
   Content are styled adapters. The base menu has no `-static` Content of its own.
+- No per-component floating CSS-variable aliases. Upstream's `getFloatingContentCSSVars` re-emitted
+  the five `--bits-floating-*` wrapper variables as `--bits-<component>-content-*` / `-anchor-*` on every
+  content element for public-API stability; this is a private styled library, so class strings read
+  `--bits-floating-transform-origin` / `-available-height` / `-anchor-width` directly off the wrapper.
 - `state_referenced_locally` warnings from vendored files are upstream's; svelte-check prints them.
 
 ## Syncing upstream fixes

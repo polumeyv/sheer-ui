@@ -87,7 +87,7 @@
 				<div {...finalProps}>
 					<SelectScrollUpButton />
 
-					<div class="h-(--bits-select-anchor-height) w-full min-w-(--bits-select-anchor-width) scroll-my-1">
+					<div class="h-(--bits-floating-anchor-height) w-full min-w-(--bits-floating-anchor-width) scroll-my-1">
 						{@render children?.()}
 					</div>
 

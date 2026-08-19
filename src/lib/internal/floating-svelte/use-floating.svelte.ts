@@ -1,7 +1,7 @@
 import { computePosition } from '@floating-ui/dom';
 import { simpleBox } from '../tools/index.js';
 import type { UseFloatingOptions, UseFloatingReturn } from './types.js';
-import { get } from './floating-utils.svelte.js';
+import { get } from '../tools/index.js';
 
 const roundByDPR = (value: number, dpr: number): number => Math.round(value * dpr) / dpr;
 

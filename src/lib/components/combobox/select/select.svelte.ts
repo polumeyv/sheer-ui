@@ -23,7 +23,6 @@ import type {
 } from '../../../internal/types.js';
 import { isIOS } from '../../../internal/tools/utils/dom.js';
 import { createBitsAttrs } from '../../../internal/attrs.js';
-import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
 import { Typeahead, textContentOf } from '../../../internal/typeahead.svelte.js';
 import { PresenceManager } from '../../../internal/presence-manager.svelte.js';
 import { DEV } from 'esm-env';
@@ -983,10 +982,6 @@ export class SelectContentState {
 		this.root.isKeyboard = false;
 	}
 
-	readonly #styles = $derived.by(() => {
-		return getFloatingContentCSSVars(this.root.isCombobox ? 'combobox' : 'select');
-	});
-
 	onInteractOutside = (e: PointerEvent) => {
 		if (e.target === this.root.triggerNode || e.target === this.root.inputNode) {
 			e.preventDefault();
@@ -1032,7 +1027,6 @@ export class SelectContentState {
 					outline: 'none',
 					boxSizing: 'border-box',
 					pointerEvents: 'auto',
-					...this.#styles,
 				},
 				onpointermove: this.onpointermove,
 				...this.attachment,

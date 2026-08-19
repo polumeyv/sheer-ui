@@ -6,7 +6,6 @@ import { kbd } from '../../internal/kbd.js';
 import type { OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { createContext, onMount, tick, untrack } from 'svelte';
 import type { FocusEventHandler, KeyboardEventHandler, PointerEventHandler } from 'svelte/elements';
-import { getFloatingContentCSSVars } from '../../internal/floating-svelte/floating-utils.svelte.js';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
 import { RovingFocusItem } from '../../internal/roving-focus-item.svelte.js';
 
@@ -377,7 +376,6 @@ export class MenubarContentState {
 			({
 				id: this.opts.id.current,
 				'aria-labelledby': this.menu.triggerId,
-				style: getFloatingContentCSSVars('menubar'),
 				onkeydown: this.onkeydown,
 				'data-menu-content': '',
 				[menubarAttrs.content]: '',

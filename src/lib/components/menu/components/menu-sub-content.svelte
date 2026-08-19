@@ -7,7 +7,6 @@
 	import { createSubmenuHandlers } from '../utils.js';
 	import { createId } from '../../../internal/create-id.js';
 	import PopperLayer from '../../../internal/popper-layer/popper-layer.svelte';
-	import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
 
 	const uid = $props.id();
 
@@ -56,7 +55,7 @@
 			{
 				'data-slot': 'dropdown-menu-sub-content',
 				class:
-					'bg-popover text-popover-foreground transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[side=bottom]:starting:-translate-y-2 data-[side=top]:starting:translate-y-2 data-[side=left]:starting:translate-x-2 data-[side=right]:starting:-translate-x-2 z-50 min-w-[8rem] origin-(--bits-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg',
+					'bg-popover text-popover-foreground transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[side=bottom]:starting:-translate-y-2 data-[side=top]:starting:translate-y-2 data-[side=left]:starting:translate-x-2 data-[side=right]:starting:-translate-x-2 z-50 min-w-[8rem] origin-(--bits-floating-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg',
 			},
 			restProps,
 			subContentState.props,
@@ -117,7 +116,7 @@
 		<!-- mergedProps already reached `props` through the layer's restProps, minus the keys
 		PopperLayer destructures for itself (id, dir, style) — only those are re-added, since
 		re-merging the whole bag composes the handlers twice (one keypress, two typeahead steps) -->
-		{@const finalProps = mergeProps(props, { id, dir: mergedProps.dir, style: mergedProps.style }, { style: getFloatingContentCSSVars('menu') }, { style })}
+		{@const finalProps = mergeProps(props, { id, dir: mergedProps.dir, style: mergedProps.style }, { style })}
 		{#if child}
 			{@render child({
 				props: finalProps,
