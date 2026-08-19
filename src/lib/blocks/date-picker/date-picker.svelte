@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
-	import type { DateValue } from '@internationalized/date';
-	import { formatDateDisplay } from '@polumeyv/utilities/date/formatters';
+	import { DateFormatter, type DateValue } from '@internationalized/date';
+	import { toDate } from '../../internal/date-time/utils.js';
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
@@ -58,7 +58,7 @@
 		contentHeader,
 	}: Props = $props();
 
-	const displayValue = $derived(value ? formatDateDisplay(value.toString(), { dateStyle: dateFormat }, locale) : placeholder);
+	const displayValue = $derived(value ? new DateFormatter(locale, { dateStyle: dateFormat }).format(toDate(value)) : placeholder);
 
 	function pick(next: DateValue | undefined) {
 		value = next;

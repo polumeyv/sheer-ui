@@ -1,9 +1,9 @@
 /**
  * Time-slot helpers for the time-picker components — comparison, duration, and slot generation over
- * ISO 8601 "HH:MM" wall-clock strings. UI-internal; the minute math and `formatTimeDisplay` (the wire/display
- * formatter) live in `@polumeyv/utilities`, the zero-dependency pure-TS layer this package builds on.
+ * ISO 8601 "HH:MM" wall-clock strings. Block-internal; the minute math and `formatTimeDisplay` (the
+ * wire/display formatter) live in `../../time`.
  */
-import { tryTimeToMinutes, minutesToTime, formatTimeDisplay } from '@polumeyv/utilities';
+import { tryTimeToMinutes, minutesToTime, formatTimeDisplay } from '../../time';
 
 export type TimeSlot = { value: string; label: string };
 export type SlotRange = { start: string; end: string };

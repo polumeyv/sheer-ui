@@ -1,10 +1,7 @@
 # Vendored code
 
 The headless engine under `internal/` is vendored source, not a dependency (ADR 0006). Inlined
-2026-06-12 to stop bundler issues from Svelte-flavored deps; restructured since — this file was
-recreated 2026-07-04 after the original was lost in the June 13 bits→components migration (the
-original survives at graveyard commit `75ffc3d^:src/lib/VENDORED.md`; its tag pins and deviation
-list still apply where noted).
+2026-06-12 to stop bundler issues from Svelte-flavored deps.
 
 ## Layout
 
@@ -38,24 +35,19 @@ This package installs and typechecks standalone. That is a hard constraint, not 
 mirrored to [polumeyv/ui-lib](https://github.com/polumeyv/ui-lib), and a specifier that only resolves
 inside the mono makes that clone uninstallable. **Nothing here may use `workspace:*` or a bun
 `catalog:`.** Verify with a cold install outside the monorepo before changing dependencies.
+`esm-env` is currently `catalog:infra` and breaks that rule — pin it before the next mirror sync.
 
-`@polumeyv/utilities` is still imported everywhere it always was — it is simply depended on by semver
-range rather than `workspace:*`. Bun links the workspace copy when the local version satisfies the
-range, and falls back to the npm registry outside the workspace, so one manifest serves both. The
-imports reach only utilities' dependency-free subpaths (`.`, `/dom`, `/env`, `/date/formatters`), so a
-standalone install pulls nothing transitive — in particular not `effect`, which sits behind an
-optional peer on `/date` and `/schema-primitives`.
+There are no `@polumeyv/*` dependencies left. The last one, `@polumeyv/utilities`, was cut 2026-08-17:
+its wall-clock module moved here as `src/lib/time.ts` (exported as `@polumeyv/ui/time`, and now the
+only copy — the apps import it from here), and the two date-picker blocks format their `DateValue`
+with `@internationalized/date` directly instead of round-tripping it through a string formatter.
 
-Three edges only a cold install reveals, each of which had been quietly borrowing from the mono root:
+Two edges only a cold install reveals, both previously borrowed from the mono root:
 
 - `typescript` and `@types/bun` are declared here now; they used to hoist from the root manifest.
 - `vite.config.ts` extends the monorepo base tsconfig **only when that file exists**. The two options
   it supplied that the check truly needs — `allowJs` (for `theme-toggle.svelte`, the one non-TS
   component) and `noFallthroughCasesInSwitch` — live in `./tsconfig.json`.
-- `bunfig.toml` is gone. It pointed the `@polumeyv` scope at GitHub Packages behind a `$GITHUB_TOKEN`;
-  now that `@polumeyv/utilities` comes from npm, that config would break a standalone clone.
-
-`effect` was a peer + dev dependency with zero imports anywhere in the package; dropped.
 
 ## Locally-authored (not vendored)
 
@@ -88,8 +80,7 @@ our side, not upstream's.
   (same truth table, verified over every trigger/content/button combination). Its handler and
   predicate opts (`onInteractOutside`, `onFocusOutside`, `isValidEvent`) are optional here rather
   than upstream's `Required<>` boxes, so callers omit them instead of passing no-ops.
-- `state_referenced_locally` warnings (14) from vendored files are upstream's; svelte-check prints
-  them.
+- `state_referenced_locally` warnings from vendored files are upstream's; svelte-check prints them.
 
 ## Syncing upstream fixes
 

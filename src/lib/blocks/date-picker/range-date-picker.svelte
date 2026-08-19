@@ -2,9 +2,9 @@
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-	import type { DateValue } from '@internationalized/date';
+	import { DateFormatter, type DateValue } from '@internationalized/date';
 	import type { DateRange } from '../../internal/index.js';
-	import { formatDateDisplay } from '@polumeyv/utilities/date/formatters';
+	import { toDate } from '../../internal/date-time/utils.js';
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
 	import { buttonVariants } from '../../components/button';
@@ -49,7 +49,7 @@
 		onValueChange,
 	}: Props = $props();
 
-	const fmtDay = (d: DateValue) => formatDateDisplay(d.toString(), { dateStyle: dateFormat }, locale);
+	const fmtDay = (d: DateValue) => new DateFormatter(locale, { dateStyle: dateFormat }).format(toDate(d));
 	const displayValue = $derived(
 		value?.start ? (value.end ? `${fmtDay(value.start)} – ${fmtDay(value.end)}` : fmtDay(value.start)) : placeholder,
 	);

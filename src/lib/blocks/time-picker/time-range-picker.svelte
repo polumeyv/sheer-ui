@@ -5,7 +5,7 @@
 	import { buttonVariants } from '../../components/button';
 	import * as Select from '../../components/select';
 	import { Popover } from '../../components/popover';
-	import { formatTimeDisplay, formatDuration } from '@polumeyv/utilities';
+	import { formatTimeDisplay, formatDuration } from '../../time';
 	import {
 		isTimeInRange,
 		compareTime,

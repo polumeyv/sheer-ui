@@ -44,6 +44,11 @@
 			"svelte": "./src/lib/internal/utils.ts",
 			"default": "./src/lib/internal/utils.ts"
 		},
+		"./time": {
+			"types": "./src/lib/time.ts",
+			"svelte": "./src/lib/time.ts",
+			"default": "./src/lib/time.ts"
+		},
 		"./icons/*": {
 			"types": "./src/lib/icons/icon.d.ts",
 			"svelte": "./src/lib/icons/*",
@@ -320,7 +325,6 @@
 		"@floating-ui/dom": "^1.7.1",
 		"@lucide/svelte": "^1.18.0",
 		"esm-env": "catalog:infra",
-		"@polumeyv/utilities": "catalog:infra",
 		"d3-scale": "^4.0.2",
 		"layerchart": "^2.0.1",
 		"overrule": "^0.7.1"
