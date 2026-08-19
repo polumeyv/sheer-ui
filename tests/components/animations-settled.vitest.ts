@@ -13,10 +13,13 @@ function render() {
 // jsdom has neither getAnimations nor Animation, so the runner's animation input is stubbed.
 function fakeAnimation(iterations: number) {
 	let settle: () => void = () => {};
-	const finished = new Promise<void>((resolve) => {
+	let cancel: () => void = () => {};
+	const finished = new Promise<void>((resolve, reject) => {
 		settle = resolve;
+		cancel = () => reject(new DOMException('cancelled', 'AbortError'));
 	});
-	return { effect: { getComputedTiming: () => ({ iterations }) }, finished, settle };
+	finished.catch(() => {});
+	return { effect: { getComputedTiming: () => ({ iterations }) }, playState: 'running', finished, settle, cancel };
 }
 
 function stubAnimations(node: HTMLElement, animations: ReturnType<typeof fakeAnimation>[]) {
@@ -70,6 +73,26 @@ describe('createSettleRunner', () => {
 
 		c.run(() => calls.push('fired'));
 
+		await vi.waitFor(() => expect(calls).toEqual(['fired']));
+		unmount(c);
+	});
+
+	test('a cancelled animation re-queries and waits for its replacement', async () => {
+		const c = render();
+		const enter = fakeAnimation(1);
+		const exit = fakeAnimation(1);
+		// close-during-enter: the browser cancels the enter transition and starts the exit
+		let queries = 0;
+		c.getNode().getAnimations = () => [queries++ === 0 ? enter : exit] as unknown as Animation[];
+		const calls: string[] = [];
+
+		c.run(() => calls.push('fired'));
+		await frames(2);
+		enter.cancel();
+		await frames(2);
+		expect(calls).toEqual([]);
+
+		exit.settle();
 		await vi.waitFor(() => expect(calls).toEqual(['fired']));
 		unmount(c);
 	});
