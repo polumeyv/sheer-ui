@@ -45,7 +45,8 @@ export class SafePolygon {
 	#transitTargets: HTMLElement[] = [];
 	#trackedTriggerNode: HTMLElement | null = null;
 	#leaveFallbackRafId: number | null = null;
-	#transitIntentTimer = createEffectTimeout(() => this.#exitIfLeft(), () => this.#transitIntentTimeout ?? 0);
+	// start() is gated on #transitIntentTimeout being set (see #scheduleTransitIntentTimeout).
+	#transitIntentTimer = createEffectTimeout(() => this.#exitIfLeft(), () => this.#transitIntentTimeout!);
 
 	#cancelLeaveFallback() {
 		if (this.#leaveFallbackRafId !== null) {

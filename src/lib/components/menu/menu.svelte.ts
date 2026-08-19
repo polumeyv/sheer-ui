@@ -1503,7 +1503,7 @@ export class ContextMenuTriggerState {
 	virtualElement = simpleBox({
 		getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...this.#point }),
 	});
-	#longPressTimer: number | null = null;
+	#longPressTimer = createEffectTimeout((e: BitsPointerEvent) => this.#handleOpen(e), () => 700);
 
 	constructor(opts: ContextMenuTriggerStateOpts, parentMenu: MenuMenuState) {
 		this.opts = opts;
@@ -1528,17 +1528,11 @@ export class ContextMenuTriggerState {
 			const isDisabled = this.opts.disabled.current;
 			untrack(() => {
 				if (isDisabled) {
-					this.#clearLongPressTimer();
+					this.#longPressTimer.stop();
 				}
 			});
 		});
 
-		onDestroy(() => this.#clearLongPressTimer());
-	}
-
-	#clearLongPressTimer() {
-		if (this.#longPressTimer === null) return;
-		getWindow(this.opts.ref.current).clearTimeout(this.#longPressTimer);
 	}
 
 	#handleOpen(e: BitsMouseEvent | BitsPointerEvent) {
@@ -1549,7 +1543,7 @@ export class ContextMenuTriggerState {
 	oncontextmenu(e: BitsMouseEvent) {
 		if (e.defaultPrevented || this.opts.disabled.current) return;
 
-		this.#clearLongPressTimer();
+		this.#longPressTimer.stop();
 		this.#handleOpen(e);
 		e.preventDefault();
 		this.parentMenu.contentNode?.focus();
@@ -1557,23 +1551,22 @@ export class ContextMenuTriggerState {
 
 	onpointerdown(e: BitsPointerEvent) {
 		if (this.opts.disabled.current || isMouseEvent(e)) return;
-		this.#clearLongPressTimer();
-		this.#longPressTimer = getWindow(this.opts.ref.current).setTimeout(() => this.#handleOpen(e), 700);
+		this.#longPressTimer.start(e);
 	}
 
 	onpointermove(e: BitsPointerEvent) {
 		if (this.opts.disabled.current || isMouseEvent(e)) return;
-		this.#clearLongPressTimer();
+		this.#longPressTimer.stop();
 	}
 
 	onpointercancel(e: BitsPointerEvent) {
 		if (this.opts.disabled.current || isMouseEvent(e)) return;
-		this.#clearLongPressTimer();
+		this.#longPressTimer.stop();
 	}
 
 	onpointerup(e: BitsPointerEvent) {
 		if (this.opts.disabled.current || isMouseEvent(e)) return;
-		this.#clearLongPressTimer();
+		this.#longPressTimer.stop();
 	}
 
 	readonly props = $derived.by(
