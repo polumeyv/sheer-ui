@@ -589,9 +589,7 @@ export class MenuContentState {
 	readonly rovingFocusGroup: RovingFocusGroup;
 	readonly domContext: DOMContext;
 	readonly attachment: RefAttachment;
-	search = $state('');
-	#timer = 0;
-	#typeahead: Typeahead<HTMLElement>;
+	readonly #typeahead: Typeahead<HTMLElement>;
 	#isSub: boolean;
 
 	constructor(opts: MenuContentStateOpts, parentMenu: MenuMenuState) {
@@ -655,9 +653,7 @@ export class MenuContentState {
 		});
 
 		$effect(() => {
-			if (!this.parentMenu.opts.open.current) {
-				this.domContext.getWindow().clearTimeout(this.#timer);
-			}
+			if (!this.parentMenu.opts.open.current) this.#typeahead.reset();
 		});
 	}
 
@@ -781,14 +777,15 @@ export class MenuContentState {
 		focusFirst(candidateNodes, () => this.domContext.getActiveElement());
 	}
 
+	get isTypingAhead() {
+		return this.#typeahead.search !== '';
+	}
+
 	onblur(e: BitsFocusEvent) {
 		if (!isElement(e.currentTarget)) return;
 		if (!isElement(e.target)) return;
 		// clear search buffer when leaving the menu
-		if (!e.currentTarget.contains?.(e.target)) {
-			this.domContext.getWindow().clearTimeout(this.#timer);
-			this.search = '';
-		}
+		if (!e.currentTarget.contains?.(e.target)) this.#typeahead.reset();
 	}
 
 	onfocus(_: BitsFocusEvent) {
@@ -987,7 +984,7 @@ export class MenuItemState {
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
-		const isTypingAhead = this.item.content.search !== '';
+		const isTypingAhead = this.item.content.isTypingAhead;
 		if (this.item.opts.disabled.current || (isTypingAhead && e.key === kbd.SPACE)) return;
 		if (SELECTION_KEYS.includes(e.key)) {
 			if (!isHTMLElement(e.currentTarget)) return;
@@ -1102,7 +1099,7 @@ export class MenuSubTriggerState {
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
-		const isTypingAhead = this.content.search !== '';
+		const isTypingAhead = this.content.isTypingAhead;
 		if (this.item.opts.disabled.current || (isTypingAhead && e.key === kbd.SPACE)) return;
 
 		if (SUB_OPEN_KEYS[this.submenu.root.opts.dir.current].includes(e.key)) {
