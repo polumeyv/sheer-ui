@@ -11,6 +11,7 @@ type RovingFocusGroupOptions = (
 			 */
 			candidateAttr: string;
 			candidateSelector?: undefined;
+			candidateNodes?: undefined;
 	  }
 	| {
 			/**
@@ -18,6 +19,15 @@ type RovingFocusGroupOptions = (
 			 */
 			candidateSelector: string;
 			candidateAttr?: undefined;
+			candidateNodes?: undefined;
+	  }
+	| {
+			/**
+			 * Collects the candidates from the root node, for groups no selector can express.
+			 */
+			candidateNodes: (rootNode: HTMLElement) => HTMLElement[];
+			candidateAttr?: undefined;
+			candidateSelector?: undefined;
 	  }
 ) & {
 	/**
@@ -51,19 +61,12 @@ export class RovingFocusGroup {
 	}
 
 	getCandidateNodes() {
-		if (!BROWSER || !this.#opts.rootNode.current) return [];
+		const rootNode = this.#opts.rootNode.current;
+		if (!BROWSER || !rootNode) return [];
+		if (this.#opts.candidateNodes) return this.#opts.candidateNodes(rootNode);
 
-		if (this.#opts.candidateSelector) {
-			const candidates = Array.from(this.#opts.rootNode.current.querySelectorAll<HTMLElement>(this.#opts.candidateSelector));
-			return candidates;
-		} else if (this.#opts.candidateAttr) {
-			const candidates = Array.from(
-				this.#opts.rootNode.current.querySelectorAll<HTMLElement>(`[${this.#opts.candidateAttr}]:not([data-disabled])`),
-			);
-			return candidates;
-		}
-
-		return [];
+		const selector = this.#opts.candidateSelector ?? `[${this.#opts.candidateAttr}]:not([data-disabled])`;
+		return Array.from(rootNode.querySelectorAll<HTMLElement>(selector));
 	}
 
 	focusFirstCandidate() {

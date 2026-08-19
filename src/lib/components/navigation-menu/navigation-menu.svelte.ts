@@ -23,10 +23,10 @@ import { type Direction, type Orientation } from '../../internal/index.js';
 import { createId } from '../../internal/create-id.js';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '../../internal/attrs.js';
 import { getTabbableCandidates } from '../../internal/tabbable.js';
+import { focusFirst } from '../../internal/focus.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, BitsPointerEvent, RefAttachment } from '../../internal/types.js';
 import { kbd } from '../../internal/kbd.js';
 import { on } from 'svelte/events';
-import { useArrowNavigation } from '../../internal/use-arrow-navigation.js';
 import { isElement } from '../../internal/tools/utils/dom.js';
 import type { FocusEventHandler, KeyboardEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
@@ -844,6 +844,7 @@ export class NavigationMenuContentImplState {
 		return attribute;
 	});
 	domContext: DOMContext;
+	readonly rovingFocusGroup: RovingFocusGroup;
 
 	constructor(opts: NavigationMenuContentImplStateOpts, itemContext: NavigationMenuItemState) {
 		this.opts = opts;
@@ -852,6 +853,12 @@ export class NavigationMenuContentImplState {
 		this.listContext = itemContext.listContext;
 		this.context = itemContext.listContext.context;
 		this.domContext = new DOMContext(opts.ref);
+		this.rovingFocusGroup = new RovingFocusGroup({
+			rootNode: this.opts.ref,
+			candidateNodes: getTabbableCandidates,
+			loop: boxWith(() => false),
+			orientation: this.context.opts.orientation,
+		});
 
 		$effect(() => {
 			const _value = this.itemContext.opts.value.current;
@@ -909,9 +916,9 @@ export class NavigationMenuContentImplState {
 
 		const isMetaKey = e.altKey || e.ctrlKey || e.metaKey;
 		const isTabKey = e.key === kbd.TAB && !isMetaKey;
-		const candidates = getTabbableCandidates(e.currentTarget);
 
 		if (isTabKey) {
+			const candidates = getTabbableCandidates(e.currentTarget);
 			const focusedElement = this.domContext.getActiveElement();
 			const index = candidates.findIndex((candidate) => candidate === focusedElement);
 			const isMovingBackwards = e.shiftKey;
@@ -940,14 +947,10 @@ export class NavigationMenuContentImplState {
 
 		if (activeEl === this.itemContext.triggerNode) return;
 
-		const newSelectedElement = useArrowNavigation(e, activeEl, undefined, {
-			itemsArray: candidates,
-			candidateSelector: navigationMenuAttrs.selector('link'),
-			loop: false,
-			enableIgnoredElement: true,
-		});
+		// typing in a field inside the content must not be hijacked as navigation
+		if (!activeEl || activeEl.nodeName === 'INPUT' || activeEl.nodeName === 'TEXTAREA') return;
 
-		newSelectedElement?.focus();
+		this.rovingFocusGroup.handleKeydown(activeEl, e, true);
 	};
 
 	onEscapeKeydown = (_: KeyboardEvent) => {
@@ -1057,16 +1060,6 @@ export class NavigationMenuViewportState {
 }
 
 //
-
-function focusFirst(candidates: HTMLElement[], getActiveElement: () => HTMLElement | null) {
-	const previouslyFocusedElement = getActiveElement();
-	return candidates.some((candidate) => {
-		// if focus is already where we want to go, we don't want to keep going through the candidates
-		if (candidate === previouslyFocusedElement) return true;
-		candidate.focus();
-		return getActiveElement() !== previouslyFocusedElement;
-	});
-}
 
 function removeFromTabOrder(candidates: HTMLElement[]) {
 	candidates.forEach((candidate) => {
