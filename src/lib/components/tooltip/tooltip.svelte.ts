@@ -439,7 +439,15 @@ export class TooltipTriggerState {
 	#isPointerDown = simpleBox(false);
 	#hasPointerMoveOpened = $state(false);
 	domContext: DOMContext;
-	#transitCheckTimeout: number | null = null;
+	// Fired on pointerenter while the pointer is in transit: if still in transit after the delay, the
+	// user is likely staying on this trigger.
+	#transitCheck = createEffectTimeout(() => {
+		const root = this.#getRoot();
+		if (!root || !root.provider.isPointerInTransit.current) return;
+		root.provider.isPointerInTransit.current = false;
+		root.onTriggerEnter(this.opts.id.current);
+		this.#hasPointerMoveOpened = true;
+	}, () => 250);
 	#mounted = false;
 	#lastRegisteredId: string | null = null;
 
@@ -542,13 +550,6 @@ export class TooltipTriggerState {
 		this.#lastRegisteredId = id;
 	};
 
-	#clearTransitCheck = () => {
-		if (this.#transitCheckTimeout !== null) {
-			clearTimeout(this.#transitCheckTimeout);
-			this.#transitCheckTimeout = null;
-		}
-	};
-
 	handlePointerUp = () => {
 		this.#isPointerDown.current = false;
 	};
@@ -585,15 +586,7 @@ export class TooltipTriggerState {
 
 		// if in transit, wait briefly to see if user is actually heading to old content or staying here
 		if (root.provider.isPointerInTransit.current) {
-			this.#clearTransitCheck();
-			this.#transitCheckTimeout = window.setTimeout(() => {
-				// if still in transit after delay, user is likely staying on this trigger
-				if (root.provider.isPointerInTransit.current) {
-					root.provider.isPointerInTransit.current = false;
-					root.onTriggerEnter(this.opts.id.current);
-					this.#hasPointerMoveOpened = true;
-				}
-			}, 250);
+			this.#transitCheck.start();
 			return;
 		}
 
@@ -614,7 +607,7 @@ export class TooltipTriggerState {
 		if (this.#hasPointerMoveOpened) return;
 
 		// moving within trigger means we're definitely not in transit anymore
-		this.#clearTransitCheck();
+		this.#transitCheck.stop();
 		root.provider.isPointerInTransit.current = false;
 
 		root.onTriggerEnter(this.opts.id.current);
@@ -625,7 +618,7 @@ export class TooltipTriggerState {
 		const root = this.#getRoot();
 		if (!root) return;
 		if (this.#isDisabled()) return;
-		this.#clearTransitCheck();
+		this.#transitCheck.stop();
 		if (!root.isActiveTrigger(this.opts.id.current)) {
 			this.#hasPointerMoveOpened = false;
 			return;

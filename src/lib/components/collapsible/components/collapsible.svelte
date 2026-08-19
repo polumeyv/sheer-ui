@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { animationsSettled } from '../../../internal/use-open-change-complete.svelte.js';
+	import { createSettleRunner } from '../../../internal/animations-settled.svelte.js';
 	import { OpenCell } from '../../../internal/open-cell.svelte.js';
 	import type { CollapsibleRootProps } from '../types.js';
 
@@ -21,23 +21,21 @@
 	// stays in the DOM while 1fr→0fr plays; it drops once the subtree's animations settle.
 	// svelte-ignore state_referenced_locally
 	let rendered = $state(cell.open);
-	let closeToken = 0;
+	const closeSettle = createSettleRunner();
 
 	$effect.pre(() => {
 		if (cell.open) {
-			closeToken++;
+			closeSettle.cancel();
 			rendered = true;
 			return;
 		}
 		if (!rendered) return;
-		const token = ++closeToken;
-		const el = ref;
-		if (!el) {
+		if (!ref) {
 			rendered = false;
 			return;
 		}
-		void animationsSettled(el).then(() => {
-			if (token === closeToken) rendered = false;
+		closeSettle.run(ref, () => {
+			rendered = false;
 		});
 	});
 

@@ -25,5 +25,12 @@ export function createEffectTimeout<T extends AnyFn>(cb: T, getDelay: () => numb
 
 	$effect(() => stop);
 
-	return { start, stop };
+	return {
+		start,
+		stop,
+		// Not reactive: a plain `let`, only ever read from event handlers.
+		get pending() {
+			return timer !== undefined;
+		},
+	};
 }

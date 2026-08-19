@@ -7,7 +7,7 @@ import DismissableLayerFixture from './dismissable-layer.fixture.svelte';
 // registration gate, the 10ms interact-outside debounce, and the 20ms reset — is routed through
 // an injected timer seam (scheduler.ts); the fixture injects a manual clock so the fragile
 // timing is deterministic, exactly mirroring how presence-manager.vitest.ts drives PresenceManager
-// through its injected AfterAnimationsRunner.
+// through its injected SettleRunner.
 
 type Props = {
 	withB?: boolean;

@@ -88,6 +88,26 @@ describe('PresenceManager', () => {
 		}
 	});
 
+	test('shouldSkipExitAnimation: a pending open completion is cancelled, not fired late', () => {
+		const c = render({ open: false, skipExit: true });
+		try {
+			c.setOpen(true);
+			flushSync();
+			expect(c.pendingCount()).toBe(1); // open completion queued on the runner
+
+			c.setOpen(false); // skip-exit path: no run(), but must cancel the queued open
+			flushSync();
+			expect(rendered()).toBe('false');
+			expect(complete()).toBe('1');
+
+			c.firePending(0); // the stale open completion
+			flushSync();
+			expect(complete()).toBe('1'); // not counted twice
+		} finally {
+			unmount(c);
+		}
+	});
+
 	test('enabled=false: closes without waiting for animations', () => {
 		const c = render({ open: true, enabled: false });
 		try {
@@ -102,7 +122,7 @@ describe('PresenceManager', () => {
 		}
 	});
 
-	test('reopen before exit completes: a stale completion is ignored (re-check guard)', () => {
+	test('reopen before exit completes: the stale completion is superseded by the runner', () => {
 		const c = render({ open: true });
 		try {
 			c.setOpen(false);
@@ -117,7 +137,7 @@ describe('PresenceManager', () => {
 
 			c.firePending(0); // fire the STALE close callback
 			flushSync();
-			expect(rendered()).toBe('true'); // guard held — not torn down
+			expect(rendered()).toBe('true'); // superseded — not torn down
 			expect(complete()).toBe('0');
 		} finally {
 			unmount(c);

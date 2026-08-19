@@ -24,7 +24,7 @@
 	// The injected timer seam: a manual clock. Encapsulated in a factory so its bookkeeping is
 	// plain (non-reactive) state rather than component state. `advance(ms)` is the only thing that
 	// fires the layer's timers — nothing here touches real time. Mirrors how presence-manager.fixture
-	// injects a fake AfterAnimationsRunner to drive PresenceManager's async window deterministically.
+	// injects a fake SettleRunner to drive PresenceManager's async window deterministically.
 	function createClock() {
 		type Scheduled = { id: number; fireAt: number; fn: () => void; delay: number };
 		let now = 0;

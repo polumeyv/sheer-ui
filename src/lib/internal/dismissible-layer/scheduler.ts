@@ -3,7 +3,7 @@
  *
  * The layer decides "am I the responsible top layer for this outside pointer event" across a
  * few timers: a 1ms registration gate, a 10ms interact-outside debounce, and a 20ms reset. That
- * timing is the fragile part, so — mirroring the {@link AfterAnimationsRunner} seam that
+ * timing is the fragile part, so — mirroring the `SettleRunner` seam that
  * `PresenceManager` injects — the timers are funnelled through this small contract. The default
  * adapter {@link realTimers} is the real global timers, byte-for-byte the behaviour before the
  * seam existed; tests inject a manual/fake clock to drive the windows deterministically.

@@ -1,18 +1,28 @@
 <script lang="ts">
 	import { boxWith } from '#lib/internal/tools/index.js';
-	import { PresenceManager, type AfterAnimationsRunner } from '#lib/internal/presence-manager.svelte.js';
+	import { PresenceManager } from '#lib/internal/presence-manager.svelte.js';
+	import type { SettleRunner } from '#lib/internal/animations-settled.svelte.js';
 
 	let { open: initialOpen = false, enabled = true, skipExit = false }: { open?: boolean; enabled?: boolean; skipExit?: boolean } = $props();
 
 	let open = $state(initialOpen);
 	let completeCount = $state(0);
 
-	// Capture the deferred exit callbacks so the test fires them on demand — no real
-	// animations, so the transition logic is driven deterministically.
-	const pending: Array<() => void | Promise<void>> = [];
-	const afterAnimations: AfterAnimationsRunner = {
-		run(fn) {
-			pending.push(fn);
+	// Capture the deferred callbacks so the test fires them on demand — no real animations, so
+	// the transition logic is driven deterministically. Mirrors the real runner's contract: the
+	// newest run (or a cancel) supersedes everything queued before it, so firing a stale
+	// callback is a no-op exactly as it is in production.
+	const pending: Array<() => void> = [];
+	let token = 0;
+	const afterAnimations: SettleRunner = {
+		run(_node, fn) {
+			const current = ++token;
+			pending.push(() => {
+				if (current === token) fn();
+			});
+		},
+		cancel() {
+			token++;
 		},
 	};
 

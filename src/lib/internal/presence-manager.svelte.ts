@@ -1,9 +1,9 @@
 import { untrack } from 'svelte';
 import { type ReadableBoxedValues } from './tools/index.js';
-import { AnimationsComplete } from './animations-complete.js';
+import { createSettleRunner, type SettleRunner } from './animations-settled.svelte.js';
 import type { TransitionState } from './attrs.js';
 
-// TODO(backlog): this module + presence-layer/ + animations-complete.ts + the
+// TODO(backlog): this module + presence-layer/ + animations-settled.svelte.ts + the
 // --tw-enter/exit keyframe system exist to keep elements mounted through exit keyframes.
 // Migrating the remaining consumers (menu, select/combobox popup, navigation-menu,
 // scroll-area) to the dialog/popover recipe — always-mounted + transition-[…,display]
@@ -12,15 +12,6 @@ import type { TransitionState } from './attrs.js';
 // (dialog-content-headless + dialog-overlay) cannot migrate: vaul's exit is keyframes
 // on [data-state=closed], which display transitions can't hold open.
 
-/**
- * Defers a callback until the element's exit animations have finished. The real
- * implementation is {@link AnimationsComplete}; tests inject a fake to drive the
- * timing deterministically (this is the only async seam in PresenceManager).
- */
-export interface AfterAnimationsRunner {
-	run(fn: () => void | Promise<void>): void;
-}
-
 interface PresenceManagerOpts extends ReadableBoxedValues<{
 	open: boolean;
 	ref: HTMLElement | null;
@@ -28,14 +19,14 @@ interface PresenceManagerOpts extends ReadableBoxedValues<{
 	onComplete?: () => void;
 	enabled?: boolean;
 	shouldSkipExitAnimation?: () => boolean;
-	/** Seam for tests; defaults to {@link AnimationsComplete} bound to `ref`/`open`. */
-	afterAnimations?: AfterAnimationsRunner;
+	/** The only async seam in PresenceManager; tests inject a fake to drive the timing deterministically. */
+	afterAnimations?: SettleRunner;
 }
 
 export class PresenceManager {
 	#opts: PresenceManagerOpts;
 	#enabled: boolean;
-	#afterAnimations: AfterAnimationsRunner;
+	#afterAnimations: SettleRunner;
 	shouldRender = $state(false);
 	transitionStatus = $state<TransitionState>(undefined);
 	#hasMounted = false;
@@ -45,12 +36,7 @@ export class PresenceManager {
 		this.#opts = opts;
 		this.shouldRender = opts.open.current;
 		this.#enabled = opts.enabled ?? true;
-		this.#afterAnimations =
-			opts.afterAnimations ??
-			new AnimationsComplete({
-				ref: this.#opts.ref,
-				deferToTick: this.#opts.open,
-			});
+		this.#afterAnimations = opts.afterAnimations ?? createSettleRunner({ subtree: false });
 		$effect(() => () => this.#clearTransitionFrame());
 
 		$effect(() => {
@@ -62,6 +48,7 @@ export class PresenceManager {
 				}
 
 				this.#clearTransitionFrame();
+				this.#afterAnimations.cancel();
 
 				if (!isOpen && this.#opts.shouldSkipExitAnimation?.()) {
 					this.shouldRender = false;
@@ -90,14 +77,12 @@ export class PresenceManager {
 					return;
 				}
 
-				this.#afterAnimations.run(() => {
-					if (isOpen === this.#opts.open.current) {
-						if (!this.#opts.open.current) {
-							this.shouldRender = false;
-						}
-						this.transitionStatus = undefined;
-						this.#opts.onComplete?.();
-					}
+				// The runner supersedes: a flip before settle cancels this run (above), so the
+				// callback always sees the open state it was scheduled for.
+				this.#afterAnimations.run(this.#opts.ref.current, () => {
+					if (!isOpen) this.shouldRender = false;
+					this.transitionStatus = undefined;
+					this.#opts.onComplete?.();
 				});
 			});
 		});

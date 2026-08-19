@@ -66,8 +66,8 @@
 	import { onMount, untrack } from 'svelte';
 	import { isAction, type SwipeDirection, type ToastClasses, type ToastProps } from './types.js';
 	import { toastState } from './toast-state.svelte.js';
-	import { AnimationsComplete } from '../../internal/animations-complete.js';
-	import { boxWith } from '../../internal/tools/index.js';
+	import { createSettleRunner } from '../../internal/animations-settled.svelte.js';
+	import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';
 	import type { DragEventHandler, PointerEventHandler } from 'svelte/elements';
 	import { on } from 'svelte/events';
 	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
@@ -208,11 +208,8 @@
 		if (toast.updated) untrack(measure);
 	});
 
-	const exitAnimations = new AnimationsComplete({
-		ref: boxWith(() => toastRef ?? null),
-		// Defers past the style recalc that starts the exit transition, so getAnimations() can see it.
-		deferToTick: boxWith(() => true),
-	});
+	// Two frames: the second defers past the style recalc that starts the exit transition, so getAnimations() can see it.
+	const exitSettle = createSettleRunner({ subtree: false, frames: 2 });
 
 	function deleteToast() {
 		if (removed) return;
@@ -221,25 +218,26 @@
 		offsetBeforeRemove = offset;
 
 		toastState.removeHeight(toast.id);
-		exitAnimations.run(() => {
+		exitSettle.run(toastRef ?? null, () => {
 			toastState.remove(toast.id);
 		});
 	}
-
-	let timeoutId: ReturnType<typeof setTimeout>;
 
 	const isPromiseLoadingOrInfiniteDuration = $derived(
 		(toast.promise && toastType === 'loading') || toast.duration === Number.POSITIVE_INFINITY,
 	);
 
-	function startTimer() {
-		closeTimerStartTime = new Date().getTime();
-		const timeout = remainingTime || duration;
-		// let the toast know it has started
-		timeoutId = setTimeout(() => {
+	const closeTimer = createEffectTimeout(
+		() => {
 			toast.onAutoClose?.(toast);
 			deleteToast();
-		}, timeout);
+		},
+		() => remainingTime || duration,
+	);
+
+	function startTimer() {
+		closeTimerStartTime = new Date().getTime();
+		closeTimer.start();
 	}
 
 	function pauseTimer() {
@@ -257,7 +255,7 @@
 			// if the toast has been updated after the initial render,
 			// we want to reset the timer and set the remaining time to the
 			// new duration
-			clearTimeout(timeoutId);
+			closeTimer.stop();
 			remainingTime = duration;
 			if (!isPromiseLoadingOrInfiniteDuration) {
 				startTimer();
@@ -274,7 +272,7 @@
 			}
 		}
 
-		return () => clearTimeout(timeoutId);
+		return () => closeTimer.stop();
 	});
 
 	onMount(() => {

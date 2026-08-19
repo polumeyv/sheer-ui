@@ -3,7 +3,7 @@ import { createContext, onDestroy, untrack } from 'svelte';
 import { createBitsAttrs, boolToStr, getDataOpenClosed, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { kbd } from '../../internal/kbd.js';
-import { useOpenChangeComplete } from '../../internal/use-open-change-complete.svelte.js';
+import { useOpenChangeComplete } from '../../internal/animations-settled.svelte.js';
 
 type DialogVariant = 'alert-dialog' | 'dialog';
 

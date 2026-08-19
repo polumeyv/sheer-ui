@@ -1,6 +1,7 @@
 import type { Getter } from './tools/index.js';
 import { on } from 'svelte/events';
 import { isElement } from './tools/utils/dom.js';
+import { createEffectTimeout } from './timeout-fn.svelte.js';
 import {
 	AXIS_VERTICAL,
 	DIR_POS,
@@ -44,7 +45,8 @@ export class SafePolygon {
 	#transitTargets: HTMLElement[] = [];
 	#trackedTriggerNode: HTMLElement | null = null;
 	#leaveFallbackRafId: number | null = null;
-	#transitIntentTimeoutId: number | null = null;
+	// start() is gated on #transitIntentTimeout being set (see #scheduleTransitIntentTimeout).
+	#transitIntentTimer = createEffectTimeout(() => this.#exitIfLeft(), () => this.#transitIntentTimeout!);
 
 	#cancelLeaveFallback() {
 		if (this.#leaveFallbackRafId !== null) {
@@ -57,28 +59,19 @@ export class SafePolygon {
 		this.#cancelLeaveFallback();
 		this.#leaveFallbackRafId = requestAnimationFrame(() => {
 			this.#leaveFallbackRafId = null;
-			if (!this.#exitPoint || !this.#exitTarget) return;
-			this.#clearTracking();
-			this.#opts.onPointerExit();
+			this.#exitIfLeft();
 		});
 	}
 
-	#cancelTransitIntentTimeout() {
-		if (this.#transitIntentTimeoutId !== null) {
-			clearTimeout(this.#transitIntentTimeoutId);
-			this.#transitIntentTimeoutId = null;
-		}
+	#exitIfLeft() {
+		if (!this.#exitPoint || !this.#exitTarget) return;
+		this.#clearTracking();
+		this.#opts.onPointerExit();
 	}
 
 	#scheduleTransitIntentTimeout() {
 		if (this.#transitIntentTimeout === null) return;
-		this.#cancelTransitIntentTimeout();
-		this.#transitIntentTimeoutId = window.setTimeout(() => {
-			this.#transitIntentTimeoutId = null;
-			if (!this.#exitPoint || !this.#exitTarget) return;
-			this.#clearTracking();
-			this.#opts.onPointerExit();
-		}, this.#transitIntentTimeout);
+		this.#transitIntentTimer.start();
 	}
 
 	constructor(opts: SafePolygonOptions) {
@@ -204,7 +197,7 @@ export class SafePolygon {
 		this.#exitTarget = TARGET_NONE;
 		this.#transitTargets = [];
 		this.#cancelLeaveFallback();
-		this.#cancelTransitIntentTimeout();
+		this.#transitIntentTimer.stop();
 	}
 
 	/**

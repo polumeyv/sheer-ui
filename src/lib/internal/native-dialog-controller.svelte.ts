@@ -1,7 +1,7 @@
 import type { EscapeBehaviorType } from './escape-layer/types.js';
 import type { InteractOutsideBehaviorType } from './dismissible-layer/types.js';
 import { getTabbableCandidates } from './tabbable.js';
-import { animationsSettled } from './use-open-change-complete.svelte.js';
+import { createSettleRunner } from './animations-settled.svelte.js';
 import type { Getter } from './tools/index.js';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
 import { on } from 'svelte/events';
@@ -29,20 +29,16 @@ export function nativeDialogControllerAttachment(options: NativeDialogController
 		// Chromium-only and WebKit doesn't start display/top-layer transitions at all —
 		// bug 275184), so the exit ride is a data-[state=closed] keyframe animation played
 		// while the dialog is still open, and close() fires only once it settles.
-		let pendingClose: AbortController | null = null;
+		const closeSettle = createSettleRunner({ subtree: false });
 		$effect(() => {
-			const open = options.open();
-			if (open) {
-				pendingClose?.abort();
-				pendingClose = null;
+			if (options.open()) {
+				closeSettle.cancel();
 				if (!node.open) node.showModal();
-			} else if (node.open && !pendingClose) {
-				const pending = new AbortController();
-				pendingClose = pending;
-				void animationsSettled(node, { subtree: false }).then(() => {
-					if (pending.signal.aborted) return;
-					pendingClose = null;
-					if (!options.open() && node.open) node.close();
+			} else if (node.open) {
+				// An open flip re-runs this effect and cancels the runner first; node.open covers a
+				// UA-initiated close in the meantime.
+				closeSettle.run(node, () => {
+					if (node.open) node.close();
 				});
 			}
 		});

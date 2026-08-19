@@ -30,7 +30,7 @@ import { on } from 'svelte/events';
 import { isElement } from '../../internal/tools/utils/dom.js';
 import type { FocusEventHandler, KeyboardEventHandler, MouseEventHandler, PointerEventHandler } from 'svelte/elements';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
-import { observeResize, observeResizeMany } from '../../internal/svelte-resize-observer.svelte.js';
+import { observeResizeMany } from '../../internal/svelte-resize-observer.svelte.js';
 
 const navigationMenuAttrs = createBitsAttrs({
 	component: 'navigation-menu',
@@ -1017,7 +1017,7 @@ export class NavigationMenuViewportState {
 		 * For example, if content animates in from `scale(0.5)` the dimensions would be anything
 		 * from `0.5` to `1` of the intended size.
 		 */
-		observeResize(() => this.contentNode, this.#measureContent);
+		observeResizeMany(() => [this.contentNode], this.#measureContent);
 
 		// reset size when viewport closes to prevent residual size animations
 		$effect(() => {

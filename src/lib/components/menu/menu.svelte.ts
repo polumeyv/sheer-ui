@@ -39,6 +39,7 @@ import { Typeahead, textContentOf } from '../../internal/typeahead.svelte.js';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
 import { PresenceManager } from '../../internal/presence-manager.svelte.js';
 import { arraysAreEqual } from '../../internal/arrays.js';
+import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';
 import { on } from 'svelte/events';
 import {
 	AXIS_VERTICAL,
@@ -133,7 +134,9 @@ export interface MenuSubmenuIntentOptions {
 export class MenuSubmenuIntent {
 	readonly #opts: MenuSubmenuIntentOptions;
 	#cleanupDocMove: AnyFn | null = null;
-	#fallbackTimer: ReturnType<typeof setTimeout> | null = null;
+	// Every `#active = false` write stops this timer first, so the callback only ever fires while active.
+	#fallbackTimer = createEffectTimeout(() => this.#intentExit(), () => 500);
+	#disengageTimer = createEffectTimeout(() => this.#opts.setIsPointerInTransit(false), () => 100);
 	#active = false;
 	#target: TargetBits = TARGET_NONE;
 	#apex: Point | null = null;
@@ -304,41 +307,29 @@ export class MenuSubmenuIntent {
 
 		this.#opts.setIsPointerInTransit(true);
 		this.#attachDocMove();
-		this.#startFallback();
+		this.#fallbackTimer.start();
 	}
-
-	#disengageTimer: ReturnType<typeof setTimeout> | null = null;
 
 	#disengage() {
 		if (!this.#active) return;
 		const wasReturning = (this.#target & TARGET_TRIGGER) !== 0;
 		this.#detachDocMove();
-		this.#clearFallback();
+		this.#fallbackTimer.stop();
 		this.#active = false;
 		this.#clearVisuals();
 
 		if (wasReturning) {
-			this.#clearDisengageTimer();
-			this.#disengageTimer = setTimeout(() => {
-				this.#disengageTimer = null;
-				this.#opts.setIsPointerInTransit(false);
-			}, 100);
+			this.#disengageTimer.start();
 		} else {
 			this.#opts.setIsPointerInTransit(false);
 		}
 	}
 
-	#clearDisengageTimer() {
-		if (this.#disengageTimer === null) return;
-		clearTimeout(this.#disengageTimer);
-		this.#disengageTimer = null;
-	}
-
 	#intentExit() {
 		const pointerPoint = this.#pointerPoint;
 		this.#detachDocMove();
-		this.#clearFallback();
-		this.#clearDisengageTimer();
+		this.#fallbackTimer.stop();
+		this.#disengageTimer.stop();
 		this.#active = false;
 		this.#opts.setIsPointerInTransit(false);
 		this.#clearVisuals();
@@ -347,8 +338,8 @@ export class MenuSubmenuIntent {
 
 	#reset() {
 		this.#detachDocMove();
-		this.#clearFallback();
-		this.#clearDisengageTimer();
+		this.#fallbackTimer.stop();
+		this.#disengageTimer.stop();
 		if (this.#active) this.#opts.setIsPointerInTransit(false);
 		this.#active = false;
 		this.#target = TARGET_NONE;
@@ -381,7 +372,7 @@ export class MenuSubmenuIntent {
 			return;
 		}
 
-		this.#clearFallback();
+		this.#fallbackTimer.stop();
 		const pt: Point = [e.clientX, e.clientY];
 		this.#pointerPoint = pt;
 
@@ -397,7 +388,7 @@ export class MenuSubmenuIntent {
 		}
 
 		if (this.#isPointerInDescendantSubContent(pt)) {
-			this.#startFallback();
+			this.#fallbackTimer.start();
 			return;
 		}
 
@@ -408,7 +399,7 @@ export class MenuSubmenuIntent {
 		}
 
 		if (this.#isInSafeZone(pt, geo.corridor, geo.intent)) {
-			this.#startFallback();
+			this.#fallbackTimer.start();
 			return;
 		}
 
@@ -427,20 +418,6 @@ export class MenuSubmenuIntent {
 
 	#detachDocMove() {
 		this.#cleanupDocMove?.();
-	}
-
-	#startFallback() {
-		this.#clearFallback();
-		this.#fallbackTimer = setTimeout(() => {
-			this.#fallbackTimer = null;
-			if (this.#active) this.#intentExit();
-		}, 500);
-	}
-
-	#clearFallback() {
-		if (this.#fallbackTimer === null) return;
-		clearTimeout(this.#fallbackTimer);
-		this.#fallbackTimer = null;
 	}
 
 	#clearVisuals() {
@@ -1042,7 +1019,10 @@ export class MenuSubTriggerState {
 	readonly content: MenuContentState;
 	readonly submenu: MenuMenuState;
 	readonly attachment: RefAttachment;
-	#openTimer: number | null = null;
+	#openTimer = createEffectTimeout(() => {
+		if (this.submenu.root.isPointerInTransit) return;
+		this.submenu.onOpen();
+	}, () => this.opts.openDelay.current);
 
 	constructor(opts: MenuSubTriggerStateOpts, item: MenuItemSharedState, content: MenuContentState, submenu: MenuMenuState) {
 		this.opts = opts;
@@ -1054,48 +1034,28 @@ export class MenuSubTriggerState {
 		this.onpointermove = this.onpointermove.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);
 		this.onclick = this.onclick.bind(this);
-
-		onDestroy(() => {
-			this.#clearOpenTimer();
-		});
-	}
-
-	#clearOpenTimer() {
-		if (this.#openTimer === null) return;
-		this.content.domContext.getWindow().clearTimeout(this.#openTimer);
-		this.#openTimer = null;
 	}
 
 	onpointermove(e: BitsPointerEvent) {
 		if (!isMouseEvent(e)) return;
 		if (this.submenu.root.isPointerInTransit) {
-			if (this.#openTimer !== null) this.#clearOpenTimer();
+			this.#openTimer.stop();
 			return;
 		}
 
-		if (!this.item.opts.disabled.current && !this.submenu.opts.open.current && !this.#openTimer) {
-			const openDelay = this.opts.openDelay.current;
-
-			if (openDelay <= 0) {
+		if (!this.item.opts.disabled.current && !this.submenu.opts.open.current && !this.#openTimer.pending) {
+			if (this.opts.openDelay.current <= 0) {
 				this.submenu.onOpen();
 				return;
 			}
 
-			this.#openTimer = this.content.domContext.setTimeout(() => {
-				if (this.submenu.root.isPointerInTransit) {
-					this.#clearOpenTimer();
-					return;
-				}
-
-				this.submenu.onOpen();
-				this.#clearOpenTimer();
-			}, openDelay);
+			this.#openTimer.start();
 		}
 	}
 
 	onpointerleave(e: BitsPointerEvent) {
 		if (!isMouseEvent(e)) return;
-		this.#clearOpenTimer();
+		this.#openTimer.stop();
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
@@ -1542,7 +1502,7 @@ export class ContextMenuTriggerState {
 	virtualElement = simpleBox({
 		getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...this.#point }),
 	});
-	#longPressTimer: number | null = null;
+	#longPressTimer = createEffectTimeout((e: BitsPointerEvent) => this.#handleOpen(e), () => 700);
 
 	constructor(opts: ContextMenuTriggerStateOpts, parentMenu: MenuMenuState) {
 		this.opts = opts;
@@ -1567,17 +1527,11 @@ export class ContextMenuTriggerState {
 			const isDisabled = this.opts.disabled.current;
 			untrack(() => {
 				if (isDisabled) {
-					this.#clearLongPressTimer();
+					this.#longPressTimer.stop();
 				}
 			});
 		});
 
-		onDestroy(() => this.#clearLongPressTimer());
-	}
-
-	#clearLongPressTimer() {
-		if (this.#longPressTimer === null) return;
-		getWindow(this.opts.ref.current).clearTimeout(this.#longPressTimer);
 	}
 
 	#handleOpen(e: BitsMouseEvent | BitsPointerEvent) {
@@ -1588,7 +1542,7 @@ export class ContextMenuTriggerState {
 	oncontextmenu(e: BitsMouseEvent) {
 		if (e.defaultPrevented || this.opts.disabled.current) return;
 
-		this.#clearLongPressTimer();
+		this.#longPressTimer.stop();
 		this.#handleOpen(e);
 		e.preventDefault();
 		this.parentMenu.contentNode?.focus();
@@ -1596,23 +1550,22 @@ export class ContextMenuTriggerState {
 
 	onpointerdown(e: BitsPointerEvent) {
 		if (this.opts.disabled.current || isMouseEvent(e)) return;
-		this.#clearLongPressTimer();
-		this.#longPressTimer = getWindow(this.opts.ref.current).setTimeout(() => this.#handleOpen(e), 700);
+		this.#longPressTimer.start(e);
 	}
 
 	onpointermove(e: BitsPointerEvent) {
 		if (this.opts.disabled.current || isMouseEvent(e)) return;
-		this.#clearLongPressTimer();
+		this.#longPressTimer.stop();
 	}
 
 	onpointercancel(e: BitsPointerEvent) {
 		if (this.opts.disabled.current || isMouseEvent(e)) return;
-		this.#clearLongPressTimer();
+		this.#longPressTimer.stop();
 	}
 
 	onpointerup(e: BitsPointerEvent) {
 		if (this.opts.disabled.current || isMouseEvent(e)) return;
-		this.#clearLongPressTimer();
+		this.#longPressTimer.stop();
 	}
 
 	readonly props = $derived.by(

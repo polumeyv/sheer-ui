@@ -6,6 +6,7 @@ import { isElement } from '../../internal/tools/utils/dom.js';
 import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { getTabbableCandidates } from '../../internal/tabbable.js';
 import { SafePolygon } from '../../internal/safe-polygon.svelte.js';
+import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';
 
 const linkPreviewAttrs = createBitsAttrs({
 	component: 'link-preview',
@@ -36,12 +37,16 @@ export class LinkPreviewRootState {
 	hasSelection = $state(false);
 	isPointerDownOnContent = $state(false);
 	containsSelection = $state(false);
-	timeout: number | null = null;
 	contentNode = $state<HTMLElement | null>(null);
 	contentMounted = $state(false);
 	triggerNode = $state<HTMLElement | null>(null);
-	isOpening = false;
 	domContext: DOMContext = new DOMContext(() => null);
+	#openTimer = createEffectTimeout(() => {
+		this.opts.open.current = true;
+	}, () => this.opts.openDelay.current);
+	#closeTimer = createEffectTimeout(() => {
+		this.opts.open.current = false;
+	}, () => this.opts.closeDelay.current);
 
 	constructor(opts: LinkPreviewRootStateOpts) {
 		this.opts = opts;
@@ -89,38 +94,26 @@ export class LinkPreviewRootState {
 	}
 
 	clearTimeout() {
-		if (this.timeout) {
-			this.domContext.clearTimeout(this.timeout);
-			this.timeout = null;
-		}
+		this.#openTimer.stop();
+		this.#closeTimer.stop();
 	}
 
 	handleOpen() {
 		this.clearTimeout();
 		if (this.opts.open.current || this.opts.disabled.current) return;
-		this.isOpening = true;
-		this.timeout = this.domContext.setTimeout(() => {
-			if (this.isOpening) {
-				this.opts.open.current = true;
-				this.isOpening = false;
-			}
-		}, this.opts.openDelay.current);
+		this.#openTimer.start();
 	}
 
 	immediateClose() {
 		this.clearTimeout();
-		this.isOpening = false;
 		this.opts.open.current = false;
 	}
 
 	handleClose() {
-		this.isOpening = false;
 		this.clearTimeout();
 
 		if (!this.isPointerDownOnContent && !this.hasSelection) {
-			this.timeout = this.domContext.setTimeout(() => {
-				this.opts.open.current = false;
-			}, this.opts.closeDelay.current);
+			this.#closeTimer.start();
 		}
 	}
 }
