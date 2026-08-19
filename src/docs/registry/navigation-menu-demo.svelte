@@ -101,7 +101,7 @@
 						content: 'How to install dependencies and structure your app.',
 					})}
 					{@render ListItem({
-						href: '/blocks/heading',
+						href: '/components/heading',
 						title: 'Typography',
 						content: 'Styles for headings, paragraphs, lists...etc',
 					})}

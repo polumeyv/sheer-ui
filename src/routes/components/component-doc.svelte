@@ -1,11 +1,11 @@
 <script lang="ts">
 	import ComponentPreview from './_preview.svelte';
-	import type { ComponentMeta } from './_registry.js';
+	import type { DemoMeta } from './_registry.js';
 	import type { ResolvedDemo } from './_demos.js';
 
 	// The DocPage equivalent: fed the resolved `{ meta, demos }` from `load`,
 	// renders the primary demo prominently then the variant examples.
-	let { meta, demos }: { meta: ComponentMeta; demos: ResolvedDemo[] } = $props();
+	let { meta, demos }: { meta: DemoMeta; demos: ResolvedDemo[] } = $props();
 
 	const primary = $derived(demos[0]);
 	const examples = $derived(demos.slice(1));
@@ -30,7 +30,7 @@
 
 	{#if primary}
 		{@const Demo = primary.component}
-		<ComponentPreview class="mt-6">
+		<ComponentPreview class="mt-6" align={meta.kind === 'block' ? 'start' : 'center'}>
 			<Demo />
 		</ComponentPreview>
 	{/if}
