@@ -11,7 +11,7 @@ function render() {
 }
 
 // jsdom has neither getAnimations nor Animation, so the runner's animation input is stubbed.
-function fakeAnimation(iterations: number) {
+function fakeAnimation(iterations: number, playState: AnimationPlayState = 'running') {
 	let settle: () => void = () => {};
 	let cancel: () => void = () => {};
 	const finished = new Promise<void>((resolve, reject) => {
@@ -19,7 +19,7 @@ function fakeAnimation(iterations: number) {
 		cancel = () => reject(new DOMException('cancelled', 'AbortError'));
 	});
 	finished.catch(() => {});
-	return { effect: { getComputedTiming: () => ({ iterations }) }, playState: 'running', finished, settle, cancel };
+	return { effect: { getComputedTiming: () => ({ iterations }) }, playState, pending: false, finished, settle, cancel };
 }
 
 function stubAnimations(node: HTMLElement, animations: ReturnType<typeof fakeAnimation>[]) {
@@ -110,5 +110,38 @@ describe('createSettleRunner', () => {
 
 		await frames();
 		expect(calls).toEqual([]);
+	});
+
+	test('a paused finite animation is excluded like an infinite one', async () => {
+		const c = render();
+		// animation-play-state: paused — `finished` never resolves either.
+		stubAnimations(c.getNode(), [fakeAnimation(1, 'paused')]);
+		const calls: string[] = [];
+
+		c.run(() => calls.push('fired'));
+
+		await vi.waitFor(() => expect(calls).toEqual(['fired']));
+		unmount(c);
+	});
+
+	test('a continuously retargeted animation does not hold the settle open forever', async () => {
+		const c = render();
+		// Every query returns a fresh animation that gets cancelled: a live-updating transition in
+		// the closing subtree. The re-query loop is bounded, so the callback still fires.
+		const spawned: ReturnType<typeof fakeAnimation>[] = [];
+		c.getNode().getAnimations = () => {
+			const a = fakeAnimation(1);
+			spawned.push(a);
+			queueMicrotask(() => a.cancel());
+			return [a] as unknown as Animation[];
+		};
+		const calls: string[] = [];
+
+		c.run(() => calls.push('fired'));
+
+		await vi.waitFor(() => expect(calls).toEqual(['fired']));
+		expect(spawned.length).toBeGreaterThan(1);
+		expect(spawned.length).toBeLessThanOrEqual(5);
+		unmount(c);
 	});
 });

@@ -15,20 +15,28 @@ export const animationsSettled = async (node: HTMLElement, { subtree = true, fra
 	for (let i = 0; i < frames; i++) await new Promise(requestAnimationFrame);
 	if (typeof node.getAnimations !== 'function') return;
 
-	for (;;) {
+	// A close during an enter retargets the transition: the browser cancels the enter (its
+	// `finished` rejects) and starts the exit, so re-query — one pass per frame. Bounded: a
+	// descendant whose transition is continuously retargeted (live progress bar, hover colour
+	// under a moving pointer) rejects every pass and must not hold the settle open forever.
+	for (let pass = 0; ; pass++) {
 		const running = node
 			.getAnimations({ subtree })
-			.filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity && animation.playState !== 'finished');
+			.filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity && isInFlight(animation));
 		if (running.length === 0) return;
 
 		const results = await Promise.allSettled(running.map((animation) => animation.finished));
-		// A close during an enter retargets the transition: the browser cancels the enter (its
-		// `finished` rejects) and starts the exit, so re-query — one pass per frame, which keeps
-		// an animation that stays listed pre-settled from spinning the microtask queue.
-		if (!results.some((result) => result.status === 'rejected')) return;
+		if (pass === MAX_RETARGET_PASSES || !results.some((result) => result.status === 'rejected')) return;
 		await new Promise(requestAnimationFrame);
 	}
 };
+
+const MAX_RETARGET_PASSES = 3;
+
+// `finished` only ever resolves for an animation that is running (or about to be, `pending`);
+// paused/idle finite animations (animation-play-state: paused, a reduced-motion override) would
+// strand the caller exactly like an infinite one.
+const isInFlight = (animation: Animation) => animation.pending || animation.playState === 'running';
 
 export interface SettleRunner {
 	/** Runs `fn` once `node` settles, superseding any pending run. A null node cancels and drops. */
@@ -51,12 +59,9 @@ export function createSettleRunner(options?: { subtree?: boolean; frames?: numbe
 	const run = (node: HTMLElement | null, fn: () => void) => {
 		const current = ++token;
 		if (!node) return;
-		void animationsSettled(node, options).then(
-			() => {
-				if (current === token) fn();
-			},
-			() => {},
-		);
+		void animationsSettled(node, options).then(() => {
+			if (current === token) fn();
+		});
 	};
 
 	$effect(() => cancel);

@@ -48,6 +48,7 @@ export class PresenceManager {
 				}
 
 				this.#clearTransitionFrame();
+				this.#afterAnimations.cancel();
 
 				if (!isOpen && this.#opts.shouldSkipExitAnimation?.()) {
 					this.shouldRender = false;
@@ -76,14 +77,12 @@ export class PresenceManager {
 					return;
 				}
 
+				// The runner supersedes: a flip before settle cancels this run (above), so the
+				// callback always sees the open state it was scheduled for.
 				this.#afterAnimations.run(this.#opts.ref.current, () => {
-					if (isOpen === this.#opts.open.current) {
-						if (!this.#opts.open.current) {
-							this.shouldRender = false;
-						}
-						this.transitionStatus = undefined;
-						this.#opts.onComplete?.();
-					}
+					if (!isOpen) this.shouldRender = false;
+					this.transitionStatus = undefined;
+					this.#opts.onComplete?.();
 				});
 			});
 		});

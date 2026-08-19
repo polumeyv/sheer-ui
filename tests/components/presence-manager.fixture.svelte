@@ -8,14 +8,22 @@
 	let open = $state(initialOpen);
 	let completeCount = $state(0);
 
-	// Capture the deferred exit callbacks so the test fires them on demand — no real
-	// animations, so the transition logic is driven deterministically.
+	// Capture the deferred callbacks so the test fires them on demand — no real animations, so
+	// the transition logic is driven deterministically. Mirrors the real runner's contract: the
+	// newest run (or a cancel) supersedes everything queued before it, so firing a stale
+	// callback is a no-op exactly as it is in production.
 	const pending: Array<() => void> = [];
+	let token = 0;
 	const afterAnimations: SettleRunner = {
 		run(_node, fn) {
-			pending.push(fn);
+			const current = ++token;
+			pending.push(() => {
+				if (current === token) fn();
+			});
 		},
-		cancel() {},
+		cancel() {
+			token++;
+		},
 	};
 
 	// A detached node so the ref box is non-null; never actually read because

@@ -40,13 +40,9 @@ export class LinkPreviewRootState {
 	contentNode = $state<HTMLElement | null>(null);
 	contentMounted = $state(false);
 	triggerNode = $state<HTMLElement | null>(null);
-	isOpening = false;
 	domContext: DOMContext = new DOMContext(() => null);
 	#openTimer = createEffectTimeout(() => {
-		if (this.isOpening) {
-			this.opts.open.current = true;
-			this.isOpening = false;
-		}
+		this.opts.open.current = true;
 	}, () => this.opts.openDelay.current);
 	#closeTimer = createEffectTimeout(() => {
 		this.opts.open.current = false;
@@ -105,18 +101,15 @@ export class LinkPreviewRootState {
 	handleOpen() {
 		this.clearTimeout();
 		if (this.opts.open.current || this.opts.disabled.current) return;
-		this.isOpening = true;
 		this.#openTimer.start();
 	}
 
 	immediateClose() {
 		this.clearTimeout();
-		this.isOpening = false;
 		this.opts.open.current = false;
 	}
 
 	handleClose() {
-		this.isOpening = false;
 		this.clearTimeout();
 
 		if (!this.isPointerDownOnContent && !this.hasSelection) {

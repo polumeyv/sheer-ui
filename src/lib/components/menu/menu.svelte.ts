@@ -134,9 +134,8 @@ export interface MenuSubmenuIntentOptions {
 export class MenuSubmenuIntent {
 	readonly #opts: MenuSubmenuIntentOptions;
 	#cleanupDocMove: AnyFn | null = null;
-	#fallbackTimer = createEffectTimeout(() => {
-		if (this.#active) this.#intentExit();
-	}, () => 500);
+	// Every `#active = false` write stops this timer first, so the callback only ever fires while active.
+	#fallbackTimer = createEffectTimeout(() => this.#intentExit(), () => 500);
 	#disengageTimer = createEffectTimeout(() => this.#opts.setIsPointerInTransit(false), () => 100);
 	#active = false;
 	#target: TargetBits = TARGET_NONE;

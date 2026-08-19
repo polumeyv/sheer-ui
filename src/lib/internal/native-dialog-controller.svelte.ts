@@ -35,8 +35,10 @@ export function nativeDialogControllerAttachment(options: NativeDialogController
 				closeSettle.cancel();
 				if (!node.open) node.showModal();
 			} else if (node.open) {
+				// An open flip re-runs this effect and cancels the runner first; node.open covers a
+				// UA-initiated close in the meantime.
 				closeSettle.run(node, () => {
-					if (!options.open() && node.open) node.close();
+					if (node.open) node.close();
 				});
 			}
 		});
