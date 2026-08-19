@@ -3,9 +3,9 @@ import type { WithElementRef } from '../../internal/utils.js';
 import type { AccordionType } from './accordion.svelte.js';
 
 export type AccordionRootProps = WithElementRef<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
-	/** 'single' groups the items' `<details>` by name so the browser enforces one-open. */
+	/** 'single' keeps at most one item open (collapsible); 'multiple' lets items open independently. Read once at mount. */
 	type?: AccordionType;
-	/** The open item value(s) — string for single, string[] for multiple. Bindable. */
+	/** The open item value(s) — string for `single`, string[] for `multiple`; the shape must match `type`. Bindable. */
 	value?: string | string[];
 };
 

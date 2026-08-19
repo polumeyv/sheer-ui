@@ -4,6 +4,7 @@
 	import { type WritableBox, boxWith, repairBindable } from '../../../../internal/tools/index.js';
 	import { OpenCell } from '../../../../internal/open-cell.svelte.js';
 	import { SelectRootState } from '../select.svelte.js';
+	import { emptySelection } from '../../../../internal/selection.svelte.js';
 	import type { SelectRootProps } from '../types.js';
 	import SelectHiddenInput from './select-hidden-input.svelte';
 
@@ -28,7 +29,7 @@
 
 	function repairUndefinedControlledValue() {
 		if (value !== undefined) return;
-		value = type === 'single' ? '' : [];
+		value = emptySelection(type);
 	}
 
 	// Select owns a mode-specific controlled value.
