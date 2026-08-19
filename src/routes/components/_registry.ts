@@ -5,7 +5,7 @@
  * (e.g. `button-demo.svelte`, `button-with-icon.svelte`).
  */
 export type DemoMeta = {
-	/** URL segment + `src/docs/registry/<slug>-*.svelte` demo prefix + `#lib/components/<slug>` import path */
+	/** URL segment + `src/docs/registry/<slug>-*.svelte` demo prefix + `#lib/{components,blocks}/<slug>` import path (by `kind`) */
 	slug: string;
 	/** Display name */
 	name: string;

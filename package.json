@@ -55,6 +55,7 @@
 			"default": "./src/lib/icons/*"
 		},
 		"./styles": "./src/lib/assets/ui.css",
+		"./components/menu": null,
 		"./components/*": {
 			"types": "./src/lib/components/*/index.ts",
 			"svelte": "./src/lib/components/*/index.ts",
