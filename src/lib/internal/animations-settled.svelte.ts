@@ -14,12 +14,20 @@ import type { Getter } from './tools/index.js';
 export const animationsSettled = async (node: HTMLElement, { subtree = true, frames = 1 } = {}): Promise<void> => {
 	for (let i = 0; i < frames; i++) await new Promise(requestAnimationFrame);
 	if (typeof node.getAnimations !== 'function') return;
-	await Promise.allSettled(
-		node
+
+	for (;;) {
+		const running = node
 			.getAnimations({ subtree })
-			.filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity)
-			.map((animation) => animation.finished),
-	);
+			.filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity && animation.playState !== 'finished');
+		if (running.length === 0) return;
+
+		const results = await Promise.allSettled(running.map((animation) => animation.finished));
+		// A close during an enter retargets the transition: the browser cancels the enter (its
+		// `finished` rejects) and starts the exit, so re-query — one pass per frame, which keeps
+		// an animation that stays listed pre-settled from spinning the microtask queue.
+		if (!results.some((result) => result.status === 'rejected')) return;
+		await new Promise(requestAnimationFrame);
+	}
 };
 
 export interface SettleRunner {
@@ -43,9 +51,12 @@ export function createSettleRunner(options?: { subtree?: boolean; frames?: numbe
 	const run = (node: HTMLElement | null, fn: () => void) => {
 		const current = ++token;
 		if (!node) return;
-		void animationsSettled(node, options).then(() => {
-			if (current === token) fn();
-		});
+		void animationsSettled(node, options).then(
+			() => {
+				if (current === token) fn();
+			},
+			() => {},
+		);
 	};
 
 	$effect(() => cancel);
