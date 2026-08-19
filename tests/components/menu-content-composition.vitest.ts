@@ -1,5 +1,5 @@
 import { flushSync, mount, unmount } from 'svelte';
-import { describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 import MenuContentCompositionFixture from './menu-content-composition.fixture.svelte';
 
 type Family = 'context-menu' | 'dropdown-menu' | 'menubar';
@@ -20,7 +20,7 @@ const families: { family: Family; dataSlot: string; minWidth: string; cssVar: st
 	{ family: 'menubar', dataSlot: 'menubar-content', minWidth: 'min-w-[12rem]', cssVar: '--bits-menu-content-transform-origin' },
 ];
 
-function render(props: { family: Family; isStatic?: boolean }) {
+function render(props: { family: Family; isStatic?: boolean; onInteractOutside?: (e: PointerEvent) => void }) {
 	const target = document.createElement('div');
 	document.body.append(target);
 	const component = mount(MenuContentCompositionFixture, { props, target });
@@ -91,5 +91,49 @@ describe('menu family Content composition', () => {
 				cleanup(component);
 			}
 		}
+	});
+
+	// The one place the shared implementation branches on the family: the engine's
+	// handleInteractOutside defers (preventDefault) an outside pointerdown that lands on the menu's
+	// own trigger — the trigger's own pointerdown toggles, so the layer must not also close — and a
+	// deferred event never reaches the consumer's onInteractOutside. A context-menu trigger is the
+	// whole right-clickable region, so it must skip that deferral and let the event through.
+	describe('outside pointerdown on the own trigger', () => {
+		afterEach(() => vi.useRealTimers());
+
+		function pointerDownOnTrigger() {
+			vi.advanceTimersByTime(1); // the layer's registration gate...
+			flushSync(); // ...and the microtask `on()` defers its listener attachment to
+			const trigger = document.body.querySelector<HTMLElement>('[data-testid="trigger"]');
+			if (!trigger) throw new Error('Expected the trigger to render');
+			trigger.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0, clientX: 5, clientY: 5 }));
+			vi.advanceTimersByTime(10); // the dismissible layer's interact-outside debounce
+			flushSync();
+		}
+
+		test.each(['dropdown-menu', 'menubar'] as const)('%s defers it: onInteractOutside is not reached', (family) => {
+			vi.useFakeTimers();
+			const onInteractOutside = vi.fn();
+			const component = render({ family, onInteractOutside });
+			try {
+				pointerDownOnTrigger();
+				expect(onInteractOutside).not.toHaveBeenCalled();
+			} finally {
+				cleanup(component);
+			}
+		});
+
+		test('context-menu lets it through: onInteractOutside is reached and the menu closes', () => {
+			vi.useFakeTimers();
+			const onInteractOutside = vi.fn();
+			const component = render({ family: 'context-menu', onInteractOutside });
+			try {
+				pointerDownOnTrigger();
+				expect(onInteractOutside).toHaveBeenCalledOnce();
+				expect(readOpen()).toBe('false');
+			} finally {
+				cleanup(component);
+			}
+		});
 	});
 });

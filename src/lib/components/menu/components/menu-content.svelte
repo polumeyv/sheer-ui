@@ -35,7 +35,7 @@
 
 	const isContextMenu = $derived(contentState.parentMenu.root.opts.variant.current === 'context-menu');
 
-	const mergedProps = $derived(mergeProps({ isValidEvent }, restProps, contentState.props));
+	const mergedProps = $derived(mergeProps(restProps, contentState.props));
 
 	function handleInteractOutside(e: PointerEvent) {
 		// a context-menu trigger is the whole right-clickable region, so the engine's
@@ -79,6 +79,7 @@
 	open={contentState.parentMenu.opts.open.current}
 	onInteractOutside={handleInteractOutside}
 	onEscapeKeydown={handleEscapeKeydown}
+	{isValidEvent}
 	{isStatic}
 	{loop}
 	{forceMount}

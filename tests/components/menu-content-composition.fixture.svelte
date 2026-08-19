@@ -3,7 +3,11 @@
 	import * as DropdownMenu from '#lib/components/dropdown-menu/index.js';
 	import { Menubar } from '#lib/components/menubar/index.js';
 
-	let { family, isStatic = false }: { family: 'context-menu' | 'dropdown-menu' | 'menubar'; isStatic?: boolean } = $props();
+	let {
+		family,
+		isStatic = false,
+		onInteractOutside,
+	}: { family: 'context-menu' | 'dropdown-menu' | 'menubar'; isStatic?: boolean; onInteractOutside?: (e: PointerEvent) => void } = $props();
 
 	let menubarValue = $state('file');
 </script>
@@ -12,13 +16,13 @@
 	<DropdownMenu.Root open>
 		{#snippet children(menu)}
 			<output data-testid="open">{String(menu.open)}</output>
-			<DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+			<DropdownMenu.Trigger data-testid="trigger">Open</DropdownMenu.Trigger>
 			{#if isStatic}
 				<DropdownMenu.ContentStatic forceMount>
 					<DropdownMenu.Item>One</DropdownMenu.Item>
 				</DropdownMenu.ContentStatic>
 			{:else}
-				<DropdownMenu.Content>
+				<DropdownMenu.Content {onInteractOutside}>
 					<DropdownMenu.Item>One</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			{/if}
@@ -28,13 +32,13 @@
 	<ContextMenu.Root open>
 		{#snippet children(menu)}
 			<output data-testid="open">{String(menu.open)}</output>
-			<ContextMenu.Trigger>Right click</ContextMenu.Trigger>
+			<ContextMenu.Trigger data-testid="trigger">Right click</ContextMenu.Trigger>
 			{#if isStatic}
 				<ContextMenu.ContentStatic forceMount>
 					<ContextMenu.Item>One</ContextMenu.Item>
 				</ContextMenu.ContentStatic>
 			{:else}
-				<ContextMenu.Content>
+				<ContextMenu.Content {onInteractOutside}>
 					<ContextMenu.Item>One</ContextMenu.Item>
 				</ContextMenu.Content>
 			{/if}
@@ -44,13 +48,13 @@
 	<Menubar.Root bind:value={menubarValue}>
 		<output data-testid="open">{String(menubarValue !== '')}</output>
 		<Menubar.Menu value="file">
-			<Menubar.Trigger>File</Menubar.Trigger>
+			<Menubar.Trigger data-testid="trigger">File</Menubar.Trigger>
 			{#if isStatic}
 				<Menubar.ContentStatic forceMount>
 					<Menubar.Item>One</Menubar.Item>
 				</Menubar.ContentStatic>
 			{:else}
-				<Menubar.Content>
+				<Menubar.Content {onInteractOutside}>
 					<Menubar.Item>One</Menubar.Item>
 				</Menubar.Content>
 			{/if}
