@@ -24,6 +24,14 @@ export const isIOS =
 		// iPad Pro Gen3 reports as Macintosh, so fall back to touch-point sniffing.
 		(window.navigator.maxTouchPoints > 2 && /iPad|Macintosh/.test(window.navigator.userAgent)));
 
+/**
+ * Yields `element` and then each of its ancestor elements, innermost first. The walk stays inside
+ * `element`'s own tree — a shadow root ends it rather than continuing through the host.
+ */
+export function* selfAndAncestors(element: Element | null | undefined): Generator<Element> {
+	for (let current = element; current; current = current.parentElement) yield current;
+}
+
 type Target = Node | EventTarget | null | undefined;
 
 export function contains(parent: Target, child: Target) {
@@ -31,6 +39,8 @@ export function contains(parent: Target, child: Target) {
 	if (!isNode(parent) || !isNode(child)) return false;
 	if (parent === child) return true;
 	if (parent.contains(child)) return true;
+	// `parent.contains` already covered the same-tree case, so this only has to climb out of shadow
+	// roots via their host — a composed walk, which is why it can't use `selfAndAncestors`.
 	let current: Node | null = child;
 	while (current) {
 		if (current === parent) return true;

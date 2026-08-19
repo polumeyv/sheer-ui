@@ -7,6 +7,8 @@
  * shadow roots and the display check modes used by the helpers below.
  */
 
+import { selfAndAncestors } from './tools/utils/dom.js';
+
 type DisplayCheck = 'full' | 'none';
 
 interface TabbableOptions {
@@ -259,17 +261,15 @@ function isHidden(node: TabbableElement, options: TabbableOptions): boolean {
 function isDisabledFromFieldset(node: TabbableElement): boolean {
 	if (!/^(INPUT|BUTTON|SELECT|TEXTAREA)$/.test(node.tagName)) return false;
 
-	let parent = node.parentElement;
-	while (parent) {
+	for (const parent of selfAndAncestors(node.parentElement)) {
 		if (parent.tagName === 'FIELDSET' && (parent as HTMLFieldSetElement).disabled) {
-			for (const child of Array.from(parent.children)) {
+			for (const child of parent.children) {
 				if (child.tagName === 'LEGEND') {
 					return matches.call(parent, 'fieldset[disabled] *') ? true : !child.contains(node);
 				}
 			}
 			return true;
 		}
-		parent = parent.parentElement;
 	}
 
 	return false;
