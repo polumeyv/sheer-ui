@@ -35,7 +35,6 @@ This package installs and typechecks standalone. That is a hard constraint, not 
 mirrored to [polumeyv/ui-lib](https://github.com/polumeyv/ui-lib), and a specifier that only resolves
 inside the mono makes that clone uninstallable. **Nothing here may use `workspace:*` or a bun
 `catalog:`.** Verify with a cold install outside the monorepo before changing dependencies.
-`esm-env` is currently `catalog:infra` and breaks that rule — pin it before the next mirror sync.
 
 There are no `@polumeyv/*` dependencies left. The last one, `@polumeyv/utilities`, was cut 2026-08-17:
 its wall-clock module moved here as `src/lib/time.ts` (exported as `@polumeyv/ui/time`, and now the

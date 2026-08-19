@@ -40,7 +40,7 @@
 		interactOutsideBehavior = 'close',
 		loop,
 		trapFocus = true,
-		isValidEvent = () => false,
+		isValidEvent,
 		customAnchor = null,
 		isStatic = false,
 		enabled,
