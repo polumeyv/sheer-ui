@@ -25,6 +25,9 @@ class ResizeObserverStub {
 Object.defineProperty(window, "ResizeObserver", { configurable: true, value: ResizeObserverStub });
 Object.defineProperty(globalThis, "ResizeObserver", { configurable: true, value: ResizeObserverStub });
 
+// jsdom runs no layout, so it ships no scrollIntoView at all.
+Object.defineProperty(Element.prototype, "scrollIntoView", { configurable: true, value: () => {} });
+
 // Per test, not module scope: suites assert showModal/close call counts.
 beforeEach(() => {
 	Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
