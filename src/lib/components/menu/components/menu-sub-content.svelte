@@ -114,7 +114,10 @@
 	{forceMount}
 	shouldRender={subContentState.shouldRender}>
 	{#snippet popper({ props, wrapperProps })}
-		{@const finalProps = mergeProps(props, mergedProps, { style: getFloatingContentCSSVars('menu') }, { style })}
+		<!-- mergedProps already reached `props` through the layer's restProps, minus the keys
+		PopperLayer destructures for itself (id, dir, style) — only those are re-added, since
+		re-merging the whole bag composes the handlers twice (one keypress, two typeahead steps) -->
+		{@const finalProps = mergeProps(props, { id, dir: mergedProps.dir, style: mergedProps.style }, { style: getFloatingContentCSSVars('menu') }, { style })}
 		{#if child}
 			{@render child({
 				props: finalProps,
