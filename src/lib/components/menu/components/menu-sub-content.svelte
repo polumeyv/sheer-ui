@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
+	import { tick } from 'svelte';
 	import type { MenuSubContentProps } from '../types.js';
 	import { MenuContentState } from '../menu.svelte.js';
 	import { createSubmenuHandlers } from '../utils.js';
@@ -16,6 +17,7 @@
 		children,
 		child,
 		loop = true,
+		isStatic = false,
 		onInteractOutside = () => {},
 		forceMount = false,
 		onEscapeKeydown = () => {},
@@ -28,7 +30,7 @@
 		trapFocus = false,
 		style,
 		...restProps
-	}: MenuSubContentProps = $props();
+	}: MenuSubContentProps & { isStatic?: boolean } = $props();
 
 	const subContentState = MenuContentState.create({
 		id: boxWith(() => id),
@@ -59,7 +61,6 @@
 			restProps,
 			subContentState.props,
 			{
-				side,
 				onkeydown,
 				[dataAttr]: '',
 			},
@@ -69,6 +70,17 @@
 	function handleOpenAutoFocus(e: Event) {
 		onOpenAutoFocusProp(e);
 		if (e.defaultPrevented) return;
+		// static content is in the DOM before the open pass, so the focus target only
+		// settles a tick later; floating content hands off to the roving group instead
+		if (isStatic) {
+			tick().then(() => {
+				e.preventDefault();
+				if (subContentState.parentMenu.root.isKeyboard) {
+					subContentState.parentMenu.contentNode?.focus();
+				}
+			});
+			return;
+		}
 		e.preventDefault();
 		if (subContentState.parentMenu.root.isKeyboard && subContentState.parentMenu.contentNode) {
 			subContentState.parentMenu.focusFirstItem?.();
@@ -80,12 +92,12 @@
 		if (e.defaultPrevented) return;
 		e.preventDefault();
 	}
-
 </script>
 
 <PopperLayer
 	{...mergedProps}
 	{id}
+	{side}
 	ref={subContentState.opts.ref}
 	{interactOutsideBehavior}
 	{escapeKeydownBehavior}
@@ -96,18 +108,26 @@
 	onEscapeKeydown={handleEscapeKeydown}
 	onFocusOutside={handleOnFocusOutside}
 	preventScroll={false}
+	{isStatic}
 	{loop}
 	{trapFocus}
 	{forceMount}
 	shouldRender={subContentState.shouldRender}>
 	{#snippet popper({ props, wrapperProps })}
-		{@const finalProps = mergeProps(props, mergedProps, { style: getFloatingContentCSSVars('menu') }, { style })}
+		<!-- mergedProps already reached `props` through the layer's restProps, minus the keys
+		PopperLayer destructures for itself (id, dir, style) — only those are re-added, since
+		re-merging the whole bag composes the handlers twice (one keypress, two typeahead steps) -->
+		{@const finalProps = mergeProps(props, { id, dir: mergedProps.dir, style: mergedProps.style }, { style: getFloatingContentCSSVars('menu') }, { style })}
 		{#if child}
 			{@render child({
 				props: finalProps,
 				wrapperProps,
 				...subContentState.snippetProps,
 			})}
+		{:else if isStatic}
+			<div {...finalProps}>
+				{@render children?.()}
+			</div>
 		{:else}
 			<div {...wrapperProps}>
 				<div {...finalProps}>

@@ -4,7 +4,8 @@
 	import type { MenubarContentStaticProps } from '../types.js';
 	import { MenubarContentState } from '../menubar.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
-	import MenuContentStatic from '../../menu/components/menu-content-static.svelte';
+	import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
+	import MenuContent from '../../menu/components/menu-content.svelte';
 
 	const uid = $props.id();
 
@@ -32,7 +33,18 @@
 		onOpenAutoFocus: boxWith(() => onOpenAutoFocus),
 	});
 
-	const mergedProps = $derived(mergeProps(restProps, contentState.props));
+	const mergedProps = $derived(
+		mergeProps(
+			{
+				'data-slot': 'menubar-content',
+				class:
+					'bg-popover text-popover-foreground transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[side=bottom]:starting:-translate-y-2 data-[side=top]:starting:translate-y-2 data-[side=left]:starting:translate-x-2 data-[side=right]:starting:-translate-x-2 z-50 min-w-[12rem] origin-(--bits-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-md outline-none',
+				style: getFloatingContentCSSVars('menu'),
+			},
+			restProps,
+			contentState.props,
+		),
+	);
 </script>
 
-<MenuContentStatic bind:ref {...mergedProps} {...contentState.popperProps} preventScroll={false} />
+<MenuContent bind:ref {...mergedProps} {...contentState.popperProps} preventScroll={false} isStatic />
