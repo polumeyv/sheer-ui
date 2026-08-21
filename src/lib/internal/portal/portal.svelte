@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	import type { Snippet } from 'svelte';
 
-	export type PortalTarget = Element | string;
+	export type PortalTarget = Element | ShadowRoot | string;
 
 	export type PortalProps = {
 		/**
@@ -27,43 +27,35 @@
 
 <script lang="ts">
 	import { resolvePortalToProp } from '../prop-resolvers.js';
-	import { BROWSER, DEV } from 'esm-env';
+	import { DEV } from 'esm-env';
 
 	let { to: toProp, children, disabled }: PortalProps = $props();
 
 	const to = resolvePortalToProp(() => toProp);
-
-	// Teleports the rendered node into the resolved target on mount and removes it on
-	// cleanup. Runs in an effect, so it re-targets automatically when `to` changes (e.g. a
-	// viewport ref that populates later). The wrapper carries `display: contents`, so it adds
-	// no box of its own — the content lays out as if it were a direct child of the target.
-	function portal(node: HTMLElement) {
-		if (!BROWSER || disabled) return;
-
-		const t = to.current;
-		let target: Element | null;
-		if (typeof t === 'string') {
-			target = document.querySelector(t);
-			if (DEV && target === null) {
-				throw new Error(`Target element "${t}" not found.`);
-			}
-		} else {
-			target = t;
-			if (DEV && !(target instanceof Element)) {
-				throw new TypeError(`Unknown portal target type: ${typeof target}. Allowed types: string (query selector) or Element.`);
-			}
-		}
-
-		if (!target) return;
-		target.appendChild(node);
-		return () => node.remove();
-	}
 </script>
 
 {#if disabled}
 	{@render children?.()}
 {:else}
-	<div class="contents" {@attach portal}>
+	<div
+		class="contents"
+		{@attach (node) => {
+			// Re-runs when `to` changes: svelte wraps the attachment in an effect, so the
+			// to.current read here is a tracked dependency and a new target re-teleports the node.
+			const t = to.current;
+			const target = typeof t === 'string' ? document.querySelector(t) : t;
+			// ShadowRoot (and other non-Element containers) take appendChild too
+			if (!(target instanceof Element || target instanceof ShadowRoot)) {
+				if (DEV) {
+					if (typeof t === 'string') throw new Error(`Target element "${t}" not found.`);
+					throw new TypeError(`Unknown portal target type: ${typeof t}. Allowed types: string (query selector), Element or ShadowRoot.`);
+				}
+				return;
+			}
+			target.appendChild(node);
+			return () => node.remove();
+		}}
+	>
 		{@render children?.()}
 	</div>
 {/if}
