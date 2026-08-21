@@ -1,14 +1,29 @@
-import { countdown } from 'handful';
-
-/** handful's countdown with a `$state` sink: `start(seconds)` / `stop()`, `.seconds` for the template; the owning
- *  component's teardown stops it. Call during component init, like `$effect`. */
+/** A restartable whole-seconds countdown for a component: `start(seconds)` shows `seconds` at once, then one less every
+ *  second down to `0`, ending any run in progress; `stop()` ends the run and shows `0`; the owning component's teardown
+ *  stops it too. Call during component init, like `$effect`. */
 export function createCountdown() {
 	let seconds = $state(0);
-	const c = countdown((s) => (seconds = s));
-	$effect(() => c.stop);
+	let timer: ReturnType<typeof setInterval> | undefined;
+
+	const stop = () => {
+		clearInterval(timer);
+		seconds = 0;
+	};
+	const start = (duration: number) => {
+		clearInterval(timer);
+		seconds = Math.max(0, Math.ceil(duration));
+		if (seconds > 0)
+			timer = setInterval(() => {
+				seconds -= 1;
+				if (seconds <= 0) clearInterval(timer);
+			}, 1000);
+	};
+
+	$effect(() => stop);
+
 	return {
-		start: c.start,
-		stop: c.stop,
+		start,
+		stop,
 		get seconds() {
 			return seconds;
 		},

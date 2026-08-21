@@ -76,6 +76,6 @@ describe('createCountdown', () => {
 		unmount(component);
 		expect(vi.getTimerCount()).toBe(0);
 		await settle(5000);
-		expect(component.log).toEqual([0, 10, 9, 0]);
+		expect(component.log).toEqual([0, 10, 9]); // the destroyed component renders nothing further
 	});
 });
