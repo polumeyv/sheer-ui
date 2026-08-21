@@ -2,7 +2,7 @@ import type { EscapeLayerProps } from '../../internal/escape-layer/types.js';
 import type { DismissibleLayerProps } from '../../internal/dismissible-layer/types.js';
 import type { FloatingLayerContentProps } from '../../internal/floating-layer/types.js';
 import type { TextSelectionLayerProps } from '../../internal/text-selection-layer/types.js';
-import type { PresenceLayerProps } from '../../internal/presence-layer/types.js';
+import type { PresenceProps } from '../../internal/presence-manager.svelte.js';
 import type { FocusScopeProps } from '../../internal/focus-scope/types.js';
 import type { ScrollLockProps } from '../../internal/body-scroll-lock.svelte.js';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../internal/types.js';
@@ -21,7 +21,7 @@ import type { PortalProps } from '../../internal/portal/index.js';
 type PopoverFloatingProps = EscapeLayerProps &
 	Omit<DismissibleLayerProps, 'onInteractOutsideStart'> &
 	FloatingLayerContentProps &
-	PresenceLayerProps &
+	PresenceProps &
 	TextSelectionLayerProps &
 	FocusScopeProps &
 	Omit<ScrollLockProps, 'restoreScrollDelay'>;

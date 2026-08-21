@@ -653,7 +653,6 @@ export class NavigationMenuIndicatorState {
 		return new NavigationMenuIndicatorState(getNavigationMenuProvider());
 	}
 	readonly context: NavigationMenuProviderState;
-	readonly isVisible = $derived.by(() => Boolean(this.context.opts.value.current));
 
 	constructor(context: NavigationMenuProviderState) {
 		this.context = context;
@@ -749,16 +748,6 @@ export class NavigationMenuContentState {
 	readonly attachment: RefAttachment;
 	readonly open = $derived.by(() => this.itemContext.opts.value.current === this.context.opts.value.current);
 	readonly value = $derived.by(() => this.itemContext.opts.value.current);
-	// We persist the last active content value as the viewport may be animating out
-	// and we want the content to remain mounted for the lifecycle of the viewport.
-	readonly isLastActiveValue = $derived.by(() => {
-		if (this.context.viewportRef.current) {
-			if (!this.context.opts.value.current && this.context.opts.previousValue.current) {
-				return this.context.opts.previousValue.current === this.itemContext.opts.value.current;
-			}
-		}
-		return false;
-	});
 
 	constructor(
 		opts: NavigationMenuContentStateOpts,
@@ -807,6 +796,7 @@ export class NavigationMenuContentImplState {
 	readonly context: NavigationMenuProviderState;
 	readonly listContext: NavigationMenuListState;
 	readonly attachment: RefAttachment;
+	readonly open = $derived.by(() => this.context.opts.value.current === this.itemContext.opts.value.current);
 	prevMotionAttribute: MotionAttribute | null = $state(null);
 	readonly motionAttribute: MotionAttribute | null = $derived.by(() => {
 		const items = this.listContext.listTriggers;
@@ -967,7 +957,7 @@ export class NavigationMenuContentImplState {
 				'aria-labelledby': this.itemContext.triggerId,
 				'data-motion': this.motionAttribute ?? undefined,
 				'data-orientation': this.context.opts.orientation.current,
-				'data-state': getDataOpenClosed(this.context.opts.value.current === this.itemContext.opts.value.current),
+				'data-state': getDataOpenClosed(this.open),
 				onkeydown: this.onkeydown,
 				[navigationMenuAttrs.content]: '',
 				...this.attachment,
@@ -990,7 +980,6 @@ export class NavigationMenuViewportState {
 	readonly activeContentValue = $derived.by(() => this.context.opts.value.current);
 	size = $state<{ width: number; height: number } | null>(null);
 	contentNode = $state<HTMLElement | null>(null);
-	mounted = $state(false);
 
 	constructor(opts: NavigationMenuViewportStateOpts, context: NavigationMenuProviderState) {
 		this.opts = opts;
@@ -1018,16 +1007,6 @@ export class NavigationMenuViewportState {
 		 * from `0.5` to `1` of the intended size.
 		 */
 		observeResizeMany(() => [this.contentNode], this.#measureContent);
-
-		// reset size when viewport closes to prevent residual size animations
-		$effect(() => {
-			this.mounted;
-			untrack(() => {
-				if (!this.mounted && this.size) {
-					this.size = null;
-				}
-			});
-		});
 	}
 
 	#measureContent = () => {

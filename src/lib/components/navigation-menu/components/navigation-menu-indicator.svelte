@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 
 	import type { NavigationMenuIndicatorProps } from '../types.js';
@@ -9,10 +8,8 @@
 	import NavigationMenuIndicatorImpl from './navigation-menu-indicator-impl.svelte';
 
 	import Portal from '../../../internal/portal/portal.svelte';
-	import PresenceLayer from '../../../internal/presence-layer/presence-layer.svelte';
 
 	import { createId } from '../../../internal/create-id.js';
-	import { getDataTransitionAttrs } from '../../../internal/attrs.js';
 
 	const uid = $props.id();
 
@@ -22,7 +19,6 @@
 		class: className,
 		children,
 		child,
-		forceMount = false,
 		...restProps
 	}: NavigationMenuIndicatorProps & {
 		class?: ClassValue;
@@ -32,7 +28,7 @@
 
 	const indicatorClass = $derived(
 		join(
-			'top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:animate-in data-[state=visible]:fade-in',
+			'top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden transition-[opacity,display] transition-discrete data-[state=hidden]:opacity-0 data-[state=hidden]:hidden starting:data-[state=visible]:opacity-0',
 			className,
 		),
 	);
@@ -47,18 +43,14 @@
 
 {#if indicatorState.context.indicatorTrackRef.current}
 	<Portal to={indicatorState.context.indicatorTrackRef.current}>
-		<PresenceLayer open={forceMount || indicatorState.isVisible} ref={boxWith(() => ref)}>
-			{#snippet presence({ transitionStatus })}
-				<NavigationMenuIndicatorImpl {...mergeProps(mergedProps, getDataTransitionAttrs(transitionStatus))} {id} bind:ref {child}>
-					{#snippet children()}
-						{#if children}
-							{@render children()}
-						{:else}
-							<div class="bg-border relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm shadow-md"></div>
-						{/if}
-					{/snippet}
-				</NavigationMenuIndicatorImpl>
+		<NavigationMenuIndicatorImpl {...mergedProps} {id} bind:ref {child}>
+			{#snippet children()}
+				{#if children}
+					{@render children()}
+				{:else}
+					<div class="bg-border relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm shadow-md"></div>
+				{/if}
 			{/snippet}
-		</PresenceLayer>
+		</NavigationMenuIndicatorImpl>
 	</Portal>
 {/if}

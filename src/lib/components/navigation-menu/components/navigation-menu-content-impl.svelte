@@ -56,7 +56,7 @@
 			if (e.defaultPrevented) return;
 			contentImplState.onEscapeKeydown(e);
 		},
-		enabled: () => true,
+		enabled: () => contentImplState.open,
 	});
 
 	const dismissible = interactOutsideAttachment({
@@ -72,7 +72,7 @@
 			if (e.defaultPrevented) return;
 			contentImplState.onFocusOutside(e);
 		},
-		enabled: () => true,
+		enabled: () => contentImplState.open,
 	});
 </script>
 

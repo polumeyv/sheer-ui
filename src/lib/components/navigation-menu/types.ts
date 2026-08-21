@@ -148,15 +148,6 @@ export type NavigationMenuContentPropsWithoutHTML = WithChild<{
 	 * Behavior when an interaction occurs outside the content.
 	 */
 	interactOutsideBehavior?: InteractOutsideBehaviorType;
-
-	/**
-	 * Whether to forcefully mount the content, regardless of the open state.
-	 * This is useful when wanting to use more custom transition and animation
-	 * libraries.
-	 *
-	 * @default false
-	 */
-	forceMount?: boolean;
 }>;
 
 export type NavigationMenuContentProps = NavigationMenuContentPropsWithoutHTML &
@@ -178,30 +169,12 @@ export type NavigationMenuLinkPropsWithoutHTML = WithChild<{
 export type NavigationMenuLinkProps = NavigationMenuLinkPropsWithoutHTML &
 	Without<BitsPrimitiveAnchorAttributes, NavigationMenuLinkPropsWithoutHTML>;
 
-export type NavigationMenuIndicatorPropsWithoutHTML = WithChild<{
-	/**
-	 * Whether to forcefully mount the content, regardless of the open state.
-	 * This is useful when wanting to use more custom transition and animation
-	 * libraries.
-	 *
-	 * @defaultValue false
-	 */
-	forceMount?: boolean;
-}>;
+export type NavigationMenuIndicatorPropsWithoutHTML = WithChild;
 
 export type NavigationMenuIndicatorProps = NavigationMenuIndicatorPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, NavigationMenuIndicatorPropsWithoutHTML>;
 
-export type NavigationMenuViewportPropsWithoutHTML = WithChild<{
-	/**
-	 * Whether to forcefully mount the content, regardless of the open state.
-	 * This is useful when wanting to use more custom transition and animation
-	 * libraries.
-	 *
-	 * @defaultValue false
-	 */
-	forceMount?: boolean;
-}>;
+export type NavigationMenuViewportPropsWithoutHTML = WithChild;
 
 export type NavigationMenuViewportProps = NavigationMenuViewportPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, NavigationMenuViewportPropsWithoutHTML>;
