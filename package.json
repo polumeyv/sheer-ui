@@ -325,6 +325,7 @@
 		"@floating-ui/dom": "^1.7.1",
 		"@lucide/svelte": "^1.18.0",
 		"esm-env": "^1.2.2",
+		"handful": "^0.2.0",
 		"d3-scale": "^4.0.2",
 		"layerchart": "^2.0.1",
 		"overrule": "^0.7.1"

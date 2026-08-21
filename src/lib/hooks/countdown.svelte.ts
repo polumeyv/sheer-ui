@@ -1,4 +1,4 @@
-import { countdown } from './countdown.js';
+import { countdown } from 'handful';
 
 /** A restartable countdown owned by the calling component (call during component init, like `$effect`).
  *  `start(durationS)` sets `.seconds` to the whole seconds of `durationS` at once, then counts it down to `0` on
