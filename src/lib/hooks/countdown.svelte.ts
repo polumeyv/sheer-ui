@@ -1,26 +1,21 @@
-/** Whole seconds left until `untilMs`, one value per second, ending at `0`. The first value is yielded at once (`0`
- *  when the instant has already passed), each next one right after the second boundary it describes, so a display
- *  fed by `for await` never shows a stale number. Aborting `signal` ends the sequence without a final `0`; the
- *  pending tick's timer is left to lapse on its own (at most a second) rather than woken early. */
-export async function* countdown(untilMs: number, signal?: AbortSignal): AsyncGenerator<number, void, undefined> {
-	while (!signal?.aborted) {
-		const seconds = Math.max(0, Math.ceil((untilMs - Date.now()) / 1000));
-		yield seconds;
-		if (seconds === 0) return;
-		await new Promise((resolve) => setTimeout(resolve, untilMs - (seconds - 1) * 1000 - Date.now()));
-	}
-}
+import { countdown } from './countdown.js';
 
-/** A restartable per-component countdown. `start(seconds)` counts `seconds` (whole seconds, read from `.seconds`)
- *  down to `0`, ending any run still in progress; `stop()` ends the current run where it stands; the owning
- *  component's teardown stops it too. */
+/** A restartable countdown owned by the calling component (call during component init, like `$effect`).
+ *  `start(durationS)` sets `.seconds` to the whole seconds of `durationS` at once, then counts it down to `0` on
+ *  the second boundaries, ending any run still in progress first; `stop()` ends the current run and resets
+ *  `.seconds` to `0`; the component's teardown stops it too. An ended run's pending timer is left to lapse on
+ *  its own (at most a second); it writes nothing. */
 export function createCountdown() {
 	let seconds = $state(0);
 	let run: AbortController | undefined;
 
-	const stop = () => run?.abort();
+	const stop = () => {
+		run?.abort();
+		seconds = 0;
+	};
 	const start = (durationS: number) => {
 		stop();
+		seconds = Math.max(0, Math.ceil(durationS));
 		const { signal } = (run = new AbortController());
 		void (async () => {
 			for await (const s of countdown(Date.now() + durationS * 1000, signal)) seconds = s;

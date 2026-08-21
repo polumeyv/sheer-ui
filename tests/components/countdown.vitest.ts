@@ -1,12 +1,20 @@
 import { flushSync, mount, tick, unmount } from 'svelte';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import CountdownFixture from './countdown.fixture.svelte';
 
+beforeEach(() => vi.useFakeTimers());
 afterEach(() => {
 	vi.useRealTimers();
 	document.body.innerHTML = '';
 });
 
+const mountFixture = () => {
+	const target = document.createElement('div');
+	document.body.append(target);
+	const component = mount(CountdownFixture, { target });
+	flushSync();
+	return component;
+};
 const shown = () => document.querySelector('output')!.textContent;
 const settle = async (ms: number) => {
 	await vi.advanceTimersByTimeAsync(ms);
@@ -14,41 +22,61 @@ const settle = async (ms: number) => {
 };
 
 describe('createCountdown', () => {
-	test('start(seconds) counts down to 0 and a later start restarts from its own duration', async () => {
-		vi.useFakeTimers();
-		const target = document.createElement('div');
-		document.body.append(target);
-		const component = mount(CountdownFixture, { target });
-		flushSync();
+	test('start(seconds) shows the duration at once, counts down on the second boundaries, and re-arms after 0', async () => {
+		const component = mountFixture();
 		expect(shown()).toBe('0');
 
 		component.start(3);
-		await settle(0);
+		flushSync();
 		expect(shown()).toBe('3');
-		await settle(1000);
+		await settle(999);
+		expect(shown()).toBe('3');
+		await settle(1);
 		expect(shown()).toBe('2');
-
-		component.start(5); // the 3s run is ended; its next tick must not write a stale 1
-		await settle(0);
-		expect(shown()).toBe('5');
-		await settle(1000);
-		expect(shown()).toBe('4');
-		await settle(4000);
+		await settle(2000);
 		expect(shown()).toBe('0');
 
+		component.start(2);
+		flushSync();
+		expect(shown()).toBe('2');
+		await settle(2000);
+		expect(shown()).toBe('0');
+		expect(component.log).toEqual([0, 3, 2, 1, 0, 2, 1, 0]);
 		unmount(component);
 	});
 
-	test('unmount ends the run', async () => {
-		vi.useFakeTimers();
-		const target = document.createElement('div');
-		document.body.append(target);
-		const component = mount(CountdownFixture, { target });
-		flushSync();
-		component.start(10);
-		await settle(1000);
+	test('a later start ends the run in progress; nothing of the ended run reaches the display', async () => {
+		const component = mountFixture();
+		component.start(3);
+		await settle(1500); // mid-sleep towards its `1`
+		component.start(5);
+		await settle(4000); // spans the ended run's `1` (t=2000) and `0` (t=3000)
+		expect(component.log).toEqual([0, 3, 2, 5, 4, 3, 2, 1]);
 		unmount(component);
-		await expect(settle(5000)).resolves.toBeUndefined();
+	});
+
+	test('stop() ends the run and clears the display', async () => {
+		const component = mountFixture();
+		component.start(10);
+		await settle(1500);
+		expect(shown()).toBe('9');
+		component.stop();
+		flushSync();
+		expect(shown()).toBe('0');
+		await settle(5000);
+		expect(component.log).toEqual([0, 10, 9, 0]);
 		expect(vi.getTimerCount()).toBe(0);
+		unmount(component);
+	});
+
+	test('unmount ends the run; its last timer lapses within a second', async () => {
+		const component = mountFixture();
+		component.start(10);
+		await settle(1500);
+		unmount(component);
+		expect(vi.getTimerCount()).toBe(1);
+		await settle(1000);
+		expect(vi.getTimerCount()).toBe(0);
+		expect(component.log).toEqual([0, 10, 9]);
 	});
 });

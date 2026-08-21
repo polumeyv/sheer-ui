@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { countdown } from './countdown.svelte';
+import { countdown } from './countdown';
 
 describe('countdown', () => {
 	it('yields the remaining whole seconds down to 0, each right after its boundary', async () => {
