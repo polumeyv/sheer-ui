@@ -69,14 +69,13 @@ describe('createCountdown', () => {
 		unmount(component);
 	});
 
-	test('unmount ends the run; its last timer lapses within a second', async () => {
+	test('unmount ends the run and clears its timer', async () => {
 		const component = mountFixture();
 		component.start(10);
 		await settle(1500);
 		unmount(component);
-		expect(vi.getTimerCount()).toBe(1);
-		await settle(1000);
 		expect(vi.getTimerCount()).toBe(0);
-		expect(component.log).toEqual([0, 10, 9]);
+		await settle(5000);
+		expect(component.log).toEqual([0, 10, 9, 0]);
 	});
 });
