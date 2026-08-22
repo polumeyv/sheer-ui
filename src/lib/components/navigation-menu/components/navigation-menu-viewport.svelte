@@ -32,7 +32,7 @@
 
 	const viewportClass = $derived(
 		join(
-			'origin-top-center relative mt-1.5 h-[calc(var(--bits-navigation-menu-viewport-height)+1rem)] w-full overflow-hidden rounded-lg bg-popover text-popover-foreground shadow ring-1 ring-foreground/10 transition-[scale,display] transition-discrete duration-100 data-closed:scale-90 data-closed:hidden starting:data-open:scale-90 md:w-[calc(var(--bits-navigation-menu-viewport-width)+1rem)]',
+			'origin-top-center relative mt-1.5 h-[calc(var(--bits-navigation-menu-viewport-height)+1rem)] w-full overflow-hidden rounded-lg bg-popover text-popover-foreground shadow ring-1 ring-foreground/10 transition transition-discrete duration-200 data-closed:opacity-0 data-closed:scale-95 data-closed:hidden starting:data-open:opacity-0 starting:data-open:scale-95 md:w-[calc(var(--bits-navigation-menu-viewport-width)+1rem)]',
 			className,
 		),
 	);
