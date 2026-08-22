@@ -51,7 +51,7 @@
 
 <div class="absolute inset-s-0 top-full isolate z-50 flex justify-center">
 	{#if child}
-		{@render child({ props: mergedProps })}
+		{@render child({ props: mergedProps, open: viewportState.open })}
 	{:else}
 		<div {...mergedProps}>
 			{@render children?.()}

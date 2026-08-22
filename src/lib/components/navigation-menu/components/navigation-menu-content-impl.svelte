@@ -26,7 +26,7 @@
 	}: Omit<NavigationMenuContentProps, 'child'> & {
 		itemState?: NavigationMenuItemState;
 		onRefChange?: (ref: HTMLElement | null) => void;
-		child?: Snippet<[{ props: Record<string, unknown> }]>;
+		child?: Snippet<[{ props: Record<string, unknown>; open: boolean }]>;
 	} = $props();
 
 	const contentImplState = NavigationMenuContentImplState.create(
@@ -77,7 +77,7 @@
 </script>
 
 {#if childProp}
-	{@render childProp({ props: mergeProps(mergedProps, dismissible.props, dismissible.attachment, escapeAttachment) })}
+	{@render childProp({ props: mergeProps(mergedProps, dismissible.props, dismissible.attachment, escapeAttachment), open: contentImplState.open })}
 {:else}
 	<div {...mergeProps(mergedProps, dismissible.props, dismissible.attachment, escapeAttachment)}>
 		{@render childrenProp?.()}
