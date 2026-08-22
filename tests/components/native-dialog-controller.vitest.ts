@@ -1,6 +1,7 @@
 import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import NativeDialogControllerFixture from './native-dialog-controller.fixture.svelte';
+import { installNativeDialogPolyfill } from './native-dialog-polyfill.js';
 
 type Fixture = ReturnType<typeof render>['component'];
 
@@ -20,20 +21,7 @@ const open = (component: Fixture) => {
 
 beforeEach(() => {
 	if (!globalThis.PointerEvent) Object.defineProperty(globalThis, 'PointerEvent', { configurable: true, value: MouseEvent });
-	Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
-		configurable: true,
-		value: vi.fn(function (this: HTMLDialogElement) {
-			this.open = true;
-		}),
-	});
-	Object.defineProperty(HTMLDialogElement.prototype, 'close', {
-		configurable: true,
-		value: vi.fn(function (this: HTMLDialogElement) {
-			if (!this.open) return;
-			this.open = false;
-			this.dispatchEvent(new Event('close'));
-		}),
-	});
+	installNativeDialogPolyfill();
 });
 
 afterEach(() => {

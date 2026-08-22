@@ -55,7 +55,8 @@
 		// --- Accepted for API parity; the native <dialog> absorbs or no-ops these ---
 		// no-op: the <dialog> is always rendered; showModal()/close() toggles visibility.
 		forceMount = false,
-		// no-op: native modal restores focus to the opener on close.
+		// no-op: native modal restores focus to the opener on close (the controller closes an open
+		// dialog on teardown too, so this holds when a consumer-owned `{#if open}` removes it).
 		onCloseAutoFocus = () => {},
 		// no-op: showModal() autofocuses ([autofocus] or the first focusable).
 		onOpenAutoFocus = () => {},

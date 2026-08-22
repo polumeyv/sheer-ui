@@ -1,18 +1,19 @@
 import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import Fixture from './dialog-child-open.fixture.svelte';
+import { installNativeDialogPolyfill } from './native-dialog-polyfill.js';
 
 // The bring-your-own-transition contract on the native modal surface: the consumer owns the
-// `{#if open}` around the <dialog>, so the element appears after the open flip. The controller
-// attachment must still call showModal() on that late element, and native dismissal must flow
-// back into `open` so the consumer's block unmounts.
-
-type Fixture = { setOpen: (value: boolean) => void };
+// `{#if open}` around the <dialog>, so the element appears after the open flip and leaves before
+// the controller's settle-deferred close. The controller must still showModal() the late element,
+// close() it on teardown (top layer + native focus restore), and native dismissal must flow back
+// into `open` so the consumer's block unmounts. The polyfilled showModal/close are prototype-wide
+// mocks, so their call counts span every <dialog> in the test.
 
 function render() {
 	const target = document.createElement('div');
 	document.body.append(target);
-	const component = mount(Fixture, { target }) as unknown as Fixture;
+	const component = mount(Fixture, { target });
 	flushSync();
 	const setOpen = (value: boolean) => {
 		component.setOpen(value);
@@ -26,22 +27,7 @@ function render() {
 	};
 }
 
-beforeEach(() => {
-	Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
-		configurable: true,
-		value: vi.fn(function (this: HTMLDialogElement) {
-			this.open = true;
-		}),
-	});
-	Object.defineProperty(HTMLDialogElement.prototype, 'close', {
-		configurable: true,
-		value: vi.fn(function (this: HTMLDialogElement) {
-			if (!this.open) return;
-			this.open = false;
-			this.dispatchEvent(new Event('close'));
-		}),
-	});
-});
+beforeEach(installNativeDialogPolyfill);
 
 afterEach(() => {
 	document.body.innerHTML = '';
@@ -49,34 +35,42 @@ afterEach(() => {
 });
 
 describe('Dialog child snippet with a consumer-owned {#if open}', () => {
-	test('showModal runs on the late element; closing removes it', () => {
+	test('showModal runs on the late element; the block teardown closes it', () => {
 		const { component, setOpen, dialog } = render();
-		expect(dialog()).toBeNull();
+		try {
+			expect(dialog()).toBeNull();
 
-		setOpen(true);
-		const el = dialog()!;
-		expect(el).not.toBeNull();
-		expect(el.showModal).toHaveBeenCalledOnce();
-		expect(el.open).toBe(true);
-		expect(el.dataset.state).toBe('open');
+			setOpen(true);
+			const el = dialog()!;
+			expect(el).not.toBeNull();
+			expect(el.showModal).toHaveBeenCalledOnce();
+			expect(el.open).toBe(true);
+			expect(el.dataset.state).toBe('open');
 
-		setOpen(false);
-		expect(dialog()).toBeNull();
+			setOpen(false);
+			expect(dialog()).toBeNull();
+			expect(HTMLDialogElement.prototype.close).toHaveBeenCalledOnce();
+			expect(el.open).toBe(false);
 
-		setOpen(true);
-		expect(dialog()!.showModal).toHaveBeenCalledTimes(2);
-		unmount(component as unknown as ReturnType<typeof mount>);
+			setOpen(true);
+			expect(dialog()!.showModal).toHaveBeenCalledTimes(2);
+		} finally {
+			unmount(component);
+		}
 	});
 
 	test('native dismissal flows back into open so the block unmounts', () => {
 		const { component, setOpen, dialog, readout } = render();
-		setOpen(true);
-		expect(readout()).toBe('open');
+		try {
+			setOpen(true);
+			expect(readout()).toBe('open');
 
-		dialog()!.dispatchEvent(new Event('close'));
-		flushSync();
-		expect(readout()).toBe('closed');
-		expect(dialog()).toBeNull();
-		unmount(component as unknown as ReturnType<typeof mount>);
+			dialog()!.dispatchEvent(new Event('close'));
+			flushSync();
+			expect(readout()).toBe('closed');
+			expect(dialog()).toBeNull();
+		} finally {
+			unmount(component);
+		}
 	});
 });

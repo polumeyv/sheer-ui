@@ -96,6 +96,12 @@ export function nativeDialogControllerAttachment(options: NativeDialogController
 				{ signal },
 			);
 		}
+
+		// Teardown can outrun the settle-deferred close (a consumer-owned `{#if open}`, or unmount
+		// while open); run the native close so the top layer and focus restore are handled.
+		return () => {
+			if (node.open) node.close();
+		};
 	}) satisfies Attachment<HTMLDialogElement>;
 
 	return { [createAttachmentKey()]: controller };
