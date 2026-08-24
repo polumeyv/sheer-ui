@@ -78,4 +78,17 @@ describe('createCountdown', () => {
 		await settle(5000);
 		expect(component.log).toEqual([0, 10, 9]); // the destroyed component renders nothing further
 	});
+
+	test('a tick that arrives late shows the true remainder, not one less', async () => {
+		const component = mountFixture();
+		component.start(10);
+		// A suspended tab: the clock advances 8s while the interval fires once.
+		vi.setSystemTime(Date.now() + 8000);
+		await settle(1000);
+		expect(shown()).toBe('1');
+		await settle(1000);
+		expect(shown()).toBe('0');
+		expect(vi.getTimerCount()).toBe(0);
+		unmount(component);
+	});
 });

@@ -11,10 +11,12 @@ export function createCountdown() {
 	};
 	const start = (duration: number) => {
 		clearInterval(timer);
+		// Anchored to the clock rather than counted in ticks: a throttled or suspended tab wakes to the true remainder.
+		const untilMs = Date.now() + duration * 1000;
 		seconds = Math.max(0, Math.ceil(duration));
 		if (seconds > 0)
 			timer = setInterval(() => {
-				seconds -= 1;
+				seconds = Math.max(0, Math.ceil((untilMs - Date.now()) / 1000));
 				if (seconds <= 0) clearInterval(timer);
 			}, 1000);
 	};
