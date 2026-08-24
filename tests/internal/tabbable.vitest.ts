@@ -111,6 +111,15 @@ describe("internal tabbable", () => {
 		expect(ids(getTabbableCandidates(root))).toEqual(["shadow"]);
 	});
 
+	test("interleaves slotted light dom with shadow candidates in document order", () => {
+		const root = render(`<button data-id="one">one</button><div data-id="host"><button data-id="slotted">slotted</button></div><button data-id="two">two</button>`);
+		const host = getById(root, "host");
+		const shadow = host.attachShadow({ mode: "open" });
+		shadow.innerHTML = `<button data-id="inner-a">a</button><slot></slot><button data-id="inner-b">b</button>`;
+
+		expect(ids(getTabbableCandidates(root))).toEqual(["one", "inner-a", "slotted", "inner-b", "two"]);
+	});
+
 	test("walks slotted light-dom candidates through open shadow roots", () => {
 		const root = render(`<div data-id="host"><button data-id="slotted">slotted</button></div>`);
 		const host = getById(root, "host");
