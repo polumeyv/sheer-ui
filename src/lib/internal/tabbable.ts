@@ -7,6 +7,8 @@
  * shadow roots and the display check modes used by the helpers below.
  */
 
+import { selfAndAncestors } from './tools/utils/dom.js';
+
 type DisplayCheck = 'full' | 'none';
 
 interface TabbableOptions {
@@ -94,7 +96,12 @@ function getCandidates(container: Element, includeContainer: boolean, filter: (n
 	return candidates.filter(filter);
 }
 
-function getCandidatesIteratively(
+/**
+ * Candidates under `elements` in document order (depth-first, pre-order). Slot content and open
+ * shadow roots recurse as their own scope: spliced in when `options.flatten`, otherwise yielded as
+ * a single `{ scopeParent, candidates }` entry so `sortByOrder` can rank the scope as a unit.
+ */
+function* iterateCandidates(
 	elements: Iterable<Element>,
 	includeContainer: boolean,
 	options: {
@@ -102,50 +109,43 @@ function getCandidatesIteratively(
 		flatten: boolean;
 		shadowRootFilter?: (node: TabbableElement) => boolean;
 	},
-): Candidate[] {
-	const candidates: Candidate[] = [];
-	const rootElements = Array.from(elements) as TabbableElement[];
-	const elementsToCheck = [...rootElements];
+): Generator<Candidate> {
+	const roots = Array.from(elements) as TabbableElement[];
+	// The roots are excluded from their own result unless `includeContainer`. Nested scopes always
+	// pass true, so only the outermost call ever consults this.
+	const excluded = includeContainer ? null : new Set<Element>(roots);
 
-	while (elementsToCheck.length) {
-		const element = elementsToCheck.shift();
-		if (!element || isInert(element, false)) continue;
+	function* scope(scopeParent: TabbableElement, content: Iterable<Element>): Generator<Candidate> {
+		const nested = iterateCandidates(content, true, options);
+		if (options.flatten) yield* nested;
+		else yield { scopeParent, candidates: Array.from(nested) };
+	}
 
-		if (element.tagName === 'SLOT') {
-			const slot = element as HTMLSlotElement;
-			const content = slot.assignedElements().length ? slot.assignedElements() : Array.from(slot.children);
-			const nestedCandidates = getCandidatesIteratively(content, true, options);
+	function* walk(elements: TabbableElement[]): Generator<Candidate> {
+		for (const element of elements) {
+			if (isInert(element, false)) continue;
 
-			if (options.flatten) {
-				candidates.push(...nestedCandidates);
-			} else {
-				candidates.push({ scopeParent: element, candidates: nestedCandidates });
+			if (element.tagName === 'SLOT') {
+				const slot = element as HTMLSlotElement;
+				const assigned = slot.assignedElements();
+				yield* scope(element, assigned.length ? assigned : Array.from(slot.children));
+				continue;
 			}
-			continue;
-		}
 
-		const validCandidate = matches.call(element, candidateSelector);
-		if (validCandidate && options.filter(element) && (includeContainer || !rootElements.includes(element))) {
-			candidates.push(element);
-		}
-
-		const shadowRoot = element.shadowRoot;
-		const validShadowRoot =
-			shadowRoot && !isInert(shadowRoot, false) && (!options.shadowRootFilter || options.shadowRootFilter(element));
-
-		if (validShadowRoot) {
-			const nestedCandidates = getCandidatesIteratively(shadowRoot.children, true, options);
-			if (options.flatten) {
-				candidates.push(...nestedCandidates);
-			} else {
-				candidates.push({ scopeParent: element, candidates: nestedCandidates });
+			if (matches.call(element, candidateSelector) && options.filter(element) && !excluded?.has(element)) {
+				yield element;
 			}
-		} else {
-			elementsToCheck.unshift(...(Array.from(element.children) as TabbableElement[]));
+
+			const shadowRoot = element.shadowRoot;
+			const validShadowRoot =
+				shadowRoot && !isInert(shadowRoot, false) && (!options.shadowRootFilter || options.shadowRootFilter(element));
+
+			if (validShadowRoot) yield* scope(element, shadowRoot.children);
+			else yield* walk(Array.from(element.children) as TabbableElement[]);
 		}
 	}
 
-	return candidates;
+	yield* walk(roots);
 }
 
 function hasTabIndex(node: Element): boolean {
@@ -259,17 +259,15 @@ function isHidden(node: TabbableElement, options: TabbableOptions): boolean {
 function isDisabledFromFieldset(node: TabbableElement): boolean {
 	if (!/^(INPUT|BUTTON|SELECT|TEXTAREA)$/.test(node.tagName)) return false;
 
-	let parent = node.parentElement;
-	while (parent) {
+	for (const parent of selfAndAncestors(node.parentElement)) {
 		if (parent.tagName === 'FIELDSET' && (parent as HTMLFieldSetElement).disabled) {
-			for (const child of Array.from(parent.children)) {
+			for (const child of parent.children) {
 				if (child.tagName === 'LEGEND') {
 					return matches.call(parent, 'fieldset[disabled] *') ? true : !child.contains(node);
 				}
 			}
 			return true;
 		}
-		parent = parent.parentElement;
 	}
 
 	return false;
@@ -319,13 +317,12 @@ function sortByOrder(candidates: Candidate[]): TabbableElement[] {
 
 export function tabbable(container: HTMLElement, options: TabbableOptions = {}) {
 	if (options.getShadowRoot) {
-		return sortByOrder(
-			getCandidatesIteratively([container], false, {
-				filter: (node) => isNodeMatchingSelectorTabbable(options, node),
-				flatten: false,
-				shadowRootFilter: isShadowRootTabbable,
-			}),
-		);
+		const candidates = iterateCandidates([container], false, {
+			filter: (node) => isNodeMatchingSelectorTabbable(options, node),
+			flatten: false,
+			shadowRootFilter: isShadowRootTabbable,
+		});
+		return sortByOrder(Array.from(candidates));
 	}
 
 	return sortByOrder(getCandidates(container, false, (node) => isNodeMatchingSelectorTabbable(options, node)));
@@ -333,10 +330,11 @@ export function tabbable(container: HTMLElement, options: TabbableOptions = {}) 
 
 export function focusable(container: HTMLElement, options: TabbableOptions = {}) {
 	if (options.getShadowRoot) {
-		return getCandidatesIteratively([container], false, {
+		const candidates = iterateCandidates([container], false, {
 			filter: (node) => isNodeMatchingSelectorFocusable(options, node),
 			flatten: true,
-		}) as TabbableElement[];
+		});
+		return Array.from(candidates) as TabbableElement[];
 	}
 
 	return getCandidates(container, false, (node) => isNodeMatchingSelectorFocusable(options, node));

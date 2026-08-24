@@ -12,7 +12,7 @@ import {
 	WINDOW_TOP_OFFSET,
 } from './constants.js';
 import { isIOSFirefox } from './browser.js';
-import { isIOS } from '../tools/utils/dom.js';
+import { isIOS, selfAndAncestors } from '../tools/utils/dom.js';
 import { on } from 'svelte/events';
 import { createContext, tick, untrack } from 'svelte';
 import { assignStyle, applyStyle, dampenValue, getTranslate, isVertical } from './helpers.js';
@@ -127,7 +127,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 	}
 
 	function shouldDrag(el: EventTarget, isDraggingInDirection: boolean) {
-		let element = el as HTMLElement;
+		const element = el as HTMLElement;
 		const highlightedText = window.getSelection()?.toString();
 		const swipeAmount = drawerNode ? getTranslate(drawerNode, opts.direction.current) : null;
 		// performance.now() shares PointerEvent.timeStamp's monotonic time origin, so the two mix safely.
@@ -174,23 +174,20 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		}
 
 		// Keep climbing up the DOM tree as long as there's a parent
-		while (element) {
+		for (const ancestor of selfAndAncestors(element)) {
 			// Check if the element is scrollable
-			if (element.scrollHeight > element.clientHeight) {
-				if (element.scrollTop !== 0) {
+			if (ancestor.scrollHeight > ancestor.clientHeight) {
+				if (ancestor.scrollTop !== 0) {
 					lastTimeDragPrevented = performance.now();
 
 					// The element is scrollable and not scrolled to the top, so don't drag
 					return false;
 				}
 
-				if (element.getAttribute('role') === 'dialog') {
+				if (ancestor.getAttribute('role') === 'dialog') {
 					return true;
 				}
 			}
-
-			// Move up to the parent element
-			element = element.parentNode as HTMLElement;
 		}
 
 		// No scrollable parents not scrolled to the top found, so drag

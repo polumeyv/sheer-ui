@@ -1,6 +1,6 @@
 // This code comes from https://github.com/adobe/react-spectrum/blob/main/packages/react-aria/src/overlays/usePreventScroll.ts
 
-import { isIOS } from '../tools/utils/dom.js';
+import { isIOS, selfAndAncestors } from '../tools/utils/dom.js';
 import { BROWSER } from 'esm-env';
 import { isWebKit } from './browser.js';
 import { SharedState } from '../shared-state.svelte.js';
@@ -34,14 +34,14 @@ const isScrollable = (node: Element | null, checkForOverflow?: boolean): boolean
 	return scrollable;
 };
 
+// `node` itself is never the answer: callers want the *enclosing* scroller, and both branches of
+// the upstream `isScrollable(node) ? node.parentElement : node` seed skipped it either way.
 const getScrollParent = (node: Element, checkForOverflow?: boolean): Element => {
-	let scrollableNode: Element | null = isScrollable(node, checkForOverflow) ? node.parentElement : node;
-
-	while (scrollableNode && !isScrollable(scrollableNode, checkForOverflow)) {
-		scrollableNode = scrollableNode.parentElement;
+	for (const el of selfAndAncestors(node.parentElement)) {
+		if (isScrollable(el, checkForOverflow)) return el;
 	}
 
-	return scrollableNode || document.scrollingElement || document.documentElement;
+	return document.scrollingElement || document.documentElement;
 };
 
 // HTML input types that do not cause the software keyboard to appear.
