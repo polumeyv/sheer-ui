@@ -6,6 +6,7 @@
 	type CountryCode = keyof typeof COUNTRIES;
 
 	let {
+		id,
 		name,
 		value = $bindable(''),
 		onchange,
@@ -13,6 +14,7 @@
 		placeholder = 'Phone Number',
 		disabled = false,
 	}: {
+		id?: string;
 		name?: string;
 		value?: string;
 		onchange?: (value: string) => void;
@@ -47,6 +49,7 @@
 			+{COUNTRIES[country]}
 		</div>
 		<Input
+			{id}
 			type="tel"
 			{placeholder}
 			autocomplete="tel-national"
