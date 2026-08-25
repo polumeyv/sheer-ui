@@ -1,17 +1,16 @@
-<script>
+<script lang="ts">
 	import SunIcon from '@lucide/svelte/icons/sun';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 
 	import { getTheme } from './theme.svelte.js';
-	import { Button } from '../button';
+	import { Button, type ButtonVariant } from '../button';
 
-	/** @type {{ variant?: import('../button').ButtonVariant }} */
-	let { variant = 'ghost' } = $props();
+	let { variant = 'ghost' }: { variant?: ButtonVariant } = $props();
 
 	const theme = getTheme();
 	// `theme.current` is SSR-safe (undefined on the server) and stays reactive, so `theme.toggle()`
 	// alone flips `dark` — no manual bookkeeping, and no `document` read at init that would crash during SSR.
-	let phase = $state('idle');
+	let phase = $state<'idle' | 'to-dark' | 'to-light'>('idle');
 	const dark = $derived(theme.current === 'dark');
 
 	function toggleTheme() {
