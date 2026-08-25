@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Snippet } from 'svelte';
-import type * as CSS from 'csstype';
 import type { ReadableBox, WritableBox } from './box.svelte.js';
 import { BROWSER } from 'esm-env';
 
@@ -35,9 +34,11 @@ export type WithChildren<Props = {}> = Props & {
 
 export type WithRefProps<T = {}> = T & ReadableBoxedValues<{ id: string }> & WritableBoxedValues<{ ref: HTMLElement | null }>;
 
-export type StyleProperties = CSS.Properties & {
-	// Allow any CSS Custom Properties
-	[str: `--${string}`]: any;
-};
+/** camelCase CSS property names from the DOM lib, plus custom properties. Values are not typed per property: every
+ *  style object here ends up in overrule's `styleToString`, which takes strings anyway. */
+type CSSPropertyName = {
+	[K in keyof CSSStyleDeclaration]: K extends string ? (CSSStyleDeclaration[K] extends string ? K : never) : never;
+}[keyof CSSStyleDeclaration];
+export type StyleProperties = Partial<Record<CSSPropertyName, string | number>> & { [custom: `--${string}`]: string | number };
 
 export type AnyFn = (...args: any[]) => any;
