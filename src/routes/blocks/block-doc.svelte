@@ -10,7 +10,7 @@
 	<title>{meta.name} — @polumeyv/ui blocks</title>
 </svelte:head>
 
-<div class="mx-auto max-w-3xl">
+<div class="mx-auto {meta.wide ? 'max-w-6xl' : 'max-w-3xl'}">
 	<div class="space-y-2">
 		<h1 class="scroll-m-20 text-3xl font-bold tracking-tight">{meta.name}</h1>
 		<p class="text-muted-foreground text-lg text-balance">{meta.description}</p>

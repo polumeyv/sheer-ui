@@ -13,6 +13,8 @@ export type BlockMeta = {
 	name: string;
 	/** One-line summary shown under the heading and on the landing cards */
 	description: string;
+	/** Preview at the page's full width; for blocks whose layout only reads at real size. */
+	wide?: boolean;
 };
 
 export const blocks: BlockMeta[] = [
@@ -20,6 +22,12 @@ export const blocks: BlockMeta[] = [
 		slug: 'alert-modal',
 		name: 'Alert Modal',
 		description: 'A store-driven confirm / acknowledge modal built on the native <dialog> element.',
+	},
+	{
+		slug: 'week-grid',
+		name: 'Week Grid',
+		description: 'A day/week time grid: open bands, lane-packed items, a now marker, and click-drag selection.',
+		wide: true,
 	},
 	{
 		slug: 'heading',
