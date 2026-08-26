@@ -87,11 +87,13 @@
 	let log = $state<string[]>([]);
 	const time = (minute: number) => `${String(Math.floor(minute / 60)).padStart(2, '0')}:${String(minute % 60).padStart(2, '0')}`;
 
+	// Opaque tints (mixed against the page, not layered over it) so hour lines never cross an event, and no outlines:
+	// the 1px of column the grid leaves between items is the separation.
 	const KIND_CLASS: Record<string, string> = {
-		appointment: 'border-s-2 border-s-primary bg-primary/15 text-foreground',
-		cancelled: 'border-s-2 border-s-muted-foreground bg-muted text-muted-foreground line-through',
-		block: 'border border-dashed border-muted-foreground/40 bg-muted-foreground/15 text-muted-foreground',
-		busy: 'border border-dotted border-chart-2 bg-chart-2/15 text-muted-foreground',
+		appointment: 'bg-[color-mix(in_oklab,var(--color-primary)_18%,var(--color-background))] text-foreground shadow-[inset_3px_0_0_var(--color-primary)]',
+		cancelled: 'bg-muted text-muted-foreground line-through',
+		block: 'bg-[color-mix(in_oklab,var(--color-muted-foreground)_16%,var(--color-background))] text-muted-foreground',
+		busy: 'bg-[color-mix(in_oklab,var(--color-chart-2)_18%,var(--color-background))] text-muted-foreground shadow-[inset_3px_0_0_var(--color-chart-2)]',
 	};
 </script>
 
@@ -151,10 +153,22 @@
 		hourLabel={use24h ? label24 : undefined}
 		dayHeader={customHeader ? todayRing : undefined}
 		onselect={selectable ? (day, start, end) => (log = [`${day} ${time(start)} – ${time(end)}`, ...log].slice(0, 5)) : undefined}>
-		{#snippet item(entry)}
-			<div class="flex h-full flex-col overflow-hidden rounded-sm px-1.5 py-0.5 text-xs leading-tight {KIND_CLASS[entry.kind]}">
-				<span class="truncate font-medium">{entry.kind}</span>
-				<span class="truncate">{entry.end - entry.start === 1440 ? 'All day' : `${time(entry.start)} – ${time(entry.end)}`}</span>
+		{#snippet item(entry, box)}
+			{@const time_ = box.full ? 'All day' : `${time(entry.start)} – ${time(entry.end)}`}
+			<div
+				class="flex h-full flex-col overflow-hidden px-1.5 text-[11px] leading-[1.15] whitespace-nowrap {KIND_CLASS[entry.kind]} {box.full
+					? 'bg-muted py-1 shadow-none'
+					: 'rounded-sm'}">
+				{#if box.height < 14}
+					<!-- fill only -->
+				{:else if box.height < 20}
+					<span class="truncate text-[10px] leading-[12px]">{entry.kind}</span>
+				{:else if box.height < 34}
+					<span class="truncate py-0.5"><span class="font-medium">{entry.kind}</span> · {time_}</span>
+				{:else}
+					<span class="truncate pt-0.5 font-medium">{entry.kind}</span>
+					<span class="truncate">{time_}</span>
+				{/if}
 			</div>
 		{/snippet}
 	</WeekGrid>

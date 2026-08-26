@@ -8,6 +8,10 @@ export type WeekGridItem = WeekGridSpan & { id: string; kind: string };
  *  cluster of items it transitively overlaps. */
 export type WeekGridPlacement = { item: WeekGridItem; start: number; end: number; lane: number; lanes: number };
 
+/** What the item snippet gets besides the item: its rendered box height in px, so it can drop lines it cannot fit,
+ *  and whether it spans the whole visible window (a full-day block), which the caller usually paints edge to edge. */
+export type WeekGridBox = { height: number; full: boolean; lanes: number };
+
 /**
  * Clip one day's items to `[from, to)` and pack them into lanes. Items that overlap only through a chain of
  * other items still share a cluster, so a pair overlapping at 9am does not narrow an unrelated item at 4pm.

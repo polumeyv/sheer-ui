@@ -2,7 +2,7 @@
 	import { join } from 'overrule';
 	import type { Snippet } from 'svelte';
 	import type { ClassValue } from 'svelte/elements';
-	import { dayParts, defaultHourLabel, layoutDay, type WeekGridItem, type WeekGridSpan } from './week-grid.js';
+	import { dayParts, defaultHourLabel, layoutDay, type WeekGridBox, type WeekGridItem, type WeekGridSpan } from './week-grid.js';
 
 	interface Props {
 		/** ISO `YYYY-MM-DD`, in whatever order they should appear; the caller decides how many fit. */
@@ -17,7 +17,7 @@
 		step?: number;
 		hourHeight?: number;
 		maxHeight?: string;
-		item: Snippet<[WeekGridItem]>;
+		item: Snippet<[WeekGridItem, WeekGridBox]>;
 		dayHeader?: Snippet<[string]>;
 		hourLabel?: (minute: number) => string;
 		/** Click or click-drag on empty grid. Absent = the grid is read-only. */
@@ -43,6 +43,7 @@
 
 	const span = $derived(range.end - range.start);
 	const pct = (minute: number) => ((minute - range.start) / span) * 100;
+	const px = (minutes: number) => (minutes / 60) * hourHeight;
 	const marks = $derived(
 		Array.from({ length: Math.ceil(range.end / 60) - Math.ceil(range.start / 60) }, (_, i) => (Math.ceil(range.start / 60) + i) * 60),
 	);
@@ -68,7 +69,7 @@
 	<div class="grid" style="grid-template-columns: 4rem repeat({days.length}, minmax(5.5rem, 1fr))">
 		<div data-slot="week-grid-corner" class="sticky top-0 left-0 z-40 border-b bg-background"></div>
 		{#each days as day (day)}
-			<div data-slot="week-grid-header" class="sticky top-0 z-30 border-b border-l bg-background px-1 py-2 text-center">
+			<div data-slot="week-grid-header" class="sticky top-0 z-30 border-b bg-background px-1 py-2 text-center">
 				{#if dayHeader}
 					{@render dayHeader(day)}
 				{:else}
@@ -91,7 +92,7 @@
 		</div>
 
 		{#each days as day (day)}
-			<div data-slot="week-grid-day" class="relative isolate border-l bg-muted" style="height: {(span / 60) * hourHeight}px">
+			<div data-slot="week-grid-day" class="relative isolate border-l border-border/60 bg-muted" style="height: {(span / 60) * hourHeight}px">
 				{#each open.filter((b) => b.day === day) as band, i (i)}
 					<div class="absolute inset-x-0 bg-background" style="top: {pct(band.start)}%; height: {pct(band.end) - pct(band.start)}%">
 					</div>
@@ -99,7 +100,7 @@
 
 				{#each marks as minute (minute)}
 					{#if minute > range.start}
-						<div class="absolute inset-x-0 border-t border-border/60" style="top: {pct(minute)}%"></div>
+						<div class="absolute inset-x-0 border-t border-border/40" style="top: {pct(minute)}%"></div>
 					{/if}
 				{/each}
 
@@ -126,20 +127,28 @@
 				{/if}
 
 				{#each byDay.get(day) ?? [] as p (p.item.id)}
+					{@const full = p.start <= range.start && p.end >= range.end}
+					<!-- 1px of column shows between neighbours and along the edges, the way calendars separate solid fills without
+					     outlines. Up to two lanes sit side by side; deeper pile-ups cascade, each later item indented and on top, since
+					     equal lanes in a narrow column leave nothing readable. -->
 					<div
 						data-slot="week-grid-item"
 						data-kind={p.item.kind}
-						class="absolute z-10 min-h-[1.125rem] px-px"
-						style="top: {pct(p.start)}%; height: {pct(p.end) - pct(p.start)}%; left: {(p.lane / p.lanes) * 100}%; width: {(1 / p.lanes) *
-							100}%">
-						{@render item(p.item)}
+						data-full={full || undefined}
+						class="absolute z-10 {p.lanes > 2 ? 'ring-1 ring-background' : ''}"
+						style={full
+							? 'inset: 0'
+							: p.lanes > 2
+								? `top: calc(${pct(p.start)}% + 1px); height: calc(${pct(p.end) - pct(p.start)}% - 2px); left: calc(1px + ${p.lane} * 1rem); right: 1px; z-index: ${10 + p.lane}`
+								: `top: calc(${pct(p.start)}% + 1px); height: calc(${pct(p.end) - pct(p.start)}% - 2px); left: calc(${(p.lane / p.lanes) * 100}% + 1px); width: calc(${(1 / p.lanes) * 100}% - 2px)`}>
+						{@render item(p.item, { height: full ? px(span) : px(p.end - p.start) - 2, full, lanes: p.lanes })}
 					</div>
 				{/each}
 
 				{#if draft?.day === day}
 					<div
 						data-slot="week-grid-draft"
-						class="pointer-events-none absolute inset-x-0 z-20 rounded-sm border-2 border-primary bg-primary/20"
+						class="pointer-events-none absolute inset-x-0 z-20 rounded-sm bg-primary/25"
 						style="top: {pct(draft.start)}%; height: {Math.max(pct(draft.end) - pct(draft.start), 1)}%">
 					</div>
 				{/if}
