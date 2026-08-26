@@ -35,13 +35,13 @@ const timeFormatters = {
 export const formatTimeDisplay = (time: string | number, options: { use24Hour?: boolean } = {}): string =>
 	timeFormatters[options.use24Hour ? 24 : 12].format(timeToDate(time));
 
-/** Wall-clock pair ("HH:MM" or minutes) → "9:30 – 10:15 AM" (locale-aware range). Ranges crossing or ending at
+/** Wall-clock pair ("HH:MM" or minutes) → "9:30 – 10:15 AM", or "09:30 – 10:15" with 24-hour display enabled. Ranges crossing or ending at
  *  midnight (an end of 1440 lands on the next epoch day) use individually formatted endpoints so `Intl.formatRange`
  *  cannot add calendar dates. */
-export const formatTimeRange = (start: string | number, end: string | number): string =>
+export const formatTimeRange = (start: string | number, end: string | number, options: { use24Hour?: boolean } = {}): string =>
 	asMinutes(end) < asMinutes(start) || asMinutes(end) >= 1440
-		? `${formatTimeDisplay(start)} – ${formatTimeDisplay(end)}`
-		: timeFormatters[12].formatRange(timeToDate(start), timeToDate(end));
+		? `${formatTimeDisplay(start, options)} – ${formatTimeDisplay(end, options)}`
+		: timeFormatters[options.use24Hour ? 24 : 12].formatRange(timeToDate(start), timeToDate(end));
 
 /**
  * The three duration styles, and where each belongs — the style is required so a call site states which
