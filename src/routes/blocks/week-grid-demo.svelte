@@ -16,7 +16,7 @@
 			{ id: 'a3', day: WEEK[1]!, start: h(10), end: h(11), kind: 'appointment' },
 			{ id: 'a4', day: WEEK[1]!, start: h(14), end: h(15, 30), kind: 'appointment' },
 			{ id: 'c1', day: WEEK[1]!, start: h(16), end: h(16, 45), kind: 'cancelled' },
-			{ id: 'b2', day: WEEK[2]!, start: 0, end: 1440, kind: 'block' },
+			{ id: 'b2', day: WEEK[2]!, start: 0, end: 1440, kind: 'block', allDay: true },
 			{ id: 'a5', day: WEEK[3]!, start: h(9, 30), end: h(10, 30), kind: 'appointment' },
 			{ id: 'b3', day: WEEK[3]!, start: h(13), end: h(14), kind: 'block' },
 			{ id: 'a6', day: WEEK[4]!, start: h(15), end: h(16), kind: 'appointment' },
@@ -39,7 +39,8 @@
 			{ id: 'e3', day: WEEK[2]!, start: h(5), end: h(6), kind: 'appointment' },
 			{ id: 'e4', day: WEEK[2]!, start: h(23, 45), end: 1440, kind: 'appointment' },
 			{ id: 'e5', day: WEEK[4]!, start: h(12), end: h(12, 5), kind: 'appointment' },
-			{ id: 'e6', day: WEEK[5]!, start: 0, end: 1440, kind: 'busy' },
+			{ id: 'e6', day: WEEK[5]!, start: 0, end: 1440, kind: 'busy', allDay: true },
+			{ id: 'e7', day: WEEK[5]!, start: 0, end: 1440, kind: 'block', allDay: true },
 		],
 		empty: [],
 	} satisfies Record<string, WeekGridItem[]>;
@@ -65,7 +66,7 @@
 	const days = $derived(WEEK.slice(0, dayCount));
 	const items = $derived(PRESETS[preset]);
 	const range = $derived(RANGES[rangeKey]);
-	const open = $derived<WeekGridSpan[]>(
+	const open = $derived<WeekGridSpan[] | undefined>(
 		showOpen
 			? days.flatMap((day, i) =>
 					i === 5 || i === 6
@@ -77,7 +78,7 @@
 								]
 							: [{ day, start: h(9), end: h(17) }],
 				)
-			: [],
+			: undefined,
 	);
 	const now = $derived(showNow ? { day: WEEK[2]!, minute: h(14, 20) } : null);
 
@@ -87,12 +88,11 @@
 	let log = $state<string[]>([]);
 	const time = (minute: number) => `${String(Math.floor(minute / 60)).padStart(2, '0')}:${String(minute % 60).padStart(2, '0')}`;
 
-	// Opaque tints (mixed against the page, not layered over it) so hour lines never cross an event, and no outlines:
-	// the 1px of column the grid leaves between items is the separation.
+	// Objects are opaque tints mixed against the page; the grid rings each in the page colour, so no outlines here.
 	const KIND_CLASS: Record<string, string> = {
 		appointment: 'bg-[color-mix(in_oklab,var(--color-primary)_18%,var(--color-background))] text-foreground shadow-[inset_3px_0_0_var(--color-primary)]',
 		cancelled: 'bg-muted text-muted-foreground line-through',
-		block: 'bg-[color-mix(in_oklab,var(--color-muted-foreground)_16%,var(--color-background))] text-muted-foreground',
+		block: 'bg-[color-mix(in_oklab,var(--color-muted-foreground)_18%,var(--color-background))] text-muted-foreground',
 		busy: 'bg-[color-mix(in_oklab,var(--color-chart-2)_18%,var(--color-background))] text-muted-foreground shadow-[inset_3px_0_0_var(--color-chart-2)]',
 	};
 </script>
@@ -154,20 +154,18 @@
 		dayHeader={customHeader ? todayRing : undefined}
 		onselect={selectable ? (day, start, end) => (log = [`${day} ${time(start)} – ${time(end)}`, ...log].slice(0, 5)) : undefined}>
 		{#snippet item(entry, box)}
-			{@const time_ = box.full ? 'All day' : `${time(entry.start)} – ${time(entry.end)}`}
-			<div
-				class="flex h-full flex-col overflow-hidden px-1.5 text-[11px] leading-[1.15] whitespace-nowrap {KIND_CLASS[entry.kind]} {box.full
-					? 'bg-muted py-1 shadow-none'
-					: 'rounded-sm'}">
-				{#if box.height < 14}
+			<div class="flex h-full flex-col overflow-hidden px-1.5 text-[11px] leading-[1.15] whitespace-nowrap {KIND_CLASS[entry.kind]}">
+				{#if entry.allDay}
+					<span class="truncate py-0.5 text-xs font-medium">{entry.kind}</span>
+				{:else if box.height < 14}
 					<!-- fill only -->
 				{:else if box.height < 20}
 					<span class="truncate text-[10px] leading-[12px]">{entry.kind}</span>
 				{:else if box.height < 34}
-					<span class="truncate py-0.5"><span class="font-medium">{entry.kind}</span> · {time_}</span>
+					<span class="truncate py-0.5"><span class="text-xs font-medium">{entry.kind}</span> · {time(entry.start)} – {time(entry.end)}</span>
 				{:else}
-					<span class="truncate pt-0.5 font-medium">{entry.kind}</span>
-					<span class="truncate">{time_}</span>
+					<span class="truncate pt-0.5 text-xs font-medium">{entry.kind}</span>
+					<span class="truncate">{time(entry.start)} – {time(entry.end)}</span>
 				{/if}
 			</div>
 		{/snippet}
