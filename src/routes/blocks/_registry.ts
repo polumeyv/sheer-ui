@@ -22,6 +22,11 @@ export const blocks: BlockMeta[] = [
 		description: 'A store-driven confirm / acknowledge modal built on the native <dialog> element.',
 	},
 	{
+		slug: 'week-grid',
+		name: 'Week Grid',
+		description: 'A day/week time grid: open bands, lane-packed items, a now marker, and click-drag selection.',
+	},
+	{
 		slug: 'heading',
 		name: 'Heading',
 		description: 'A page heading: title row plus an optional tab nav.',
