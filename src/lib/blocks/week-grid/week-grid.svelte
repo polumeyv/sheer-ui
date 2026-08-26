@@ -48,7 +48,7 @@
 	);
 	const byDay = $derived(new Map(days.map((day) => [day, layoutDay(items.filter((i) => i.day === day), range.start, range.end)])));
 
-	let drag = $state<{ day: string; anchor: number; edge: number } | null>(null);
+	let drag = $state<{ pointerId: number; day: string; anchor: number; edge: number } | null>(null);
 	const draft = $derived(drag && { day: drag.day, start: Math.min(drag.anchor, drag.edge), end: Math.max(drag.anchor, drag.edge) });
 
 	const at = (e: PointerEvent) => {
@@ -112,16 +112,16 @@
 							if (e.button !== 0) return;
 							e.currentTarget.setPointerCapture(e.pointerId);
 							const start = at(e);
-							drag = { day, anchor: start, edge: start };
+							drag = { pointerId: e.pointerId, day, anchor: start, edge: start };
 						}}
-						onpointermove={(e) => drag && (drag = { ...drag, edge: at(e) })}
+						onpointermove={(e) => drag?.pointerId === e.pointerId && (drag = { ...drag, edge: at(e) })}
 						onpointerup={(e) => {
-							if (!draft) return;
+							if (!draft || drag?.pointerId !== e.pointerId) return;
 							commit(draft.day, draft.start, draft.end);
 							drag = null;
 							e.currentTarget.releasePointerCapture(e.pointerId);
 						}}
-						onpointercancel={() => (drag = null)}
+						onpointercancel={(e) => drag?.pointerId === e.pointerId && (drag = null)}
 						onclick={(e) => e.detail === 0 && commit(day, range.start, Math.min(range.start + 60, range.end))}></button>
 				{/if}
 

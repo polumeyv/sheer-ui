@@ -27,6 +27,7 @@ describe('formatTimeRange', () => {
 	it('preserves Intl range compaction within a day', () => expect(formatTimeRange('09:30', '10:15')).toBe('9:30 – 10:15 AM'));
 	it('formats endpoints separately across midnight', () => expect(formatTimeRange('23:30', '00:15')).toBe('11:30 PM – 12:15 AM'));
 	it('takes minutes since midnight directly', () => expect(formatTimeRange(570, 615)).toBe('9:30 – 10:15 AM'));
+	it('formats endpoints separately when the end is midnight', () => expect(formatTimeRange(1380, 1440)).toBe('11:00 PM – 12:00 AM'));
 });
 
 describe('formatDuration', () => {
