@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Playground for the week grid: every prop is a control, plus item presets that exercise lane packing,
 	// midnight-crossing spans, whole-day bands, and read-only vs selectable grids.
-	import { WeekGrid, type WeekGridItem, type WeekGridSpan } from '#lib/blocks/week-grid/index.js';
+	import { WeekGrid, WeekGridChip, type WeekGridItem, type WeekGridSpan } from '#lib/blocks/week-grid/index.js';
 	import { Button } from '#lib/components/button/index.js';
 	import { Switch } from '#lib/components/switch/index.js';
 
@@ -88,12 +88,13 @@
 	let log = $state<string[]>([]);
 	const time = (minute: number) => `${String(Math.floor(minute / 60)).padStart(2, '0')}:${String(minute % 60).padStart(2, '0')}`;
 
-	// Objects are opaque tints mixed against the page; the grid rings each in the page colour, so no outlines here.
-	const KIND_CLASS: Record<string, string> = {
-		appointment: 'bg-[color-mix(in_oklab,var(--color-primary)_18%,var(--color-background))] text-foreground shadow-[inset_3px_0_0_var(--color-primary)]',
-		cancelled: 'bg-muted text-muted-foreground line-through',
-		block: 'bg-[color-mix(in_oklab,var(--color-muted-foreground)_18%,var(--color-background))] text-muted-foreground',
-		busy: 'bg-[color-mix(in_oklab,var(--color-chart-2)_18%,var(--color-background))] text-muted-foreground shadow-[inset_3px_0_0_var(--color-chart-2)]',
+	// One colour per chip: the fill is that colour mixed into the page, the accent pill is the colour itself, and the
+	// text stays neutral, so chips differ by shape and label rather than by competing hues.
+	const TONES: Record<string, { fill: string; accent?: string }> = {
+		appointment: { fill: 'bg-[color-mix(in_oklab,var(--color-primary)_16%,var(--color-background))] text-foreground', accent: 'bg-primary' },
+		busy: { fill: 'bg-[color-mix(in_oklab,var(--color-chart-2)_16%,var(--color-background))] text-foreground', accent: 'bg-chart-2' },
+		block: { fill: 'bg-[color-mix(in_oklab,var(--color-muted-foreground)_16%,var(--color-background))] text-muted-foreground' },
+		cancelled: { fill: 'bg-muted text-muted-foreground line-through' },
 	};
 </script>
 
@@ -154,7 +155,8 @@
 		dayHeader={customHeader ? todayRing : undefined}
 		onselect={selectable ? (day, start, end) => (log = [`${day} ${time(start)} – ${time(end)}`, ...log].slice(0, 5)) : undefined}>
 		{#snippet item(entry, box)}
-			<div class="flex h-full flex-col overflow-hidden px-1.5 text-[11px] leading-[1.15] whitespace-nowrap {KIND_CLASS[entry.kind]}">
+			{@const tone = TONES[entry.kind]!}
+			<WeekGridChip class={tone.fill} accent={tone.accent}>
 				{#if entry.allDay}
 					<span class="truncate py-0.5 text-xs font-medium">{entry.kind}</span>
 				{:else if box.height < 14}
@@ -162,12 +164,12 @@
 				{:else if box.height < 20}
 					<span class="truncate text-[10px] leading-[12px]">{entry.kind}</span>
 				{:else if box.height < 34}
-					<span class="truncate py-0.5"><span class="text-xs font-medium">{entry.kind}</span> · {time(entry.start)} – {time(entry.end)}</span>
+					<span class="truncate py-0.5"><span class="text-xs font-medium">{entry.kind}</span> <span class="text-muted-foreground">· {time(entry.start)} – {time(entry.end)}</span></span>
 				{:else}
 					<span class="truncate pt-0.5 text-xs font-medium">{entry.kind}</span>
-					<span class="truncate">{time(entry.start)} – {time(entry.end)}</span>
+					<span class="truncate text-muted-foreground">{time(entry.start)} – {time(entry.end)}</span>
 				{/if}
-			</div>
+			</WeekGridChip>
 		{/snippet}
 	</WeekGrid>
 
