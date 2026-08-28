@@ -2,6 +2,7 @@
 	import { join } from 'overrule';
 	import type { Snippet } from 'svelte';
 	import type { ClassValue } from 'svelte/elements';
+	import { formatTimeRange } from '../../time.js';
 	import { dayParts, defaultHourLabel, layoutDay, type WeekGridBox, type WeekGridItem, type WeekGridSpan } from './week-grid.js';
 
 	interface Props {
@@ -22,6 +23,8 @@
 		hourLabel?: (minute: number) => string;
 		/** Click or click-drag on empty grid. Absent = the grid is read-only. */
 		onselect?: (day: string, start: number, end: number) => void;
+		/** The span a drag is reaching, shown above the draft as it moves. */
+		draftLabel?: (start: number, end: number) => string;
 		class?: ClassValue;
 	}
 
@@ -38,6 +41,7 @@
 		dayHeader,
 		hourLabel = defaultHourLabel,
 		onselect,
+		draftLabel = formatTimeRange,
 		class: className,
 	}: Props = $props();
 
@@ -165,6 +169,12 @@
 						data-slot="week-grid-draft"
 						class="pointer-events-none absolute inset-x-0 z-40 rounded-[4px] bg-primary/30 ring-1 ring-background"
 						style="top: {pct(draft.start)}%; height: {Math.max(pct(draft.end) - pct(draft.start), 1)}%">
+						<!-- Sits just above the draft so the pointer never covers it; fades in with the drag, then tracks it. -->
+						<span
+							data-slot="week-grid-draft-label"
+							class="absolute left-1 -translate-y-[calc(100%+2px)] rounded-[4px] bg-background/90 px-1 text-[10px] leading-4 font-medium tabular-nums whitespace-nowrap text-foreground ring-1 ring-border/50 transition-opacity duration-150 starting:opacity-0">
+							{draftLabel(draft.start, draft.end)}
+						</span>
 					</div>
 				{/if}
 
