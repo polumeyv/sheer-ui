@@ -36,7 +36,7 @@
 	</div>
 	<Combobox.Portal>
 		<Combobox.Content
-			class="z-50 max-h-(--bits-combobox-content-available-height) w-(--bits-combobox-anchor-width) min-w-(--bits-combobox-anchor-width) select-none overflow-hidden rounded-xl border bg-popover px-1 py-2 text-popover-foreground shadow-md outline-hidden transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 data-[side=bottom]:starting:-translate-y-1 data-[side=top]:starting:translate-y-1"
+			class="z-50 max-h-(--bits-combobox-content-available-height) w-(--bits-combobox-anchor-width) min-w-(--bits-combobox-anchor-width) select-none overflow-hidden rounded-xl border bg-popover px-1 py-2 text-popover-foreground shadow-md outline-hidden transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-closed:opacity-0 data-closed:scale-95 data-[side=bottom]:starting:-translate-y-1 data-[side=top]:starting:translate-y-1"
 			sideOffset={6}>
 			<Combobox.Viewport class="p-1">
 				{#each filtered as item (item.value)}

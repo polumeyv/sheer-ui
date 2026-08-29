@@ -28,7 +28,7 @@
 			<Sidebar.Header>
 				<Sidebar.Menu>
 					<Sidebar.MenuItem>
-						<Sidebar.MenuButton size="lg" tooltipContent="Finance" class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+						<Sidebar.MenuButton size="lg" tooltipContent="Finance" class="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground">
 							<div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sm font-semibold text-sidebar-primary-foreground">
 								F
 							</div>

@@ -26,7 +26,7 @@
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
-					<Button {...props} variant="ghost" size="sm" class="data-[state=open]:bg-accent -ms-3">
+					<Button {...props} variant="ghost" size="sm" class="data-open:bg-accent -ms-3">
 						<span>
 							{title}
 						</span>

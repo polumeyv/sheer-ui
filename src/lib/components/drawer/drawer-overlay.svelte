@@ -37,7 +37,7 @@
 		mergeProps(
 			{
 				'data-slot': 'drawer-overlay',
-				class: join('fixed inset-0 z-50 bg-black/50 transition-opacity data-[state=closed]:opacity-0 starting:opacity-0', className),
+				class: join('fixed inset-0 z-50 bg-black/50 transition-opacity data-closed:opacity-0 starting:opacity-0', className),
 			},
 			restProps,
 			{

@@ -32,7 +32,7 @@
 			{
 				'data-slot': 'separator',
 				class:
-					'bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px',
+					'bg-border shrink-0 data-horizontal:h-px data-horizontal:w-full data-vertical:h-full data-vertical:w-px',
 			},
 			restProps,
 			rootState.props,

@@ -599,13 +599,5 @@
 			border-color: var(--error-border);
 			color: var(--error-text);
 		}
-
-		@media (prefers-reduced-motion) {
-			[data-sonner-toast],
-			[data-sonner-toast] > * {
-				transition: none !important;
-				animation: none !important;
-			}
-		}
 	}
 </style>

@@ -17,7 +17,7 @@
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger>
 		{#snippet child({ props })}
-			<Button {...props} variant="ghost" size="icon-sm" class="data-[state=open]:bg-muted">
+			<Button {...props} variant="ghost" size="icon-sm" class="data-open:bg-muted">
 				<EllipsisIcon />
 				<span class="sr-only">Open Menu</span>
 			</Button>

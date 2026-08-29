@@ -104,7 +104,7 @@
 			{
 				'data-slot': 'slider',
 				class: join(
-					'relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
+					'relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-vertical:h-full data-vertical:min-h-44 data-vertical:w-auto data-vertical:flex-col',
 					className,
 				),
 			},
@@ -125,7 +125,7 @@
 			<span
 				data-orientation={orientation}
 				data-slot="slider-track"
-				class="bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5">
+				class="bg-muted relative grow overflow-hidden rounded-full data-horizontal:h-1.5 data-horizontal:w-full data-vertical:h-full data-vertical:w-1.5">
 				<SliderRange />
 			</span>
 			{#each thumbs as thumb (thumb)}

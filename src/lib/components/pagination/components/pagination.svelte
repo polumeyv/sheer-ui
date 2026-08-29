@@ -48,7 +48,7 @@
 				role: 'navigation',
 				'aria-label': 'pagination',
 				'data-slot': 'pagination',
-				class: 'mx-auto flex w-full items-center justify-center gap-1 data-[orientation=vertical]:flex-col',
+				class: 'mx-auto flex w-full items-center justify-center gap-1 data-vertical:flex-col',
 			},
 			restProps,
 			rootState.props,
