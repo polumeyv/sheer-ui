@@ -30,7 +30,7 @@
 			{
 				'data-slot': 'dropdown-menu-group-heading',
 				'data-inset': inset,
-				class: 'px-2 py-1.5 text-sm font-semibold data-[inset]:ps-8',
+				class: 'px-2 py-1.5 text-sm font-semibold data-inset:ps-8',
 			},
 			restProps,
 			groupHeadingState.props,

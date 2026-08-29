@@ -8,16 +8,16 @@ const families: { family: Family; dataSlot: string; minWidth: string; cssVar: st
 	{
 		family: 'dropdown-menu',
 		dataSlot: 'dropdown-menu-content',
-		minWidth: 'min-w-[8rem]',
+		minWidth: 'min-w-32',
 		cssVar: '--bits-dropdown-menu-content-transform-origin',
 	},
 	{
 		family: 'context-menu',
 		dataSlot: 'context-menu-content',
-		minWidth: 'min-w-[8rem]',
+		minWidth: 'min-w-32',
 		cssVar: '--bits-context-menu-content-transform-origin',
 	},
-	{ family: 'menubar', dataSlot: 'menubar-content', minWidth: 'min-w-[12rem]', cssVar: '--bits-menu-content-transform-origin' },
+	{ family: 'menubar', dataSlot: 'menubar-content', minWidth: 'min-w-48', cssVar: '--bits-menu-content-transform-origin' },
 ];
 
 function render(props: { family: Family; isStatic?: boolean; onInteractOutside?: (e: PointerEvent) => void }) {

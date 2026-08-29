@@ -8,7 +8,7 @@
 <td
 	bind:this={ref}
 	data-slot="table-cell"
-	class={join('bg-clip-padding p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pe-0', className)}
+	class={join('bg-clip-padding p-2 align-middle whitespace-nowrap has-[[role=checkbox]]:pe-0', className)}
 	{...restProps}>
 	{@render children?.()}
 </td>
