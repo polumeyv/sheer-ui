@@ -9,5 +9,5 @@
 <DialogOverlay
 	bind:ref
 	data-slot="sheet-overlay"
-	class={join('transition-opacity starting:opacity-0 data-[state=closed]:opacity-0 fixed inset-0 z-50 bg-black/50', className)}
+	class={join('transition-opacity starting:opacity-0 data-closed:opacity-0 fixed inset-0 z-50 bg-black/50', className)}
 	{...restProps} />

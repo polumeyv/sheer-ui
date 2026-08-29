@@ -17,7 +17,7 @@
 		),
 	});
 
-	const mergedProps = $derived(mergeProps(restProps, viewportState.props));
+	const mergedProps = $derived(mergeProps({ class: 'scrollbar-hidden' }, restProps, viewportState.props));
 	const mergedContentProps = $derived(mergeProps({}, viewportState.contentProps));
 </script>
 
@@ -28,14 +28,6 @@
 </div>
 
 <style>
-	/* Hide scrollbars cross browser */
-	:global([data-scroll-area-viewport]) {
-		scrollbar-width: none !important;
-	}
-	:global([data-scroll-area-viewport])::-webkit-scrollbar {
-		display: none !important;
-	}
-
 	:global(:where([data-scroll-area-viewport])) {
 		display: flex;
 		flex-direction: column;

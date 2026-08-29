@@ -30,6 +30,6 @@
 		</div>
 
 		<!-- Time -->
-		<span class="shrink-0 text-[10px] text-muted-foreground/70">{time}</span>
+		<span class="shrink-0 text-3xs text-muted-foreground/70">{time}</span>
 	</div>
 </div>

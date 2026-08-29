@@ -49,7 +49,7 @@
 		// Sizing is driven by one variable: --switch-size is the track height; width is
 		// 1.75x it, the thumb fills the height, and travel is 0.75x it (W - thumb). Override
 		// --switch-size alone to rescale the whole control. See the thumb span below.
-		'relative [--switch-size:1.15rem] data-[state=checked]:bg-primary data-[state=unchecked]:bg-border has-focus-visible:border-ring has-focus-visible:ring-ring/50 dark:data-[state=unchecked]:bg-border/80 inline-flex h-(--switch-size) w-[calc(var(--switch-size)*1.75)] shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none has-focus-visible:ring-3 data-disabled:cursor-not-allowed data-disabled:opacity-50',
+		'relative [--switch-size:1.15rem] data-checked:bg-primary data-unchecked:bg-border has-focus-visible:border-ring has-focus-visible:ring-ring/50 dark:data-unchecked:bg-border/80 inline-flex h-(--switch-size) w-[calc(var(--switch-size)*1.75)] shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none has-focus-visible:ring-3 data-disabled:cursor-not-allowed data-disabled:opacity-50',
 		className,
 	)}>
 	<input
@@ -73,6 +73,6 @@
 		data-slot="switch-thumb"
 		data-switch-thumb=""
 		{...shared}
-		class="bg-background dark:data-[state=unchecked]:bg-foreground dark:data-[state=checked]:bg-primary-foreground pointer-events-none block size-[calc(var(--switch-size)-2px)] rounded-full ring-0 transition-transform data-[state=checked]:translate-x-[calc(var(--switch-size)*0.75)] data-[state=unchecked]:translate-x-0"
+		class="bg-background dark:data-unchecked:bg-foreground dark:data-checked:bg-primary-foreground pointer-events-none block size-[calc(var(--switch-size)-2px)] rounded-full ring-0 transition-transform data-checked:translate-x-[calc(var(--switch-size)*0.75)] data-unchecked:translate-x-0"
 	></span>
 </span>

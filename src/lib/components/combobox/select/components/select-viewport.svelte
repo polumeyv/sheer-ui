@@ -17,7 +17,7 @@
 		),
 	});
 
-	const mergedProps = $derived(mergeProps(restProps, viewportState.props));
+	const mergedProps = $derived(mergeProps({ class: 'scrollbar-hidden' }, restProps, viewportState.props));
 </script>
 
 {#if child}
@@ -27,21 +27,3 @@
 		{@render children?.()}
 	</div>
 {/if}
-
-<style>
-	/* Hide scrollbars cross browser */
-	:global([data-select-viewport]) {
-		scrollbar-width: none !important;
-	}
-
-	:global([data-combobox-viewport]) {
-		scrollbar-width: none !important;
-	}
-
-	:global([data-combobox-viewport])::-webkit-scrollbar {
-		display: none !important;
-	}
-	:global([data-select-viewport])::-webkit-scrollbar {
-		display: none !important;
-	}
-</style>

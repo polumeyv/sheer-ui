@@ -108,6 +108,7 @@
 	const toastRootClass = $derived(
 		join(
 			'absolute box-border touch-none wrap-anywhere opacity-0 outline-none',
+			'motion-reduce:transition-none! motion-reduce:animate-none! motion-reduce:*:transition-none! motion-reduce:*:animate-none!',
 			'z-(--z-index) transform-(--y)',
 			'transition-[transform,opacity,height,box-shadow] duration-400',
 			// opacity stays here (it cascades correctly); the --y entrance/settled/stacking

@@ -24,7 +24,7 @@
 			<Sidebar.Header>
 				<Sidebar.Menu>
 					<Sidebar.MenuItem>
-						<Sidebar.MenuButton size="lg" tooltipContent="Acme Inc" class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+						<Sidebar.MenuButton size="lg" tooltipContent="Acme Inc" class="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground">
 							<div class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg text-xs font-semibold">
 								A
 							</div>
@@ -57,7 +57,7 @@
 			<Sidebar.Footer>
 				<Sidebar.Menu>
 					<Sidebar.MenuItem>
-						<Sidebar.MenuButton size="lg" tooltipContent="Alex Morgan" class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+						<Sidebar.MenuButton size="lg" tooltipContent="Alex Morgan" class="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground">
 							<div class="bg-muted text-muted-foreground flex aspect-square size-8 items-center justify-center rounded-lg text-xs font-medium">
 								AM
 							</div>
