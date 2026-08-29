@@ -17,7 +17,7 @@
 			{#each segments as segment, i (`${segment.part}-${i}`)}
 				<DateField.Segment
 					part={segment.part}
-					class="data-[placeholder]:text-muted-foreground focus:bg-accent focus:text-accent-foreground rounded px-0.5 tabular-nums focus:outline-none">
+					class="data-placeholder:text-muted-foreground focus:bg-accent focus:text-accent-foreground rounded px-0.5 tabular-nums focus:outline-none">
 					{segment.value}
 				</DateField.Segment>
 			{/each}

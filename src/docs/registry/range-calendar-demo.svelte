@@ -43,7 +43,7 @@
 									<RangeCalendar.Cell
 										{date}
 										month={month.value}
-										class="relative size-9 p-0! text-center text-sm data-[highlighted]:bg-accent data-[selection-end]:rounded-r-md data-[selection-start]:rounded-l-md">
+										class="relative size-9 p-0! text-center text-sm data-highlighted:bg-accent data-selection-end:rounded-r-md data-selection-start:rounded-l-md">
 										<RangeCalendar.Day
 											class="hover:border-foreground data-disabled:text-foreground/30 data-selected:bg-primary data-selected:text-primary-foreground data-unavailable:text-muted-foreground inline-grid size-9 place-items-center whitespace-nowrap rounded-md border border-transparent bg-transparent p-0 text-sm font-normal text-foreground data-disabled:pointer-events-none data-outside-month:pointer-events-none data-selected:font-medium data-unavailable:line-through" />
 									</RangeCalendar.Cell>

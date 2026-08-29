@@ -125,8 +125,8 @@
 		[
 			'toaster group',
 			join(className),
-			'fixed box-border m-0 list-none p-0 outline-none w-(--width) z-[999999999]',
-			'font-sans transition-transform duration-[400ms] ease-[ease]',
+			'fixed box-border m-0 list-none p-0 outline-none w-(--width) z-999999999',
+			'font-sans transition-transform duration-400 ease-[ease]',
 			'data-[x-position=right]:right-(--offset-right)',
 			'data-[x-position=left]:left-(--offset-left)',
 			'data-[x-position=center]:left-1/2 data-[x-position=center]:-translate-x-1/2',
@@ -136,7 +136,7 @@
 			'max-[600px]:left-(--mobile-offset-left) max-[600px]:w-full',
 			// !-forced: rtl:/max-[600px]: add no specificity over the plain max-[600px]:left-(...)
 			// rule above, so without !important this loses the tie to Tailwind's internal ordering.
-			'rtl:max-[600px]:left-[calc(var(--mobile-offset-left)*-1)]!',
+			'rtl:max-[600px]:-left-(--mobile-offset-left)!',
 			'max-[600px]:data-[x-position=left]:left-(--mobile-offset-left)',
 			'max-[600px]:data-[y-position=bottom]:bottom-(--mobile-offset-bottom)',
 			'max-[600px]:data-[y-position=top]:top-(--mobile-offset-top)',

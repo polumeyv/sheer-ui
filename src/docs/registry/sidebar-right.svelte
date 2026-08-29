@@ -18,7 +18,7 @@
 	];
 </script>
 
-<div class="relative isolate h-[28rem] w-full overflow-hidden rounded-lg border bg-background transform-gpu">
+<div class="relative isolate h-112 w-full overflow-hidden rounded-lg border bg-background transform-gpu">
 	<Sidebar.Provider open class="relative min-h-0! h-full overflow-hidden" style="--sidebar-width: 14rem;">
 		{#snippet children(sidebar)}
 		<Sidebar.Inset class="min-h-0 overflow-hidden">

@@ -107,23 +107,23 @@
 
 	const toastRootClass = $derived(
 		join(
-			'absolute box-border touch-none [overflow-wrap:anywhere] opacity-0 outline-none',
-			'z-[var(--z-index)] [transform:var(--y)]',
-			'transition-[transform,opacity,height,box-shadow] duration-[400ms]',
+			'absolute box-border touch-none wrap-anywhere opacity-0 outline-none',
+			'z-(--z-index) transform-(--y)',
+			'transition-[transform,opacity,height,box-shadow] duration-400',
 			// opacity stays here (it cascades correctly); the --y entrance/settled/stacking
 			// transform cascade lives in Toaster.svelte's :global block — see the note there.
 			'data-[mounted=true]:opacity-100',
 			'data-[visible=false]:pointer-events-none data-[visible=false]:opacity-0',
 			'data-[swiped=true]:select-none',
-			'data-[swiping=true]:[transform:var(--y)_translateY(var(--swipe-amount-y,0px))_translateX(var(--swipe-amount-x,0px))]',
+			'data-[swiping=true]:transform-[var(--y)_translateY(var(--swipe-amount-y,0px))_translateX(var(--swipe-amount-x,0px))]',
 			'data-[swiping=true]:transition-none',
 			'data-[x-position=left]:left-0 data-[x-position=right]:right-0',
-			// !-forced: ties data-[styled=true]:w-[var(--width)] on specificity (both class+attribute),
+			// !-forced: ties data-[styled=true]:w-(--width) on specificity (both class+attribute),
 			// and without !important this loses the tie to Tailwind's own internal utility ordering.
 			'max-[600px]:inset-x-0! max-[600px]:w-[calc(100%-var(--mobile-offset-left)*2)]!',
-			'data-[styled=true]:flex data-[styled=true]:w-[var(--width)] data-[styled=true]:items-center data-[styled=true]:gap-1.5',
-			'data-[styled=true]:rounded-[var(--border-radius)] data-[styled=true]:border data-[styled=true]:border-[color:var(--normal-border)]',
-			'data-[styled=true]:bg-[var(--normal-bg)] data-[styled=true]:p-4 data-[styled=true]:text-[13px] data-[styled=true]:text-[color:var(--normal-text)]',
+			'data-[styled=true]:flex data-[styled=true]:w-(--width) data-[styled=true]:items-center data-[styled=true]:gap-1.5',
+			'data-[styled=true]:rounded-(--border-radius) data-[styled=true]:border data-[styled=true]:border-(--normal-border)',
+			'data-[styled=true]:bg-(--normal-bg) data-[styled=true]:p-4 data-[styled=true]:text-[13px] data-[styled=true]:text-(--normal-text)',
 			'data-[styled=true]:shadow-[0px_4px_12px_rgba(0,0,0,0.1)]',
 			'focus-visible:shadow-[0px_4px_12px_rgba(0,0,0,0.1),0_0_0_2px_rgba(0,0,0,0.2)]',
 			restProps.class,
@@ -136,7 +136,7 @@
 	);
 
 	// Fades the icon in when it's swapped mid-flight (loading -> success/error) during a toast.promise() sequence.
-	const iconClass = $derived(join('size-4 shrink-0 ms-[-1px]', toast.promise && '[animation:sonner-fade-in_300ms_ease_forwards]'));
+	const iconClass = $derived(join('size-4 shrink-0 -ms-px', toast.promise && 'animate-[sonner-fade-in_300ms_ease_forwards]'));
 
 	let mounted = $state(false);
 	let removed = $state(false);
