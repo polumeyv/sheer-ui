@@ -54,7 +54,7 @@
 						{#if children}
 							{@render children()}
 						{:else}
-							<div class="bg-border relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm shadow-md"></div>
+							<div class="bg-border relative top-3/5 h-2 w-2 rotate-45 rounded-tl-sm shadow-md"></div>
 						{/if}
 					{/snippet}
 				</NavigationMenuIndicatorImpl>

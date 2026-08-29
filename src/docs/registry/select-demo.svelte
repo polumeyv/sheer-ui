@@ -4,7 +4,7 @@
 	let value = $state('');
 </script>
 
-<Select.Root bind:value placeholder="Select a fruit" widthClass="w-[180px]">
+<Select.Root bind:value placeholder="Select a fruit" widthClass="w-45">
 	<Select.OptGroup label="Fruits">
 		<Select.Option value="apple">Apple</Select.Option>
 		<Select.Option value="banana">Banana</Select.Option>

@@ -67,7 +67,7 @@
 				{heading}
 			</div>
 		{/if}
-		<div style="display: contents;">
+		<div class="contents">
 			<div {...itemsState.props}>
 				{@render children?.()}
 			</div>

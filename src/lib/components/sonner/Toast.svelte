@@ -447,12 +447,12 @@
 			}}
 			class={join(
 				'absolute inset-s-0 top-0 z-1 flex size-5 items-center justify-center rounded-full border p-0 outline-none',
-				'cursor-pointer border-[hsl(0,0%,93%)] bg-(--normal-bg) text-[hsl(0,0%,9%)]',
+				'cursor-pointer border-(--gray4) bg-(--normal-bg) text-(--gray12)',
 				'transform-[translate(-35%,-35%)] rtl:transform-[translate(35%,-35%)]',
 				'[transition:opacity_100ms,background_200ms,border-color_200ms]',
-				'hover:border-[hsl(0,0%,90.9%)] hover:bg-[hsl(0,0%,97.3%)]',
+				'hover:border-(--gray5) hover:bg-(--gray2)',
 				'focus-visible:shadow-[0px_4px_12px_rgba(0,0,0,0.1),0_0_0_2px_rgba(0,0,0,0.2)]',
-				'data-[disabled=true]:cursor-not-allowed',
+				'data-disabled:cursor-not-allowed',
 				classes?.closeButton,
 				toast?.classes?.closeButton,
 			)}>
@@ -468,7 +468,7 @@
 			<div
 				data-icon=""
 				class={join(
-					'relative flex size-4 shrink-0 items-center justify-start ms-[-3px] me-1',
+					'relative flex size-4 shrink-0 items-center justify-start -ms-0.75 me-1',
 					ICON_COLORS[toastType],
 					classes?.icon,
 					toast?.classes?.icon,

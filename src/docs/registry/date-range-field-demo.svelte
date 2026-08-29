@@ -11,7 +11,7 @@
 <DateRangeField.Root bind:value>
 	<DateRangeField.Label class="text-sm font-medium">Stay</DateRangeField.Label>
 	<div
-		class="border-input bg-background focus-within:border-ring focus-within:ring-ring/50 mt-1.5 inline-flex h-9 w-fit items-center rounded-md border px-3 py-1 text-sm focus-within:ring-[3px]">
+		class="border-input bg-background focus-within:border-ring focus-within:ring-ring/50 mt-1.5 inline-flex h-9 w-fit items-center rounded-md border px-3 py-1 text-sm focus-within:ring-3">
 		<DateRangeField.Input type="start" class="inline-flex items-center">
 			{#snippet children({ segments })}
 				{#each segments as segment, i (`start-${segment.part}-${i}`)}

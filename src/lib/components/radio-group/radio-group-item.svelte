@@ -39,7 +39,7 @@
 	{...shared}
 	{...restProps}
 	class={join(
-		'border-border text-primary dark:bg-border/30 has-focus-visible:border-ring has-focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive relative grid aspect-square size-4 shrink-0 place-items-center rounded-full border shadow-xs transition-[color,box-shadow] outline-none has-focus-visible:ring-[3px] data-disabled:cursor-not-allowed data-disabled:opacity-50',
+		'border-border text-primary dark:bg-border/30 has-focus-visible:border-ring has-focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive relative grid aspect-square size-4 shrink-0 place-items-center rounded-full border shadow-xs transition-[color,box-shadow] outline-none has-focus-visible:ring-3 data-disabled:cursor-not-allowed data-disabled:opacity-50',
 		className,
 	)}>
 	<input

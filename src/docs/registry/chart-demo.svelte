@@ -16,7 +16,7 @@
 	} satisfies Chart.ChartConfig;
 </script>
 
-<Chart.Container config={chartConfig} class="h-[250px] w-full max-w-xl">
+<Chart.Container config={chartConfig} class="h-62.5 w-full max-w-xl">
 	<BarChart
 		data={chartData}
 		x="month"

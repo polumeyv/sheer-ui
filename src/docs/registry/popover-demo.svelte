@@ -16,7 +16,7 @@
 	data-anchored
 	data-side='bottom'
 	style:position-anchor={anchorName}
-	class='bg-popover text-popover-foreground z-50 w-72 rounded-md border p-4 opacity-0 shadow-md outline-hidden transition-[opacity,scale,translate,display,overlay] transition-discrete open:scale-100 open:opacity-100 starting:open:scale-95 starting:open:opacity-0'>
+	class='bg-popover text-popover-foreground z-50 w-72 rounded-md border p-4 opacity-0 scale-95 shadow-md outline-hidden transition-[opacity,scale,translate,display,overlay] transition-discrete open:scale-100 open:opacity-100 starting:open:scale-95 starting:open:opacity-0'>
 	<div class='flex flex-col gap-3'>
 		<div class='flex flex-col gap-1'>
 			<h4 class='font-medium leading-none'>Dimensions</h4>

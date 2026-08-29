@@ -2,7 +2,7 @@ import { declareVariants, type VariantProps } from 'overrule';
 import { interactiveBase } from '../button/variants';
 
 export const toggleVariants = declareVariants({
-	base: `${interactiveBase} data-[state=on]:bg-accent data-[state=on]:text-accent-foreground focus-visible:border-ring focus-visible:ring-ring/50 gap-2 rounded-md text-sm transition-[color,box-shadow] focus-visible:ring-[3px] [&_svg:not([class*='size-'])]:size-4`,
+	base: `${interactiveBase} data-[state=on]:bg-accent data-[state=on]:text-accent-foreground focus-visible:border-ring focus-visible:ring-ring/50 gap-2 rounded-md text-sm transition-[color,box-shadow] focus-visible:ring-3 [&_svg:not([class*='size-'])]:size-4`,
 	variants: {
 		variant: {
 			default: 'bg-transparent hover:bg-muted hover:text-muted-foreground',

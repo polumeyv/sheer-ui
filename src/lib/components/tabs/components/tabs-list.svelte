@@ -21,7 +21,7 @@
 		mergeProps(
 			{
 				'data-slot': 'tabs-list',
-				class: 'bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]',
+				class: 'bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-0.75',
 			},
 			restProps,
 			listState.props,

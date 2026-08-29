@@ -12,7 +12,7 @@
 <DateField.Root bind:value>
 	<DateField.Label class="text-sm font-medium">Date of birth</DateField.Label>
 	<DateField.Input
-		class="border-input bg-background focus-within:border-ring focus-within:ring-ring/50 mt-1.5 inline-flex h-9 w-fit items-center rounded-md border px-3 py-1 text-sm focus-within:ring-[3px]">
+		class="border-input bg-background focus-within:border-ring focus-within:ring-ring/50 mt-1.5 inline-flex h-9 w-fit items-center rounded-md border px-3 py-1 text-sm focus-within:ring-3">
 		{#snippet children({ segments })}
 			{#each segments as segment, i (`${segment.part}-${i}`)}
 				<DateField.Segment

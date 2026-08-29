@@ -639,12 +639,6 @@
 	}
 }
 
-/* @custom-variant data-selected {
-	&:where([data-selected="true"]) {
-		@slot;
-	}
-} */
-
 @custom-variant data-disabled {
 	&:where([data-disabled='true']),
 	&:where([data-disabled]:not([data-disabled='false'])) {
@@ -672,7 +666,7 @@
 }
 
 .label-selectable-card {
-	@apply /* ← the */ gap-2 rounded-2xl border leading-snug group-data-[disabled=true]/field:opacity-50 has-data-checked:bg-border/30 *:data-[slot=field]:p-4;
+	@apply gap-2 rounded-2xl border leading-snug group-data-disabled/field:opacity-50 has-data-checked:bg-border/30 *:data-[slot=field]:p-4;
 }
 
 .wrap-input-identity {

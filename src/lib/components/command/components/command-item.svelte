@@ -47,7 +47,7 @@
 </script>
 
 {#key itemState.root.key}
-	<div style="display: contents;" data-item-wrapper data-value={itemState.trueValue}>
+	<div class="contents" data-item-wrapper data-value={itemState.trueValue}>
 		{#if itemState.shouldRender}
 			{#if child}
 				{@render child({ props: mergedProps })}

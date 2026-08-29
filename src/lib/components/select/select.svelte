@@ -88,7 +88,7 @@
 		'outline-none select-none',
 		'transition-[color,box-shadow]',
 		'dark:bg-border/30 dark:hover:bg-input/50',
-		'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
+		'focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
 		'disabled:cursor-not-allowed disabled:opacity-50',
 		className,
 	)}
@@ -171,13 +171,11 @@
 		position-try-fallbacks: flip-block, flip-inline;
 
 		border: 1px solid var(--border);
-		border-radius: calc(var(--radius) - 2px);
+		border-radius: var(--radius-md);
 		background: var(--popover);
 		color: var(--popover-foreground);
 		padding: 0.25rem;
-		box-shadow:
-			0 4px 6px -1px rgb(0 0 0 / 0.1),
-			0 2px 4px -2px rgb(0 0 0 / 0.1);
+		box-shadow: var(--shadow-md);
 
 		opacity: 0;
 		transform: translateY(-0.5rem);
@@ -236,7 +234,7 @@
 		padding-block: 0.375rem;
 		padding-inline-start: 0.5rem;
 		padding-inline-end: 2rem;
-		border-radius: calc(var(--radius) - 4px);
+		border-radius: var(--radius-sm);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 		cursor: default;
@@ -267,7 +265,7 @@
 	/* Custom checkmark - hidden by default */
 	:global(.select-checkmark) {
 		position: absolute;
-		right: 0.5rem;
+		inset-inline-end: 0.5rem;
 		display: none;
 		align-items: center;
 		justify-content: center;

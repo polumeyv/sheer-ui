@@ -144,7 +144,7 @@
 			{disabled}
 			class={buttonVariants({
 				variant: 'outline',
-				class: ['w-auto min-w-[220px] justify-start! text-start font-normal!', !value?.start && 'text-muted-foreground', triggerClass],
+				class: ['w-auto min-w-55 justify-start! text-start font-normal!', !value?.start && 'text-muted-foreground', triggerClass],
 			})}>
 			<Clock class="me-2 size-4" />
 			{displayValue}
@@ -153,7 +153,7 @@
 			<div class="flex flex-col gap-1">
 				<span class="text-xs text-muted-foreground px-1">Start</span>
 				<Select.Root
-					class="w-[120px]"
+					class="w-30"
 					placeholder="Start time"
 					maxHeight="12.5rem"
 					value={value?.start}
@@ -169,7 +169,7 @@
 			<div class="flex flex-col gap-1">
 				<span class="text-xs text-muted-foreground px-1">End</span>
 				<Select.Root
-					class="w-[120px]"
+					class="w-30"
 					placeholder="End time"
 					maxHeight="12.5rem"
 					value={value?.end}
