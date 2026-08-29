@@ -14,7 +14,7 @@
 	<Table.Caption>A list of your recent invoices.</Table.Caption>
 	<Table.Header>
 		<Table.Row>
-			<Table.Head class="w-[100px]">Invoice</Table.Head>
+			<Table.Head class="w-25">Invoice</Table.Head>
 			<Table.Head>Status</Table.Head>
 			<Table.Head>Method</Table.Head>
 			<Table.Head class="text-right">Amount</Table.Head>

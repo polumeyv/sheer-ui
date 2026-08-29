@@ -63,7 +63,7 @@
 {#if disabled}
 	{@render children?.()}
 {:else}
-	<div style="display: contents" {@attach portal}>
+	<div class="contents" {@attach portal}>
 		{@render children?.()}
 	</div>
 {/if}

@@ -22,7 +22,7 @@
 			{
 				'data-slot': 'toolbar-link',
 				class:
-					'focus-visible:border-ring focus-visible:ring-ring/50 inline-flex items-center justify-center rounded-md text-sm font-medium underline-offset-4 transition-colors outline-none hover:underline focus-visible:ring-[3px]',
+					'focus-visible:border-ring focus-visible:ring-ring/50 inline-flex items-center justify-center rounded-md text-sm font-medium underline-offset-4 transition-colors outline-none hover:underline focus-visible:ring-3',
 			},
 			restProps,
 			linkState.props,

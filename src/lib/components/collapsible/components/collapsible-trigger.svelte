@@ -8,7 +8,7 @@
 <summary
 	{...restProps}
 	data-slot="collapsible-trigger"
-	class={join('cursor-pointer list-none [&::-webkit-details-marker]:hidden', className)}
+	class={join('cursor-pointer list-none marker:hidden', className)}
 	bind:this={ref}>
 	{@render children?.()}
 </summary>

@@ -8,7 +8,7 @@
 <div
 	bind:this={ref}
 	data-slot="field-label"
-	class={join('gap-2 text-sm font-medium group-data-[disabled=true]/field:opacity-50 flex w-fit items-center leading-5', className)}
+	class={join('gap-2 text-sm font-medium group-data-disabled/field:opacity-50 flex w-fit items-center leading-5', className)}
 	{...restProps}>
 	{@render children?.()}
 </div>

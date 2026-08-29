@@ -53,7 +53,7 @@
 	});
 
 	const selectShell =
-		'relative flex rounded border border-border hover:bg-muted has-focus-visible:border-ring has-focus-visible:ring-ring/50 has-focus-visible:ring-[3px]';
+		'relative flex rounded border border-border hover:bg-muted has-focus-visible:border-ring has-focus-visible:ring-ring/50 has-focus-visible:ring-3';
 	const selectLabel = 'flex select-none items-center gap-1 py-1.5 pe-1.5 ps-2 text-sm font-medium';
 </script>
 

@@ -78,7 +78,7 @@
 		<NavigationMenu.Item>
 			<NavigationMenu.Trigger>Home</NavigationMenu.Trigger>
 			<NavigationMenu.Content>
-				<ul class="grid gap-2 p-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+				<ul class="grid gap-2 p-2 md:w-100 lg:w-125 lg:grid-cols-[.75fr_1fr]">
 					<li class="row-span-3">
 						<NavigationMenu.Link
 							class="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-4 no-underline outline-hidden select-none focus:shadow-md md:p-6">
@@ -111,7 +111,7 @@
 		<NavigationMenu.Item>
 			<NavigationMenu.Trigger>Components</NavigationMenu.Trigger>
 			<NavigationMenu.Content>
-				<ul class="grid w-[300px] gap-2 p-2 sm:w-[400px] md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+				<ul class="grid w-75 gap-2 p-2 sm:w-100 md:w-125 md:grid-cols-2 lg:w-150">
 					{#each components as component, i (i)}
 						{@render ListItem({
 							href: component.href,
@@ -133,7 +133,7 @@
 		<NavigationMenu.Item class="hidden md:block">
 			<NavigationMenu.Trigger>List</NavigationMenu.Trigger>
 			<NavigationMenu.Content>
-				<ul class="grid w-[300px] gap-4 p-2">
+				<ul class="grid w-75 gap-4 p-2">
 					<li>
 						<NavigationMenu.Link href="#">
 							<div class="font-medium">Components</div>
@@ -154,7 +154,7 @@
 		<NavigationMenu.Item class="hidden md:block">
 			<NavigationMenu.Trigger>Simple</NavigationMenu.Trigger>
 			<NavigationMenu.Content>
-				<ul class="grid w-[200px] gap-4 p-2">
+				<ul class="grid w-50 gap-4 p-2">
 					<li>
 						<NavigationMenu.Link href="#">Components</NavigationMenu.Link>
 						<NavigationMenu.Link href="#">Documentation</NavigationMenu.Link>
@@ -167,7 +167,7 @@
 			<NavigationMenu.Trigger>With Icon</NavigationMenu.Trigger>
 
 			<NavigationMenu.Content>
-				<ul class="grid w-[200px] gap-4 p-2">
+				<ul class="grid w-50 gap-4 p-2">
 					<li>
 						<NavigationMenu.Link href="#" class="flex-row items-center gap-2">
 							<CircleHelpIcon />

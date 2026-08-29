@@ -22,7 +22,7 @@
 		mergeProps(
 			{
 				'data-slot': 'command-list',
-				class: 'max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto',
+				class: 'max-h-75 scroll-py-1 overflow-x-hidden overflow-y-auto',
 			},
 			restProps,
 			listState.props,

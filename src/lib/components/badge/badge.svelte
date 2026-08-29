@@ -2,7 +2,7 @@
 	import { declareVariants, type VariantProps } from 'overrule';
 
 	export const badgeVariants = declareVariants({
-		base: 'h-5 gap-1 rounded-4xl border px-2 py-0.5 text-xs font-medium has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&>svg]:size-3! focus-visible:border-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive group/badge inline-flex w-fit shrink-0 items-center justify-center overflow-hidden whitespace-nowrap transition-colors focus-visible:ring-[3px] [&>svg]:pointer-events-none',
+		base: 'h-5 gap-1 rounded-4xl border px-2 py-0.5 text-xs font-medium has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&>svg]:size-3! focus-visible:border-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive group/badge inline-flex w-fit shrink-0 items-center justify-center overflow-hidden whitespace-nowrap transition-colors focus-visible:ring-3 [&>svg]:pointer-events-none',
 		variants: {
 			variant: {
 				default: 'border-transparent focus-visible:ring-ring/50 bg-primary text-primary-foreground [a]:hover:bg-primary/80',

@@ -277,43 +277,9 @@
 		opacity: 1;
 	}
 
-	:global([data-vaul-handle]) {
-		display: block;
-		position: relative;
-		opacity: 0.7;
-		background: #e2e2e4;
-		margin-left: auto;
-		margin-right: auto;
-		height: 5px;
-		width: 32px;
-		border-radius: 1rem;
-		touch-action: pan-y;
-	}
-
-	:global([data-vaul-handle]:hover, [data-vaul-handle]:active) {
-		opacity: 1;
-	}
-
-	:global([data-vaul-handle-hitarea]) {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-		width: max(100%, 2.75rem); /* 44px */
-		height: max(100%, 2.75rem); /* 44px */
-		touch-action: inherit;
-	}
-
 	@media (hover: hover) and (pointer: fine) {
 		:global([data-vaul-drawer]) {
 			user-select: none !important;
-		}
-	}
-
-	@media (pointer: fine) {
-		:global([data-vaul-handle-hitarea]) {
-			width: 100%;
-			height: 100%;
 		}
 	}
 </style>

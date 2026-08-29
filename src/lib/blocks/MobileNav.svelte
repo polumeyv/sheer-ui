@@ -53,12 +53,12 @@
 	aria-expanded={cell.open}
 	aria-label={cell.open ? 'Close menu' : 'Open menu'}
 	class={join(
-		'hamburger md:hidden inline-grid size-10 place-items-center relative z-50 bg-transparent border-0 cursor-pointer text-current',
+		'group/hamburger md:hidden inline-grid size-10 place-items-center relative z-50 bg-transparent border-0 cursor-pointer text-current',
 		className,
 	)}>
-	<span class="bar bar-top"></span>
-	<span class="bar bar-mid"></span>
-	<span class="bar bar-bot"></span>
+	<span class="bar top-[calc(50%-6px)] group-aria-expanded/hamburger:top-1/2 group-aria-expanded/hamburger:rotate-45"></span>
+	<span class="bar top-1/2 group-aria-expanded/hamburger:opacity-0"></span>
+	<span class="bar top-[calc(50%+6px)] group-aria-expanded/hamburger:top-1/2 group-aria-expanded/hamburger:-rotate-45"></span>
 </button>
 
 <div
@@ -72,11 +72,11 @@
 			{#each navLinks as link (link.href)}
 				<li class="border-b border-border">
 					{#if link.children && link.children.length > 0}
-						<details>
+						<details class="group/nav-item">
 							<summary
-								class="flex cursor-pointer items-center justify-between py-6 text-3xl pr-5 font-medium tracking-tight transition-colors hover:text-muted-foreground">
+								class="flex cursor-pointer list-none marker:hidden items-center justify-between py-6 text-3xl pr-5 font-medium tracking-tight transition-colors hover:text-muted-foreground">
 								<span>{link.label}</span>
-								<Plus class="details-icon size-6 transition-transform duration-300" />
+								<Plus class="size-6 transition-transform duration-300 group-open/nav-item:rotate-45" />
 							</summary>
 							<ul class="list-none p-0 m-0 pb-2">
 								{#each link.children as child (child.href)}
@@ -118,10 +118,8 @@
 </div>
 
 <style>
-	.hamburger {
-		position: relative;
-	}
-
+	/* Split durations (300ms rotate/top, 200ms opacity) have no utility spelling; the bar's
+	   positions and open-state rotation are utilities on the spans. */
 	.bar {
 		position: absolute;
 		left: 50%;
@@ -129,34 +127,11 @@
 		height: 2px;
 		background-color: currentColor;
 		border-radius: 2px;
-		transform-origin: center;
 		transition:
-			transform 300ms cubic-bezier(0.19, 1, 0.22, 1),
+			rotate 300ms cubic-bezier(0.19, 1, 0.22, 1),
 			top 300ms cubic-bezier(0.19, 1, 0.22, 1),
 			opacity 200ms ease;
 		margin-left: -0.625rem;
-	}
-
-	.bar-top {
-		top: calc(50% - 6px);
-	}
-	.bar-mid {
-		top: 50%;
-	}
-	.bar-bot {
-		top: calc(50% + 6px);
-	}
-
-	.hamburger[aria-expanded='true'] .bar-top {
-		top: 50%;
-		transform: rotate(45deg);
-	}
-	.hamburger[aria-expanded='true'] .bar-mid {
-		opacity: 0;
-	}
-	.hamburger[aria-expanded='true'] .bar-bot {
-		top: 50%;
-		transform: rotate(-45deg);
 	}
 
 	.mobile-nav-popover {
@@ -190,16 +165,5 @@
 
 	:global(html:has(.mobile-nav-popover:popover-open)) {
 		overflow: hidden;
-	}
-
-	summary {
-		list-style: none;
-	}
-	summary::-webkit-details-marker {
-		display: none;
-	}
-
-	details[open] summary :global(.details-icon) {
-		transform: rotate(45deg);
 	}
 </style>

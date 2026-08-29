@@ -27,7 +27,7 @@
 	{...restProps}
 	data-slot="accordion-trigger"
 	class={join(
-		'focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 cursor-pointer list-none items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] [&::-webkit-details-marker]:hidden',
+		'focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 cursor-pointer list-none items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-3 marker:hidden',
 		className,
 	)}
 	{onkeydown}
