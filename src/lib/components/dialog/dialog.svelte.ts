@@ -12,18 +12,7 @@ const dialogAttrs = createBitsAttrs({
 	parts: ['content', 'trigger', 'overlay', 'title', 'description', 'close', 'cancel', 'action'],
 });
 
-const [getDialogRoot, setDialogRoot] = createContext<DialogRootState>();
-
-const missingContextErrorUrl = 'https://svelte.dev/e/missing_context';
-
-function getDialogRootOr<TFallback>(fallback: TFallback): DialogRootState | TFallback {
-	try {
-		return getDialogRoot();
-	} catch (error) {
-		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
-		throw error;
-	}
-}
+const [getDialogRoot, setDialogRoot, hasDialogRoot] = createContext<DialogRootState>();
 
 // The dialog's public state cell is the shared overlay OpenCell (internal/open-cell.svelte.ts),
 // exported under its established dialog-facing name.
@@ -40,7 +29,7 @@ interface DialogRootStateOpts
 
 export class DialogRootState {
 	static create(opts: DialogRootStateOpts) {
-		const parent = getDialogRootOr(null);
+		const parent = hasDialogRoot() ? getDialogRoot() : null;
 		return setDialogRoot(new DialogRootState(opts, parent));
 	}
 

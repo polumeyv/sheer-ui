@@ -22,18 +22,7 @@ interface CheckboxGroupStateOpts
 			value: string[];
 		}> {}
 
-export const [getCheckboxGroup, setCheckboxGroup] = createContext<CheckboxGroupState>();
-
-const missingContextErrorUrl = 'https://svelte.dev/e/missing_context';
-
-export function getCheckboxGroupOr<TFallback>(fallback: TFallback): CheckboxGroupState | TFallback {
-	try {
-		return getCheckboxGroup();
-	} catch (error) {
-		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
-		throw error;
-	}
-}
+export const [getCheckboxGroup, setCheckboxGroup, hasCheckboxGroup] = createContext<CheckboxGroupState>();
 
 export class CheckboxGroupState {
 	static create(opts: CheckboxGroupStateOpts) {

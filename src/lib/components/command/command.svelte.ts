@@ -36,18 +36,8 @@ const COMMAND_VALID_ITEM_SELECTOR = `${commandAttrs.selector('item')}:not([aria-
 
 const [getCommandRoot, setCommandRoot] = createContext<CommandRootState>();
 const [getCommandList, setCommandList] = createContext<CommandListState>();
-const [getCommandGroupContainer, setCommandGroupContainer] = createContext<CommandGroupContainerState>();
-
-const missingContextErrorUrl = 'https://svelte.dev/e/missing_context';
-
-function getCommandGroupContainerOr<TFallback>(fallback: TFallback): CommandGroupContainerState | TFallback {
-	try {
-		return getCommandGroupContainer();
-	} catch (error) {
-		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
-		throw error;
-	}
-}
+const [getCommandGroupContainer, setCommandGroupContainer, hasCommandGroupContainer] =
+	createContext<CommandGroupContainerState>();
 
 interface GridItem {
 	index: number;
@@ -1251,7 +1241,7 @@ interface CommandItemStateOpts
 
 export class CommandItemState {
 	static create(opts: Omit<CommandItemStateOpts, 'group'>) {
-		const group = getCommandGroupContainerOr(null);
+		const group = hasCommandGroupContainer() ? getCommandGroupContainer() : null;
 		return new CommandItemState({ ...opts, group }, getCommandRoot());
 	}
 	readonly opts: CommandItemStateOpts;
@@ -1277,7 +1267,7 @@ export class CommandItemState {
 	constructor(opts: CommandItemStateOpts, root: CommandRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.#group = getCommandGroupContainerOr(null);
+		this.#group = opts.group;
 		this.trueValue = opts.value.current;
 		this.attachment = attachRef(this.opts.ref);
 

@@ -64,28 +64,9 @@ const [getMenuRoot, setMenuRoot] = createContext<MenuRootState>();
 const [getMenuMenu, setMenuMenu] = createContext<MenuMenuState>();
 const [getMenuContent, setMenuContent] = createContext<MenuContentState>();
 const [getMenuGroup, setMenuGroup] = createContext<MenuGroupState | MenuRadioGroupState>();
-const [getMenuRadioGroup, setMenuRadioGroup] = createContext<MenuRadioGroupState>();
-export const [getMenuCheckboxGroup, setMenuCheckboxGroup] = createContext<MenuCheckboxGroupState>();
-
-const missingContextErrorUrl = 'https://svelte.dev/e/missing_context';
-
-function getMenuRadioGroupOr<TFallback>(fallback: TFallback): MenuRadioGroupState | TFallback {
-	try {
-		return getMenuRadioGroup();
-	} catch (error) {
-		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
-		throw error;
-	}
-}
-
-export function getMenuCheckboxGroupOr<TFallback>(fallback: TFallback): MenuCheckboxGroupState | TFallback {
-	try {
-		return getMenuCheckboxGroup();
-	} catch (error) {
-		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
-		throw error;
-	}
-}
+const [getMenuRadioGroup, setMenuRadioGroup, hasMenuRadioGroup] = createContext<MenuRadioGroupState>();
+export const [getMenuCheckboxGroup, setMenuCheckboxGroup, hasMenuCheckboxGroup] =
+	createContext<MenuCheckboxGroupState>();
 
 type MenuVariant = 'context-menu' | 'dropdown-menu' | 'menubar';
 
@@ -1224,14 +1205,12 @@ interface MenuGroupHeadingStateOpts extends WithRefOpts {}
 
 export class MenuGroupHeadingState {
 	static create(opts: MenuGroupHeadingStateOpts) {
-		// Try to get checkbox group first, then radio group, then regular group
-		const checkboxGroup = getMenuCheckboxGroupOr(null);
-		if (checkboxGroup) return new MenuGroupHeadingState(opts, checkboxGroup);
-
-		const radioGroup = getMenuRadioGroupOr(null);
-		if (radioGroup) return new MenuGroupHeadingState(opts, radioGroup);
-
-		return new MenuGroupHeadingState(opts, getMenuGroup());
+		const group = hasMenuCheckboxGroup()
+			? getMenuCheckboxGroup()
+			: hasMenuRadioGroup()
+				? getMenuRadioGroup()
+				: getMenuGroup();
+		return new MenuGroupHeadingState(opts, group);
 	}
 	readonly opts: MenuGroupHeadingStateOpts;
 	readonly group: MenuGroupState | MenuRadioGroupState | MenuCheckboxGroupState;

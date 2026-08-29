@@ -3,7 +3,7 @@
 	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { MenuCheckboxItemProps } from '../types.js';
-	import { getMenuCheckboxGroupOr, MenuCheckboxItemState } from '../menu.svelte.js';
+	import { getMenuCheckboxGroup, hasMenuCheckboxGroup, MenuCheckboxItemState } from '../menu.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
@@ -26,7 +26,7 @@
 		...restProps
 	}: MenuCheckboxItemProps = $props();
 
-	const group = getMenuCheckboxGroupOr(null);
+	const group = hasMenuCheckboxGroup() ? getMenuCheckboxGroup() : null;
 
 	function syncCheckedFromGroupValue() {
 		if (group && value) checked = group.opts.value.current.includes(value);

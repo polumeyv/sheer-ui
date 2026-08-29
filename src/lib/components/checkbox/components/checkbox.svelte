@@ -5,7 +5,7 @@
 	import { bindableWith, boxWith, repairBindable } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { CheckboxRootProps } from '../types.js';
-	import { getCheckboxGroupOr, CheckboxRootState } from '../checkbox.svelte.js';
+	import { getCheckboxGroup, hasCheckboxGroup, CheckboxRootState } from '../checkbox.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
@@ -29,7 +29,7 @@
 		...restProps
 	}: CheckboxRootProps = $props();
 
-	const group = getCheckboxGroupOr(null);
+	const group = hasCheckboxGroup() ? getCheckboxGroup() : null;
 
 	function syncCheckedFromGroupValue() {
 		if (!group || !value) return;
