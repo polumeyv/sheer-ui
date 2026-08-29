@@ -14,7 +14,6 @@
 @import '../lib/assets/ui.css';
 @source '../lib';
 @import '@fontsource-variable/inter';
-@custom-variant dark (&:is(.dark *));
 
 @theme inline {
 	--font-sans: 'Inter Variable', sans-serif;
