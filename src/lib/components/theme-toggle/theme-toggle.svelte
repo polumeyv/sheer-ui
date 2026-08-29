@@ -20,19 +20,23 @@
 </script>
 
 <Button onclick={toggleTheme} {variant} size="icon" class="rounded-full!">
-	<span class="stage group grid *:[grid-area:1/1]" data-dark={dark} data-phase={phase} aria-hidden="true">
-		<span class="icon sun group-data-dark:opacity-0">
-			<SunIcon class="size-5" />
-		</span>
-		<span class="icon moon group-not-data-dark:opacity-0">
-			<MoonIcon class="size-5" />
-		</span>
+	<span class="stage grid *:[grid-area:1/1]" data-dark={dark} data-phase={phase} aria-hidden="true">
+		<span class="sun"><SunIcon class="size-5" /></span>
+		<span class="moon"><MoonIcon class="size-5" /></span>
 	</span>
 
 	<span class="sr-only">Toggle theme</span>
 </Button>
 
 <style>
+	/* Keyed on the stage's own attribute rather than a Tailwind `group-*` variant: `data-dark`
+	   is rendered as "true"/"false" (presence-only `[data-dark]` can't tell them apart), and a
+	   bare `.group` ancestor such as the sidebar root would capture the variant. */
+	.stage[data-dark='true'] .sun,
+	.stage[data-dark='false'] .moon {
+		opacity: 0;
+	}
+
 	.stage[data-phase='to-dark'] .sun,
 	.stage[data-phase='to-light'] .moon {
 		animation: theme-spin-out 600ms ease-in both;
