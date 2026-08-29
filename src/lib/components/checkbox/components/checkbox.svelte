@@ -5,7 +5,7 @@
 	import { bindableWith, boxWith, repairBindable } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { CheckboxRootProps } from '../types.js';
-	import { getCheckboxGroup, hasCheckboxGroup, CheckboxRootState } from '../checkbox.svelte.js';
+	import { CheckboxRootState } from '../checkbox.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
@@ -29,41 +29,30 @@
 		...restProps
 	}: CheckboxRootProps = $props();
 
-	const group = hasCheckboxGroup() ? getCheckboxGroup() : null;
+	const rootState = CheckboxRootState.create({
+		checked: bindableWith(
+			() => checked,
+			(v) => (checked = v),
+			(v) => onCheckedChange?.(v),
+		),
+		disabled: boxWith(() => disabled ?? false),
+		required: boxWith(() => required),
+		value: boxWith(() => value),
+		id: boxWith(() => id),
+		ref: bindableWith(
+			() => ref,
+			(v) => (ref = v),
+		),
+		indeterminate: bindableWith(
+			() => indeterminate,
+			(v) => (indeterminate = v),
+			(v) => onIndeterminateChange?.(v),
+		),
+		type: boxWith(() => type),
+		readonly: boxWith(() => Boolean(readonly)),
+	});
 
-	function syncCheckedFromGroupValue() {
-		if (!group || !value) return;
-		checked = group.opts.value.current.includes(value);
-	}
-
-	// Grouped checkboxes derive their checked state from the group value.
-	repairBindable(() => value, syncCheckedFromGroupValue);
-
-	const rootState = CheckboxRootState.create(
-		{
-			checked: bindableWith(
-				() => checked,
-				(v) => (checked = v),
-				(v) => onCheckedChange?.(v),
-			),
-			disabled: boxWith(() => disabled ?? false),
-			required: boxWith(() => required),
-			value: boxWith(() => value),
-			id: boxWith(() => id),
-			ref: bindableWith(
-				() => ref,
-				(v) => (ref = v),
-			),
-			indeterminate: bindableWith(
-				() => indeterminate,
-				(v) => (indeterminate = v),
-				(v) => onIndeterminateChange?.(v),
-			),
-			type: boxWith(() => type),
-			readonly: boxWith(() => Boolean(readonly)),
-		},
-		group,
-	);
+	repairBindable(rootState.groupChecked, () => (checked = rootState.groupChecked() ?? checked));
 
 	const mergedProps = $derived(
 		mergeProps(

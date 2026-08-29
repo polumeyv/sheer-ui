@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
+	import { bindableWith, boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { MenuCheckboxGroupProps } from '../types.js';
 	import { MenuCheckboxGroupState } from '../menu.svelte.js';
@@ -18,14 +18,11 @@
 	}: MenuCheckboxGroupProps = $props();
 
 	const checkboxGroupState = MenuCheckboxGroupState.create({
-		value: boxWith(
+		value: bindableWith(
 			() => $state.snapshot(value),
-			(v) => {
-				value = $state.snapshot(v);
-				onValueChange(v);
-			},
+			(v) => (value = $state.snapshot(v)),
+			(v) => onValueChange(v),
 		),
-		onValueChange: boxWith(() => onValueChange),
 		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),

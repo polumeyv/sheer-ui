@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
+	import { bindableWith, boxWith, repairBindable } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { MenuCheckboxItemProps } from '../types.js';
-	import { getMenuCheckboxGroup, hasMenuCheckboxGroup, MenuCheckboxItemState } from '../menu.svelte.js';
+	import { MenuCheckboxItemState } from '../menu.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
@@ -26,46 +26,29 @@
 		...restProps
 	}: MenuCheckboxItemProps = $props();
 
-	const group = hasMenuCheckboxGroup() ? getMenuCheckboxGroup() : null;
+	const checkboxItemState = MenuCheckboxItemState.create({
+		checked: bindableWith(
+			() => checked,
+			(v) => (checked = v),
+			(v) => onCheckedChange(v),
+		),
+		id: boxWith(() => id),
+		disabled: boxWith(() => disabled),
+		onSelect: boxWith(() => handleSelect),
+		ref: boxWith(
+			() => ref,
+			(v) => (ref = v),
+		),
+		closeOnSelect: boxWith(() => closeOnSelect),
+		indeterminate: bindableWith(
+			() => indeterminate,
+			(v) => (indeterminate = v),
+			(v) => onIndeterminateChange(v),
+		),
+		value: boxWith(() => value),
+	});
 
-	function syncCheckedFromGroupValue() {
-		if (group && value) checked = group.opts.value.current.includes(value);
-	}
-
-	repairBindable(() => value, syncCheckedFromGroupValue);
-
-	const checkboxItemState = MenuCheckboxItemState.create(
-		{
-			checked: boxWith(
-				() => checked,
-				(v) => {
-					if (v !== checked) {
-						checked = v;
-						onCheckedChange(v);
-					}
-				},
-			),
-			id: boxWith(() => id),
-			disabled: boxWith(() => disabled),
-			onSelect: boxWith(() => handleSelect),
-			ref: boxWith(
-				() => ref,
-				(v) => (ref = v),
-			),
-			closeOnSelect: boxWith(() => closeOnSelect),
-			indeterminate: boxWith(
-				() => indeterminate,
-				(v) => {
-					if (v !== indeterminate) {
-						indeterminate = v;
-						onIndeterminateChange(v);
-					}
-				},
-			),
-			value: boxWith(() => value),
-		},
-		group,
-	);
+	repairBindable(checkboxItemState.groupChecked, () => (checked = checkboxItemState.groupChecked() ?? checked));
 
 	function handleSelect(e: Event) {
 		onSelect(e);

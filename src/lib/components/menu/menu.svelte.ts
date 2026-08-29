@@ -38,7 +38,7 @@ import type { KeyboardEventHandler, PointerEventHandler, MouseEventHandler } fro
 import { Typeahead, textContentOf } from '../../internal/typeahead.svelte.js';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
 import { PresenceManager } from '../../internal/presence-manager.svelte.js';
-import { arraysAreEqual } from '../../internal/arrays.js';
+import { joinGroup } from '../../internal/group-value.svelte.js';
 import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';
 import { on } from 'svelte/events';
 import {
@@ -63,10 +63,9 @@ export const CONTEXT_MENU_CONTENT_ATTR = 'data-context-menu-content';
 const [getMenuRoot, setMenuRoot] = createContext<MenuRootState>();
 const [getMenuMenu, setMenuMenu] = createContext<MenuMenuState>();
 const [getMenuContent, setMenuContent] = createContext<MenuContentState>();
-const [getMenuGroup, setMenuGroup] = createContext<MenuGroupState | MenuRadioGroupState>();
-const [getMenuRadioGroup, setMenuRadioGroup, hasMenuRadioGroup] = createContext<MenuRadioGroupState>();
-export const [getMenuCheckboxGroup, setMenuCheckboxGroup, hasMenuCheckboxGroup] =
-	createContext<MenuCheckboxGroupState>();
+const [getMenuGroup, setMenuGroup] = createContext<MenuGroupState | MenuRadioGroupState | MenuCheckboxGroupState>();
+const [getMenuRadioGroup, setMenuRadioGroup] = createContext<MenuRadioGroupState>();
+const [getMenuCheckboxGroup, setMenuCheckboxGroup, hasMenuCheckboxGroup] = createContext<MenuCheckboxGroupState>();
 
 type MenuVariant = 'context-menu' | 'dropdown-menu' | 'menubar';
 
@@ -1102,47 +1101,19 @@ interface MenuCheckboxItemStateOpts
 		}> {}
 
 export class MenuCheckboxItemState {
-	static create(opts: MenuItemCombinedProps & MenuCheckboxItemStateOpts, checkboxGroup: MenuCheckboxGroupState | null) {
+	static create(opts: MenuItemCombinedProps & MenuCheckboxItemStateOpts) {
 		const item = new MenuItemState(opts, new MenuItemSharedState(opts, getMenuContent()));
-		return new MenuCheckboxItemState(opts, item, checkboxGroup);
+		return new MenuCheckboxItemState(opts, item);
 	}
 
 	readonly opts: MenuCheckboxItemStateOpts;
 	readonly item: MenuItemState;
-	readonly group: MenuCheckboxGroupState | null;
+	readonly groupChecked: () => boolean | undefined;
 
-	constructor(opts: MenuCheckboxItemStateOpts, item: MenuItemState, group: MenuCheckboxGroupState | null = null) {
+	constructor(opts: MenuCheckboxItemStateOpts, item: MenuItemState) {
 		this.opts = opts;
 		this.item = item;
-		this.group = group;
-
-		if (this.group) {
-			/**
-			 * Group -> item sync: external bind:value updates must drive each item's
-			 * bind:checked state and ARIA state.
-			 */
-			$effect(() => {
-				const groupValues = this.group!.opts.value.current;
-				untrack(() => {
-					this.opts.checked.current = groupValues.includes(this.opts.value.current);
-				});
-			});
-
-			/**
-			 * Item -> group sync: menu selection toggles write back into the controlled
-			 * group value. addValue/removeValue are idempotent to avoid value-array churn.
-			 */
-			$effect(() => {
-				const checked = this.opts.checked.current;
-				untrack(() => {
-					if (checked) {
-						this.group!.addValue(this.opts.value.current);
-					} else {
-						this.group!.removeValue(this.opts.value.current);
-					}
-				});
-			});
-		}
+		this.groupChecked = joinGroup(hasMenuCheckboxGroup() ? getMenuCheckboxGroup() : null, opts);
 	}
 
 	toggleChecked() {
@@ -1205,12 +1176,7 @@ interface MenuGroupHeadingStateOpts extends WithRefOpts {}
 
 export class MenuGroupHeadingState {
 	static create(opts: MenuGroupHeadingStateOpts) {
-		const group = hasMenuCheckboxGroup()
-			? getMenuCheckboxGroup()
-			: hasMenuRadioGroup()
-				? getMenuRadioGroup()
-				: getMenuGroup();
-		return new MenuGroupHeadingState(opts, group);
+		return new MenuGroupHeadingState(opts, getMenuGroup());
 	}
 	readonly opts: MenuGroupHeadingStateOpts;
 	readonly group: MenuGroupState | MenuRadioGroupState | MenuCheckboxGroupState;
@@ -1569,16 +1535,13 @@ export class ContextMenuTriggerState {
 interface MenuCheckboxGroupStateOpts
 	extends
 		WithRefOpts,
-		ReadableBoxedValues<{
-			onValueChange: (value: string[]) => void;
-		}>,
 		WritableBoxedValues<{
 			value: string[];
 		}> {}
 
 export class MenuCheckboxGroupState {
 	static create(opts: MenuCheckboxGroupStateOpts) {
-		return setMenuCheckboxGroup(new MenuCheckboxGroupState(opts, getMenuContent()));
+		return setMenuGroup(setMenuCheckboxGroup(new MenuCheckboxGroupState(opts, getMenuContent())));
 	}
 
 	readonly opts: MenuCheckboxGroupStateOpts;
@@ -1592,26 +1555,6 @@ export class MenuCheckboxGroupState {
 		this.content = content;
 		this.root = content.parentMenu.root;
 		this.attachment = attachRef(this.opts.ref);
-	}
-
-	addValue(checkboxValue: string | undefined) {
-		if (!checkboxValue) return;
-		if (!this.opts.value.current.includes(checkboxValue)) {
-			const newValue = [...$state.snapshot(this.opts.value.current), checkboxValue];
-			this.opts.value.current = newValue;
-			if (arraysAreEqual(this.opts.value.current, newValue)) return;
-			this.opts.onValueChange.current(newValue);
-		}
-	}
-
-	removeValue(checkboxValue: string | undefined) {
-		if (!checkboxValue) return;
-		const index = this.opts.value.current.indexOf(checkboxValue);
-		if (index === -1) return;
-		const newValue = this.opts.value.current.filter((v) => v !== checkboxValue);
-		this.opts.value.current = newValue;
-		if (arraysAreEqual(this.opts.value.current, newValue)) return;
-		this.opts.onValueChange.current(newValue);
 	}
 
 	readonly props = $derived.by(
