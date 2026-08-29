@@ -1,4 +1,5 @@
-import { createContext, untrack } from 'svelte';
+import { createContext } from 'svelte';
+import { joinGroup } from '../../internal/group-value.svelte.js';
 import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import type { HTMLButtonAttributes } from 'svelte/elements';
 import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
@@ -22,18 +23,7 @@ interface CheckboxGroupStateOpts
 			value: string[];
 		}> {}
 
-export const [getCheckboxGroup, setCheckboxGroup] = createContext<CheckboxGroupState>();
-
-const missingContextErrorUrl = 'https://svelte.dev/e/missing_context';
-
-export function getCheckboxGroupOr<TFallback>(fallback: TFallback): CheckboxGroupState | TFallback {
-	try {
-		return getCheckboxGroup();
-	} catch (error) {
-		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
-		throw error;
-	}
-}
+const [getCheckboxGroup, setCheckboxGroup, hasCheckboxGroup] = createContext<CheckboxGroupState>();
 
 export class CheckboxGroupState {
 	static create(opts: CheckboxGroupStateOpts) {
@@ -48,18 +38,6 @@ export class CheckboxGroupState {
 	constructor(opts: CheckboxGroupStateOpts) {
 		this.opts = opts;
 		this.attachment = attachRef(this.opts.ref);
-	}
-
-	addValue(checkboxValue: string | undefined) {
-		if (!checkboxValue) return;
-		if (this.opts.value.current.includes(checkboxValue)) return;
-		this.opts.value.current = [...$state.snapshot(this.opts.value.current), checkboxValue];
-	}
-
-	removeValue(checkboxValue: string | undefined) {
-		if (!checkboxValue) return;
-		if (!this.opts.value.current.includes(checkboxValue)) return;
-		this.opts.value.current = this.opts.value.current.filter((v) => v !== checkboxValue);
 	}
 
 	readonly props = $derived.by(
@@ -122,12 +100,14 @@ interface CheckboxRootStateOpts
 		}> {}
 
 export class CheckboxRootState {
-	static create(opts: CheckboxRootStateOpts, group: CheckboxGroupState | null = null) {
+	static create(opts: CheckboxRootStateOpts) {
+		const group = hasCheckboxGroup() ? getCheckboxGroup() : null;
 		return setCheckboxRoot(new CheckboxRootState(opts, group));
 	}
 
 	readonly opts: CheckboxRootStateOpts;
 	readonly group: CheckboxGroupState | null;
+	readonly groupChecked: () => boolean | undefined;
 	readonly trueRequired = $derived.by(() => {
 		if (this.group && this.group.opts.required.current) return true;
 		return this.opts.required.current;
@@ -148,35 +128,7 @@ export class CheckboxRootState {
 		this.attachment = attachRef(this.opts.ref);
 		this.onkeydown = this.onkeydown.bind(this);
 		this.onclick = this.onclick.bind(this);
-
-		/**
-		 * Group -> item sync: external bind:value updates must drive each item's
-		 * bind:checked state so parent bindings and hidden input state stay aligned.
-		 */
-		$effect.pre(() => {
-			const groupValue = $state.snapshot(this.group?.opts.value.current);
-			const value = this.opts.value.current;
-			untrack(() => {
-				if (!groupValue || !value) return;
-				this.opts.checked.current = groupValue.includes(value);
-			});
-		});
-
-		/**
-		 * Item -> group sync: item toggles write back into the controlled group value.
-		 * addValue/removeValue are idempotent, which prevents value-array churn loops.
-		 */
-		$effect.pre(() => {
-			const checked = this.opts.checked.current;
-			untrack(() => {
-				if (!this.group) return;
-				if (checked) {
-					this.group?.addValue(this.opts.value.current);
-				} else {
-					this.group?.removeValue(this.opts.value.current);
-				}
-			});
-		});
+		this.groupChecked = joinGroup(group, opts);
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {

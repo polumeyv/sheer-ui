@@ -36,18 +36,8 @@ const COMMAND_VALID_ITEM_SELECTOR = `${commandAttrs.selector('item')}:not([aria-
 
 const [getCommandRoot, setCommandRoot] = createContext<CommandRootState>();
 const [getCommandList, setCommandList] = createContext<CommandListState>();
-const [getCommandGroupContainer, setCommandGroupContainer] = createContext<CommandGroupContainerState>();
-
-const missingContextErrorUrl = 'https://svelte.dev/e/missing_context';
-
-function getCommandGroupContainerOr<TFallback>(fallback: TFallback): CommandGroupContainerState | TFallback {
-	try {
-		return getCommandGroupContainer();
-	} catch (error) {
-		if (error instanceof Error && error.message.includes(missingContextErrorUrl)) return fallback;
-		throw error;
-	}
-}
+const [getCommandGroupContainer, setCommandGroupContainer, hasCommandGroupContainer] =
+	createContext<CommandGroupContainerState>();
 
 interface GridItem {
 	index: number;
@@ -1251,15 +1241,14 @@ interface CommandItemStateOpts
 
 export class CommandItemState {
 	static create(opts: Omit<CommandItemStateOpts, 'group'>) {
-		const group = getCommandGroupContainerOr(null);
+		const group = hasCommandGroupContainer() ? getCommandGroupContainer() : null;
 		return new CommandItemState({ ...opts, group }, getCommandRoot());
 	}
 	readonly opts: CommandItemStateOpts;
 	readonly root: CommandRootState;
 	readonly attachment: RefAttachment;
-	readonly #group: CommandGroupContainerState | null = null;
 	readonly #trueForceMount = $derived.by(() => {
-		return this.opts.forceMount.current || this.#group?.opts.forceMount.current === true;
+		return this.opts.forceMount.current || this.opts.group?.opts.forceMount.current === true;
 	});
 	readonly shouldRender = $derived.by(() => {
 		this.opts.ref.current;
@@ -1277,17 +1266,16 @@ export class CommandItemState {
 	constructor(opts: CommandItemStateOpts, root: CommandRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.#group = getCommandGroupContainerOr(null);
 		this.trueValue = opts.value.current;
 		this.attachment = attachRef(this.opts.ref);
 
 		$effect(() => {
 			this.trueValue;
-			this.#group?.trueValue;
+			this.opts.group?.trueValue;
 			this.opts.forceMount.current;
 			return untrack(() => {
 				if (this.opts.forceMount.current || !this.trueValue) return;
-				return this.root.registerItem(this.trueValue, this.#group?.trueValue);
+				return this.root.registerItem(this.trueValue, this.opts.group?.trueValue);
 			});
 		});
 
@@ -1346,7 +1334,7 @@ export class CommandItemState {
 				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
 				'data-selected': boolToEmptyStrOrUndef(this.isSelected),
 				'data-value': this.trueValue,
-				'data-group': this.#group?.trueValue,
+				'data-group': this.opts.group?.trueValue,
 				[commandAttrs.item]: '',
 				role: 'option',
 				onpointermove: this.onpointermove,

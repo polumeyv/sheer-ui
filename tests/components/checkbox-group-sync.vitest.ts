@@ -127,7 +127,7 @@ describe("Checkbox group synchronization", () => {
 
 			expect(readOutput("group-value")).toBe("[beta]");
 			expect(readOutput("dynamic-checked")).toBe("false");
-			expect(readOutput("checked-change-count")).toBe("4");
+			expect(readOutput("checked-change-count")).toBe("1");
 		} finally {
 			cleanup(component);
 		}
