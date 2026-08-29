@@ -19,15 +19,8 @@ interface GroupItem {
 export function joinGroup(group: GroupValue | null, item: GroupItem): () => boolean | undefined {
 	if (!group) return () => undefined;
 
-	// $effect.pre runs synchronously on creation, before the component has repaired
-	// `checked` from the group, so the first run only subscribes: at mount the group wins.
-	let mounted = false;
-	$effect.pre(() => {
+	$effect(() => {
 		const checked = item.checked.current;
-		if (!mounted) {
-			mounted = true;
-			return;
-		}
 		untrack(() => {
 			const value = item.value.current;
 			const values = group.opts.value.current;
