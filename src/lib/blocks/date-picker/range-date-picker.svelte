@@ -111,7 +111,7 @@
 							{#each months as month, i (i)}
 								{#if i > 0}
 									<Resizable.Handle
-										class="mx-2 w-px shrink-0 cursor-col-resize rounded-full bg-border transition-colors hover:bg-foreground/30 data-active:bg-foreground/40" />
+										class="mx-2 w-px shrink-0 cursor-col-resize rounded-full bg-border transition-colors hover:bg-foreground/30 data-[active]:bg-foreground/40" />
 								{/if}
 								<Resizable.Pane minSize={30} defaultSize={100 / months.length}>
 									{@render monthGrid(month)}

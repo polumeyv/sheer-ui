@@ -171,11 +171,13 @@
 		position-try-fallbacks: flip-block, flip-inline;
 
 		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
+		border-radius: calc(var(--radius) - 2px);
 		background: var(--popover);
 		color: var(--popover-foreground);
 		padding: 0.25rem;
-		box-shadow: var(--shadow-md);
+		box-shadow:
+			0 4px 6px -1px rgb(0 0 0 / 0.1),
+			0 2px 4px -2px rgb(0 0 0 / 0.1);
 
 		opacity: 0;
 		transform: translateY(-0.5rem);
@@ -234,7 +236,7 @@
 		padding-block: 0.375rem;
 		padding-inline-start: 0.5rem;
 		padding-inline-end: 2rem;
-		border-radius: var(--radius-sm);
+		border-radius: calc(var(--radius) - 4px);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 		cursor: default;
