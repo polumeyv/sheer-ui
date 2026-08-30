@@ -29,7 +29,6 @@
 		contentClass?: ClassValue;
 		align?: 'start' | 'center' | 'end';
 		side?: 'top' | 'right' | 'bottom' | 'left';
-		onValueChange?: (value: SlotRange | undefined) => void;
 		// Time slot configuration
 		preset?: TimeSlotPreset;
 		slots?: TimeSlot[];
@@ -55,7 +54,6 @@
 		contentClass,
 		align = 'start',
 		side = 'bottom',
-		onValueChange,
 		preset = 'extended',
 		slots,
 		interval = 60,
@@ -115,7 +113,6 @@
 	function handleStartChange(newStart: string | undefined) {
 		if (!newStart) {
 			value = undefined;
-			onValueChange?.(undefined);
 			return;
 		}
 
@@ -126,15 +123,11 @@
 		}
 
 		value = newValue;
-		onValueChange?.(newValue);
 	}
 
 	function handleEndChange(newEnd: string | undefined) {
 		if (!newEnd || !value?.start) return;
-
-		const newValue: SlotRange = { start: value.start, end: newEnd };
-		value = newValue;
-		onValueChange?.(newValue);
+		value = { start: value.start, end: newEnd };
 	}
 </script>
 

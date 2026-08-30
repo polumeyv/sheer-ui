@@ -14,7 +14,6 @@
 		triggerClass?: ClassValue;
 		align?: 'start' | 'center' | 'end';
 		side?: 'top' | 'right' | 'bottom' | 'left';
-		onValueChange?: (value: string | undefined) => void;
 		// Time slot configuration
 		preset?: TimeSlotPreset;
 		slots?: TimeSlot[];
@@ -35,7 +34,6 @@
 		triggerClass,
 		align = 'start',
 		side = 'bottom',
-		onValueChange,
 		preset = 'extended',
 		slots,
 		interval = 60,
@@ -67,17 +65,12 @@
 			return true;
 		});
 	});
-
-	function handleValueChange(newValue: string | undefined) {
-		value = newValue;
-		onValueChange?.(value);
-	}
 </script>
 
 <div class={join('grid gap-2', className)}>
 	<Select.Root
 		{value}
-		onchange={(e) => handleValueChange(e.currentTarget.value || undefined)}
+		onchange={(e) => (value = e.currentTarget.value || undefined)}
 		{disabled}
 		{placeholder}
 		side={side === 'top' ? 'top' : 'bottom'}
