@@ -327,7 +327,7 @@
 		"esm-env": "^1.2.2",
 		"d3-scale": "^4.0.2",
 		"layerchart": "^2.0.1",
-		"overrule": "^0.7.1"
+		"overrule": "^0.7.3"
 	},
 	"devDependencies": {
 		"@fontsource-variable/inter": "^5.2.8",
