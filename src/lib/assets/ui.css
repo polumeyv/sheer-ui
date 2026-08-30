@@ -28,6 +28,14 @@
 	min-height: 0;
 }
 
+/* scrollbar-none covers only scrollbar-width; the webkit pseudo is still needed for Safari < 18.2. */
+@utility scrollbar-hidden {
+	scrollbar-width: none;
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
 @theme inline {
 	--text-2xs: 11px;
 	--text-3xs: 10px;
@@ -38,17 +46,7 @@
 			transform: scale(0.6);
 		}
 	}
-}
 
-/* scrollbar-none covers only scrollbar-width; the webkit pseudo is still needed for Safari < 18.2. */
-@utility scrollbar-hidden {
-	scrollbar-width: none;
-	&::-webkit-scrollbar {
-		display: none;
-	}
-}
-
-@theme inline {
 	--animate-caret-blink: caret-blink 1.25s ease-out infinite;
 
 	@keyframes caret-blink {
