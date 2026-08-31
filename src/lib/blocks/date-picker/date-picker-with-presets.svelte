@@ -23,7 +23,6 @@
 		side?: 'top' | 'right' | 'bottom' | 'left';
 		presets?: PresetItem[];
 		presetsPlaceholder?: string;
-		onValueChange?: (value: DateValue | undefined) => void;
 		// Calendar props
 		captionLayout?: 'dropdown' | 'label';
 		minValue?: DateValue;
@@ -55,7 +54,6 @@
 		side = 'bottom',
 		presets = defaultPresets,
 		presetsPlaceholder = 'Select preset',
-		onValueChange,
 		captionLayout,
 		minValue,
 		maxValue,
@@ -70,11 +68,6 @@
 	// so the placeholder shows again (and the same preset can be re-picked). The chosen date is surfaced on the
 	// outer popover trigger.
 	let presetSelection = $state('');
-
-	function pick(next: DateValue | undefined) {
-		value = next;
-		onValueChange?.(next);
-	}
 </script>
 
 {#snippet presetMenu()}
@@ -86,7 +79,7 @@
 			const v = e.currentTarget.value;
 			presetSelection = '';
 			if (!v) return;
-			pick(today(getLocalTimeZone()).add({ days: Number.parseInt(v) }));
+			value = today(getLocalTimeZone()).add({ days: Number.parseInt(v) });
 		}}>
 		{#each presets as preset (preset.value)}
 			<Select.Option value={`${preset.value}`}>{preset.label}</Select.Option>
@@ -105,7 +98,6 @@
 	{contentClass}
 	{align}
 	{side}
-	{onValueChange}
 	{captionLayout}
 	{minValue}
 	{maxValue}

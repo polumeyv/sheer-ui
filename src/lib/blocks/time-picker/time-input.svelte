@@ -10,7 +10,6 @@
 		disabled?: boolean;
 		class?: ClassValue;
 		triggerClass?: ClassValue;
-		onValueChange?: (value: string) => void;
 		interval?: 15 | 30 | 60;
 		use24Hour?: boolean;
 	}
@@ -21,7 +20,6 @@
 		disabled = false,
 		class: className,
 		triggerClass,
-		onValueChange,
 		interval = 30,
 		use24Hour = false,
 	}: Props = $props();
@@ -84,9 +82,7 @@
 		const parts = slot.includes(':') ? slot.split(':').map(Number) : [Number(slot), 0];
 		const h = parts[0] ?? 0;
 		const m = parts[1] ?? 0;
-		const newValue = use24Hour ? to24(h, m) : to24(h, m, period);
-		value = newValue;
-		onValueChange?.(newValue);
+		value = use24Hour ? to24(h, m) : to24(h, m, period);
 	}
 
 	function togglePeriod() {
@@ -96,7 +92,6 @@
 			const hour = parsed.hour12 ?? 12;
 			value = to24(hour, parsed.minute, period === 'AM' ? 'PM' : 'AM');
 		}
-		onValueChange?.(value);
 	}
 </script>
 

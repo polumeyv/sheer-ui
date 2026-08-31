@@ -28,7 +28,6 @@
 		weekdayFormat?: 'short' | 'long' | 'narrow';
 		minValue?: DateValue;
 		maxValue?: DateValue;
-		onValueChange?: (value: DateRange) => void;
 	}
 
 	let {
@@ -46,7 +45,6 @@
 		weekdayFormat = 'short',
 		minValue,
 		maxValue,
-		onValueChange,
 	}: Props = $props();
 
 	const fmtDay = (d: DateValue) => new DateFormatter(locale, { dateStyle: dateFormat }).format(toDate(d));
@@ -67,7 +65,7 @@
 			{displayValue}
 		</Popover.Trigger>
 		<Popover.Content class={join('w-auto! p-0!', contentClass)} {align} {side}>
-			<RangeCalendar.Root bind:value {onValueChange} {minValue} {maxValue} {numberOfMonths} {weekdayFormat} {locale} class="p-3">
+			<RangeCalendar.Root bind:value {minValue} {maxValue} {numberOfMonths} {weekdayFormat} {locale} class="p-3">
 				{#snippet children({ months, weekdays })}
 					<RangeCalendar.Header class="flex items-center justify-between">
 						<RangeCalendar.PrevButton class="inline-grid size-7 place-items-center rounded-md hover:bg-muted">

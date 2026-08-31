@@ -9,7 +9,6 @@
 		id,
 		name,
 		value = $bindable(''),
-		onchange,
 		error,
 		placeholder = 'Phone Number',
 		disabled = false,
@@ -17,7 +16,6 @@
 		id?: string;
 		name?: string;
 		value?: string;
-		onchange?: (value: string) => void;
 		error?: string;
 		placeholder?: string;
 		disabled?: boolean;
@@ -37,7 +35,6 @@
 		onchange={(e) => {
 			country = e.currentTarget.value as CountryCode;
 			value = toE164();
-			onchange?.(value);
 		}}
 		{disabled}>
 		{#each Object.keys(COUNTRIES) as code (code)}
@@ -63,7 +60,6 @@
 			oninput={(e: Event) => {
 				raw = clean((e.target as HTMLInputElement).value);
 				value = toE164();
-				onchange?.(value);
 			}} />
 	</div>
 	{#if name}

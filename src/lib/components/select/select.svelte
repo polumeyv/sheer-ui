@@ -56,7 +56,6 @@
 	function handleChange(event: SelectChangeEvent) {
 		const select = event.currentTarget;
 
-		value = select.value;
 		syncSelectedLabel(select);
 
 		onchange?.(event);

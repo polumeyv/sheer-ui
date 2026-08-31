@@ -19,7 +19,6 @@
 		type,
 		value = $bindable(),
 		placeholder = $bindable(),
-		onValueChange,
 		minValue,
 		maxValue,
 		isDateDisabled,
@@ -36,7 +35,7 @@
 		day,
 		disableDaysOutsideMonth = false,
 		...restProps
-	}: Omit<WithoutChildrenOrChild<SingleRootProps>, 'type'> & {
+	}: Omit<WithoutChildrenOrChild<SingleRootProps>, 'type' | 'onValueChange' | 'onPlaceholderChange'> & {
 		type: 'single';
 		buttonVariant?: ButtonVariant;
 		captionLayout?: 'dropdown' | 'label';
@@ -62,7 +61,6 @@
 	bind:value
 	bind:ref
 	bind:placeholder
-	{onValueChange}
 	{minValue}
 	{maxValue}
 	{isDateDisabled}

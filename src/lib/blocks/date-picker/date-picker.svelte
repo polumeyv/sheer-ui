@@ -21,7 +21,6 @@
 		contentClass?: ClassValue;
 		align?: 'start' | 'center' | 'end';
 		side?: 'top' | 'right' | 'bottom' | 'left';
-		onValueChange?: (value: DateValue | undefined) => void;
 		// Calendar props
 		captionLayout?: 'dropdown' | 'label';
 		minValue?: DateValue;
@@ -47,7 +46,6 @@
 		align = 'start',
 		side = 'bottom',
 		captionLayout = 'label',
-		onValueChange,
 		minValue,
 		maxValue,
 		weekdayFormat,
@@ -59,11 +57,6 @@
 	}: Props = $props();
 
 	const displayValue = $derived(value ? new DateFormatter(locale, { dateStyle: dateFormat }).format(toDate(value)) : placeholder);
-
-	function pick(next: DateValue | undefined) {
-		value = next;
-		onValueChange?.(next);
-	}
 </script>
 
 <div class={join('grid gap-2', className)}>
@@ -84,8 +77,7 @@
 			{@render contentHeader?.()}
 			<Calendar
 				type="single"
-				{value}
-				onValueChange={pick}
+				bind:value
 				{captionLayout}
 				{minValue}
 				{maxValue}
