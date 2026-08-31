@@ -93,8 +93,7 @@
 			<Field.Label for="theme-mode">Theme</Field.Label>
 			<Field.Description>{description}</Field.Description>
 			<RadioGroup.Root
-				value={theme.pref ?? 'system'}
-				onValueChange={(v) => (theme.pref = v === 'system' ? null : (v as Mode))}
+				bind:value={() => theme.pref ?? 'system', (v) => (theme.pref = v === 'system' ? null : (v as Mode))}
 				class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
 				{@render tile('light', 'Light', LIGHT.border, lightInterior)}
 				{@render tile('dark', 'Dark', DARK.border, darkInterior)}

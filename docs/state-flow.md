@@ -63,13 +63,14 @@ external truth    when the source of truth is outside Svelte state (router,
 | want | write |
 |---|---|
 | share state | `bind:value={x}` |
-| side effect on change | `bind:value={x}` + `onValueChange={fetchStuff}` — mixing is correct |
+| react to a change | `$derived` / `$effect` over `x` — the binding already carries every write |
 | transform / validate | `bind:value={() => x, (v) => (x = clamp(v))}` |
 | URL / form-engine driven | `open={!!params.edit}` + `onOpenChange={setEditing}` |
 
-Never: `value={x}` + `onValueChange={(v) => (x = v)}` (hand-rolled bind:) and
-never an app-side `$effect` that watches a component value — use the change
-callback or await-in-markup.
+Never `value={x}` + `onValueChange={(v) => (x = v)}` (hand-rolled bind:). A
+change callback next to a binding is a second channel for the same write:
+components keep `on<Prop>Change` for the controlled case above, blocks expose
+`bind:` only.
 
 ## Internals — three tiers
 
@@ -77,7 +78,7 @@ callback or await-in-markup.
 |---|---|---|
 | leaf / native | `*-native`, input, textarea | runes only: `$bindable` + native `bind:` + callback from the DOM handler. No boxes, no State class. |
 | complex (State class) | overlays, collections, date/time | box membrane stays; every writable bridge goes through `bindableWith`. |
-| blocks | `blocks/*` | consume primitives with `bind:` + callback forwarding. No boxes. |
+| blocks | `blocks/*` | consume primitives with `bind:` only, no callback forwarding. No boxes. |
 
 ## The bridge (`bindableWith`)
 
