@@ -3,13 +3,14 @@ import { type ReadableBoxedValues } from './tools/index.js';
 import { createSettleRunner, type SettleRunner } from './animations-settled.svelte.js';
 import type { TransitionState } from './attrs.js';
 
-// TODO(backlog): this module + presence-layer/ + animations-settled.svelte.ts exist to keep
-// elements mounted through their exit transition. Migrating the remaining consumers (menu,
-// select/combobox popup, navigation-menu, scroll-area) to the dialog/popover recipe —
-// always-mounted + transition-[…,display] transition-discrete + @starting-style (88.9%
-// 2026-07, same bar dialog/sheet already shipped on) — deletes most of it (~230 LoC JS).
-// The drawer path (dialog-content-headless + dialog-overlay) cannot migrate: vaul's exit is
-// keyframes on [data-state=closed], which display transitions can't hold open.
+// TODO(backlog): this module + presence-layer/ exist to keep elements mounted through their
+// exit transition. Migrating the remaining consumers (select/combobox popup, navigation-menu,
+// scroll-area; the menu family is done) to the always-mounted recipe deletes most of it
+// (~230 LoC JS). Copy the menu, not the tooltip/nav-menu one: Firefox never transitions
+// `display` (BCD css.properties.display.is_transitionable), so a `transition-discrete` display
+// exit snaps there; the menu keeps the closed state visibility:hidden (`menu-surface` in ui.css)
+// and completes through useOpenChangeComplete. The drawer path (dialog-content-headless +
+// dialog-overlay) cannot migrate: vaul's exit is keyframes on [data-state=closed].
 
 interface PresenceManagerOpts extends ReadableBoxedValues<{
 	open: boolean;

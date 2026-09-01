@@ -45,6 +45,8 @@
 		isStatic = false,
 		enabled,
 		ref,
+		forceMount = false,
+		present,
 		tooltip = false,
 		contentPointerEvents = 'auto',
 		...restProps
@@ -78,10 +80,12 @@
 		enabled: () => enabled && (preventOverflowTextSelection ?? true),
 	});
 
-	// Under forceMount the content element persists, so the lock additionally gates on `enabled`;
-	// otherwise element lifecycle (the presence window) is the gate, as the old <ScrollLock> mount was.
+	// Under forceMount the content element persists, so the lock additionally gates on `present`
+	// (open, or still exiting — the same window element lifecycle gave the old <ScrollLock> mount);
+	// otherwise element lifecycle is the gate.
+	const isPresent = $derived(present ?? enabled);
 	const scrollLock = scrollLockAttachment({
-		enabled: () => resolvedPreventScroll && (restProps.forceMount ? enabled : true),
+		enabled: () => resolvedPreventScroll && (forceMount ? isPresent : true),
 	});
 
 	const focusScope = createFocusScopeProps({

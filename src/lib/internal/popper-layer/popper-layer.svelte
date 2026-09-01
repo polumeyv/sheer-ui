@@ -39,8 +39,9 @@
 		customAnchor = null,
 		isStatic = false,
 		ref,
-		shouldRender,
+		shouldRender = true,
 		forceMount = false,
+		present,
 		...restProps
 	}: PopperLayerImplProps = $props();
 </script>
@@ -83,6 +84,7 @@
 		{isValidEvent}
 		{onFocusOutside}
 		{forceMount}
+		{present}
 		{ref}
 		{...restProps} />
 {/if}

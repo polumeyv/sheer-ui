@@ -30,14 +30,13 @@ import {
 	boolToStr,
 	getDataOpenClosed,
 	boolToEmptyStrOrUndef,
-	getDataTransitionAttrs,
 } from '../../internal/attrs.js';
 import type { Direction } from '../../internal/index.js';
 import { getTabbableFrom, isTabbable } from '../../internal/tabbable.js';
 import type { KeyboardEventHandler, PointerEventHandler, MouseEventHandler } from 'svelte/elements';
 import { Typeahead, textContentOf } from '../../internal/typeahead.svelte.js';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
-import { PresenceManager } from '../../internal/presence-manager.svelte.js';
+import { useOpenChangeComplete } from '../../internal/animations-settled.svelte.js';
 import { joinGroup } from '../../internal/group-value.svelte.js';
 import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';
 import { on } from 'svelte/events';
@@ -478,8 +477,10 @@ export class MenuMenuState {
 	readonly parentMenu: MenuMenuState | null;
 	contentId = boxWith<string>(() => '');
 	contentNode = $state<HTMLElement | null>(null);
-	contentPresence: PresenceManager;
 	triggerNode = $state<HTMLElement | null>(null);
+	readonly #completion: { readonly pending: boolean };
+	/** Rendered: open, or closing with the exit still settling — the window the popper layer's scroll lock covers. */
+	readonly present = $derived.by(() => this.opts.open.current || this.#completion.pending);
 	/** Registered by the mounted content: keyboard-driven opens land focus on the first item. */
 	focusFirstItem: (() => void) | null = null;
 
@@ -488,19 +489,14 @@ export class MenuMenuState {
 		this.root = root;
 		this.parentMenu = parentMenu;
 
-		this.contentPresence = new PresenceManager({
-			ref: boxWith(() => this.contentNode),
-			open: this.opts.open,
-			onComplete: () => {
-				this.opts.onOpenChangeComplete.current(this.opts.open.current);
-			},
-			shouldSkipExitAnimation: () => {
-				if (this.root.opts.variant.current !== 'menubar' || this.parentMenu !== null) {
-					return false;
-				}
-				return this.root.opts.shouldSkipExitAnimation?.() ?? false;
-			},
-		});
+		// Content stays mounted through its exit transition (CSS owns the motion; the closed state
+		// is the content's `contentStyle`); completion is settle-based on the content node.
+		this.#completion = useOpenChangeComplete(
+			() => this.opts.open.current,
+			() => this.contentNode,
+			(open) => this.opts.onOpenChangeComplete.current(open),
+			(open) => !open && this.shouldSkipExitAnimation(),
+		);
 
 		if (parentMenu) {
 			$effect(() => {
@@ -511,6 +507,12 @@ export class MenuMenuState {
 				});
 			});
 		}
+	}
+
+	/** A menubar swap between top-level menus closes the outgoing one without its exit transition. */
+	shouldSkipExitAnimation() {
+		if (this.root.opts.variant.current !== 'menubar' || this.parentMenu !== null) return false;
+		return this.root.opts.shouldSkipExitAnimation?.() ?? false;
 	}
 
 	toggleOpen() {
@@ -534,6 +536,8 @@ interface MenuContentStateOpts
 			onCloseAutoFocus: (event: Event) => void;
 		}> {
 	isSub?: boolean;
+	/** Rendered in flow (ContentStatic) rather than in a floating wrapper. */
+	isStatic?: boolean;
 }
 
 export class MenuContentState {
@@ -548,6 +552,9 @@ export class MenuContentState {
 	readonly attachment: RefAttachment;
 	readonly #typeahead: Typeahead<HTMLElement>;
 	#isSub: boolean;
+	#isStatic: boolean;
+	/** Items of a closed (still mounted) sub-content are hidden, not candidates. */
+	readonly #candidateSelector: string;
 
 	constructor(opts: MenuContentStateOpts, parentMenu: MenuMenuState) {
 		this.opts = opts;
@@ -562,6 +569,9 @@ export class MenuContentState {
 		parentMenu.contentId = opts.id;
 
 		this.#isSub = opts.isSub ?? false;
+		this.#isStatic = opts.isStatic ?? false;
+		const root = parentMenu.root;
+		this.#candidateSelector = `[${root.getBitsAttr('item')}]:not([data-disabled]):not([${root.getBitsAttr('sub-content')}][data-state='closed'] *)`;
 		this.onkeydown = this.onkeydown.bind(this);
 		this.onblur = this.onblur.bind(this);
 		this.onfocus = this.onfocus.bind(this);
@@ -592,7 +602,7 @@ export class MenuContentState {
 		});
 		this.rovingFocusGroup = new RovingFocusGroup({
 			rootNode: boxWith(() => this.parentMenu.contentNode),
-			candidateAttr: this.parentMenu.root.getBitsAttr('item'),
+			candidateSelector: this.#candidateSelector,
 			loop: this.opts.loop,
 			orientation: boxWith(() => 'vertical'),
 		});
@@ -617,8 +627,7 @@ export class MenuContentState {
 	#getCandidateNodes() {
 		const node = this.parentMenu.contentNode;
 		if (!node) return [];
-		const candidates = Array.from(node.querySelectorAll<HTMLElement>(`[${this.parentMenu.root.getBitsAttr('item')}]:not([data-disabled])`));
-		return candidates;
+		return Array.from(node.querySelectorAll<HTMLElement>(this.#candidateSelector));
 	}
 
 	#isPointerMovingToSubmenu() {
@@ -788,10 +797,6 @@ export class MenuContentState {
 		});
 	}
 
-	get shouldRender() {
-		return this.parentMenu.contentPresence.shouldRender;
-	}
-
 	readonly snippetProps = $derived.by(() => ({ open: this.parentMenu.opts.open.current }));
 
 	readonly props = $derived.by(
@@ -802,7 +807,6 @@ export class MenuContentState {
 				'aria-orientation': 'vertical' as const,
 				[this.parentMenu.root.getBitsAttr('content')]: '',
 				'data-state': getDataOpenClosed(this.parentMenu.opts.open.current),
-				...getDataTransitionAttrs(this.parentMenu.contentPresence.transitionStatus),
 				onkeydown: this.onkeydown,
 				onblur: this.onblur,
 				onfocus: this.onfocus,
@@ -814,6 +818,22 @@ export class MenuContentState {
 				...this.attachment,
 			}) as const,
 	);
+
+	/**
+	 * Inline style for the content element alone — `props.style` also reaches the floating wrapper
+	 * through PopperLayer, and hiding the wrapper would cancel the content's exit transition.
+	 * Always mounted: closed floating content is visibility:hidden (out of the a11y tree, not
+	 * focusable, and transitionable in every engine — see `menu-surface` in ui.css); closed static
+	 * content is display:none since it must leave the flow. The `menu-surface` utilities add the
+	 * motion; a menubar swap zeroes the exit.
+	 */
+	readonly contentStyle = $derived.by(() => {
+		if (this.parentMenu.opts.open.current) return {};
+		return {
+			...(this.#isStatic ? { display: 'none' } : { visibility: 'hidden' }),
+			...(this.parentMenu.shouldSkipExitAnimation() ? { transitionDuration: '0s', transitionDelay: '0s' } : {}),
+		};
+	});
 
 	readonly popperProps = {
 		onCloseAutoFocus: (e: Event) => this.onCloseAutoFocus(e),

@@ -60,13 +60,13 @@ export type _SharedMenuContentProps = {
 };
 
 export type MenuContentPropsWithoutHTML = Expand<
-	WithChildNoChildrenSnippetProps<Omit<PopperLayerProps, 'content'> & _SharedMenuContentProps, FloatingContentSnippetProps>
+	WithChildNoChildrenSnippetProps<Omit<PopperLayerProps, 'content' | 'forceMount'> & _SharedMenuContentProps, FloatingContentSnippetProps>
 >;
 
 export type MenuContentProps = MenuContentPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, MenuContentPropsWithoutHTML>;
 
 export type MenuContentStaticPropsWithoutHTML = Expand<
-	WithChildNoChildrenSnippetProps<Omit<PopperLayerStaticProps, 'content'> & _SharedMenuContentProps, StaticContentSnippetProps>
+	WithChildNoChildrenSnippetProps<Omit<PopperLayerStaticProps, 'content' | 'forceMount'> & _SharedMenuContentProps, StaticContentSnippetProps>
 >;
 
 export type MenuContentStaticProps = MenuContentStaticPropsWithoutHTML &
@@ -202,7 +202,7 @@ export type MenuSubProps = MenuSubPropsWithoutHTML;
 
 export type MenuSubContentPropsWithoutHTML = Expand<
 	WithChildNoChildrenSnippetProps<
-		Omit<PopperLayerProps, 'content' | 'preventScroll'> & _SharedMenuContentProps,
+		Omit<PopperLayerProps, 'content' | 'preventScroll' | 'forceMount'> & _SharedMenuContentProps,
 		FloatingContentSnippetProps
 	>
 >;
@@ -211,7 +211,7 @@ export type MenuSubContentProps = MenuSubContentPropsWithoutHTML & Without<BitsP
 
 export type MenuSubContentStaticPropsWithoutHTML = Expand<
 	WithChildNoChildrenSnippetProps<
-		Omit<PopperLayerStaticProps, 'content' | 'preventScroll'> & _SharedMenuContentProps,
+		Omit<PopperLayerStaticProps, 'content' | 'preventScroll' | 'forceMount'> & _SharedMenuContentProps,
 		StaticContentSnippetProps
 	>
 >;
