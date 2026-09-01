@@ -60,7 +60,8 @@
 	const display = $derived.by(() => {
 		if (!parsed) return '';
 		if (use24Hour) {
-			return `${parsed.hour24}:${String(parsed.minute).padStart(2, '0')}`;
+			// zero-padded hour, matching formatTimeDisplay's h23 output ("09:30", not "9:30")
+			return `${String(parsed.hour24).padStart(2, '0')}:${String(parsed.minute).padStart(2, '0')}`;
 		}
 		return parsed.minute === 0 ? `${parsed.hour12}` : `${parsed.hour12}:${String(parsed.minute).padStart(2, '0')}`;
 	});

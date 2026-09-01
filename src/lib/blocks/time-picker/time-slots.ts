@@ -28,14 +28,14 @@ export function getTimeDuration(startTime: string, endTime: string): number {
 	return end - start;
 }
 
-export function generateTimeSlots(startHour: number, endHour: number, interval: number): TimeSlot[] {
+export function generateTimeSlots(startHour: number, endHour: number, interval: number, use24Hour = false): TimeSlot[] {
 	const slots: TimeSlot[] = [];
 	const span = (endHour - startHour) * 60;
 	// `elapsed` bounds the loop in minutes (so endHour === 24 works); `minutesToTime` wraps at midnight
 	// and zero-pads for us.
 	for (let elapsed = 0; elapsed < span; elapsed += interval) {
 		const min = startHour * 60 + elapsed;
-		slots.push({ value: minutesToTime(min), label: formatTimeDisplay(min) });
+		slots.push({ value: minutesToTime(min), label: formatTimeDisplay(min, { use24Hour }) });
 	}
 	return slots;
 }
@@ -49,11 +49,13 @@ type ResolveTimeSlotsOptions = {
 	interval: number;
 	startHour: number;
 	endHour: number;
+	use24Hour?: boolean;
 };
 
-export const resolveTimeSlots = ({ slots, preset, interval, startHour, endHour }: ResolveTimeSlotsOptions) => {
+export const resolveTimeSlots = ({ slots, preset, interval, startHour, endHour, use24Hour = false }: ResolveTimeSlotsOptions) => {
 	if (slots) return slots;
-	if (preset === 'business') return b_HOURS;
-	if (preset === 'extended') return EXTENDED_HOURS;
-	return preset === 'full' ? generateTimeSlots(0, 24, interval) : generateTimeSlots(startHour, endHour, interval);
+	// the baked constants carry 12-hour labels; 24-hour display regenerates the preset
+	if (preset === 'business') return use24Hour ? generateTimeSlots(9, 17, 60, true) : b_HOURS;
+	if (preset === 'extended') return use24Hour ? generateTimeSlots(7, 21, 60, true) : EXTENDED_HOURS;
+	return preset === 'full' ? generateTimeSlots(0, 24, interval, use24Hour) : generateTimeSlots(startHour, endHour, interval, use24Hour);
 };
