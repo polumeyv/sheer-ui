@@ -6,14 +6,13 @@
 	import { interactOutsideAttachment } from '../../../internal/dismissible-layer/use-dismissable-layer.svelte.js';
 	import { escapeKeydownAttachment } from '../../../internal/escape-layer/use-escape-layer.svelte.js';
 	import { createFocusScopeProps } from '../../../internal/focus-scope/focus-scope.svelte.js';
-	import { textSelectionAttachment } from '../../../internal/text-selection-layer/use-text-selection-layer.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
 	import { scrollLockAttachment } from '../../../internal/body-scroll-lock.svelte.js';
 
 	/**
 	 * Headless JS-overlay dialog content — an always-mounted <div> (visibility:hidden while closed;
 	 * the drawer's exit keyframes hold it visible) with the FocusScope / EscapeLayer /
-	 * DismissibleLayer / ScrollLock stack. The public Dialog.Content is now the native <dialog>
+	 * DismissibleLayer / ScrollLock stack and the CSS text-selection guard. The public Dialog.Content is now the native <dialog>
 	 * (dialog-content.svelte); this variant survives ONLY for the Drawer, whose vaul drag physics need a
 	 * draggable in-flow <div> and cannot live in the top layer. Keep in sync with the shared Dialog state
 	 * cell — it is the same DialogContentState, just rendered as a div instead of a modal <dialog>.
@@ -72,12 +71,10 @@
 		enabled: () => contentState.root.cell.open,
 	});
 
-	const textSelection = textSelectionAttachment({
-		id: () => id,
-		onPointerDown: () => () => {},
-		onPointerUp: () => () => {},
-		enabled: () => contentState.root.cell.open && (restProps.preventOverflowTextSelection ?? true),
-	});
+	// Flags the open surface for the CSS text-selection guard in ui.css.
+	const textSelectionGuard = $derived(
+		contentState.root.cell.open && (restProps.preventOverflowTextSelection ?? true) ? { 'data-text-selection-guard': '' } : {},
+	);
 
 	// Spans `present` (open through the settled exit), the window element lifecycle used to
 	// give it — restoreScrollDelay covers the scrollbar restore.
@@ -97,11 +94,11 @@
 
 {#if child}
 	{@render child({
-		props: mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection, scrollLock),
+		props: mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelectionGuard, scrollLock),
 		...contentState.snippetProps,
 	})}
 {:else}
-	<div {...mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection, scrollLock)}>
+	<div {...mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelectionGuard, scrollLock)}>
 		{@render children?.()}
 	</div>
 {/if}

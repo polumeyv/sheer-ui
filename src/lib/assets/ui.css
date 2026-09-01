@@ -192,6 +192,22 @@
 	}
 }
 
+/* Text-selection guard. A drag that starts inside an open modal surface must not select the page
+   text behind it. This was a document pointer tracker (text-selection-layer) that set body
+   user-select:none for the length of an outward drag and kept a global layer stack to decide
+   which surface owned the drag; now the open surface flags itself and :has() covers its whole
+   open window instead — page text is unreachable then anyway (the scroll lock's pointer-events:
+   none on body). Descendants with their own user-select (select-none items) keep it. Safari
+   only reads the -webkit- form. */
+body:has([data-text-selection-guard]) {
+	-webkit-user-select: none;
+	user-select: none;
+}
+[data-text-selection-guard] {
+	-webkit-user-select: text;
+	user-select: text;
+}
+
 @utility scrollbar-hidden {
 	scrollbar-width: none;
 	&::-webkit-scrollbar {

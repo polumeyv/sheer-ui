@@ -114,3 +114,13 @@ export type StaticContentSnippetProps = Omit<FloatingContentSnippetProps, 'wrapp
 export type PresenceProps = {
 	forceMount?: boolean;
 };
+
+export type TextSelectionGuardProps = {
+	/**
+	 * Whether to prevent a drag that starts inside the surface from selecting page text behind
+	 * it: the open surface is flagged for the `user-select` guard in ui.css.
+	 *
+	 * @default true
+	 */
+	preventOverflowTextSelection?: boolean;
+};
