@@ -19,7 +19,6 @@
 		loop = true,
 		isStatic = false,
 		onInteractOutside = () => {},
-		forceMount = false,
 		onEscapeKeydown = () => {},
 		interactOutsideBehavior = 'defer-otherwise-close',
 		escapeKeydownBehavior = 'defer-otherwise-close',
@@ -40,6 +39,8 @@
 			(v) => (ref = v),
 		),
 		isSub: true,
+		// svelte-ignore state_referenced_locally -- fixed per instance, like the Static/floating split it selects
+		isStatic,
 		onCloseAutoFocus: boxWith(() => handleCloseAutoFocus),
 	});
 
@@ -56,7 +57,7 @@
 			{
 				'data-slot': 'dropdown-menu-sub-content',
 				class:
-					'bg-popover text-popover-foreground transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-closed:opacity-0 data-closed:scale-95 data-[side=bottom]:starting:-translate-y-2 data-[side=top]:starting:translate-y-2 data-[side=left]:starting:translate-x-2 data-[side=right]:starting:-translate-x-2 z-50 min-w-32 origin-(--bits-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg',
+					`bg-popover text-popover-foreground ${isStatic ? 'menu-surface menu-surface-static' : 'menu-surface'} z-50 min-w-32 origin-(--bits-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg`,
 			},
 			restProps,
 			subContentState.props,
@@ -111,13 +112,14 @@
 	{isStatic}
 	{loop}
 	{trapFocus}
-	{forceMount}
-	shouldRender={subContentState.shouldRender}>
+	forceMount
+	present={subContentState.parentMenu.present}
+>
 	{#snippet popper({ props, wrapperProps })}
 		<!-- mergedProps already reached `props` through the layer's restProps, minus the keys
 		PopperLayer destructures for itself (id, dir, style) — only those are re-added, since
 		re-merging the whole bag composes the handlers twice (one keypress, two typeahead steps) -->
-		{@const finalProps = mergeProps(props, { id, dir: mergedProps.dir, style: mergedProps.style }, { style: getFloatingContentCSSVars('menu') }, { style })}
+		{@const finalProps = mergeProps(props, { id, dir: mergedProps.dir, style: mergedProps.style }, { style: getFloatingContentCSSVars('menu') }, { style }, { style: subContentState.contentStyle })}
 		{#if child}
 			{@render child({
 				props: finalProps,

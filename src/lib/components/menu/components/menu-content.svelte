@@ -18,7 +18,6 @@
 		onInteractOutside = () => {},
 		onEscapeKeydown = () => {},
 		onCloseAutoFocus: onCloseAutoFocusProp = () => {},
-		forceMount = false,
 		style,
 		...restProps
 	}: MenuContentProps & { isStatic?: boolean } = $props();
@@ -31,6 +30,8 @@
 			(v) => (ref = v),
 		),
 		onCloseAutoFocus: boxWith(() => onCloseAutoFocusProp),
+		// svelte-ignore state_referenced_locally -- fixed per instance, like the Static/floating split it selects
+		isStatic,
 	});
 
 	const isContextMenu = $derived(contentState.parentMenu.root.opts.variant.current === 'context-menu');
@@ -82,11 +83,11 @@
 	{isValidEvent}
 	{isStatic}
 	{loop}
-	{forceMount}
-	{id}
-	shouldRender={contentState.shouldRender}>
+	forceMount
+	present={contentState.parentMenu.present}
+	{id}>
 	{#snippet popper({ props, wrapperProps })}
-		{@const finalProps = mergeProps(props, { style })}
+		{@const finalProps = mergeProps(props, { style }, { style: contentState.contentStyle })}
 		{#if child}
 			{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
 		{:else if isStatic}

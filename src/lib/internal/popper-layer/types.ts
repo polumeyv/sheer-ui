@@ -59,7 +59,13 @@ export type PopperLayerImplProps = Omit<
 			/**
 			 * Whether the popper layer should be rendered.
 			 */
-			shouldRender: boolean;
+			shouldRender?: boolean;
+
+			/**
+			 * Under `forceMount`, whether the content is still rendered — open, or closed with its
+			 * exit transition running. Gates the scroll lock. Defaults to the open state.
+			 */
+			present?: boolean;
 
 			/**
 			 * Override for the content's pointer-events style.

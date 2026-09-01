@@ -18,7 +18,7 @@
 			<output data-testid="open">{String(menu.open)}</output>
 			<DropdownMenu.Trigger data-testid="trigger">Open</DropdownMenu.Trigger>
 			{#if isStatic}
-				<DropdownMenu.ContentStatic forceMount>
+				<DropdownMenu.ContentStatic>
 					<DropdownMenu.Item>One</DropdownMenu.Item>
 				</DropdownMenu.ContentStatic>
 			{:else}
@@ -34,7 +34,7 @@
 			<output data-testid="open">{String(menu.open)}</output>
 			<ContextMenu.Trigger data-testid="trigger">Right click</ContextMenu.Trigger>
 			{#if isStatic}
-				<ContextMenu.ContentStatic forceMount>
+				<ContextMenu.ContentStatic>
 					<ContextMenu.Item>One</ContextMenu.Item>
 				</ContextMenu.ContentStatic>
 			{:else}
@@ -50,7 +50,7 @@
 		<Menubar.Menu value="file">
 			<Menubar.Trigger data-testid="trigger">File</Menubar.Trigger>
 			{#if isStatic}
-				<Menubar.ContentStatic forceMount>
+				<Menubar.ContentStatic>
 					<Menubar.Item>One</Menubar.Item>
 				</Menubar.ContentStatic>
 			{:else}

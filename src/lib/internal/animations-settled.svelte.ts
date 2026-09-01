@@ -1,3 +1,4 @@
+import { untrack } from 'svelte';
 import type { Getter } from './tools/index.js';
 
 /**
@@ -74,15 +75,42 @@ export function createSettleRunner(options?: { subtree?: boolean; frames?: numbe
  * Settle-based rather than transitionend so completion still fires when no transition
  * runs (duration-0 override, reduced motion, jsdom). A flip while a settle is pending
  * supersedes it; a flip while the surface has no node cancels and is dropped.
+ * `skipSettle` answers per flip: true completes synchronously and drops any pending settle
+ * (a menubar swap, where the outgoing menu's exit is zeroed).
+ * `pending` is true from a flip until its completion fires — an always-mounted surface is still
+ * rendered while a close is pending, which is what its locks key on.
  */
-export function useOpenChangeComplete(open: Getter<boolean>, ref: Getter<HTMLElement | null>, onComplete: (open: boolean) => void) {
+export function useOpenChangeComplete(
+	open: Getter<boolean>,
+	ref: Getter<HTMLElement | null>,
+	onComplete: (open: boolean) => void,
+	skipSettle: (open: boolean) => boolean = () => false,
+): { readonly pending: boolean } {
 	let prevOpen = open();
+	let pending = $state(false);
 	const settle = createSettleRunner({ subtree: false });
 	$effect(() => {
 		const el = ref();
 		const isOpen = open();
 		if (isOpen === prevOpen) return;
 		prevOpen = isOpen;
-		settle.run(el, () => onComplete(isOpen));
+		untrack(() => {
+			if (!el || skipSettle(isOpen)) {
+				settle.cancel();
+				pending = false;
+				if (el) onComplete(isOpen);
+				return;
+			}
+			pending = true;
+			settle.run(el, () => {
+				pending = false;
+				onComplete(isOpen);
+			});
+		});
 	});
+	return {
+		get pending() {
+			return pending;
+		},
+	};
 }

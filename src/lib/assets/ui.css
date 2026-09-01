@@ -29,6 +29,57 @@
 }
 
 /* scrollbar-none covers only scrollbar-width; the webkit pseudo is still needed for Safari < 18.2. */
+/* Menu surfaces (dropdown, context and menubar content, sub-content) stay mounted through their
+   exit; the engine sets the closed state inline and these utilities add the motion. Closed is
+   visibility:hidden, not display:none: Firefox cannot transition `display` at all (BCD
+   css.properties.display.is_transitionable — Chrome 117, Safari 18, Firefox never), so a discrete
+   display exit snaps there, while visibility transitions discretely in every engine and stays
+   visible until the exit ends. The entry slide is transition-only as well: closed gives `translate`
+   a zero duration and a full-length delay, so it jumps to its side offset only once the surface is
+   hidden, and open transitions it back to zero — enter slides, exit does not, as before.
+   Visibility itself transitions only on the way out: the entry flips it instantly, because a
+   hidden→visible transition is still hidden at its first frame and the focus scope's opening
+   focus() lands exactly there. */
+@utility menu-surface {
+	--menu-duration: var(--tw-duration, var(--default-transition-duration));
+	transition-property: opacity, scale, translate, visibility;
+	transition-duration: var(--menu-duration), var(--menu-duration), var(--menu-duration), 0s;
+	transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+
+	&[data-state='closed'] {
+		visibility: hidden;
+		opacity: 0;
+		scale: 0.95;
+		transition-duration: var(--menu-duration), var(--menu-duration), 0s, var(--menu-duration);
+		transition-delay: 0s, 0s, var(--menu-duration), 0s;
+	}
+	&[data-state='closed'][data-side='bottom'] {
+		translate: 0 -0.5rem;
+	}
+	&[data-state='closed'][data-side='top'] {
+		translate: 0 0.5rem;
+	}
+	&[data-state='closed'][data-side='left'] {
+		translate: 0.5rem 0;
+	}
+	&[data-state='closed'][data-side='right'] {
+		translate: -0.5rem 0;
+	}
+}
+
+/* Static (in-flow) content must leave the flow when closed, so the engine sets display:none
+   there; transitioning it discretely lets the exit play where display is transitionable. */
+@utility menu-surface-static {
+	transition-property: opacity, scale, translate, visibility, display;
+	transition-duration: var(--menu-duration), var(--menu-duration), var(--menu-duration), 0s, var(--menu-duration);
+	transition-behavior: allow-discrete;
+
+	&[data-state='closed'] {
+		transition-duration: var(--menu-duration), var(--menu-duration), 0s, var(--menu-duration), var(--menu-duration);
+		transition-delay: 0s, 0s, var(--menu-duration), 0s, 0s;
+	}
+}
+
 @utility scrollbar-hidden {
 	scrollbar-width: none;
 	&::-webkit-scrollbar {

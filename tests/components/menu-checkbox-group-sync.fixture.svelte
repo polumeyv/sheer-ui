@@ -39,7 +39,7 @@
 <output data-testid="select-count">{selectCount}</output>
 
 <DropdownMenu.Root open>
-	<DropdownMenu.ContentStatic forceMount>
+	<DropdownMenu.ContentStatic>
 		<DropdownMenu.CheckboxGroup
 			bind:value
 			onValueChange={() => (groupChangeCount += 1)}
