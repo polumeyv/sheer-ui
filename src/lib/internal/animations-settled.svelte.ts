@@ -78,7 +78,10 @@ export function createSettleRunner(options?: { subtree?: boolean; frames?: numbe
  * `skipSettle` answers per flip: true completes synchronously and drops any pending settle
  * (a menubar swap, where the outgoing menu's exit is zeroed).
  * `pending` is true from a flip until its completion fires — an always-mounted surface is still
- * rendered while a close is pending, which is what its locks key on.
+ * rendered while a close is pending, which is what its locks key on. It flips in a pre-effect so
+ * it is already set when the surface's own effects and attachments run in the same flush; set a
+ * pass later, `open || pending` would read false for that pass, and a scroll lock would tear
+ * down and re-create itself mid-exit (and capture the locked body as the style to restore).
  */
 export function useOpenChangeComplete(
 	open: Getter<boolean>,
@@ -89,7 +92,7 @@ export function useOpenChangeComplete(
 	let prevOpen = open();
 	let pending = $state(false);
 	const settle = createSettleRunner({ subtree: false });
-	$effect(() => {
+	$effect.pre(() => {
 		const el = ref();
 		const isOpen = open();
 		if (isOpen === prevOpen) return;

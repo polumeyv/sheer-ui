@@ -33,7 +33,7 @@ Dialog.Content
 `NativeDialog` and `Sheet.Content` are good native targets because their current consumers expect a
 modal surface, not a low-level interaction primitive. Generic `Dialog.Content` is different: it is a
 shared primitive with public props from `FocusScope`, `DismissibleLayer`, `EscapeLayer`,
-`TextSelectionLayer`, `PresenceManager`, and `ScrollLock`.
+`TextSelectionLayer`, and `ScrollLock`.
 
 ## Generic Dialog audit
 

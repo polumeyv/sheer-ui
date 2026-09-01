@@ -112,7 +112,6 @@
 	{isStatic}
 	{loop}
 	{trapFocus}
-	forceMount
 	present={subContentState.parentMenu.present}
 >
 	{#snippet popper({ props, wrapperProps })}

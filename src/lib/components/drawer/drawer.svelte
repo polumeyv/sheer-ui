@@ -174,6 +174,11 @@
 		animation-name: slideToRight;
 	}
 
+	/* Snap-point drawers exit by transform transition, not keyframes: hold visibility for its length. */
+	:global([data-vaul-drawer][data-vaul-snap-points='true'][data-state='closed']) {
+		transition: transform var(--vaul-duration) var(--vaul-ease), visibility var(--vaul-duration);
+	}
+
 	:global([data-vaul-drawer][data-vaul-snap-points='true'][data-vaul-drawer-direction='bottom']) {
 		transform: translate3d(0, var(--initial-transform, 100%), 0);
 	}

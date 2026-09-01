@@ -17,7 +17,7 @@
 	 * `class`, an `outsideEvent` override, and their inner markup.
 	 *
 	 * What native + CSS absorb, replacing the old JS overlay stack
-	 * (FocusScope / EscapeLayer / DismissibleLayer / PresenceManager / portal + overlay <div>):
+	 * (FocusScope / EscapeLayer / DismissibleLayer / presence gate / portal + overlay <div>):
 	 *   focus trap / restore / initial focus  → showModal() (drops FocusScope + the focus-memory stack)
 	 *   focus CONTAINMENT (can't tab out)      → native, via inert on everything outside the dialog
 	 *   focus trap LOOP (tab wraps ends)       → NOT native: inert stops escape but sequential nav lands

@@ -9,10 +9,10 @@
 	import { textSelectionAttachment } from '../../../internal/text-selection-layer/use-text-selection-layer.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
 	import { scrollLockAttachment } from '../../../internal/body-scroll-lock.svelte.js';
-	import { PresenceManager } from '../../../internal/presence-manager.svelte.js';
 
 	/**
-	 * Headless JS-overlay dialog content — a presence-gated <div> with the FocusScope / EscapeLayer /
+	 * Headless JS-overlay dialog content — an always-mounted <div> (visibility:hidden while closed;
+	 * the drawer's exit keyframes hold it visible) with the FocusScope / EscapeLayer /
 	 * DismissibleLayer / ScrollLock stack. The public Dialog.Content is now the native <dialog>
 	 * (dialog-content.svelte); this variant survives ONLY for the Drawer, whose vaul drag physics need a
 	 * draggable in-flow <div> and cannot live in the top layer. Keep in sync with the shared Dialog state
@@ -25,7 +25,6 @@
 		children,
 		child,
 		ref = $bindable(null),
-		forceMount = false,
 		onCloseAutoFocus = () => {},
 		onOpenAutoFocus = () => {},
 		onEscapeKeydown = () => {},
@@ -44,15 +43,10 @@
 		),
 	});
 
-	// Mount gate rides shouldRender, not `open`: it flips a flush later, so vaul's
-	// open-effect snapshots body styles before the scroll lock applies, and the root's
-	// completion watcher sees no contentNode at the open flip (drawer parity).
-	const presence = new PresenceManager({
-		ref: boxWith(() => ref),
-		open: boxWith(() => contentState.root.cell.open),
-	});
-
-	const mergedProps = $derived(mergeProps(restProps, contentState.props));
+	// Closed state, on this element only (DialogContentState.props is shared with the native
+	// modal surface). The scroll lock's body styles land a tick after opening, after vaul's
+	// open effect has snapshotted them, as they did when the mount gate flipped a flush later.
+	const mergedProps = $derived(mergeProps(restProps, contentState.props, { style: contentState.root.cell.open ? {} : { visibility: 'hidden' } }));
 
 	const escapeAttachment = escapeKeydownAttachment({
 		escapeKeydownBehavior: () => restProps.escapeKeydownBehavior ?? 'close',
@@ -85,10 +79,10 @@
 		enabled: () => contentState.root.cell.open && (restProps.preventOverflowTextSelection ?? true),
 	});
 
-	// Rides the content element, so the lock spans the presence window (mount through exit
-	// animation) on both render paths — restoreScrollDelay covers the scrollbar restore.
+	// Spans `present` (open through the settled exit), the window element lifecycle used to
+	// give it — restoreScrollDelay covers the scrollbar restore.
 	const scrollLock = scrollLockAttachment({
-		enabled: () => preventScroll,
+		enabled: () => preventScroll && contentState.root.present,
 		restoreScrollDelay: () => restoreScrollDelay,
 	});
 
@@ -101,15 +95,13 @@
 	});
 </script>
 
-{#if presence.shouldRender || forceMount}
-	{#if child}
-		{@render child({
-			props: mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection, scrollLock),
-			...contentState.snippetProps,
-		})}
-	{:else}
-		<div {...mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection, scrollLock)}>
-			{@render children?.()}
-		</div>
-	{/if}
+{#if child}
+	{@render child({
+		props: mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection, scrollLock),
+		...contentState.snippetProps,
+	})}
+{:else}
+	<div {...mergeProps(mergedProps, focusScope.props, escapeAttachment, dismissible.attachment, textSelection, scrollLock)}>
+		{@render children?.()}
+	</div>
 {/if}

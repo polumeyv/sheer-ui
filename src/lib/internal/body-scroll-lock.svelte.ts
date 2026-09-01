@@ -216,6 +216,7 @@ export class BodyScrollLock {
 	readonly #restoreScrollDelay: Getter<number | null> = () => null;
 	readonly #countState: ReturnType<typeof bodyLockStackCount.get>;
 	readonly locked: ReadableBox<boolean> | undefined;
+	#released = false;
 
 	constructor(initialState?: boolean | undefined, restoreScrollDelay: Getter<number | null> = () => null) {
 		this.#initialState = initialState;
@@ -243,23 +244,33 @@ export class BodyScrollLock {
 			(v) => this.#countState.lockMap.set(this, v),
 		);
 
-		onMount(() => () => {
-			this.#countState.lockMap.delete(this);
+		// Component-form owners (a lock constructed during init) release on unmount; effect owners
+		// release through their cleanup, for which this is a no-op.
+		onMount(() => () => this.release());
+	}
 
-			// if not the last lock, we don't need to do anything
-			if (isAnyLocked(this.#countState.lockMap)) return;
+	/**
+	 * Unregisters the lock; the owner returns this as its effect cleanup. Registration is
+	 * synchronous in the constructor, so the release must not depend on a child effect having
+	 * run: an owner effect that re-runs before its children execute (an attachment re-run in
+	 * the same flush) would otherwise never unregister the lock, and the body stays locked.
+	 */
+	release() {
+		if (this.#released || !this.#countState) return;
+		this.#released = true;
+		this.#countState.lockMap.delete(this);
 
-			const restoreScrollDelay = this.#restoreScrollDelay();
+		// if not the last lock, we don't need to do anything
+		if (isAnyLocked(this.#countState.lockMap)) return;
 
-			/**
-			 * We schedule the cleanup to run after a delay to handle same-tick
-			 * destroy/create scenarios.
-			 *
-			 * reference: https://github.com/huntabyte/bits-ui/issues/1639
-			 */
-			this.#countState.scheduleCleanupIfNoNewLocks(restoreScrollDelay, () => {
-				this.#countState.resetBodyStyle();
-			});
+		/**
+		 * We schedule the cleanup to run after a delay to handle same-tick
+		 * destroy/create scenarios.
+		 *
+		 * reference: https://github.com/huntabyte/bits-ui/issues/1639
+		 */
+		this.#countState.scheduleCleanupIfNoNewLocks(this.#restoreScrollDelay(), () => {
+			this.#countState.resetBodyStyle();
 		});
 	}
 }
@@ -295,10 +306,9 @@ export type ScrollLockProps = {
 /**
  * Attachment form of the body lock — replaces the renderless `<ScrollLock>` component.
  * Locks while the host element is connected AND `enabled()` is true; `enabled` is a tracked
- * read, so surfaces whose element persists across open/close (the native `<dialog>`s) re-run
- * the attachment as their open state flips. Constructing `BodyScrollLock` inside the
- * attachment effect is the vaul `use-prevent-scroll` precedent: its `onMount` cleanup
- * registers as a child user effect and releases the lock on re-run or teardown.
+ * read, so surfaces whose element persists across open/close re-run the attachment as their
+ * open state flips, and the lock is released through the attachment's own cleanup (see
+ * `BodyScrollLock.release`).
  *
  * Spreadable (`{...lock}` / a `mergeProps` argument); create it ONCE in the script so the
  * attachment's identity is stable across renders.
@@ -312,8 +322,9 @@ export function scrollLockAttachment(opts: {
 		[createAttachmentKey()]: () => {
 			if (!enabled()) return;
 			// untracked: registering in the shared lockMap is a deliberate write from a tracked
-			// context (the attach effect) — the component form did the same write during init.
-			untrack(() => new BodyScrollLock(true, restoreScrollDelay));
+			// context (the attach effect).
+			const lock = untrack(() => new BodyScrollLock(true, restoreScrollDelay));
+			return () => lock.release();
 		},
 	};
 }

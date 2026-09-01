@@ -42,7 +42,6 @@
 	open={contentState.root.opts.open.current}
 	{id}
 	{preventScroll}
-	forceMount
 	present={contentState.root.present}>
 	{#snippet popper({ props })}
 		{@const finalProps = mergeProps(props, { style: contentState.props.style }, { style }, { style: contentState.contentStyle })}

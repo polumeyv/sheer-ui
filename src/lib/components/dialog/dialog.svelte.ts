@@ -48,6 +48,9 @@ export class DialogRootState {
 	nestedOpenCount = $state(0);
 	readonly depth: number;
 	readonly parent: DialogRootState | null;
+	readonly #completion: { readonly pending: boolean };
+	/** Rendered: open, or closing with the exit still settling — the window the headless content's scroll lock covers. */
+	readonly present = $derived.by(() => this.cell.open || this.#completion.pending);
 
 	constructor(opts: DialogRootStateOpts, parent: DialogRootState | null) {
 		this.opts = opts;
@@ -57,7 +60,7 @@ export class DialogRootState {
 		this.handleOpen = this.handleOpen.bind(this);
 		this.handleClose = this.handleClose.bind(this);
 
-		useOpenChangeComplete(
+		this.#completion = useOpenChangeComplete(
 			() => this.cell.open,
 			() => this.contentNode,
 			(isOpen) => this.opts.onOpenChangeComplete.current(isOpen),
