@@ -22,11 +22,11 @@ focus scope's opening `focus()` runs exactly there.
 
 | Surface | Recipe | Notes |
 | --- | --- | --- |
-| Menu family content and sub-content (`components/menu`) | visibility (`menu-surface` in `assets/ui.css`) | Static content is display (`menu-surface-static`). The engine sets the closed state inline, so headless use hides without the utility. Items of a closed sub-content are excluded from the parent's roving/typeahead candidates by selector. The scroll lock keys on `present` (open, or exit pending), the window element lifecycle used to give it. A menubar swap zeroes the exit inline and completes synchronously. |
+| Menu family content and sub-content (`components/menu`) | visibility (`popup-surface` in `assets/ui.css`) | Static content is display (`popup-surface-static`). The engine sets the closed state inline, so headless use hides without the utility. Items of a closed sub-content are excluded from the parent's roving/typeahead candidates by selector. The scroll lock keys on `present` (open, or exit pending), the window element lifecycle used to give it. A menubar swap zeroes the exit inline and completes synchronously. |
 | Dialog, Sheet (`<dialog>`) | keyframes + deferred `close()` | Unchanged; native top layer. |
 | Tooltip, Popover, Link preview (native popover) | display (`transition-discrete`) | Exit snaps in Firefox (verified 2026-08-31: `display: none` 40ms after hover-out, no running animation). Candidate for the visibility recipe if the top layer allows it — a hidden popover is removed from the top layer by the UA, so this needs a check first. |
 | Navigation menu | display, in PR #58 | Same Firefox snap. |
-| Select / Combobox popup, Scroll area | `PresenceManager` | Next in the loop; copy the menu. |
+| Select / Combobox content (`components/combobox/select`) | visibility (`popup-surface`) | Same shape as the menu; no sub-content, no swap. |
 | Drawer (vaul) | keyframes on `[data-state=closed]` | Cannot migrate: the exit is a keyframe animation the controller waits for. |
 
 ## Verification

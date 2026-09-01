@@ -8,7 +8,6 @@ import {
 	boolToEmptyStrOrUndef,
 	getDataOpenClosed,
 	boolToTrueOrUndef,
-	getDataTransitionAttrs,
 } from '../../../internal/attrs.js';
 import { kbd, FIRST_LAST_KEYS } from '../../../internal/kbd.js';
 import type {
@@ -25,7 +24,7 @@ import { isIOS } from '../../../internal/tools/utils/dom.js';
 import { createBitsAttrs } from '../../../internal/attrs.js';
 import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
 import { Typeahead, textContentOf } from '../../../internal/typeahead.svelte.js';
-import { PresenceManager } from '../../../internal/presence-manager.svelte.js';
+import { useOpenChangeComplete } from '../../../internal/animations-settled.svelte.js';
 import { DEV } from 'esm-env';
 import type { SelectValueSnippetProps } from './types.js';
 
@@ -82,7 +81,9 @@ abstract class SelectBaseRootState {
 	touchedInput = $state(false);
 	inputNode = $state<HTMLElement | null>(null);
 	contentNode = $state<HTMLElement | null>(null);
-	contentPresence: PresenceManager;
+	readonly #completion: { readonly pending: boolean };
+	/** Rendered: open, or closing with the exit still settling — the window the popper layer's scroll lock covers. */
+	readonly present = $derived.by(() => this.opts.open.current || this.#completion.pending);
 	viewportNode = $state<HTMLElement | null>(null);
 	triggerNode = $state<HTMLElement | null>(null);
 	valueNode = $state<HTMLElement | null>(null);
@@ -109,13 +110,13 @@ abstract class SelectBaseRootState {
 		this.opts = opts;
 		this.isCombobox = opts.isCombobox;
 
-		this.contentPresence = new PresenceManager({
-			ref: boxWith(() => this.contentNode),
-			open: this.opts.open,
-			onComplete: () => {
-				this.opts.onOpenChangeComplete.current(this.opts.open.current);
-			},
-		});
+		// Content stays mounted through its exit transition (CSS owns the motion; the closed state
+		// is the content's `contentStyle`); completion is settle-based on the content node.
+		this.#completion = useOpenChangeComplete(
+			() => this.opts.open.current,
+			() => this.contentNode,
+			(open) => this.opts.onOpenChangeComplete.current(open),
+		);
 
 		$effect.pre(() => {
 			if (!this.opts.open.current) {
@@ -930,7 +931,10 @@ interface SelectContentStateOpts
 		ReadableBoxedValues<{
 			onInteractOutside: (e: PointerEvent) => void;
 			onEscapeKeydown: (e: KeyboardEvent) => void;
-		}> {}
+		}> {
+	/** Rendered in flow (ContentStatic) rather than in a floating wrapper. */
+	isStatic?: boolean;
+}
 
 export class SelectContentState {
 	static create(opts: SelectContentStateOpts) {
@@ -941,10 +945,12 @@ export class SelectContentState {
 	readonly attachment: RefAttachment;
 	isPositioned = $state(false);
 	domContext: DOMContext;
+	#isStatic: boolean;
 
 	constructor(opts: SelectContentStateOpts, root: SelectRoot) {
 		this.opts = opts;
 		this.root = root;
+		this.#isStatic = opts.isStatic ?? false;
 		this.attachment = attachRef(opts.ref, (v) => (this.root.contentNode = v));
 		this.domContext = new DOMContext(this.opts.ref);
 
@@ -1011,10 +1017,6 @@ export class SelectContentState {
 		e.preventDefault();
 	};
 
-	get shouldRender() {
-		return this.root.contentPresence.shouldRender;
-	}
-
 	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open.current }));
 
 	readonly props = $derived.by(
@@ -1024,7 +1026,6 @@ export class SelectContentState {
 				role: 'listbox',
 				'aria-multiselectable': this.root.isMulti ? 'true' : undefined,
 				'data-state': getDataOpenClosed(this.root.opts.open.current),
-				...getDataTransitionAttrs(this.root.contentPresence.transitionStatus),
 				[this.root.getBitsAttr('content')]: '',
 				style: {
 					display: 'flex',
@@ -1038,6 +1039,17 @@ export class SelectContentState {
 				...this.attachment,
 			}) as const,
 	);
+
+	/**
+	 * Inline style for the content element alone — `props.style` also reaches the floating wrapper
+	 * through PopperLayer, and hiding the wrapper would cancel the content's exit transition.
+	 * Always mounted: closed floating content is visibility:hidden, closed static content is
+	 * display:none (it must leave the flow); `popup-surface` in ui.css adds the motion.
+	 */
+	readonly contentStyle = $derived.by(() => {
+		if (this.root.opts.open.current) return {};
+		return this.#isStatic ? { display: 'none' } : { visibility: 'hidden' };
+	});
 
 	readonly popperProps = {
 		onInteractOutside: this.onInteractOutside,

@@ -23,7 +23,6 @@
 		class: className,
 		side = 'bottom',
 		sideOffset = 4,
-		forceMount = false,
 		preventScroll = true,
 
 		onInteractOutside = () => {},
@@ -49,7 +48,7 @@
 	});
 	const contentClass = $derived(
 		join(
-			'relative isolate z-50 min-w-36 overflow-x-hidden overflow-y-auto rounded-md bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 transition-[opacity,scale,translate] starting:opacity-0 starting:scale-95 data-closed:opacity-0 data-closed:scale-95 data-[side=bottom]:starting:-translate-y-2 data-[side=top]:starting:translate-y-2 data-[side=left]:starting:translate-x-2 data-[side=right]:starting:-translate-x-2 data-[side=inline-start]:starting:translate-x-2 data-[side=inline-end]:starting:-translate-x-2',
+			'relative isolate z-50 min-w-36 overflow-x-hidden overflow-y-auto rounded-md bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 popup-surface',
 			className,
 		),
 	);
@@ -75,10 +74,10 @@
 	open={contentState.root.opts.open.current}
 	{id}
 	{preventScroll}
-	{forceMount}
-	shouldRender={contentState.shouldRender}>
+	forceMount
+	present={contentState.root.present}>
 	{#snippet popper({ props, wrapperProps })}
-		{@const finalProps = mergeProps(props, { style: contentState.props.style }, { style })}
+		{@const finalProps = mergeProps(props, { style: contentState.props.style }, { style }, { style: contentState.contentStyle })}
 
 		{#if child}
 			{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
