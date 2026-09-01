@@ -1,6 +1,6 @@
 import type { Getter } from './tools/index.js';
 import { on } from 'svelte/events';
-import { useOpenChangeComplete } from './animations-settled.svelte.js';
+import { createSettleRunner, useOpenChangeComplete } from './animations-settled.svelte.js';
 
 type NativePopoverAnchor = HTMLElement | string | null | undefined | object;
 
@@ -60,18 +60,29 @@ export function useNativePopoverLifecycle(
 	const ref = () => state.opts.ref.current;
 	const open = () => state.root.opts.open.current;
 
+	const exitSettle = createSettleRunner();
 	$effect(() => {
 		const el = ref();
 		const isOpen = open();
 		if (!el?.isConnected || typeof el.showPopover !== 'function') return;
-		if (isOpen === el.matches(':popover-open')) return; // already in the desired state
 
-		if (!isOpen) return el.hidePopover();
+		if (isOpen) {
+			exitSettle.cancel(); // a reopen mid-exit keeps the surface shown
+			if (el.matches(':popover-open')) return;
+			const source = resolveNativePopoverAnchor(options.anchor?.(), state.root.triggerNode);
+			// `source` gives CSS anchor() a default anchor without requiring position-anchor, and in `auto`
+			// mode makes the UA exempt the invoker from light dismiss where supported (Chrome 137+).
+			source ? (el.showPopover as (options: { source: HTMLElement }) => void).call(el, { source }) : el.showPopover();
+			return;
+		}
 
-		const source = resolveNativePopoverAnchor(options.anchor?.(), state.root.triggerNode);
-		// `source` gives CSS anchor() a default anchor without requiring position-anchor, and in `auto`
-		// mode makes the UA exempt the invoker from light dismiss where supported (Chrome 137+).
-		source ? (el.showPopover as (options: { source: HTMLElement }) => void).call(el, { source }) : el.showPopover();
+		if (!el.matches(':popover-open')) return; // the UA already hid it (light dismiss, Escape)
+		// Hold the popover in the top layer while the [data-state=closed] exit runs, then hide.
+		// `overlay` transitions are Chrome-only, so an immediate hidePopover() snaps the exit
+		// in Firefox and Safari; the surfaces key their exit on data-state, not :popover-open.
+		exitSettle.run(el, () => {
+			if (!open() && el.matches(':popover-open')) el.hidePopover();
+		});
 	});
 
 	useOpenChangeComplete(open, ref, (isOpen) => state.root.opts.onOpenChangeComplete.current(isOpen));
