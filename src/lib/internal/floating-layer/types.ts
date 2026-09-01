@@ -49,6 +49,13 @@ export type FloatingLayerContentProps = {
 	 */
 	collisionPadding?: number | Partial<Record<Side, number>>;
 
+	/**
+	 * Hides the content while its anchor is scrolled out of view (`position-visibility`).
+	 *
+	 * @default false
+	 */
+	hideWhenDetached?: boolean;
+
 	content?: Snippet<[{ props: Record<string, unknown> }]>;
 
 	/**

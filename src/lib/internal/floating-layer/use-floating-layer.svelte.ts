@@ -98,6 +98,7 @@ export interface FloatingContentStateOpts extends ReadableBoxedValues<{
 	arrowPadding: number;
 	avoidCollisions: boolean;
 	collisionPadding: number | Partial<Record<Side, number>>;
+	hideWhenDetached: boolean;
 	onPlaced: () => void;
 	dir: Direction;
 	style: StyleProperties | null | undefined | string;
@@ -150,12 +151,22 @@ export class FloatingContentState {
 		return { top: value('top'), right: value('right'), bottom: value('bottom'), left: value('left') };
 	});
 
-	placedSide = $derived.by(() => this.opts.side.current);
-	placedAlign = $derived.by(() => this.opts.align.current);
-	#vertical = $derived(this.placedSide === 'top' || this.placedSide === 'bottom');
+	#requestedSide = $derived.by(() => this.opts.side.current);
+	#requestedAlign = $derived.by(() => this.opts.align.current);
+	/**
+	 * The placement the browser actually chose. The applied position-try fallback cannot be read
+	 * back (anchored container queries are Chrome-only), so it is measured from the rects while
+	 * open; `data-side`/`data-align`, the transform origin and the arrow follow it through flips.
+	 * The position style itself always emits the requested placement — the measurement must never
+	 * feed back into what it measures.
+	 */
+	#measuredPlacement = $state<{ side: Side; align: Align } | null>(null);
+	placedSide = $derived(this.#measuredPlacement?.side ?? this.#requestedSide);
+	placedAlign = $derived(this.#measuredPlacement?.align ?? this.#requestedAlign);
+	#vertical = $derived(this.#requestedSide === 'top' || this.#requestedSide === 'bottom');
 	/** The physical edge of the anchor the content aligns to; `start`/`end` follow the text direction across. */
 	#alignEdge = $derived.by((): Side | null => {
-		const align = this.placedAlign;
+		const align = this.#requestedAlign;
 		if (align === 'center') return null;
 		if (!this.#vertical) return align === 'start' ? 'top' : 'bottom';
 		const rtl = this.opts.dir.current === 'rtl';
@@ -183,7 +194,7 @@ export class FloatingContentState {
 		if (!this.opts.present.current) {
 			return { position: 'fixed', inset: 'auto' } satisfies StyleProperties;
 		}
-		const side = this.placedSide;
+		const side = this.#requestedSide;
 		const padding = this.#padding;
 		const edge = this.#alignEdge;
 		const vertical = this.#vertical;
@@ -216,6 +227,7 @@ export class FloatingContentState {
 			positionArea: `${side} ${span}`,
 			positionTryFallbacks: fallbacks,
 			...(edge === null && { [vertical ? 'justifySelf' : 'alignSelf']: 'anchor-center' }),
+			...(this.opts.hideWhenDetached.current && { positionVisibility: 'anchors-visible' }),
 			marginTop: `${margin.top}px`,
 			marginRight: `${margin.right}px`,
 			marginBottom: `${margin.bottom}px`,
@@ -306,6 +318,71 @@ export class FloatingContentState {
 			if (!this.opts.enabled.current) return;
 			this.opts.onPlaced.current();
 		});
+
+		// Measure the resolved placement while open, re-checking on scroll and resize (a flip can
+		// change as the page moves). Rect reads only; guarded against unlaid-out nodes (jsdom).
+		$effect(() => {
+			if (!this.opts.enabled.current) {
+				this.#measuredPlacement = null;
+				return;
+			}
+			const content = this.contentRef.current;
+			if (!content) return;
+			const win = getWindow(content);
+			let raf = win.requestAnimationFrame(() => this.#measurePlacement());
+			const schedule = () => {
+				win.cancelAnimationFrame(raf);
+				raf = win.requestAnimationFrame(() => this.#measurePlacement());
+			};
+			win.addEventListener('scroll', schedule, { capture: true, passive: true });
+			win.addEventListener('resize', schedule, { passive: true });
+			return () => {
+				win.cancelAnimationFrame(raf);
+				win.removeEventListener('scroll', schedule, { capture: true });
+				win.removeEventListener('resize', schedule);
+			};
+		});
+	}
+
+	#measurePlacement() {
+		const content = this.contentRef.current;
+		const anchor = this.root.anchorNode.current;
+		if (!content || !anchor) return;
+		const c = content.getBoundingClientRect();
+		const a = anchor.getBoundingClientRect();
+		if (c.width === 0 && c.height === 0) return;
+
+		const requested = this.#requestedSide;
+		const vertical = this.#vertical;
+		const side: Side = vertical
+			? c.bottom <= a.top + 1
+				? 'top'
+				: c.top >= a.bottom - 1
+					? 'bottom'
+					: requested
+			: c.right <= a.left + 1
+				? 'left'
+				: c.left >= a.right - 1
+					? 'right'
+					: requested;
+
+		// nearest alignment on the cross axis; start/end follow the text direction horizontally
+		const rtl = this.opts.dir.current === 'rtl';
+		const distance: Record<Align, number> = vertical
+			? {
+					start: Math.abs(rtl ? c.right - a.right : c.left - a.left),
+					center: Math.abs(c.left + c.width / 2 - (a.left + a.width / 2)),
+					end: Math.abs(rtl ? c.left - a.left : c.right - a.right),
+				}
+			: {
+					start: Math.abs(c.top - a.top),
+					center: Math.abs(c.top + c.height / 2 - (a.top + a.height / 2)),
+					end: Math.abs(c.bottom - a.bottom),
+				};
+		const align = ALIGN_OPTIONS.reduce((best, k) => (distance[k] < distance[best] ? k : best), 'center' as Align);
+
+		const previous = this.#measuredPlacement;
+		if (previous?.side !== side || previous?.align !== align) this.#measuredPlacement = { side, align };
 	}
 
 	#measureArrow(arrowNode: HTMLElement) {

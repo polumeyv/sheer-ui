@@ -20,6 +20,7 @@
 		arrowPadding,
 		avoidCollisions,
 		collisionPadding,
+		hideWhenDetached,
 		dir,
 		preventScroll,
 		style,
@@ -91,6 +92,7 @@
 	{arrowPadding}
 	{avoidCollisions}
 	{collisionPadding}
+	{hideWhenDetached}
 	{dir}
 	{style}
 	{onPlaced}

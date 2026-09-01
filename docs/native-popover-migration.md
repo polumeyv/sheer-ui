@@ -49,10 +49,21 @@ The menu family and select/combobox position with CSS anchor positioning too (`i
 no `@floating-ui/dom`): the content element itself is anchored via `position-area`, unclamped
 `position-try-fallbacks` flips first, and the `--bits-clamped` options (ui.css) cap the block size
 when no side fits the whole content. Differences from the floating-ui behavior, measured in three
-engines: `data-side`/`data-align` and the transform origin are the requested placement, not the
-resolved fallback (only Chrome can read the applied fallback back); at a flush viewport edge the
-content flip-aligns to the trigger edge instead of sliding to the viewport edge (≤ the trigger-width
-difference); when no side fits the whole content the requested side is kept and scrolls, where
-floating-ui switched to the tallest side. A closed-at-rest surface drops its anchored style —
-a page of always-mounted anchored boxes otherwise taxes every layout pass. The anchor name is
-written imperatively by the trigger attachment; the content must follow its trigger in tree order.
+engines: at a flush viewport edge the content flip-aligns to the trigger edge instead of sliding to
+the viewport edge (≤ the trigger-width difference); when no side fits the whole content the
+requested side is kept and scrolls, where floating-ui switched to the tallest side. `data-side`/
+`data-align`, the transform origin and the arrow follow the RESOLVED placement: the applied
+position-try fallback is not readable back (anchored container queries are Chrome-only), so it is
+measured from the rects while open and re-checked on scroll/resize. A closed-at-rest surface drops
+its anchored style — a page of always-mounted anchored boxes otherwise taxes every layout pass.
+The anchor name is written imperatively by the trigger attachment; the content must follow its
+trigger in tree order.
+
+`collisionBoundary` and `sticky` do not exist here, by design, researched 2026-09-01: CSS anchor
+positioning is viewport-only and flip-only (CSSWG removed the boundary mechanism from Level 1;
+continuous slide is a dormant Level-2 issue), which is also where the post-floating-ui libraries
+landed (Ariakit/Kobalte/melt-next expose no boundary; Base UI defaults to flip on both axes; the
+native `<select>` picker behaves the same), and real-world usage is a few hundred call sites on all
+of public GitHub. The one audience this genuinely excludes: apps whose popups live inside a canvas
+or embedded pane whose edges matter more than the viewport's. `hideWhenDetached` is real, via
+`position-visibility: anchors-visible`.
