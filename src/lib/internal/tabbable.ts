@@ -61,9 +61,6 @@ function getRootNode(element: Element): Node {
 	return element.getRootNode?.() ?? element.ownerDocument;
 }
 
-function getRootHost(root: Node | null | undefined): Element | undefined {
-	return root && 'host' in root ? (root.host as Element) : undefined;
-}
 
 function isInert(node: Node | null | undefined, lookUp = true): boolean {
 	const element = asElement(node);
@@ -222,38 +219,22 @@ function isNonTabbableRadio(node: TabbableElement): boolean {
 	return isRadio(node) && !isTabbableRadio(node);
 }
 
-function isNodeAttached(node: TabbableElement): boolean {
-	let root = getRootNode(node);
-	let host = getRootHost(root);
-	let attached = false;
-
-	if (root && root !== node) {
-		attached = Boolean(host?.ownerDocument?.contains(host) || node.ownerDocument?.contains(node));
-
-		while (!attached && host) {
-			root = getRootNode(host);
-			host = getRootHost(root);
-			attached = Boolean(host?.ownerDocument?.contains(host));
-		}
-	}
-
-	return attached;
-}
 
 function isHidden(node: TabbableElement, options: TabbableOptions): boolean {
+	// 'full' (a real browser): one platform call covers display:none anywhere up the tree,
+	// visibility hidden/collapse (own or inherited), content-visibility, a closed <details>'
+	// content and a detached node (no box) — upstream tabbable's `full-native` mode.
+	if (!options.displayCheck || options.displayCheck === 'full') {
+		return !node.checkVisibility({ visibilityProperty: true });
+	}
+
+	// 'none' (jsdom, no layout): the style-only checks the platform call would have made.
 	const { visibility } = getComputedStyle(node);
 	if (visibility === 'hidden' || visibility === 'collapse') return true;
 
 	const isDirectSummary = matches.call(node, 'details>summary:first-of-type');
 	const nodeUnderDetails = isDirectSummary ? node.parentElement : node;
-	if (nodeUnderDetails && matches.call(nodeUnderDetails, 'details:not([open]) *')) return true;
-
-	if (!options.displayCheck || options.displayCheck === 'full') {
-		if (isNodeAttached(node)) return !node.getClientRects().length;
-		return true;
-	}
-
-	return false;
+	return Boolean(nodeUnderDetails && matches.call(nodeUnderDetails, 'details:not([open]) *'));
 }
 
 function isDisabledFromFieldset(node: TabbableElement): boolean {

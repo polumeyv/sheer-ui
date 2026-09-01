@@ -129,25 +129,19 @@ describe("internal tabbable", () => {
 		expect(ids(getTabbableCandidates(root))).toEqual(["slotted"]);
 	});
 
-	test("displayCheck full requires an attached node with client rects", () => {
-		const root = render(`<button data-id="visible">visible</button>`);
-		const visible = getById(root, "visible");
+	test("displayCheck full asks the platform: checkVisibility decides", () => {
+		const root = render(`<button data-id="shown">shown</button><button data-id="hidden">hidden</button>`);
+		const stub = (id: string, visible: boolean) =>
+			Object.defineProperty(getById(root, id), "checkVisibility", {
+				configurable: true,
+				value: (options: unknown) => {
+					expect(options).toEqual({ visibilityProperty: true });
+					return visible;
+				},
+			});
+		stub("shown", true);
+		stub("hidden", false);
 
-		Object.defineProperty(visible, "getClientRects", {
-			configurable: true,
-			value: () => ({ length: 1 }),
-		});
-
-		expect(ids(tabbable(root, { displayCheck: "full", getShadowRoot: true }))).toEqual(["visible"]);
-
-		const detached = document.createElement("div");
-		detached.innerHTML = `<button data-id="detached">detached</button>`;
-		const detachedButton = getById(detached, "detached");
-		Object.defineProperty(detachedButton, "getClientRects", {
-			configurable: true,
-			value: () => ({ length: 1 }),
-		});
-
-		expect(ids(tabbable(detached, { displayCheck: "full", getShadowRoot: true }))).toEqual([]);
+		expect(ids(tabbable(root, { displayCheck: "full", getShadowRoot: true }))).toEqual(["shown"]);
 	});
 });
