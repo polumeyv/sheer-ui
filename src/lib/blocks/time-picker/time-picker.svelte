@@ -24,6 +24,7 @@
 		minTime?: string;
 		maxTime?: string;
 		isTimeDisabled?: (time: string) => boolean;
+		use24Hour?: boolean;
 	}
 
 	let {
@@ -42,10 +43,11 @@
 		minTime,
 		maxTime,
 		isTimeDisabled,
+		use24Hour = false,
 	}: Props = $props();
 
 	// Generate time slots based on configuration
-	const timeSlots = $derived(resolveTimeSlots({ slots, preset, interval, startHour, endHour }));
+	const timeSlots = $derived(resolveTimeSlots({ slots, preset, interval, startHour, endHour, use24Hour }));
 
 	// Filter slots based on constraints
 	const filteredSlots = $derived.by(() => {

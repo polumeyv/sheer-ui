@@ -30,6 +30,10 @@ describe('formatTimeRange', () => {
 	it('formats endpoints separately when the end is midnight', () => expect(formatTimeRange(1380, 1440)).toBe('11:00 PM – 12:00 AM'));
 	it('supports 24-hour display', () => expect(formatTimeRange('09:30', '13:15', { use24Hour: true })).toBe('09:30 – 13:15'));
 	it('supports 24-hour display across midnight', () => expect(formatTimeRange(1380, 1440, { use24Hour: true })).toBe('23:00 – 00:00'));
+	it('keeps equal endpoints a range, not a collapsed single time', () =>
+		expect(formatTimeRange('09:30', '09:30')).toBe('9:30 AM – 9:30 AM'));
+	it('keeps equal endpoints a range in 24-hour display', () =>
+		expect(formatTimeRange(570, 570, { use24Hour: true })).toBe('09:30 – 09:30'));
 });
 
 describe('formatDuration', () => {

@@ -18,7 +18,7 @@
 
 	// The internal SlotRange keeps plain strings ('' = unset end); every set value comes from a TimeSlot,
 	// so casting at the guarded display seam is sound.
-	const fmt = (t: string) => formatTimeDisplay(t);
+	const fmt = (t: string) => formatTimeDisplay(t, { use24Hour });
 
 	interface Props {
 		value?: SlotRange;
@@ -43,6 +43,7 @@
 		isTimeDisabled?: (time: string) => boolean;
 		// Display options
 		showDuration?: boolean;
+		use24Hour?: boolean;
 	}
 
 	let {
@@ -65,10 +66,11 @@
 		maxDuration,
 		isTimeDisabled,
 		showDuration = true,
+		use24Hour = false,
 	}: Props = $props();
 
 	// Generate time slots based on configuration
-	const timeSlots = $derived(resolveTimeSlots({ slots, preset, interval, startHour, endHour }));
+	const timeSlots = $derived(resolveTimeSlots({ slots, preset, interval, startHour, endHour, use24Hour }));
 
 	// Filter start time slots
 	const startSlots = $derived.by(() => {
