@@ -18,7 +18,7 @@ describe('createLayerStack', () => {
 	});
 
 	test('default predicate (always-true): the most recently registered instance is responsible', () => {
-		// matches text-selection-layer, which has no behavior-type distinction at all
+		// a layer with no behavior-type distinction at all
 		const stack = createLayerStack<string, boolean>();
 		stack.register('a', true);
 		stack.register('b', true);

@@ -33,7 +33,7 @@ Dialog.Content
 `NativeDialog` and `Sheet.Content` are good native targets because their current consumers expect a
 modal surface, not a low-level interaction primitive. Generic `Dialog.Content` is different: it is a
 shared primitive with public props from `FocusScope`, `DismissibleLayer`, `EscapeLayer`,
-`TextSelectionLayer`, and `ScrollLock`.
+and `ScrollLock`, plus the CSS text-selection guard.
 
 ## Generic Dialog audit
 
@@ -44,7 +44,7 @@ shared primitive with public props from `FocusScope`, `DismissibleLayer`, `Escap
 | `Dialog.Content` outside interaction | backdrop click / `closedby` | Keep component behavior | The current API exposes dismissible-layer behavior and `onInteractOutside`; native backdrop events do not match that stack. |
 | `Dialog.Overlay` | `::backdrop` | Keep component behavior | Existing consumers style and render a separate overlay component. `::backdrop` cannot receive those props, classes, snippets, or presence state. |
 | `Dialog.Content` child snippet | custom `<dialog>` child | Keep component behavior | A native adapter would require the child to be a real `HTMLDialogElement`; the current child API accepts arbitrary elements. |
-| `Dialog.Content` text selection guard | none | Keep component behavior | Native dialog does not replace the current overflow text-selection attachment. |
+| `Dialog.Content` text selection guard | `inert` | Native | A modal `<dialog>` makes the page inert, so no drag can select behind it; the JS-overlay path (the drawer) uses the CSS `user-select` guard in `ui.css`. |
 | `Dialog.Content` scroll lock | none | Keep JS | `showModal()` makes the page inert but does not reliably freeze background scrolling, especially on touch browsers. |
 
 ## Safe migration targets

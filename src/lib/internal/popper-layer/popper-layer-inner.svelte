@@ -5,7 +5,6 @@
 	import PopperContent from './popper-content.svelte';
 	import { escapeKeydownAttachment } from '../escape-layer/use-escape-layer.svelte.js';
 	import { interactOutsideAttachment } from '../dismissible-layer/use-dismissable-layer.svelte.js';
-	import { textSelectionAttachment } from '../text-selection-layer/use-text-selection-layer.svelte.js';
 	import { createFocusScopeProps } from '../focus-scope/focus-scope.svelte.js';
 
 	let {
@@ -14,8 +13,6 @@
 		escapeKeydownBehavior,
 		preventOverflowTextSelection,
 		id,
-		onPointerDown,
-		onPointerUp,
 		side,
 		sideOffset,
 		align,
@@ -72,12 +69,8 @@
 		isValidEvent: () => isValidEvent,
 	});
 
-	const textSelection = textSelectionAttachment({
-		id: () => id,
-		onPointerDown: () => onPointerDown ?? (() => {}),
-		onPointerUp: () => onPointerUp ?? (() => {}),
-		enabled: () => enabled && (preventOverflowTextSelection ?? true),
-	});
+	// Flags the open surface for the CSS text-selection guard in ui.css.
+	const textSelectionGuard = $derived(enabled && (preventOverflowTextSelection ?? true) ? { 'data-text-selection-guard': '' } : {});
 
 	// The content is always mounted, so the lock gates on `present` (open, or still exiting — the
 	// window element lifecycle gave the old <ScrollLock> mount).
@@ -126,7 +119,7 @@
 				dismissible.attachment,
 				focusScope.props,
 				escapeAttachment,
-				textSelection,
+				textSelectionGuard,
 				scrollLock,
 				{
 					style: {

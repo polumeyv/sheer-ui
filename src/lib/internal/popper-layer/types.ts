@@ -8,10 +8,7 @@ import type {
 	FloatingLayerContentImplProps,
 	FloatingLayerContentProps,
 } from "../floating-layer/types.js";
-import type {
-	TextSelectionLayerImplProps,
-	TextSelectionLayerProps,
-} from "../text-selection-layer/types.js";
+import type { TextSelectionGuardProps } from "../types.js";
 import type { ReadableBox } from "../tools/index.js";
 import type { FocusScopeImplProps, FocusScopeProps } from "../focus-scope/types.js";
 import type { ScrollLockProps } from "../body-scroll-lock.svelte.js";
@@ -20,13 +17,13 @@ import type { Direction } from "../index.js";
 export type PopperLayerProps = EscapeLayerProps &
 	Omit<DismissibleLayerProps, "onInteractOutsideStart"> &
 	FloatingLayerContentProps &
-	TextSelectionLayerProps &
+	TextSelectionGuardProps &
 	FocusScopeProps &
 	Omit<ScrollLockProps, "restoreScrollDelay">;
 
 export type PopperLayerStaticProps = EscapeLayerProps &
 	Omit<DismissibleLayerProps, "onInteractOutsideStart"> &
-	TextSelectionLayerProps &
+	TextSelectionGuardProps &
 	FocusScopeProps &
 	Omit<ScrollLockProps, "restoreScrollDelay"> & {
 		content?: Snippet<[{ props: Record<string, unknown> }]>;
@@ -38,7 +35,7 @@ export type PopperLayerImplProps = Omit<
 		DismissibleLayerImplProps &
 		FloatingLayerContentImplProps &
 		{ open: boolean; ref: ReadableBox<HTMLElement | null> } &
-		TextSelectionLayerImplProps &
+		TextSelectionGuardProps &
 		FocusScopeImplProps & {
 			popper: Snippet<
 				[{ props: Record<string, unknown>; wrapperProps: Record<string, unknown> }]

@@ -9,8 +9,6 @@
 		escapeKeydownBehavior,
 		preventOverflowTextSelection,
 		id,
-		onPointerDown,
-		onPointerUp,
 		side,
 		sideOffset,
 		align,
@@ -50,8 +48,6 @@
 	{escapeKeydownBehavior}
 	{preventOverflowTextSelection}
 	{id}
-	{onPointerDown}
-	{onPointerUp}
 	{side}
 	{sideOffset}
 	{align}

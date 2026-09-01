@@ -40,3 +40,14 @@ animations, `document.activeElement` and the body scroll lock, in Chromium, Fire
 The menu migration matches its baseline on every row; the one intentional difference is that
 `onOpenChangeComplete(true)` now fires on open (the JS presence path ran its settle against a not
 yet mounted node and dropped it).
+
+## Text-selection guard
+
+The document pointer tracker (`text-selection-layer`, with its own layer stack) that set body
+`user-select: none` for the length of an outward drag is gone. An open surface with
+`preventOverflowTextSelection` carries `data-text-selection-guard`; `body:has(...)` in
+`assets/ui.css` sets `user-select: none` for the whole open window and the surface restores
+`text`. Page text is unreachable while a modal surface is open anyway (the scroll lock's
+`pointer-events: none`), so the window is wider on paper and identical in effect: an outward drag
+from a dropdown item or the drawer title selects nothing in Chromium, Firefox and WebKit, before
+and after.
