@@ -2,21 +2,6 @@ import { flushSync, mount, unmount } from "svelte";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import FloatingLayerArrowFixture from "./floating-layer-arrow.fixture.svelte";
 
-const floatingMocks = vi.hoisted(() => ({
-	autoUpdate: vi.fn(),
-	computePosition: vi.fn(),
-}));
-
-vi.mock("@floating-ui/dom", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("@floating-ui/dom")>();
-
-	return {
-		...actual,
-		autoUpdate: floatingMocks.autoUpdate,
-		computePosition: floatingMocks.computePosition,
-	};
-});
-
 class ResizeObserverStub {
 	static instances: ResizeObserverStub[] = [];
 	readonly observe = vi.fn();
@@ -31,10 +16,7 @@ class ResizeObserverStub {
 	}
 }
 
-let arrowWidthReads: number[] = [];
-let arrowHeightReads: number[] = [];
-
-function renderFixture(props: { arrowWidth?: number; arrowHeight?: number } = {}) {
+function renderFixture(props: { arrowWidth?: number; arrowHeight?: number; side?: "top" | "right" | "bottom" | "left"; arrowPadding?: number } = {}) {
 	const target = document.createElement("div");
 	document.body.append(target);
 
@@ -44,22 +26,14 @@ function renderFixture(props: { arrowWidth?: number; arrowHeight?: number } = {}
 	return { component, target };
 }
 
-async function settlePositioning() {
-	await Promise.resolve();
-	await Promise.resolve();
-	flushSync();
-}
-
-function getArrow() {
-	const node = document.body.querySelector<HTMLElement>('[data-testid="arrow"]');
-	if (!node) throw new Error("Expected floating arrow to render");
-	return node;
-}
+const node = (testid: string) => {
+	const el = document.body.querySelector<HTMLElement>(`[data-testid="${testid}"]`);
+	if (!el) throw new Error(`Expected [data-testid="${testid}"] to render`);
+	return el;
+};
 
 beforeEach(() => {
 	ResizeObserverStub.instances = [];
-	arrowWidthReads = [];
-	arrowHeightReads = [];
 
 	Object.defineProperty(window, "ResizeObserver", {
 		configurable: true,
@@ -67,61 +41,11 @@ beforeEach(() => {
 	});
 
 	vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockImplementation(function getOffsetWidth() {
-		const width = Number(this.getAttribute("data-test-width") ?? 0);
-		if (this.getAttribute("data-testid") === "arrow") {
-			arrowWidthReads.push(width);
-		}
-		return width;
+		return Number(this.getAttribute("data-test-width") ?? 0);
 	});
 
 	vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockImplementation(function getOffsetHeight() {
-		const height = Number(this.getAttribute("data-test-height") ?? 0);
-		if (this.getAttribute("data-testid") === "arrow") {
-			arrowHeightReads.push(height);
-		}
-		return height;
-	});
-
-	vi.spyOn(Element.prototype, "getClientRects").mockImplementation(
-		() =>
-			({
-				length: 1,
-				item: () => null,
-				0: new DOMRect(0, 0, 10, 10),
-				[Symbol.iterator]: function* () {
-					yield this[0];
-				},
-			}) as DOMRectList
-	);
-
-	floatingMocks.autoUpdate.mockImplementation((_reference, _floating, update) => {
-		update();
-		return vi.fn();
-	});
-
-	floatingMocks.computePosition.mockImplementation(async (_reference, _floating, options) => {
-		const middleware = (options.middleware ?? []) as Array<{
-			name?: string;
-			options?: { arrowWidth?: number; arrowHeight?: number };
-		}>;
-		const transformOriginMiddleware =
-			middleware.find((entry) => entry?.name === "transformOrigin") ?? middleware.at(-1);
-		const arrowWidth = transformOriginMiddleware?.options?.arrowWidth ?? 0;
-		const arrowHeight = transformOriginMiddleware?.options?.arrowHeight ?? 0;
-
-		return {
-			x: 0,
-			y: 0,
-			strategy: "fixed",
-			placement: "bottom",
-			middlewareData: {
-				arrow: { x: 4, y: 0, centerOffset: 0 },
-				transformOrigin: {
-					x: `${4 + arrowWidth / 2}px`,
-					y: `${-arrowHeight}px`,
-				},
-			},
-		};
+		return Number(this.getAttribute("data-test-height") ?? 0);
 	});
 });
 
@@ -130,47 +54,101 @@ afterEach(() => {
 	document.body.innerHTML = "";
 });
 
-describe("FloatingLayer arrow measurement", () => {
-	test("arrow mount starts measurement and observes the arrow element", async () => {
+// jsdom does not lay out anchor positioning; the contract under test is the CSS the engine emits.
+describe("FloatingLayer anchor positioning", () => {
+	test("the trigger carries the anchor name the content positions against", () => {
 		const { component } = renderFixture();
 
 		try {
-			await settlePositioning();
-
-			expect(ResizeObserverStub.instances).toHaveLength(1);
-			expect(ResizeObserverStub.instances[0]?.observe).toHaveBeenCalledWith(getArrow());
-			expect(arrowWidthReads).toContain(12);
-			expect(arrowHeightReads).toContain(8);
+			const anchorName = node("anchor").style.getPropertyValue("anchor-name");
+			expect(anchorName).toMatch(/^--bits-anchor-/);
+			const content = node("content");
+			expect(content.style.getPropertyValue("position-anchor")).toBe(anchorName);
+			expect(content.style.getPropertyValue("position-area")).toBe("bottom span-all");
+			expect(content.style.getPropertyValue("justify-self")).toBe("anchor-center");
+			expect(content.style.getPropertyValue("position-try-fallbacks")).toBe("none");
+			expect(content.style.getPropertyValue("--bits-floating-anchor-width")).toBe(`anchor-size(${anchorName} width)`);
+			expect(content.dataset.side).toBe("bottom");
+			expect(content.dataset.align).toBe("center");
 		} finally {
 			unmount(component);
 		}
 	});
 
-	test("arrow resize remeasures the current arrow dimensions", async () => {
+	test("the arrow height adds to the side offset and the arrow centers on the anchor", () => {
+		const { component } = renderFixture({ arrowPadding: 4 });
+
+		try {
+			const content = node("content");
+			// side "bottom": the gap toward the anchor is margin-top = sideOffset (0) + arrow height (8)
+			expect(content.style.marginTop).toBe("8px");
+			const anchorName = content.style.getPropertyValue("position-anchor");
+			const arrow = node("arrow");
+			expect(arrow.style.position).toBe("absolute");
+			expect(arrow.style.top).toBe("0px");
+			// jsdom re-serializes the calc(); the parts are what matter
+			expect(arrow.style.left).toMatch(/^clamp\(4px, /);
+			expect(arrow.style.left).toContain(anchorName);
+			expect(arrow.style.left).toContain('center');
+			expect(arrow.style.left).toContain('6px');
+			expect(arrow.style.left).toContain('100%');
+			expect(arrow.dataset.side).toBe("bottom");
+		} finally {
+			unmount(component);
+		}
+	});
+
+	test("a horizontal side centers the arrow on the block axis", () => {
+		const { component } = renderFixture({ side: "right" });
+
+		try {
+			const content = node("content");
+			expect(content.style.getPropertyValue("position-area")).toBe("right span-all");
+			expect(content.style.getPropertyValue("align-self")).toBe("anchor-center");
+			expect(content.style.marginLeft).toBe("8px");
+			const arrow = node("arrow");
+			expect(arrow.style.left).toBe("0px");
+			expect(arrow.style.top).toContain("anchor(");
+		} finally {
+			unmount(component);
+		}
+	});
+});
+
+describe("FloatingLayer arrow measurement", () => {
+	test("arrow mount starts measurement and observes the arrow element", () => {
 		const { component } = renderFixture();
 
 		try {
-			await settlePositioning();
-			expect(arrowWidthReads).toContain(12);
-			expect(arrowHeightReads).toContain(8);
+			expect(ResizeObserverStub.instances).toHaveLength(1);
+			expect(ResizeObserverStub.instances[0]?.observe).toHaveBeenCalledWith(node("arrow"));
+		} finally {
+			unmount(component);
+		}
+	});
+
+	test("arrow resize remeasures the current arrow dimensions", () => {
+		const { component } = renderFixture();
+
+		try {
+			expect(node("content").style.marginTop).toBe("8px");
 
 			component.setArrowSize(20, 10);
 			flushSync();
 			ResizeObserverStub.instances[0]?.trigger();
-			await settlePositioning();
+			flushSync();
 
-			expect(arrowWidthReads).toContain(20);
-			expect(arrowHeightReads).toContain(10);
+			expect(node("content").style.marginTop).toBe("10px");
+			expect(node("arrow").style.left).toContain("10px");
 		} finally {
 			unmount(component);
 		}
 	});
 
-	test("ResizeObserver disconnects when the arrow unmounts", async () => {
+	test("ResizeObserver disconnects when the arrow unmounts", () => {
 		const { component } = renderFixture();
 
 		try {
-			await settlePositioning();
 			const observer = ResizeObserverStub.instances[0];
 			expect(observer).toBeDefined();
 
@@ -179,6 +157,7 @@ describe("FloatingLayer arrow measurement", () => {
 
 			expect(observer?.disconnect).toHaveBeenCalledTimes(1);
 			expect(ResizeObserverStub.instances).toHaveLength(1);
+			expect(node("content").style.marginTop).toBe("0px");
 		} finally {
 			unmount(component);
 		}

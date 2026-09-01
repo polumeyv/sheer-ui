@@ -15,15 +15,10 @@
 		alignOffset,
 		arrowPadding,
 		avoidCollisions,
-		collisionBoundary,
 		collisionPadding,
-		sticky,
 		hideWhenDetached,
-		updatePositionStrategy,
-		strategy,
 		dir,
 		preventScroll,
-		wrapperId,
 		style,
 		onPlaced,
 		onInteractOutside,
@@ -54,15 +49,10 @@
 	{alignOffset}
 	{arrowPadding}
 	{avoidCollisions}
-	{collisionBoundary}
 	{collisionPadding}
-	{sticky}
 	{hideWhenDetached}
-	{updatePositionStrategy}
-	{strategy}
 	{dir}
 	{preventScroll}
-	{wrapperId}
 	{style}
 	{onPlaced}
 	{customAnchor}

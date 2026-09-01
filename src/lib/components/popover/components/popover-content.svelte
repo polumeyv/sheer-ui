@@ -62,7 +62,7 @@
 </script>
 
 {#if child}
-	{@render child({ props: mergedProps, wrapperProps: {}, ...contentState.snippetProps })}
+	{@render child({ props: mergedProps, ...contentState.snippetProps })}
 {:else}
 	<div {...mergedProps} bind:this={ref} data-side={side} data-align={align}>
 		{@render children?.()}

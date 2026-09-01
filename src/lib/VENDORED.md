@@ -13,7 +13,7 @@ Nothing under `internal/` appears in the package.json exports map.
 
 | Path | Upstream | Version |
 | --- | --- | --- |
-| `internal/` engine core (`tools/utils`, `date-time/`, `floating-svelte/`, flat helpers) + the behavior primitives (`portal/`, `floating-layer/`, `popper-layer/`, `dismissible-layer/`, `escape-layer/`, `focus-scope/`, `scroll-lock/`, `prop-resolvers.ts`) + component state engines in `components/*/**.svelte.ts` | [huntabyte/bits-ui](https://github.com/huntabyte/bits-ui) tag `bits-ui@2.18.1`, `packages/bits-ui/src/lib` (the behavior primitives are upstream's `bits/utilities`, moved here 2026-07-04) | 2.18.1 |
+| `internal/` engine core (`tools/utils`, `date-time/`, flat helpers) + the behavior primitives (`portal/`, `floating-layer/` (positioning rewritten on CSS anchor positioning 2026-09-01), `popper-layer/`, `dismissible-layer/`, `escape-layer/`, `focus-scope/`, `scroll-lock/`, `prop-resolvers.ts`) + component state engines in `components/*/**.svelte.ts` | [huntabyte/bits-ui](https://github.com/huntabyte/bits-ui) tag `bits-ui@2.18.1`, `packages/bits-ui/src/lib` (the behavior primitives are upstream's `bits/utilities`, moved here 2026-07-04) | 2.18.1 |
 | `internal/tools/` (`box`, `use-debounce`) | [svecosystem/runed](https://github.com/svecosystem/runed) `runed@0.35.1` subset + svelte-toolbelt `v0.10.6` derivations (`box`) | 0.35.1 / 0.10.6 |
 | `internal/tabbable.ts` | [focus-trap/tabbable](https://github.com/focus-trap/tabbable) `v6.5.0` `src/index.js`, adapted (see file header); the `full` display check is the platform's `checkVisibility()` (upstream's opt-in `full-native`), 2026-08-31 | 6.5.0 |
 | `internal/vaul/` | vaul-svelte (drawer engine; sole consumer `components/drawer`) | untracked — pin on next sync |
@@ -26,8 +26,10 @@ locally authored) is now `components/carousel`. Capability loss accepted:
 embla `opts`/`plugins`/`setApi` and desktop mouse-drag momentum.
 
 All upstreams are MIT. clsx and style-to-object (in the original inline) are gone — `cn()` is a
-plain join via `overrule`. Kept as regular dependencies on purpose: `@floating-ui/dom` (pure TS)
-and the `@internationalized/date` peer.
+plain join via `overrule`. `@floating-ui/dom` left 2026-09-01: `internal/floating-layer` positions
+with CSS anchor positioning (`position-area`, `position-try-fallbacks`, `anchor-size()`), so the
+`floating-svelte/` port of its Svelte binding went with it. Kept on purpose: the
+`@internationalized/date` peer.
 
 ## No workspace edges (2026-07-08)
 

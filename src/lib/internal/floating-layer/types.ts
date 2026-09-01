@@ -1,37 +1,29 @@
 import type { Snippet } from 'svelte';
-import type { ReadableBox } from '../tools/index.js';
-import type { Align, Boundary, Side } from './use-floating-layer.svelte.js';
-import type { Arrayable, WithChild } from '../types.js';
+import type { Align, Measurable, Side } from './use-floating-layer.svelte.js';
+import type { WithChild } from '../types.js';
 import type { Direction, StyleProperties } from '../index.js';
-import type { Measurable } from '../floating-svelte/types.js';
 import type { BitsPrimitiveSpanAttributes } from '../attribute-types.js';
 
 export type FloatingLayerContentProps = {
 	/**
 	 * The preferred side of the anchor to render against when open.
-	 * Will be reversed when collisions occur.
-	 *
-	 * @see https://floating-ui.com/docs/computePosition#placement
+	 * Flipped when it would overflow the viewport.
 	 */
 	side?: Side;
 
 	/**
 	 * The distance in pixels from the anchor to the floating element.
-	 * @see https://floating-ui.com/docs/offset#options
 	 */
 	sideOffset?: number;
 
 	/**
 	 * The preferred alignment of the anchor to render against when open.
-	 * This may change when collisions occur.
-	 *
-	 * @see https://floating-ui.com/docs/computePosition#placement
+	 * Flipped when it would overflow the viewport.
 	 */
 	align?: Align;
 
 	/**
 	 * An offset in pixels from the "start" or "end" alignment options.
-	 * @see https://floating-ui.com/docs/offset#options
 	 */
 	alignOffset?: number | undefined;
 
@@ -43,50 +35,28 @@ export type FloatingLayerContentProps = {
 	arrowPadding?: number;
 
 	/**
-	 * When `true`, overrides the `side` and `align` options to prevent collisions
-	 * with the boundary edges.
+	 * When `true`, the `side` and `align` flip to keep the content inside the viewport.
 	 *
 	 * @default true
-	 * @see https://floating-ui.com/docs/flip
 	 */
 	avoidCollisions?: boolean | undefined;
 
 	/**
-	 * A boundary element or array of elements to check for collisions against.
+	 * The amount in pixels of virtual padding around the viewport edges the content keeps
+	 * clear of.
 	 *
-	 * @see https://floating-ui.com/docs/detectoverflow#boundary
-	 */
-	collisionBoundary?: Arrayable<Boundary>;
-
-	/**
-	 * The amount in pixels of virtual padding around the viewport edges to check
-	 * for overflow which will cause a collision.
-	 *
-	 * @default 8
-	 * @see https://floating-ui.com/docs/detectOverflow#padding
+	 * @default 0
 	 */
 	collisionPadding?: number | Partial<Record<Side, number>>;
 
-	sticky?: 'partial' | 'always';
-
+	/**
+	 * Hides the content while its anchor is scrolled out of view (`position-visibility`).
+	 *
+	 * @default false
+	 */
 	hideWhenDetached?: boolean;
 
-	/**
-	 * "optimized" will only update the position when necessary, while "always"
-	 * will update the position on each animation frame, which is useful if the floating
-	 * content is following something like a mouse cursor.
-	 *
-	 * @defaultValue "optimized"
-	 */
-	updatePositionStrategy?: 'optimized' | 'always';
-
-	content?: Snippet<[{ props: Record<string, unknown>; wrapperProps: Record<string, unknown> }]>;
-
-	/**
-	 * The positioning strategy to use for the floating element.
-	 * @see https://floating-ui.com/docs/computeposition#strategy
-	 */
-	strategy?: 'absolute' | 'fixed' | undefined;
+	content?: Snippet<[{ props: Record<string, unknown> }]>;
 
 	/**
 	 * The text direction of the content.
@@ -111,11 +81,6 @@ export type FloatingLayerContentImplProps = {
 	id: string;
 
 	/**
-	 * The ID of the content wrapper element.
-	 */
-	wrapperId?: string;
-
-	/**
 	 * The style properties to apply to the content.
 	 */
 	style?: StyleProperties | string | null;
@@ -125,6 +90,12 @@ export type FloatingLayerContentImplProps = {
 	 */
 	onPlaced?: () => void;
 	enabled: boolean;
+	/**
+	 * Open, or closed with the exit transition still running. A closed-at-rest surface
+	 * drops its anchored position style so it costs anchor layout nothing.
+	 * @default enabled
+	 */
+	present?: boolean;
 	/**
 	 * Tooltips are special in that they are commonly composed
 	 * with other floating components, where the same trigger is

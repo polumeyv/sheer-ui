@@ -2,7 +2,7 @@
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ContextMenuContentProps } from '../types.js';
 	import MenuContent from '../../menu/components/menu-content.svelte';
-	import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
+	import { getFloatingContentCSSVars } from '../../../internal/floating-layer/index.js';
 
 	let { ref = $bindable(null), side = 'right', sideOffset = 2, align = 'start', trapFocus = false, ...restProps }: ContextMenuContentProps = $props();
 
@@ -11,7 +11,7 @@
 			{
 				'data-slot': 'context-menu-content',
 				class:
-					'bg-popover text-popover-foreground popup-surface z-50 max-h-(--bits-context-menu-content-available-height) min-w-32 origin-(--bits-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md',
+					'bg-popover text-popover-foreground popup-surface z-50 min-w-32 origin-(--bits-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md',
 				style: getFloatingContentCSSVars('context-menu'),
 			},
 			restProps,

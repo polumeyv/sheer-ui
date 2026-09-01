@@ -6,7 +6,7 @@
 		content,
 		onPlaced,
 	}: {
-		content?: Snippet<[{ props: Record<string, unknown>; wrapperProps: Record<string, unknown> }]>;
+		content?: Snippet<[{ props: Record<string, unknown> }]>;
 		onPlaced?: () => void;
 	} = $props();
 
@@ -16,4 +16,4 @@
 	const placed = { [createAttachmentKey()]: () => onPlaced?.() };
 </script>
 
-{@render content?.({ props: placed, wrapperProps: {} })}
+{@render content?.({ props: placed })}

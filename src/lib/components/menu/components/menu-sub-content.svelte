@@ -7,7 +7,7 @@
 	import { createSubmenuHandlers } from '../utils.js';
 	import { createId } from '../../../internal/create-id.js';
 	import PopperLayer from '../../../internal/popper-layer/popper-layer.svelte';
-	import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
+	import { getFloatingContentCSSVars } from '../../../internal/floating-layer/use-floating-layer.svelte.js';
 
 	const uid = $props.id();
 
@@ -114,7 +114,7 @@
 	{trapFocus}
 	present={subContentState.parentMenu.present}
 >
-	{#snippet popper({ props, wrapperProps })}
+	{#snippet popper({ props })}
 		<!-- mergedProps already reached `props` through the layer's restProps, minus the keys
 		PopperLayer destructures for itself (id, dir, style) — only those are re-added, since
 		re-merging the whole bag composes the handlers twice (one keypress, two typeahead steps) -->
@@ -122,18 +122,11 @@
 		{#if child}
 			{@render child({
 				props: finalProps,
-				wrapperProps,
 				...subContentState.snippetProps,
 			})}
-		{:else if isStatic}
+		{:else}
 			<div {...finalProps}>
 				{@render children?.()}
-			</div>
-		{:else}
-			<div {...wrapperProps}>
-				<div {...finalProps}>
-					{@render children?.()}
-				</div>
 			</div>
 		{/if}
 	{/snippet}

@@ -19,15 +19,10 @@
 		alignOffset,
 		arrowPadding,
 		avoidCollisions,
-		collisionBoundary,
 		collisionPadding,
-		sticky,
 		hideWhenDetached,
-		updatePositionStrategy,
-		strategy,
 		dir,
 		preventScroll,
-		wrapperId,
 		style,
 		onPlaced,
 		onInteractOutside,
@@ -52,7 +47,6 @@
 	} = $props();
 
 	const resolvedPreventScroll = $derived(preventScroll ?? true);
-	const effectiveStrategy = $derived(strategy ?? (resolvedPreventScroll ? 'fixed' : 'absolute'));
 
 	const escapeAttachment = escapeKeydownAttachment({
 		escapeKeydownBehavior: () => escapeKeydownBehavior ?? 'close',
@@ -97,20 +91,16 @@
 	{alignOffset}
 	{arrowPadding}
 	{avoidCollisions}
-	{collisionBoundary}
 	{collisionPadding}
-	{sticky}
 	{hideWhenDetached}
-	{updatePositionStrategy}
-	strategy={effectiveStrategy}
 	{dir}
-	{wrapperId}
 	{style}
 	{onPlaced}
 	{customAnchor}
 	{enabled}
+	present={isPresent}
 	{tooltip}>
-	{#snippet content({ props: floatingProps, wrapperProps })}
+	{#snippet content({ props: floatingProps })}
 		{@render popper?.({
 			props: mergeProps(
 				restProps,
@@ -127,7 +117,6 @@
 					},
 				},
 			),
-			wrapperProps,
 		})}
 	{/snippet}
 </PopperContent>

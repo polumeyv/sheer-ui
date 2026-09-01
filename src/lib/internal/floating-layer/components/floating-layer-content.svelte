@@ -1,11 +1,7 @@
 <script lang="ts">
 	import { boxWith } from '../../tools/index.js';
-	import { mergeProps } from '../../merge-props.js';
 	import { FloatingContentState } from '../use-floating-layer.svelte.js';
 	import type { ContentImplProps } from './index.js';
-	import { createId } from '../../create-id.js';
-
-	const uid = $props.id();
 
 	let {
 		content,
@@ -16,18 +12,14 @@
 		id,
 		arrowPadding = 0,
 		avoidCollisions = true,
-		collisionBoundary = [],
 		collisionPadding = 0,
 		hideWhenDetached = false,
 		onPlaced = () => {},
-		sticky = 'partial',
-		updatePositionStrategy = 'optimized',
-		strategy = 'fixed',
 		dir = 'ltr',
 		style = {},
-		wrapperId = createId('floating-wrapper', uid),
 		customAnchor = null,
 		enabled,
+		present,
 		tooltip = false,
 	}: ContentImplProps = $props();
 
@@ -40,29 +32,21 @@
 			id: boxWith(() => id),
 			arrowPadding: boxWith(() => arrowPadding),
 			avoidCollisions: boxWith(() => avoidCollisions),
-			collisionBoundary: boxWith(() => collisionBoundary),
 			collisionPadding: boxWith(() => collisionPadding),
 			hideWhenDetached: boxWith(() => hideWhenDetached),
 			onPlaced: boxWith(() => onPlaced),
-			sticky: boxWith(() => sticky),
-			updatePositionStrategy: boxWith(() => updatePositionStrategy),
-			strategy: boxWith(() => strategy),
 			dir: boxWith(() => dir),
 			style: boxWith(() => style),
 			enabled: boxWith(() => enabled),
-			wrapperId: boxWith(() => wrapperId),
+			present: boxWith(() => present ?? enabled),
 			customAnchor: boxWith(() => customAnchor),
 		},
 		tooltip,
 	);
-
-	const mergedProps = $derived(
-		mergeProps(contentState.wrapperProps, {
-			style: {
-				pointerEvents: 'auto',
-			},
-		}),
-	);
 </script>
 
-{@render content?.({ props: contentState.props, wrapperProps: mergedProps })}
+<!-- a virtual anchor precedes the content, as CSS anchor resolution requires -->
+{#if contentState.virtualAnchorStyle}
+	<span style={contentState.virtualAnchorStyle}></span>
+{/if}
+{@render content?.({ props: contentState.props })}
