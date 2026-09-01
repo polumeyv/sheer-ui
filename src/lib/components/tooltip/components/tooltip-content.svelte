@@ -22,8 +22,8 @@
 		onEscapeKeydown = () => {},
 		style,
 		// Floating-UI-only props kept for API compatibility; native positioning ignores them
-		// (sideOffset, avoidCollisions, arrowPadding, sticky, hideWhenDetached, collisionPadding,
-		//  strategy, customAnchor, portalProps, forceMount).
+		// (sideOffset, avoidCollisions, arrowPadding, collisionPadding, customAnchor, portalProps,
+		//  forceMount).
 		...restProps
 	}: TooltipContentProps & { arrowClasses?: ClassValue; portalProps?: unknown } = $props();
 
@@ -58,7 +58,7 @@
 </script>
 
 {#if child}
-	{@render child({ props: mergedProps, wrapperProps: {}, ...contentState.snippetProps })}
+	{@render child({ props: mergedProps, ...contentState.snippetProps })}
 {:else}
 	<div {...mergedProps} bind:this={ref} data-side={side} data-align={align}>
 		{@render children?.()}

@@ -62,7 +62,7 @@ describe('menu family Content composition', () => {
 		const floating = render({ family });
 
 		try {
-			expect(getContent(dataSlot).closest('[data-bits-floating-content-wrapper]')).not.toBeNull();
+			expect(getContent(dataSlot).hasAttribute('data-floating-content')).toBe(true);
 		} finally {
 			cleanup(floating);
 		}
@@ -70,7 +70,7 @@ describe('menu family Content composition', () => {
 		const staticContent = render({ family, isStatic: true });
 
 		try {
-			expect(getContent(dataSlot).closest('[data-bits-floating-content-wrapper]')).toBeNull();
+			expect(getContent(dataSlot).hasAttribute('data-floating-content')).toBe(false);
 		} finally {
 			cleanup(staticContent);
 		}

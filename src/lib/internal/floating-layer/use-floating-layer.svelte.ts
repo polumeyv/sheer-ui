@@ -1,6 +1,5 @@
 import { createContext } from 'svelte';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
-import { type Middleware, type Placement, arrow, autoUpdate, flip, hide, limitShift, offset, shift, size } from '@floating-ui/dom';
 import {
 	attachRef,
 	getWindow,
@@ -11,9 +10,7 @@ import {
 	simpleBox,
 	boxWith,
 } from '../tools/index.js';
-import type { Arrayable, WithRefOpts } from '../types.js';
-import { useFloating } from '../floating-svelte/use-floating.svelte.js';
-import type { Measurable, UseFloatingReturn } from '../floating-svelte/types.js';
+import type { WithRefOpts } from '../types.js';
 import type { Direction, StyleProperties } from '../index.js';
 
 export const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const;
@@ -33,14 +30,36 @@ const [getFloatingTooltipRoot, setFloatingTooltipRoot] = createContext<FloatingR
 export type Side = (typeof SIDE_OPTIONS)[number];
 export type Align = (typeof ALIGN_OPTIONS)[number];
 
-export type Boundary = Element | null;
+/** A virtual anchor: anything with a client rect (the context menu's pointer position). */
+export type Measurable = {
+	getBoundingClientRect: () => DOMRect;
+};
 type AnchorNode = Measurable | HTMLElement | null;
 type CustomAnchorNode = AnchorNode | string;
 
+/** The per-component names the adapters read (`--bits-<name>-content-available-height` and so on). */
+export const getFloatingContentCSSVars = (name: string): Record<string, string> => {
+	const prefix = `--bits-${name}`;
+
+	return {
+		[`${prefix}-content-transform-origin`]: 'var(--bits-floating-transform-origin)',
+		[`${prefix}-content-available-width`]: 'var(--bits-floating-available-width)',
+		[`${prefix}-content-available-height`]: 'var(--bits-floating-available-height)',
+		[`${prefix}-anchor-width`]: 'var(--bits-floating-anchor-width)',
+		[`${prefix}-anchor-height`]: 'var(--bits-floating-anchor-height)',
+	};
+};
+
+/**
+ * One floating root per surface: names the CSS anchor the content positions against and holds
+ * the anchor source (the trigger, a `customAnchor`, or a virtual rect).
+ */
 export class FloatingRootState {
-	static create(tooltip = false) {
-		return tooltip ? setFloatingTooltipRoot(new FloatingRootState()) : setFloatingRoot(new FloatingRootState());
+	static create(anchorName: string, tooltip = false) {
+		const root = new FloatingRootState(anchorName);
+		return tooltip ? setFloatingTooltipRoot(root) : setFloatingRoot(root);
 	}
+	readonly anchorName: string;
 	#customAnchorSource = $state<ReadableBox<CustomAnchorNode>>(simpleBox(null));
 	triggerSource = $state<ReadableBox<AnchorNode>>(simpleBox(null));
 	anchorNode: ReadableBox<AnchorNode> = boxWith(() => {
@@ -57,6 +76,10 @@ export class FloatingRootState {
 		return this.triggerSource.current;
 	});
 
+	constructor(anchorName: string) {
+		this.anchorName = anchorName;
+	}
+
 	get triggerNode() {
 		return this.triggerSource;
 	}
@@ -68,26 +91,36 @@ export class FloatingRootState {
 
 export interface FloatingContentStateOpts extends ReadableBoxedValues<{
 	id: string;
-	wrapperId: string;
 	side: Side;
 	sideOffset: number;
 	align: Align;
 	alignOffset: number;
 	arrowPadding: number;
 	avoidCollisions: boolean;
-	collisionBoundary: Arrayable<Boundary>;
 	collisionPadding: number | Partial<Record<Side, number>>;
-	sticky: 'partial' | 'always';
-	hideWhenDetached: boolean;
-	updatePositionStrategy: 'optimized' | 'always';
-	strategy: 'fixed' | 'absolute';
 	onPlaced: () => void;
 	dir: Direction;
 	style: StyleProperties | null | undefined | string;
 	enabled: boolean;
+	/** Open, or closed with the exit still running. A closed-at-rest surface leaves anchor layout. */
+	present: boolean;
 	customAnchor: string | HTMLElement | null | Measurable;
 }> {}
 
+const alignToOrigin = {
+	start: '0%',
+	center: '50%',
+	end: '100%',
+} satisfies Record<Align, string>;
+
+/**
+ * Positions the content with CSS anchor positioning: the content element is `position: fixed`
+ * in a `position-area` beside its anchor, `position-try-fallbacks` flips it away from a viewport
+ * edge, and the sizing custom properties (`--bits-floating-available-*`, `--bits-floating-anchor-*`)
+ * resolve against that area, so they only mean something on the content element itself, never on
+ * a descendant. Nothing runs per scroll or resize; the browser repositions. `data-side` and
+ * `data-align` are the requested placement (the resolved fallback is not readable outside Chrome).
+ */
 export class FloatingContentState {
 	static create(opts: FloatingContentStateOpts, tooltip = false) {
 		return tooltip
@@ -102,10 +135,8 @@ export class FloatingContentState {
 
 	// nodes
 	contentRef = simpleBox<HTMLElement | null>(null);
-	wrapperRef = simpleBox<HTMLElement | null>(null);
 	arrowRef = simpleBox<HTMLElement | null>(null);
 	readonly contentAttachment = attachRef(this.contentRef);
-	readonly wrapperAttachment = attachRef(this.wrapperRef);
 	readonly arrowAttachment = {
 		...attachRef(this.arrowRef),
 		[createAttachmentKey()]: ((node) => this.#measureArrow(node)) satisfies Attachment<HTMLElement>,
@@ -113,179 +144,167 @@ export class FloatingContentState {
 
 	#userStyle = $derived.by(() => styleToString(this.opts.style.current));
 
-	#updatePositionStrategy = undefined as unknown as FloatingContentStateOpts['updatePositionStrategy'];
-	#desiredPlacement = $derived.by(
-		() => (this.opts.side?.current + (this.opts.align.current !== 'center' ? `-${this.opts.align.current}` : '')) as Placement,
-	);
-	#boundary = $derived.by(() =>
-		Array.isArray(this.opts.collisionBoundary.current) ? this.opts.collisionBoundary.current : [this.opts.collisionBoundary.current],
-	);
-	hasExplicitBoundaries = $derived(this.#boundary.length > 0);
-	detectOverflowOptions = $derived.by(() => ({
-		padding: this.opts.collisionPadding.current,
-		boundary: this.#boundary.filter((boundary): boundary is Element => boundary !== null),
-		altBoundary: this.hasExplicitBoundaries,
-	}));
-	#availableWidth = $state<number | undefined>(undefined);
-	#availableHeight = $state<number | undefined>(undefined);
-	#anchorWidth = $state<number | undefined>(undefined);
-	#anchorHeight = $state<number | undefined>(undefined);
-	middleware: Middleware[] = $derived.by(
-		() =>
-			[
-				offset({
-					mainAxis: this.opts.sideOffset.current + this.#arrowHeight,
-					alignmentAxis: this.opts.alignOffset.current,
-				}),
-				this.opts.avoidCollisions.current &&
-					shift({
-						mainAxis: true,
-						crossAxis: false,
-						limiter: this.opts.sticky.current === 'partial' ? limitShift() : undefined,
-						...this.detectOverflowOptions,
-					}),
-				this.opts.avoidCollisions.current && flip({ ...this.detectOverflowOptions }),
-				size({
-					...this.detectOverflowOptions,
-					apply: ({ rects, availableWidth, availableHeight }) => {
-						const { width: anchorWidth, height: anchorHeight } = rects.reference;
-						this.#availableWidth = availableWidth;
-						this.#availableHeight = availableHeight;
-						this.#anchorWidth = anchorWidth;
-						this.#anchorHeight = anchorHeight;
-					},
-				}),
-				this.arrowRef.current &&
-					arrow({
-						element: this.arrowRef.current,
-						padding: this.opts.arrowPadding.current,
-					}),
-				transformOrigin({
-					arrowWidth: this.#arrowWidth,
-					arrowHeight: this.#arrowHeight,
-				}),
-				this.opts.hideWhenDetached.current && hide({ strategy: 'referenceHidden', ...this.detectOverflowOptions }),
-			].filter(Boolean) as Middleware[],
-	);
-	floating: UseFloatingReturn;
-	placedSide = $derived.by(() => getSideFromPlacement(this.floating.placement));
-	placedAlign = $derived.by(() => getAlignFromPlacement(this.floating.placement));
+	#padding = $derived.by(() => {
+		const padding = this.opts.collisionPadding.current;
+		const value = (side: Side) => (typeof padding === 'number' ? padding : (padding[side] ?? 0));
+		return { top: value('top'), right: value('right'), bottom: value('bottom'), left: value('left') };
+	});
 
-	arrowX = $derived.by(() => this.floating.middlewareData.arrow?.x ?? 0);
-	arrowY = $derived.by(() => this.floating.middlewareData.arrow?.y ?? 0);
-	cannotCenterArrow = $derived.by(() => this.floating.middlewareData.arrow?.centerOffset !== 0);
-	contentZIndex = $state<string>();
-	arrowBaseSide = $derived(OPPOSITE_SIDE[this.placedSide]);
-	wrapperProps = $derived.by(
-		() =>
-			({
-				id: this.opts.wrapperId.current,
-					'data-bits-floating-content-wrapper': '',
-				style: [
-					styleToString({
-						...this.floating.floatingStyles,
-						// keep off page when measuring
-						transform: this.floating.isPositioned ? this.floating.floatingStyles.transform : 'translate(0, -200%)',
-						minWidth: 'max-content',
-						zIndex: this.contentZIndex,
-						'--bits-floating-transform-origin': `${this.floating.middlewareData.transformOrigin?.x} ${this.floating.middlewareData.transformOrigin?.y}`,
-						'--bits-floating-available-width': `${this.#availableWidth}px`,
-						'--bits-floating-available-height': `${this.#availableHeight}px`,
-						'--bits-floating-anchor-width': `${this.#anchorWidth}px`,
-						'--bits-floating-anchor-height': `${this.#anchorHeight}px`,
-						// hide the content if using the hide middleware and should be hidden
-						...(this.floating.middlewareData.hide?.referenceHidden && {
-							visibility: 'hidden',
-							'pointer-events': 'none',
-						}),
-					}),
-					this.#userStyle,
-				]
-					.filter(Boolean)
-					.join(' '),
-				// Floating UI calculates logical alignment based the `dir` attribute
-				dir: this.opts.dir.current,
-				...this.wrapperAttachment,
-			}) as const,
-	);
+	placedSide = $derived.by(() => this.opts.side.current);
+	placedAlign = $derived.by(() => this.opts.align.current);
+	#vertical = $derived(this.placedSide === 'top' || this.placedSide === 'bottom');
+	/** The physical edge of the anchor the content aligns to; `start`/`end` follow the text direction across. */
+	#alignEdge = $derived.by((): Side | null => {
+		const align = this.placedAlign;
+		if (align === 'center') return null;
+		if (!this.#vertical) return align === 'start' ? 'top' : 'bottom';
+		const rtl = this.opts.dir.current === 'rtl';
+		return (align === 'start') !== rtl ? 'left' : 'right';
+	});
+
+	#transformOrigin = $derived.by(() => {
+		const along = alignToOrigin[this.placedAlign];
+		switch (this.placedSide) {
+			case 'bottom':
+				return `${along} 0%`;
+			case 'top':
+				return `${along} 100%`;
+			case 'right':
+				return `0% ${along}`;
+			case 'left':
+				return `100% ${along}`;
+		}
+	});
+
+	#positionStyle = $derived.by(() => {
+		// Hidden at rest, the surface must not keep the anchor solver busy: a page of always-mounted
+		// menus re-evaluates every anchored box per layout pass, which showed up as a measurable delay
+		// on every animation on the page. The anchored style comes back in the same pass that opens it.
+		if (!this.opts.present.current) {
+			return { position: 'fixed', inset: 'auto' } satisfies StyleProperties;
+		}
+		const side = this.placedSide;
+		const padding = this.#padding;
+		const edge = this.#alignEdge;
+		const vertical = this.#vertical;
+
+		// margins: the offsets toward the anchor, the collision padding toward the viewport
+		const margin: Record<Side, number> = {
+			[OPPOSITE_SIDE[side]]: this.opts.sideOffset.current + this.#arrowHeight,
+			[side]: padding[side],
+		} as Record<Side, number>;
+		const cross: [Side, Side] = vertical ? ['left', 'right'] : ['top', 'bottom'];
+		for (const s of cross) margin[s] = padding[s];
+		if (edge) margin[edge] = this.opts.alignOffset.current;
+
+		// the content spans from the aligned anchor edge toward the opposite one; centered spans both ways
+		const span = edge ? `span-${OPPOSITE_SIDE[edge]}` : 'span-all';
+		// Unclamped flips first — a side is left for a bigger one while the content fits there whole.
+		// When no side fits the whole content, the `--bits-clamped` options (ui.css) re-try each with
+		// max-block-size capped to the side's space, so the requested side wins and scrolls inside.
+		const flips = vertical
+			? ['flip-block', 'flip-inline', 'flip-block flip-inline']
+			: ['flip-inline', 'flip-block', 'flip-inline flip-block'];
+		const fallbacks = this.opts.avoidCollisions.current
+			? [...flips, '--bits-clamped', ...flips.map((f) => `--bits-clamped ${f}`)].join(', ')
+			: 'none';
+
+		return {
+			position: 'fixed',
+			inset: 'auto',
+			positionAnchor: this.root.anchorName,
+			positionArea: `${side} ${span}`,
+			positionTryFallbacks: fallbacks,
+			...(edge === null && { [vertical ? 'justifySelf' : 'alignSelf']: 'anchor-center' }),
+			marginTop: `${margin.top}px`,
+			marginRight: `${margin.right}px`,
+			marginBottom: `${margin.bottom}px`,
+			marginLeft: `${margin.left}px`,
+			'--bits-floating-block-margins': `${margin.top + margin.bottom}px`,
+			'--bits-floating-transform-origin': this.#transformOrigin,
+			'--bits-floating-available-width': `calc(100% - ${margin.left + margin.right}px)`,
+			'--bits-floating-available-height': `calc(100% - ${margin.top + margin.bottom}px)`,
+			'--bits-floating-anchor-width': `anchor-size(${this.root.anchorName} width)`,
+			'--bits-floating-anchor-height': `anchor-size(${this.root.anchorName} height)`,
+		} satisfies StyleProperties;
+	});
+
+	/** A virtual anchor (a rect, no element) is rendered as a zero-size fixed box carrying the anchor name. */
+	virtualAnchorStyle = $derived.by(() => {
+		if (!this.opts.present.current) return null;
+		const anchor = this.root.anchorNode.current;
+		// SSR-safe: on the server there is no HTMLElement (and no virtual anchor either)
+		if (!anchor || typeof HTMLElement === 'undefined' || anchor instanceof HTMLElement) return null;
+		const rect = anchor.getBoundingClientRect();
+		return styleToString({
+			position: 'fixed',
+			left: `${rect.left}px`,
+			top: `${rect.top}px`,
+			width: `${rect.width}px`,
+			height: `${rect.height}px`,
+			pointerEvents: 'none',
+			anchorName: this.root.anchorName,
+		});
+	});
+
 	props = $derived.by(
 		() =>
 			({
+				id: this.opts.id.current,
 				'data-side': this.placedSide,
 				'data-align': this.placedAlign,
-				style: this.#userStyle,
+				'data-floating-content': '',
+				style: [styleToString(this.#positionStyle), this.#userStyle].filter(Boolean).join(' '),
+				dir: this.opts.dir.current,
 				...this.contentAttachment,
 			}) as const,
 	);
 
-	arrowStyle = $derived({
-		position: 'absolute',
-		left: this.arrowX ? `${this.arrowX}px` : undefined,
-		top: this.arrowY ? `${this.arrowY}px` : undefined,
-		[this.arrowBaseSide]: 0,
-		'transform-origin': {
-			top: '',
-			right: '0 0',
-			bottom: 'center 0',
-			left: '100% 0',
-		}[this.placedSide],
-		transform: {
-			top: 'translateY(100%)',
-			right: 'translateY(50%) rotate(90deg) translateX(-50%)',
-			bottom: 'rotate(180deg)',
-			left: 'translateY(50%) rotate(-90deg) translateX(50%)',
-		}[this.placedSide],
-		visibility: this.cannotCenterArrow ? 'hidden' : undefined,
+	arrowBaseSide = $derived(OPPOSITE_SIDE[this.placedSide]);
+	arrowStyle = $derived.by((): StyleProperties => {
+		// centered on the anchor, kept `arrowPadding` inside the content's edges
+		const padding = this.opts.arrowPadding.current;
+		const width = this.#arrowWidth;
+		const centered = `clamp(${padding}px, calc(anchor(${this.root.anchorName} center) - ${width / 2}px), calc(100% - ${padding + width}px))`;
+		return {
+			position: 'absolute',
+			...(this.#vertical ? { left: centered } : { top: centered }),
+			[this.arrowBaseSide]: 0,
+			transformOrigin: {
+				top: '',
+				right: '0 0',
+				bottom: 'center 0',
+				left: '100% 0',
+			}[this.placedSide],
+			transform: {
+				top: 'translateY(100%)',
+				right: 'translateY(50%) rotate(90deg) translateX(-50%)',
+				bottom: 'rotate(180deg)',
+				left: 'translateY(50%) rotate(-90deg) translateX(50%)',
+			}[this.placedSide],
+		};
 	});
 
 	constructor(opts: FloatingContentStateOpts, root: FloatingRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.#updatePositionStrategy = opts.updatePositionStrategy;
 		this.root.setCustomAnchorSource(opts.customAnchor);
 
-		this.floating = useFloating({
-			strategy: () => this.opts.strategy.current,
-			placement: () => this.#desiredPlacement,
-			middleware: () => this.middleware,
-			reference: this.root.anchorNode,
-			whileElementsMounted: (...args) => {
-				const cleanup = autoUpdate(...args, {
-					animationFrame: this.#updatePositionStrategy?.current === 'always',
-				});
-				return cleanup;
-			},
-			open: () => this.opts.enabled.current,
-			sideOffset: () => this.opts.sideOffset.current,
-			alignOffset: () => this.opts.alignOffset.current,
+		// An element anchor that is not the trigger (a `customAnchor`) needs the anchor name too.
+		$effect(() => {
+			const anchor = this.root.anchorNode.current;
+			if (!(anchor instanceof HTMLElement) || anchor === this.root.triggerNode.current) return;
+			const previous = anchor.style.anchorName;
+			anchor.style.anchorName = this.root.anchorName;
+			return () => {
+				anchor.style.anchorName = previous;
+			};
 		});
 
+		// Placement is the browser's: the content is positioned as soon as it renders open.
 		$effect(() => {
-			if (!this.floating.isPositioned) return;
-			this.opts.onPlaced?.current();
-		});
-
-		// Mirror the content's computed z-index onto the wrapper (upstream bits-ui behavior): the wrapper
-		// is the element that stacks against the page, and at z-index auto it loses to positioned elements
-		// that come later in the DOM when the layer renders inline (e.g. a dropdown inside the mobile
-		// sidebar sheet, where the sheet's own items paint over the menu).
-		$effect(() => {
-			const contentNode = this.contentRef.current;
-			if (!contentNode || !this.opts.enabled.current) return;
-			const win = getWindow(contentNode);
-			const rafId = win.requestAnimationFrame(() => {
-				// avoid applying stale values when refs change quickly
-				if (this.contentRef.current !== contentNode || !this.opts.enabled.current) return;
-				const zIndex = win.getComputedStyle(contentNode).zIndex;
-				if (zIndex !== this.contentZIndex) this.contentZIndex = zIndex;
-			});
-			return () => win.cancelAnimationFrame(rafId);
-		});
-
-		// Feed the rendered wrapper element into useFloating. Without this the floating element
-		// stays null, computePosition never runs, and the content is stuck off-screen.
-		$effect(() => {
-			this.floating.floating.current = this.wrapperRef.current;
+			if (!this.opts.enabled.current) return;
+			this.opts.onPlaced.current();
 		});
 	}
 
@@ -301,7 +320,6 @@ export class FloatingContentState {
 
 			this.#arrowWidth = arrowNode.offsetWidth;
 			this.#arrowHeight = arrowNode.offsetHeight;
-			this.floating.update();
 		};
 
 		measure();
@@ -346,75 +364,31 @@ export class FloatingArrowState {
 /**
  * Registers an explicit reference source as the floating root's anchor. Used for the cursor-anchored
  * context menu, where there is no element to attach to — the source is a virtual `Measurable` box
- * tracking the pointer. Reads the floating-root context, so call it during component init.
+ * tracking the pointer, which the content renders as a zero-size anchor element. Reads the
+ * floating-root context, so call it during component init.
  */
 export function setFloatingAnchor(source: ReadableBox<AnchorNode>, tooltip = false) {
 	const root = tooltip ? getFloatingTooltipRoot() : getFloatingRoot();
 	root.triggerSource = source;
 }
 
+/**
+ * The trigger attachment: registers the node as the root's anchor and writes the anchor name
+ * on it imperatively — through style props it would be lost to any consumer `style` attribute
+ * after the spread. The content must follow the trigger in tree order; CSS anchor positioning
+ * only resolves anchors laid out before the positioned element.
+ */
 export function floatingAnchor(tooltip = false): RefAttachment {
 	const root = tooltip ? getFloatingTooltipRoot() : getFloatingRoot();
 	return {
 		[createAttachmentKey()]: (node) => {
-			root.triggerSource = simpleBox(node);
+			const el = node as HTMLElement;
+			root.triggerSource = simpleBox(el);
+			el.style.anchorName = root.anchorName;
 			return () => {
+				el.style.removeProperty('anchor-name');
 				root.triggerSource = simpleBox(null);
 			};
 		},
 	};
 }
-
-//
-// HELPERS
-//
-const alignToOrigin = {
-	start: '0%',
-	center: '50%',
-	end: '100%',
-} satisfies Record<Align, string>;
-
-function transformOrigin(options: { arrowWidth: number; arrowHeight: number }): Middleware {
-	const { arrowWidth, arrowHeight } = options;
-
-	return {
-		name: 'transformOrigin',
-		options,
-		fn({ placement, rects, middlewareData }) {
-			const [side, align] = getSideAndAlignFromPlacement(placement);
-
-			const arrow = middlewareData.arrow;
-			const hasArrow = arrow?.centerOffset === 0;
-
-			const width = hasArrow ? arrowWidth : 0;
-			const height = hasArrow ? arrowHeight : 0;
-
-			const fallback = alignToOrigin[align];
-			const arrowX = `${(arrow?.x ?? 0) + width / 2}px`;
-			const arrowY = `${(arrow?.y ?? 0) + height / 2}px`;
-
-			switch (side) {
-				case 'bottom':
-					return { data: { x: hasArrow ? arrowX : fallback, y: `${-height}px` } };
-
-				case 'top':
-					return { data: { x: hasArrow ? arrowX : fallback, y: `${rects.floating.height + height}px` } };
-
-				case 'right':
-					return { data: { x: `${-height}px`, y: hasArrow ? arrowY : fallback } };
-
-				case 'left':
-					return { data: { x: `${rects.floating.width + height}px`, y: hasArrow ? arrowY : fallback } };
-			}
-		},
-	};
-}
-
-const getSideAndAlignFromPlacement = (placement: Placement) => {
-	const [side, align] = placement.split('-') as [Side, Align?];
-	return [side, align ?? 'center'] as const;
-};
-
-export const getSideFromPlacement = (placement: Placement): Side => getSideAndAlignFromPlacement(placement)[0];
-
-export const getAlignFromPlacement = (placement: Placement): Align => getSideAndAlignFromPlacement(placement)[1];

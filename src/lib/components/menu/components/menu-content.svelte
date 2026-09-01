@@ -85,19 +85,13 @@
 	{loop}
 	present={contentState.parentMenu.present}
 	{id}>
-	{#snippet popper({ props, wrapperProps })}
+	{#snippet popper({ props })}
 		{@const finalProps = mergeProps(props, { style }, { style: contentState.contentStyle })}
 		{#if child}
-			{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
-		{:else if isStatic}
+			{@render child({ props: finalProps, ...contentState.snippetProps })}
+		{:else}
 			<div {...finalProps}>
 				{@render children?.()}
-			</div>
-		{:else}
-			<div {...wrapperProps}>
-				<div {...finalProps}>
-					{@render children?.()}
-				</div>
 			</div>
 		{/if}
 	{/snippet}

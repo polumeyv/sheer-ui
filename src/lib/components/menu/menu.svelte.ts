@@ -811,9 +811,11 @@ export class MenuContentState {
 				onblur: this.onblur,
 				onfocus: this.onfocus,
 				dir: this.parentMenu.root.opts.dir.current,
+				// no `contain: layout` (upstream had it): layout containment makes this element the
+				// containing block of its fixed sub-content, shrinking the sub's anchor position area
+				// to this box; floating-ui compensated for containing blocks, CSS anchor cannot.
 				style: {
 					pointerEvents: 'auto',
-					contain: 'layout style',
 				},
 				...this.attachment,
 			}) as const,

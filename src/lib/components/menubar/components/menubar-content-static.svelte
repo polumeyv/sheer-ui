@@ -4,7 +4,7 @@
 	import type { MenubarContentStaticProps } from '../types.js';
 	import { MenubarContentState } from '../menubar.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
-	import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
+	import { getFloatingContentCSSVars } from '../../../internal/floating-layer/index.js';
 	import MenuContent from '../../menu/components/menu-content.svelte';
 
 	const uid = $props.id();

@@ -18,7 +18,7 @@ import type {
 	WithRefOpts,
 } from '../../internal/types.js';
 import { isElement } from '../../internal/tools/utils/dom.js';
-import type { Measurable } from '../../internal/floating-svelte/types.js';
+import type { Measurable } from '../../internal/floating-layer/index.js';
 import { SafePolygon } from '../../internal/safe-polygon.svelte.js';
 import { isTabbable } from '../../internal/tabbable.js';
 import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';

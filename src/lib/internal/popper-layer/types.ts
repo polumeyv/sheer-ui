@@ -37,9 +37,7 @@ export type PopperLayerImplProps = Omit<
 		{ open: boolean; ref: ReadableBox<HTMLElement | null> } &
 		TextSelectionGuardProps &
 		FocusScopeImplProps & {
-			popper: Snippet<
-				[{ props: Record<string, unknown>; wrapperProps: Record<string, unknown> }]
-			>;
+			popper: Snippet<[{ props: Record<string, unknown> }]>;
 			isStatic?: boolean;
 			/**
 			 * Tooltips are special in that they are commonly composed

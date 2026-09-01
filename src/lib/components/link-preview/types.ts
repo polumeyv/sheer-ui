@@ -73,11 +73,8 @@ export type LinkPreviewContentPropsWithoutHTML = WithChildNoChildrenSnippetProps
 		| 'align'
 		| 'alignOffset'
 		| 'avoidCollisions'
-		| 'collisionBoundary'
 		| 'collisionPadding'
 		| 'arrowPadding'
-		| 'sticky'
-		| 'hideWhenDetached'
 		| 'dir'
 		| 'customAnchor'
 	> &

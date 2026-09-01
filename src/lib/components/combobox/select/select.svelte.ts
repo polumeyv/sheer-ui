@@ -22,7 +22,7 @@ import type {
 } from '../../../internal/types.js';
 import { isIOS } from '../../../internal/tools/utils/dom.js';
 import { createBitsAttrs } from '../../../internal/attrs.js';
-import { getFloatingContentCSSVars } from '../../../internal/floating-svelte/floating-utils.svelte.js';
+import { getFloatingContentCSSVars } from '../../../internal/floating-layer/index.js';
 import { Typeahead, textContentOf } from '../../../internal/typeahead.svelte.js';
 import { useOpenChangeComplete } from '../../../internal/animations-settled.svelte.js';
 import { DEV } from 'esm-env';

@@ -48,7 +48,7 @@
 	});
 	const contentClass = $derived(
 		join(
-			'relative isolate z-50 min-w-36 overflow-x-hidden overflow-y-auto rounded-md bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 popup-surface',
+			'relative isolate z-50 min-w-(--bits-select-anchor-width) overflow-x-hidden overflow-y-auto rounded-md bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 popup-surface',
 			className,
 		),
 	);
@@ -75,22 +75,20 @@
 	{id}
 	{preventScroll}
 	present={contentState.root.present}>
-	{#snippet popper({ props, wrapperProps })}
+	{#snippet popper({ props })}
 		{@const finalProps = mergeProps(props, { style: contentState.props.style }, { style }, { style: contentState.contentStyle })}
 
 		{#if child}
-			{@render child({ props: finalProps, wrapperProps, ...contentState.snippetProps })}
+			{@render child({ props: finalProps, ...contentState.snippetProps })}
 		{:else}
-			<div {...wrapperProps}>
-				<div {...finalProps}>
-					<SelectScrollUpButton />
+			<div {...finalProps}>
+				<SelectScrollUpButton />
 
-					<div class="h-(--bits-select-anchor-height) w-full min-w-(--bits-select-anchor-width) scroll-my-1">
-						{@render children?.()}
-					</div>
-
-					<SelectScrollDownButton />
+				<div class="w-full scroll-my-1">
+					{@render children?.()}
 				</div>
+
+				<SelectScrollDownButton />
 			</div>
 		{/if}
 	{/snippet}

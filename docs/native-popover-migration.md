@@ -42,3 +42,17 @@ The remaining migration work is not a delete-all-components pass. It is a reduct
 1. Remove or deprecate ignored Floating-UI-era props on `PopoverContentProps`.
 2. Convert simple app-local popovers only after confirming they do not need controlled open state.
 3. Keep `Popover` as a native-popover adapter for controlled and composed overlays.
+
+## CSS anchor positioning for the JS surfaces (2026-09-01)
+
+The menu family and select/combobox position with CSS anchor positioning too (`internal/floating-layer`,
+no `@floating-ui/dom`): the content element itself is anchored via `position-area`, unclamped
+`position-try-fallbacks` flips first, and the `--bits-clamped` options (ui.css) cap the block size
+when no side fits the whole content. Differences from the floating-ui behavior, measured in three
+engines: `data-side`/`data-align` and the transform origin are the requested placement, not the
+resolved fallback (only Chrome can read the applied fallback back); at a flush viewport edge the
+content flip-aligns to the trigger edge instead of sliding to the viewport edge (≤ the trigger-width
+difference); when no side fits the whole content the requested side is kept and scrolls, where
+floating-ui switched to the tallest side. A closed-at-rest surface drops its anchored style —
+a page of always-mounted anchored boxes otherwise taxes every layout pass. The anchor name is
+written imperatively by the trigger attachment; the content must follow its trigger in tree order.

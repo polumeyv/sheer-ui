@@ -19,8 +19,8 @@
 		onEscapeKeydown = () => {},
 		style,
 		// Floating-UI-only props kept for API compatibility; native positioning ignores them
-		// (sideOffset, alignOffset, avoidCollisions, collisionBoundary, collisionPadding, arrowPadding,
-		//  sticky, hideWhenDetached, dir, customAnchor, forceMount).
+		// (sideOffset, alignOffset, avoidCollisions, collisionPadding, arrowPadding, dir, customAnchor,
+		//  forceMount).
 		...restProps
 	}: LinkPreviewContentProps = $props();
 
@@ -55,7 +55,7 @@
 </script>
 
 {#if child}
-	{@render child({ props: mergedProps, wrapperProps: {}, ...contentState.snippetProps })}
+	{@render child({ props: mergedProps, ...contentState.snippetProps })}
 {:else}
 	<div {...mergedProps} bind:this={ref} data-side={side} data-align={align}>
 		{@render children?.()}
