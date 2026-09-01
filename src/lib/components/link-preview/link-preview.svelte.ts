@@ -38,7 +38,6 @@ export class LinkPreviewRootState {
 	isPointerDownOnContent = $state(false);
 	containsSelection = $state(false);
 	contentNode = $state<HTMLElement | null>(null);
-	contentMounted = $state(false);
 	triggerNode = $state<HTMLElement | null>(null);
 	domContext: DOMContext = new DOMContext(() => null);
 	#openTimer = createEffectTimeout(() => {
@@ -147,7 +146,8 @@ export class LinkPreviewTriggerState {
 
 	onpointerleave(e: BitsPointerEvent) {
 		if (e.pointerType === 'touch') return;
-		if (!this.root.contentMounted || !this.root.opts.open.current) {
+		// The content is always mounted (native popover, display toggled), so open is the only gate.
+		if (!this.root.opts.open.current) {
 			this.root.immediateClose();
 		}
 	}

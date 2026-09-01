@@ -51,7 +51,7 @@
 			{
 				'data-slot': 'popover-content',
 				class:
-					'bg-popover text-popover-foreground z-50 w-72 rounded-md border p-4 shadow-md outline-hidden transition-[opacity,scale,translate,display,overlay] transition-discrete opacity-0 scale-95 data-[state=closed]:pointer-events-none data-[state=open]:opacity-100 data-[state=open]:scale-100 starting:data-[state=open]:opacity-0 starting:data-[state=open]:scale-95',
+					'bg-popover text-popover-foreground z-50 w-72 rounded-md border p-4 shadow-md outline-hidden transition-[opacity,scale,translate,display,overlay] transition-discrete opacity-0 scale-95 open:data-[state=open]:opacity-100 open:data-[state=open]:scale-100 starting:open:data-[state=open]:opacity-0 starting:open:data-[state=open]:scale-95',
 			},
 			restProps,
 			contentState.props,

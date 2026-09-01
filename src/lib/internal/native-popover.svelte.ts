@@ -60,7 +60,12 @@ export function useNativePopoverLifecycle(
 	const ref = () => state.opts.ref.current;
 	const open = () => state.root.opts.open.current;
 
-	const exitSettle = createSettleRunner();
+	// The surface's own animations gate the deferred hide; a long-running descendant
+	// animation (a chart entry inside a popover) must not hold the top layer.
+	const exitSettle = createSettleRunner({ subtree: false });
+	// Anchoring is entirely the implicit showPopover source, so the anchor is frozen at the
+	// last show; a reopen against a different trigger/customAnchor must re-show, not no-op.
+	let shownSource: HTMLElement | null = null;
 	$effect(() => {
 		const el = ref();
 		const isOpen = open();
@@ -68,15 +73,22 @@ export function useNativePopoverLifecycle(
 
 		if (isOpen) {
 			exitSettle.cancel(); // a reopen mid-exit keeps the surface shown
-			if (el.matches(':popover-open')) return;
 			const source = resolveNativePopoverAnchor(options.anchor?.(), state.root.triggerNode);
+			if (el.matches(':popover-open')) {
+				if (source === shownSource) return;
+				el.hidePopover(); // re-anchor: hide+show against the new source in one pass
+			}
 			// `source` gives CSS anchor() a default anchor without requiring position-anchor, and in `auto`
 			// mode makes the UA exempt the invoker from light dismiss where supported (Chrome 137+).
 			source ? (el.showPopover as (options: { source: HTMLElement }) => void).call(el, { source }) : el.showPopover();
+			shownSource = source;
 			return;
 		}
 
 		if (!el.matches(':popover-open')) return; // the UA already hid it (light dismiss, Escape)
+		// The exiting surface is inert-adjacent but still in the tab order; hand focus back to
+		// the trigger now rather than letting Tab land inside a closing popover.
+		if (el.contains(el.ownerDocument.activeElement)) state.root.triggerNode?.focus();
 		// Hold the popover in the top layer while the [data-state=closed] exit runs, then hide.
 		// `overlay` transitions are Chrome-only, so an immediate hidePopover() snaps the exit
 		// in Firefox and Safari; the surfaces key their exit on data-state, not :popover-open.
