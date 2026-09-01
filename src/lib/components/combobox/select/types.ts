@@ -185,7 +185,7 @@ export type _SharedSelectContentProps = {
 
 export type SelectContentPropsWithoutHTML = Expand<
 	WithChildNoChildrenSnippetProps<
-		Omit<PopperLayerProps, 'content' | 'onOpenAutoFocus' | 'trapFocus' | 'onCloseAutoFocus'> & _SharedSelectContentProps,
+		Omit<PopperLayerProps, 'content' | 'onOpenAutoFocus' | 'trapFocus' | 'onCloseAutoFocus' | 'forceMount'> & _SharedSelectContentProps,
 		FloatingContentSnippetProps
 	>
 >;
@@ -194,7 +194,7 @@ export type SelectContentProps = SelectContentPropsWithoutHTML & Without<BitsPri
 
 export type SelectContentStaticPropsWithoutHTML = Expand<
 	WithChildNoChildrenSnippetProps<
-		Omit<PopperLayerStaticProps, 'content' | 'onOpenAutoFocus' | 'onCloseAutoFocus' | 'trapFocus'> & _SharedSelectContentProps,
+		Omit<PopperLayerStaticProps, 'content' | 'onOpenAutoFocus' | 'onCloseAutoFocus' | 'trapFocus' | 'forceMount'> & _SharedSelectContentProps,
 		StaticContentSnippetProps
 	>
 >;

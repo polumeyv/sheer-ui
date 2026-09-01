@@ -57,7 +57,7 @@
 			{
 				'data-slot': 'dropdown-menu-sub-content',
 				class:
-					`bg-popover text-popover-foreground ${isStatic ? 'menu-surface menu-surface-static' : 'menu-surface'} z-50 min-w-32 origin-(--bits-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg`,
+					`bg-popover text-popover-foreground ${isStatic ? 'popup-surface popup-surface-static' : 'popup-surface'} z-50 min-w-32 origin-(--bits-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg`,
 			},
 			restProps,
 			subContentState.props,

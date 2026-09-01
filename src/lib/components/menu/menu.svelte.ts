@@ -823,8 +823,8 @@ export class MenuContentState {
 	 * Inline style for the content element alone — `props.style` also reaches the floating wrapper
 	 * through PopperLayer, and hiding the wrapper would cancel the content's exit transition.
 	 * Always mounted: closed floating content is visibility:hidden (out of the a11y tree, not
-	 * focusable, and transitionable in every engine — see `menu-surface` in ui.css); closed static
-	 * content is display:none since it must leave the flow. The `menu-surface` utilities add the
+	 * focusable, and transitionable in every engine — see `popup-surface` in ui.css); closed static
+	 * content is display:none since it must leave the flow. The `popup-surface` utilities add the
 	 * motion; a menubar swap zeroes the exit.
 	 */
 	readonly contentStyle = $derived.by(() => {

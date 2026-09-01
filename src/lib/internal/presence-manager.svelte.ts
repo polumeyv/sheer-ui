@@ -4,11 +4,11 @@ import { createSettleRunner, type SettleRunner } from './animations-settled.svel
 import type { TransitionState } from './attrs.js';
 
 // TODO(backlog): this module + presence-layer/ exist to keep elements mounted through their
-// exit transition. Migrating the remaining consumers (select/combobox popup, navigation-menu,
-// scroll-area; the menu family is done) to the always-mounted recipe deletes most of it
-// (~230 LoC JS). Copy the menu, not the tooltip/nav-menu one: Firefox never transitions
+// exit transition. Migrating the remaining consumers (navigation-menu; the drawer path in
+// dialog-overlay + dialog-content-headless; the menu family and select/combobox are done) to
+// the always-mounted recipe deletes most of it (~230 LoC JS). Copy the menu, not the tooltip/nav-menu one: Firefox never transitions
 // `display` (BCD css.properties.display.is_transitionable), so a `transition-discrete` display
-// exit snaps there; the menu keeps the closed state visibility:hidden (`menu-surface` in ui.css)
+// exit snaps there; the menu keeps the closed state visibility:hidden (`popup-surface` in ui.css)
 // and completes through useOpenChangeComplete. The drawer path (dialog-content-headless +
 // dialog-overlay) cannot migrate: vaul's exit is keyframes on [data-state=closed].
 

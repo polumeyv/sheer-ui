@@ -29,8 +29,8 @@
 }
 
 /* scrollbar-none covers only scrollbar-width; the webkit pseudo is still needed for Safari < 18.2. */
-/* Menu surfaces (dropdown, context and menubar content, sub-content) stay mounted through their
-   exit; the engine sets the closed state inline and these utilities add the motion. Closed is
+/* Popup surfaces (menu family content and sub-content, select/combobox content) stay mounted
+   through their exit; the engine sets the closed state inline and these utilities add the motion. Closed is
    visibility:hidden, not display:none: Firefox cannot transition `display` at all (BCD
    css.properties.display.is_transitionable — Chrome 117, Safari 18, Firefox never), so a discrete
    display exit snaps there, while visibility transitions discretely in every engine and stays
@@ -40,7 +40,7 @@
    Visibility itself transitions only on the way out: the entry flips it instantly, because a
    hidden→visible transition is still hidden at its first frame and the focus scope's opening
    focus() lands exactly there. */
-@utility menu-surface {
+@utility popup-surface {
 	--menu-duration: var(--tw-duration, var(--default-transition-duration));
 	transition-property: opacity, scale, translate, visibility;
 	transition-duration: var(--menu-duration), var(--menu-duration), var(--menu-duration), 0s;
@@ -65,11 +65,17 @@
 	&[data-state='closed'][data-side='right'] {
 		translate: -0.5rem 0;
 	}
+	&[data-state='closed'][data-side='inline-start'] {
+		translate: 0.5rem 0;
+	}
+	&[data-state='closed'][data-side='inline-end'] {
+		translate: -0.5rem 0;
+	}
 }
 
 /* Static (in-flow) content must leave the flow when closed, so the engine sets display:none
    there; transitioning it discretely lets the exit play where display is transitionable. */
-@utility menu-surface-static {
+@utility popup-surface-static {
 	transition-property: opacity, scale, translate, visibility, display;
 	transition-duration: var(--menu-duration), var(--menu-duration), var(--menu-duration), 0s, var(--menu-duration);
 	transition-behavior: allow-discrete;

@@ -11,7 +11,6 @@
 	let {
 		id = createId(uid),
 		ref = $bindable(null),
-		forceMount = false,
 		onInteractOutside = () => {},
 		onEscapeKeydown = () => {},
 		children,
@@ -29,6 +28,7 @@
 		),
 		onInteractOutside: boxWith(() => onInteractOutside),
 		onEscapeKeydown: boxWith(() => onEscapeKeydown),
+		isStatic: true,
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, contentState.props));
@@ -42,10 +42,10 @@
 	open={contentState.root.opts.open.current}
 	{id}
 	{preventScroll}
-	{forceMount}
-	shouldRender={contentState.shouldRender}>
+	forceMount
+	present={contentState.root.present}>
 	{#snippet popper({ props })}
-		{@const finalProps = mergeProps(props, { style: contentState.props.style }, { style })}
+		{@const finalProps = mergeProps(props, { style: contentState.props.style }, { style }, { style: contentState.contentStyle })}
 		{#if child}
 			{@render child({ props: finalProps, ...contentState.snippetProps })}
 		{:else}
