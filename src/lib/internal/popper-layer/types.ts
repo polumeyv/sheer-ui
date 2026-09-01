@@ -12,7 +12,6 @@ import type {
 	TextSelectionLayerImplProps,
 	TextSelectionLayerProps,
 } from "../text-selection-layer/types.js";
-import type { PresenceProps } from "../presence-manager.svelte.js";
 import type { ReadableBox } from "../tools/index.js";
 import type { FocusScopeImplProps, FocusScopeProps } from "../focus-scope/types.js";
 import type { ScrollLockProps } from "../body-scroll-lock.svelte.js";
@@ -21,14 +20,12 @@ import type { Direction } from "../index.js";
 export type PopperLayerProps = EscapeLayerProps &
 	Omit<DismissibleLayerProps, "onInteractOutsideStart"> &
 	FloatingLayerContentProps &
-	PresenceProps &
 	TextSelectionLayerProps &
 	FocusScopeProps &
 	Omit<ScrollLockProps, "restoreScrollDelay">;
 
 export type PopperLayerStaticProps = EscapeLayerProps &
 	Omit<DismissibleLayerProps, "onInteractOutsideStart"> &
-	PresenceProps &
 	TextSelectionLayerProps &
 	FocusScopeProps &
 	Omit<ScrollLockProps, "restoreScrollDelay"> & {
@@ -40,7 +37,7 @@ export type PopperLayerImplProps = Omit<
 	EscapeLayerImplProps &
 		DismissibleLayerImplProps &
 		FloatingLayerContentImplProps &
-		PresenceProps & { open: boolean; ref: ReadableBox<HTMLElement | null> } &
+		{ open: boolean; ref: ReadableBox<HTMLElement | null> } &
 		TextSelectionLayerImplProps &
 		FocusScopeImplProps & {
 			popper: Snippet<
@@ -58,13 +55,8 @@ export type PopperLayerImplProps = Omit<
 			tooltip?: boolean;
 
 			/**
-			 * Whether the popper layer should be rendered.
-			 */
-			shouldRender?: boolean;
-
-			/**
-			 * Under `forceMount`, whether the content is still rendered — open, or closed with its
-			 * exit transition running. Gates the scroll lock. Defaults to the open state.
+			 * Whether the always-mounted content is still rendered — open, or closed with its exit
+			 * transition running. Gates the scroll lock. Defaults to the open state.
 			 */
 			present?: boolean;
 

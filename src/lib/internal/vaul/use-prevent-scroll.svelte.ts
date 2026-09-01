@@ -71,11 +71,9 @@ const preventScroll = new SharedState(() => {
  * The actual body-style lock (overflow/scrollbar-compensation/pointer-events) is delegated to
  * `BodyScrollLock` — the same shared, refcounted lock Dialog/Sheet/Select/Popover use — so a
  * Drawer opened over (or under) one of those doesn't run two uncoordinated scroll-lock strategies
- * at once. `onMount` (which `BodyScrollLock`'s constructor uses) is just `$effect` under the hood
- * in runes mode, so constructing it fresh inside this effect ties its register/unregister to
- * *this* effect's re-run/teardown, not to the whole component's mount/unmount — exactly "acquire
- * while enabled, release the moment it's disabled" without needing to expose a settable lock.
- * The iOS touch/focus/scroll workaround above stays Drawer-specific.
+ * at once. The lock is constructed inside this effect and released by the effect's cleanup, so
+ * register/unregister follow *this* effect's re-run/teardown — "acquire while enabled, release
+ * the moment it's disabled". The iOS touch/focus/scroll workaround above stays Drawer-specific.
  *
  * Both are constructed inside `untrack` — their own internal reads/writes (lockMap bookkeeping,
  * refcounting) must not become dependencies of *this* effect, or a write during construction can
@@ -84,10 +82,12 @@ const preventScroll = new SharedState(() => {
 export const usePreventScroll = (opts: PreventScrollOptions) => {
 	$effect(() => {
 		if (opts.isDisabled()) return;
-		untrack(() => {
-			new BodyScrollLock(true);
+		const lock = untrack(() => {
+			const lock = new BodyScrollLock(true);
 			preventScroll.get();
+			return lock;
 		});
+		return () => lock.release();
 	});
 };
 

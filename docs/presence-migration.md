@@ -1,9 +1,9 @@
 # Presence migration
 
-Surfaces that animate out used to stay mounted through JS (`internal/presence-manager.svelte.ts`
-waits for the exit to settle, then unmounts). The always-mounted recipe replaces that with CSS:
-the closed state is inline, the motion is a transition, completion is `useOpenChangeComplete`
-(`internal/animations-settled.svelte.ts`).
+Surfaces that animate out used to stay mounted through JS (a presence manager waited for the exit
+to settle, then unmounted; deleted 2026-08-31). The always-mounted recipe replaces that with CSS:
+the closed state is inline, the motion is a transition or keyframe, completion is
+`useOpenChangeComplete` (`internal/animations-settled.svelte.ts`).
 
 ## Rule
 
@@ -27,7 +27,8 @@ focus scope's opening `focus()` runs exactly there.
 | Tooltip, Popover, Link preview (native popover) | display (`transition-discrete`) | Exit snaps in Firefox (verified 2026-08-31: `display: none` 40ms after hover-out, no running animation). Candidate for the visibility recipe if the top layer allows it — a hidden popover is removed from the top layer by the UA, so this needs a check first. |
 | Navigation menu content, viewport, indicator | visibility (`nav-*-surface`) | Content enters are keyframes: every enter fades, a swap also slides from the previous item's side, while exits fade only on a swap or in the viewport-less layout. Content stays visible through the viewport's zoom-out on Escape as well as on pointer-leave (it used to unmount instantly on Escape). |
 | Select / Combobox content (`components/combobox/select`) | visibility (`popup-surface`) | Same shape as the menu; no sub-content, no swap. |
-| Drawer (vaul) | keyframes on `[data-state=closed]` | Cannot migrate: the exit is a keyframe animation the controller waits for. |
+| Drawer content and overlay (`dialog-content-headless`, `dialog-overlay`) | keyframes | The exit keyframes (`slideTo*`, `fadeOut`) keep `visibility: visible` while they run, so the hold is the animation itself; vaul's inline `transition` writes during drag cannot cancel it. Snap-point drawers exit by transform transition and hold visibility for its length. The scroll lock keys on the dialog root's `present`, and `BodyScrollLock.release()` is the owner effect's cleanup: registration is synchronous in the constructor, so unregistering could not stay in a child effect that an immediate re-run destroys before it ever runs. Known deviation: after a drag-dismiss in WebKit, `onOpenChangeComplete(false)` fires ~0.5 s late (WebKit holds a `transform` transition behind the exit keyframe and runs it, invisibly, afterwards; the settle waits for it). |
+| Sheet overlay | visibility (`overlay-surface`) | Sheet content itself is the native `<dialog>`. |
 
 ## Verification
 

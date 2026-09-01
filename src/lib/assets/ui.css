@@ -176,6 +176,22 @@
 	}
 }
 
+/* A JS-overlay backdrop that stays mounted: fades, and holds visibility through the fade-out. */
+@utility overlay-surface {
+	--overlay-duration: var(--tw-duration, var(--default-transition-duration));
+	transition-property: opacity, visibility;
+	transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+
+	&[data-state='open'] {
+		transition-duration: var(--overlay-duration), 0s;
+	}
+	&[data-state='closed'] {
+		visibility: hidden;
+		opacity: 0;
+		transition-duration: var(--overlay-duration);
+	}
+}
+
 @utility scrollbar-hidden {
 	scrollbar-width: none;
 	&::-webkit-scrollbar {
@@ -220,9 +236,17 @@
 	}
 }
 
+/* The exit keyframes keep `visibility: visible` while they run: the drawer and its overlay stay
+   mounted with visibility:hidden inline once closed, and a running animation outranks inline
+   style, so the surface hides exactly when its exit ends (vaul writes inline `transition`
+   shorthands while dragging, which a visibility transition would not survive). */
 @keyframes fadeOut {
+	from {
+		visibility: visible;
+	}
 	to {
 		opacity: 0;
+		visibility: visible;
 	}
 }
 
@@ -243,8 +267,12 @@
 }
 
 @keyframes slideToBottom {
+	from {
+		visibility: visible;
+	}
 	to {
 		transform: translate3d(0, var(--initial-transform, 100%), 0);
+		visibility: visible;
 	}
 }
 
@@ -258,8 +286,12 @@
 }
 
 @keyframes slideToTop {
+	from {
+		visibility: visible;
+	}
 	to {
 		transform: translate3d(0, calc(var(--initial-transform, 100%) * -1), 0);
+		visibility: visible;
 	}
 }
 
@@ -273,8 +305,12 @@
 }
 
 @keyframes slideToLeft {
+	from {
+		visibility: visible;
+	}
 	to {
 		transform: translate3d(calc(var(--initial-transform, 100%) * -1), 0, 0);
+		visibility: visible;
 	}
 }
 
@@ -288,8 +324,12 @@
 }
 
 @keyframes slideToRight {
+	from {
+		visibility: visible;
+	}
 	to {
 		transform: translate3d(var(--initial-transform, 100%), 0, 0);
+		visibility: visible;
 	}
 }
 

@@ -83,7 +83,6 @@
 	{isValidEvent}
 	{isStatic}
 	{loop}
-	forceMount
 	present={contentState.parentMenu.present}
 	{id}>
 	{#snippet popper({ props, wrapperProps })}
