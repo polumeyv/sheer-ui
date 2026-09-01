@@ -30,28 +30,33 @@
 
 /* scrollbar-none covers only scrollbar-width; the webkit pseudo is still needed for Safari < 18.2. */
 /* Popup surfaces (menu family content and sub-content, select/combobox content) stay mounted
-   through their exit; the engine sets the closed state inline and these utilities add the motion. Closed is
-   visibility:hidden, not display:none: Firefox cannot transition `display` at all (BCD
-   css.properties.display.is_transitionable — Chrome 117, Safari 18, Firefox never), so a discrete
-   display exit snaps there, while visibility transitions discretely in every engine and stays
-   visible until the exit ends. The entry slide is transition-only as well: closed gives `translate`
-   a zero duration and a full-length delay, so it jumps to its side offset only once the surface is
-   hidden, and open transitions it back to zero — enter slides, exit does not, as before.
-   Visibility itself transitions only on the way out: the entry flips it instantly, because a
-   hidden→visible transition is still hidden at its first frame and the focus scope's opening
-   focus() lands exactly there. */
+   through their exit; the engine sets the closed state inline and these utilities add the
+   motion. Closed is visibility:hidden, not display:none: Firefox cannot transition `display` at
+   all (BCD css.properties.display.is_transitionable — Chrome 117, Safari 18, Firefox never), so a
+   discrete display exit snaps there, while visibility transitions discretely in every engine and
+   stays visible until the exit ends. The entry slide is transition-only as well: closed gives
+   `translate` a zero duration and a full-length delay, so it jumps to its side offset only once
+   the surface is hidden, and open transitions it back to zero — enter slides, exit does not, as
+   before. Visibility itself transitions only on the way out: the entry flips it instantly,
+   because a hidden→visible transition is still hidden at its first frame (WebKit: for half of
+   it) and the focus scope's opening focus() lands exactly there.
+   Duration lists live under the state selectors on purpose: an adapter's `duration-*` class sets
+   a single transition-duration that would override a list at utility specificity, while the
+   attribute selectors still read its --tw-duration. */
 @utility popup-surface {
-	--menu-duration: var(--tw-duration, var(--default-transition-duration));
+	--popup-duration: var(--tw-duration, var(--default-transition-duration));
 	transition-property: opacity, scale, translate, visibility;
-	transition-duration: var(--menu-duration), var(--menu-duration), var(--menu-duration), 0s;
 	transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
 
+	&[data-state='open'] {
+		transition-duration: var(--popup-duration), var(--popup-duration), var(--popup-duration), 0s;
+	}
 	&[data-state='closed'] {
 		visibility: hidden;
 		opacity: 0;
 		scale: 0.95;
-		transition-duration: var(--menu-duration), var(--menu-duration), 0s, var(--menu-duration);
-		transition-delay: 0s, 0s, var(--menu-duration), 0s;
+		transition-duration: var(--popup-duration), var(--popup-duration), 0s, var(--popup-duration);
+		transition-delay: 0s, 0s, var(--popup-duration), 0s;
 	}
 	&[data-state='closed'][data-side='bottom'] {
 		translate: 0 -0.5rem;
@@ -59,15 +64,11 @@
 	&[data-state='closed'][data-side='top'] {
 		translate: 0 0.5rem;
 	}
-	&[data-state='closed'][data-side='left'] {
-		translate: 0.5rem 0;
-	}
-	&[data-state='closed'][data-side='right'] {
-		translate: -0.5rem 0;
-	}
+	&[data-state='closed'][data-side='left'],
 	&[data-state='closed'][data-side='inline-start'] {
 		translate: 0.5rem 0;
 	}
+	&[data-state='closed'][data-side='right'],
 	&[data-state='closed'][data-side='inline-end'] {
 		translate: -0.5rem 0;
 	}
@@ -77,12 +78,101 @@
    there; transitioning it discretely lets the exit play where display is transitionable. */
 @utility popup-surface-static {
 	transition-property: opacity, scale, translate, visibility, display;
-	transition-duration: var(--menu-duration), var(--menu-duration), var(--menu-duration), 0s, var(--menu-duration);
 	transition-behavior: allow-discrete;
 
+	&[data-state='open'] {
+		transition-duration: var(--popup-duration), var(--popup-duration), var(--popup-duration), 0s, 0s;
+	}
 	&[data-state='closed'] {
-		transition-duration: var(--menu-duration), var(--menu-duration), 0s, var(--menu-duration), var(--menu-duration);
-		transition-delay: 0s, 0s, var(--menu-duration), 0s, 0s;
+		transition-duration: var(--popup-duration), var(--popup-duration), 0s, var(--popup-duration), var(--popup-duration);
+		transition-delay: 0s, 0s, var(--popup-duration), 0s, 0s;
+	}
+}
+
+/* Navigation menu surfaces, same always-mounted contract as popup-surface. Content enters are
+   keyframes, because they are asymmetric with the exit: every enter fades in, and a swap also
+   slides in from the previous item's side, while an exit fades and slides only on a swap
+   (data-motion=to-*) or in the viewport-less layout (the adapter's data-closed classes). Only
+   those two exits hold visibility: inside a viewport a plain close hides the content at once and
+   lets the viewport zoom out on its own, as the unmount did. */
+@keyframes nav-content-in {
+	from {
+		opacity: 0;
+	}
+}
+@keyframes nav-content-in-from-start {
+	from {
+		opacity: 0;
+		translate: -13rem 0;
+	}
+}
+@keyframes nav-content-in-from-end {
+	from {
+		opacity: 0;
+		translate: 13rem 0;
+	}
+}
+@utility nav-content-surface {
+	--nav-duration: var(--tw-duration, var(--default-transition-duration));
+	--nav-ease: var(--tw-ease, var(--default-transition-timing-function));
+	transition-property: opacity, scale, translate, visibility;
+	transition-timing-function: var(--nav-ease);
+
+	&[data-state='open'] {
+		transition-duration: var(--nav-duration), var(--nav-duration), var(--nav-duration), 0s;
+		animation: nav-content-in var(--nav-duration) var(--nav-ease);
+	}
+	&[data-state='open'][data-motion='from-start'] {
+		animation-name: nav-content-in-from-start;
+	}
+	&[data-state='open'][data-motion='from-end'] {
+		animation-name: nav-content-in-from-end;
+	}
+	&[data-state='closed'] {
+		visibility: hidden;
+		transition-duration: var(--nav-duration), var(--nav-duration), var(--nav-duration), 0s;
+	}
+	&[data-state='closed']:is([data-motion='to-start'], [data-motion='to-end']),
+	[data-viewport='false'] &[data-state='closed'] {
+		transition-duration: var(--nav-duration);
+	}
+	&[data-motion='to-start'],
+	&[data-motion='to-end'] {
+		opacity: 0;
+	}
+	&[data-motion='to-start'] {
+		translate: -13rem 0;
+	}
+	&[data-motion='to-end'] {
+		translate: 13rem 0;
+	}
+}
+@utility nav-viewport-surface {
+	--nav-duration: var(--tw-duration, var(--default-transition-duration));
+	transition-property: scale, visibility;
+	transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+
+	&[data-state='open'] {
+		transition-duration: var(--nav-duration), 0s;
+	}
+	&[data-state='closed'] {
+		visibility: hidden;
+		scale: 0.9;
+		transition-duration: var(--nav-duration);
+	}
+}
+@utility nav-indicator-surface {
+	--nav-duration: var(--tw-duration, var(--default-transition-duration));
+	transition-property: opacity, visibility;
+	transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+
+	&[data-state='visible'] {
+		transition-duration: var(--nav-duration), 0s;
+	}
+	&[data-state='hidden'] {
+		visibility: hidden;
+		opacity: 0;
+		transition-duration: var(--nav-duration);
 	}
 }
 

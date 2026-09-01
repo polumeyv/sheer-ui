@@ -13,7 +13,7 @@ Nothing under `internal/` appears in the package.json exports map.
 
 | Path | Upstream | Version |
 | --- | --- | --- |
-| `internal/` engine core (`tools/utils`, `date-time/`, `floating-svelte/`, flat helpers) + the behavior primitives (`portal/`, `floating-layer/`, `popper-layer/`, `dismissible-layer/`, `presence-layer/`, `escape-layer/`, `focus-scope/`, `scroll-lock/`, `text-selection-layer/`, `prop-resolvers.ts`) + component state engines in `components/*/**.svelte.ts` | [huntabyte/bits-ui](https://github.com/huntabyte/bits-ui) tag `bits-ui@2.18.1`, `packages/bits-ui/src/lib` (the behavior primitives are upstream's `bits/utilities`, moved here 2026-07-04) | 2.18.1 |
+| `internal/` engine core (`tools/utils`, `date-time/`, `floating-svelte/`, flat helpers) + the behavior primitives (`portal/`, `floating-layer/`, `popper-layer/`, `dismissible-layer/`, `escape-layer/`, `focus-scope/`, `scroll-lock/`, `text-selection-layer/`, `prop-resolvers.ts`) + component state engines in `components/*/**.svelte.ts` | [huntabyte/bits-ui](https://github.com/huntabyte/bits-ui) tag `bits-ui@2.18.1`, `packages/bits-ui/src/lib` (the behavior primitives are upstream's `bits/utilities`, moved here 2026-07-04) | 2.18.1 |
 | `internal/tools/` (`box`, `use-debounce`) | [svecosystem/runed](https://github.com/svecosystem/runed) `runed@0.35.1` subset + svelte-toolbelt `v0.10.6` derivations (`box`) | 0.35.1 / 0.10.6 |
 | `internal/tabbable.ts` | [focus-trap/tabbable](https://github.com/focus-trap/tabbable) `v6.5.0` `src/index.js`, adapted (see file header) | 6.5.0 |
 | `internal/vaul/` | vaul-svelte (drawer engine; sole consumer `components/drawer`) | untracked — pin on next sync |

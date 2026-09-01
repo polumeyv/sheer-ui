@@ -10,15 +10,6 @@ export const getDataOpenClosed = (condition: boolean): 'open' | 'closed' => cond
 
 export type TransitionState = 'starting' | 'ending' | 'idle' | undefined;
 
-export function getDataTransitionAttrs(state: TransitionState): {
-	'data-starting-style'?: '';
-	'data-ending-style'?: '';
-} {
-	if (state === 'starting') return { 'data-starting-style': '' };
-	if (state === 'ending') return { 'data-ending-style': '' };
-	return {};
-}
-
 export const getAriaChecked = (checked: boolean, indeterminate: boolean): 'true' | 'false' | 'mixed' =>
 	indeterminate ? 'mixed' : checked ? 'true' : 'false';
 

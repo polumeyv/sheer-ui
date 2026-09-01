@@ -12,7 +12,8 @@ import type {
 	TextSelectionLayerImplProps,
 	TextSelectionLayerProps,
 } from "../text-selection-layer/types.js";
-import type { PresenceLayerImplProps, PresenceLayerProps } from "../presence-layer/types.js";
+import type { PresenceProps } from "../presence-manager.svelte.js";
+import type { ReadableBox } from "../tools/index.js";
 import type { FocusScopeImplProps, FocusScopeProps } from "../focus-scope/types.js";
 import type { ScrollLockProps } from "../body-scroll-lock.svelte.js";
 import type { Direction } from "../index.js";
@@ -20,14 +21,14 @@ import type { Direction } from "../index.js";
 export type PopperLayerProps = EscapeLayerProps &
 	Omit<DismissibleLayerProps, "onInteractOutsideStart"> &
 	FloatingLayerContentProps &
-	PresenceLayerProps &
+	PresenceProps &
 	TextSelectionLayerProps &
 	FocusScopeProps &
 	Omit<ScrollLockProps, "restoreScrollDelay">;
 
 export type PopperLayerStaticProps = EscapeLayerProps &
 	Omit<DismissibleLayerProps, "onInteractOutsideStart"> &
-	PresenceLayerProps &
+	PresenceProps &
 	TextSelectionLayerProps &
 	FocusScopeProps &
 	Omit<ScrollLockProps, "restoreScrollDelay"> & {
@@ -39,7 +40,7 @@ export type PopperLayerImplProps = Omit<
 	EscapeLayerImplProps &
 		DismissibleLayerImplProps &
 		FloatingLayerContentImplProps &
-		Omit<PresenceLayerImplProps, "presence"> &
+		PresenceProps & { open: boolean; ref: ReadableBox<HTMLElement | null> } &
 		TextSelectionLayerImplProps &
 		FocusScopeImplProps & {
 			popper: Snippet<
