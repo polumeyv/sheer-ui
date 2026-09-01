@@ -16,11 +16,18 @@ Use native HTML/CSS overlay primitives when they can preserve the existing behav
 
 ```txt
 Popover.Content
-  -> popover="manual"
-  -> showPopover() / hidePopover()
+  -> popover="auto"   (tooltip and link-preview run popover="manual")
+  -> showPopover() / hidePopover(), the hide deferred until the exit settles
   -> data-anchored + anchor()
   -> Svelte state bridge for controlled/custom interactions
 ```
+
+Exit contract (2026-09-01): open/closed styling keys on `data-state`, not `:popover-open` — the
+lifecycle holds the popover in the top layer until the `[data-state=closed]` exit settles, then
+calls `hidePopover()`. The Popover (auto) additionally conjoins `open:` (`:popover-open`), so a
+UA-initiated dismissal, which drops `:popover-open` before state catches up, fades from t=0 under
+the Chrome-only display/overlay hold. A `child`-snippet consumer supplying its own classes keys
+its exit on `data-[state=closed]`; an exiting `[data-anchored]` surface is pointer-inert via ui.css.
 
 The remaining migration work is not a delete-all-components pass. It is a reduction pass: remove JS and component wrappers only where native HTML/CSS can carry the same behavior.
 

@@ -46,7 +46,8 @@
 				class: join(
 					'group/tooltip z-50 w-fit rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background @container-[anchored]',
 					'data-[side=left]:[position-try-fallbacks:flip-inline] data-[side=right]:[position-try-fallbacks:flip-inline]',
-					'transition-[opacity,translate,display,overlay] transition-discrete opacity-0 translate-y-1 open:opacity-100 open:translate-y-0 starting:open:opacity-0 starting:open:translate-y-1',
+					// tooltip data-state is closed | delayed-open | instant-open, so "open" is not-closed
+					'transition-[opacity,translate,display,overlay] transition-discrete opacity-0 translate-y-1 not-data-[state=closed]:opacity-100 not-data-[state=closed]:translate-y-0 starting:not-data-[state=closed]:opacity-0 starting:not-data-[state=closed]:translate-y-1',
 				),
 			},
 			restProps,

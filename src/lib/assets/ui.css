@@ -569,6 +569,12 @@ body:has([data-text-selection-guard]) {
 	}
 }
 
+/* An exiting anchored surface (still shown while its [data-state=closed] fade runs, hidden by
+   the deferred hidePopover) must not catch the pointer. Shared here, not restated per surface. */
+[data-anchored][data-state='closed'] {
+	pointer-events: none;
+}
+
 /* Reserve the scrollbar gutter permanently (92% 2026-07): overlays that lock body scroll no
    longer shift the layout, and body-scroll-lock's measurement branch becomes the fallback
    for engines without support (Safari <18.2). Unlayered on purpose — wins over app resets. */
