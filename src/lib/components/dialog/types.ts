@@ -1,6 +1,6 @@
 import type { EscapeLayerProps } from "../../internal/escape-layer/types.js";
 import type { DismissibleLayerProps } from "../../internal/dismissible-layer/types.js";
-import type { PresenceLayerProps } from "../../internal/presence-layer/types.js";
+import type { PresenceProps } from "../../internal/presence-manager.svelte.js";
 import type { FocusScopeProps } from "../../internal/focus-scope/types.js";
 import type { TextSelectionLayerProps } from "../../internal/text-selection-layer/types.js";
 import type { ScrollLockProps } from "../../internal/body-scroll-lock.svelte.js";
@@ -55,7 +55,7 @@ export type DialogContentPropsWithoutHTML = WithChildNoChildrenSnippetProps<
 	Omit<
 		EscapeLayerProps &
 			Omit<DismissibleLayerProps, "onInteractOutsideStart"> &
-			PresenceLayerProps &
+			PresenceProps &
 			FocusScopeProps &
 			TextSelectionLayerProps &
 			ScrollLockProps,
@@ -72,7 +72,7 @@ export type DialogOverlaySnippetProps = {
 };
 
 export type DialogOverlayPropsWithoutHTML = WithChild<
-	PresenceLayerProps,
+	PresenceProps,
 	DialogOverlaySnippetProps
 >;
 

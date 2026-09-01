@@ -3,10 +3,9 @@ import { type ReadableBoxedValues } from './tools/index.js';
 import { createSettleRunner, type SettleRunner } from './animations-settled.svelte.js';
 import type { TransitionState } from './attrs.js';
 
-// TODO(backlog): this module + presence-layer/ exist to keep elements mounted through their
-// exit transition. Migrating the remaining consumers (navigation-menu; the drawer path in
-// dialog-overlay + dialog-content-headless; the menu family and select/combobox are done) to
-// the always-mounted recipe deletes most of it (~230 LoC JS). Copy the menu, not the tooltip/nav-menu one: Firefox never transitions
+// TODO(backlog): this module exists to keep elements mounted through their exit transition.
+// Its remaining consumer is the drawer path (dialog-overlay + dialog-content-headless); the
+// menu family, select/combobox and navigation-menu are on the always-mounted recipe. Copy the menu, not the tooltip/nav-menu one: Firefox never transitions
 // `display` (BCD css.properties.display.is_transitionable), so a `transition-discrete` display
 // exit snaps there; the menu keeps the closed state visibility:hidden (`popup-surface` in ui.css)
 // and completes through useOpenChangeComplete. The drawer path (dialog-content-headless +
@@ -22,6 +21,15 @@ interface PresenceManagerOpts extends ReadableBoxedValues<{
 	/** The only async seam in PresenceManager; tests inject a fake to drive the timing deterministically. */
 	afterAnimations?: SettleRunner;
 }
+
+/** The presence-driven surfaces' shared prop: keep the element mounted while closed. */
+export type PresenceProps = {
+	/**
+	 * Whether to force mount the component, regardless of the open state — for a consumer
+	 * driving its own transition.
+	 */
+	forceMount?: boolean;
+};
 
 export class PresenceManager {
 	#opts: PresenceManagerOpts;
