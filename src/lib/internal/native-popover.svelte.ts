@@ -2,6 +2,9 @@ import type { Getter } from './tools/index.js';
 import { on } from 'svelte/events';
 import { createSettleRunner, useOpenChangeComplete } from './animations-settled.svelte.js';
 
+/** Per-surface CSS anchor names; client-only (the lifecycle effect never runs in SSR). */
+let anchorSequence = 0;
+
 type NativePopoverAnchor = HTMLElement | string | null | undefined | object;
 
 /**
@@ -63,9 +66,33 @@ export function useNativePopoverLifecycle(
 	// The surface's own animations gate the deferred hide; a long-running descendant
 	// animation (a chart entry inside a popover) must not hold the top layer.
 	const exitSettle = createSettleRunner({ subtree: false });
-	// Anchoring is entirely the implicit showPopover source, so the anchor is frozen at the
+	// Anchoring is entirely the source element, so the anchor is frozen at the
 	// last show; a reopen against a different trigger/customAnchor must re-show, not no-op.
 	let shownSource: HTMLElement | null = null;
+
+	// Explicit CSS anchor per surface: showPopover({source})'s implicit anchor is Chrome 137+
+	// only — without it, anchor() in the [data-anchored] rules has nothing to resolve against
+	// in Firefox and Safari, and the surface lands over its own trigger (which also swallowed
+	// the trigger's close click). anchor-name is a list, so a source that already carries one
+	// (a menu trigger sharing the element) keeps it.
+	const anchorName = `--bits-popover-anchor-${++anchorSequence}`;
+	const nameAnchor = (source: HTMLElement) => {
+		const existing = source.style.anchorName || '';
+		if (!existing || existing === 'none') source.style.anchorName = anchorName;
+		else if (!existing.split(',').some((n) => n.trim() === anchorName)) source.style.anchorName = `${existing}, ${anchorName}`;
+	};
+	const unnameAnchor = (source: HTMLElement) => {
+		const rest = (source.style.anchorName || '')
+			.split(',')
+			.map((n) => n.trim())
+			.filter((n) => n && n !== anchorName && n !== 'none');
+		if (rest.length) source.style.anchorName = rest.join(', ');
+		else source.style.removeProperty('anchor-name');
+	};
+	$effect(() => () => {
+		if (shownSource) unnameAnchor(shownSource);
+	});
+
 	$effect(() => {
 		const el = ref();
 		const isOpen = open();
@@ -78,8 +105,15 @@ export function useNativePopoverLifecycle(
 				if (source === shownSource) return;
 				el.hidePopover(); // re-anchor: hide+show against the new source in one pass
 			}
-			// `source` gives CSS anchor() a default anchor without requiring position-anchor, and in `auto`
-			// mode makes the UA exempt the invoker from light dismiss where supported (Chrome 137+).
+			if (shownSource && shownSource !== source) unnameAnchor(shownSource);
+			if (source) {
+				nameAnchor(source);
+				el.style.positionAnchor = anchorName;
+			} else {
+				el.style.removeProperty('position-anchor');
+			}
+			// The implicit source still matters where it works: in `auto` mode it makes the UA
+			// exempt the invoker from light dismiss (Chrome 137+).
 			source ? (el.showPopover as (options: { source: HTMLElement }) => void).call(el, { source }) : el.showPopover();
 			shownSource = source;
 			return;
