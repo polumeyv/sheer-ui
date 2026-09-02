@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import { isMobile as viewportIsMobile } from '../../hooks/is-mobile.svelte';
+	import { isMobile as viewportIsMobile } from 'handful';
 	import MobileSurface from './sidebar-mobile-surface.svelte';
 	import DesktopSurface from './sidebar-desktop-surface.svelte';
 	import type { SidebarRootProps } from './types.js';
