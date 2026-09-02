@@ -7,7 +7,7 @@
 	import CircleIcon from '@lucide/svelte/icons/circle';
 	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
 
-	import { IsMobile } from '../../lib/hooks/is-mobile.svelte.js';
+	import { IsMobile } from 'handful';
 
 	const isMobile = new IsMobile();
 

@@ -7,7 +7,7 @@
 	import { SIDEBAR_COOKIE_MAX_AGE, SIDEBAR_COOKIE_NAME, SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON } from './constants';
 	import { setSidebar, SidebarState } from './context.svelte';
 	import { OpenCell } from '../../internal/open-cell.svelte.js';
-	import { isMobile } from '../../hooks/is-mobile.svelte.js';
+	import { isMobile } from 'handful';
 	import type { Snippet } from 'svelte';
 
 	let {
