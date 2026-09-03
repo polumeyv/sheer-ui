@@ -2,7 +2,7 @@
  * Demo app stylesheet — infrastructure only.
  *
  * This file deliberately contains NO component styling. Every component in
- * @polumeyv/ui already ships its own shadcn styling (see e.g. Button's
+ * sheer-ui already ships its own shadcn styling (see e.g. Button's
  * buttonVariants, Switch's baked-in classes). The demo renders the real
  * components; it must not re-style them.
  *

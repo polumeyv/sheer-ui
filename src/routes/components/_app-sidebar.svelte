@@ -15,7 +15,7 @@
 
 <Sidebar.Root>
 	<Sidebar.Header class="gap-2">
-		<a href={resolve('')} class="px-2 py-1 text-sm font-semibold">@polumeyv/ui</a>
+		<a href={resolve('')} class="px-2 py-1 text-sm font-semibold">sheer-ui</a>
 		<Sidebar.Input bind:value={query} placeholder="Search..." />
 	</Sidebar.Header>
 	<Sidebar.Content>

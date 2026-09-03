@@ -8,12 +8,12 @@
 </script>
 
 <svelte:head>
-	<title>@polumeyv/ui — component demo</title>
+	<title>sheer-ui — component demo</title>
 </svelte:head>
 
 <div class="mx-auto max-w-5xl space-y-8">
 	<div class="space-y-3">
-		<h1 class="text-4xl font-bold tracking-tight">@polumeyv/ui</h1>
+		<h1 class="text-4xl font-bold tracking-tight">sheer-ui</h1>
 		<p class="max-w-2xl text-lg text-muted-foreground">
 			A Svelte 5 component library. Every component below is demoed with its own real styling — the demo adds no CSS of its own.
 		</p>

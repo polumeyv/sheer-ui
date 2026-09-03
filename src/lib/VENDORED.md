@@ -34,12 +34,12 @@ with CSS anchor positioning (`position-area`, `position-try-fallbacks`, `anchor-
 ## No workspace edges (2026-07-08)
 
 This package installs and typechecks standalone. That is a hard constraint, not an accident: it is
-mirrored to [polumeyv/ui-lib](https://github.com/polumeyv/ui-lib), and a specifier that only resolves
+mirrored to [polumeyv/sheer-ui](https://github.com/polumeyv/sheer-ui), and a specifier that only resolves
 inside the mono makes that clone uninstallable. **Nothing here may use `workspace:*` or a bun
 `catalog:`.** Verify with a cold install outside the monorepo before changing dependencies.
 
 There are no `@polumeyv/*` dependencies left. The last one, `@polumeyv/utilities`, was cut 2026-08-17:
-its wall-clock module moved here as `src/lib/time.ts` (exported as `@polumeyv/ui/time`, and now the
+its wall-clock module moved here as `src/lib/time.ts` (exported as `sheer-ui/time`, and now the
 only copy — the apps import it from here), and the two date-picker blocks format their `DateValue`
 with `@internationalized/date` directly instead of round-tripping it through a string formatter.
 
