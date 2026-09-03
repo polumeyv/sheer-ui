@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-	<title>{meta.name} — @polumeyv/ui blocks</title>
+	<title>{meta.name} — sheer-ui blocks</title>
 </svelte:head>
 
 <div class="mx-auto {meta.wide ? 'max-w-6xl' : 'max-w-3xl'}">

@@ -1,0 +1,39 @@
+name: release
+
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  # one release run at a time; two racing can publish twice or fail
+  group: ${{ github.workflow }}
+
+permissions: {}
+
+jobs:
+  release:
+    if: github.repository == 'polumeyv/sheer-ui'
+    permissions:
+      contents: write # changesets/action creates the release + version commit
+      id-token: write # npm provenance (trusted publishing)
+      pull-requests: write # changesets/action opens the "Version Packages" PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: bun install
+      - run: bun run test
+      # Pending changesets → "Version Packages" PR; none pending and version unpublished → publish.
+      - uses: changesets/action@v2
+        with:
+          version-script: bun run changeset:version
+          publish-script: bun run changeset:release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'true'

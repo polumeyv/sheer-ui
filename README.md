@@ -1,4 +1,4 @@
-# @polumeyv/ui
+# sheer-ui
 
 Svelte 5 component library built on [Tailwind CSS v4](https://tailwindcss.com). The headless primitives are a vendored copy of [bits-ui](https://bits-ui.com) (see `src/lib/VENDORED.md`), so the package has no Svelte component dependencies to fight bundlers over.
 
@@ -9,7 +9,7 @@ Accordion, Alert, Alert Dialog, Aspect Ratio, Avatar, Badge, Breadcrumb, Button,
 ## Install
 
 ```bash
-bun add @polumeyv/ui
+bun add sheer-ui
 ```
 
 ## CSS Import
@@ -18,7 +18,7 @@ Import the theme CSS:
 
 ```svelte
 <script>
-  import '@polumeyv/ui/styles';
+  import 'sheer-ui/styles';
 </script>
 ```
 
@@ -28,7 +28,7 @@ This requires your app to provide the font files separately, since the CSS refer
 
 ```svelte
 <script>
-  import { Button } from '@polumeyv/ui';
+  import { Button } from 'sheer-ui';
 </script>
 
 <Button variant="outline">Click me</Button>

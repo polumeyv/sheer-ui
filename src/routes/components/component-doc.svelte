@@ -19,7 +19,7 @@
 </script>
 
 <svelte:head>
-	<title>{meta.name} — @polumeyv/ui</title>
+	<title>{meta.name} — sheer-ui</title>
 </svelte:head>
 
 <div class="mx-auto max-w-3xl">
