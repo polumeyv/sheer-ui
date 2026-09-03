@@ -34,7 +34,7 @@
 		"test": "bun test && bun run test:components",
 		"test:components": "svelte-kit sync && bunx vitest run --config vitest.config.ts",
 		"changeset": "changeset",
-		"changeset:version": "changeset version && oxfmt",
+		"changeset:version": "changeset version",
 		"changeset:release": "changeset publish"
 	},
 	"exports": {
