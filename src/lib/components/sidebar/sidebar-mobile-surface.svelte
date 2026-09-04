@@ -8,18 +8,26 @@
 	import { useSidebar } from './context.svelte.js';
 	import type { SidebarRootProps } from './types.js';
 
-	let { ref = $bindable(null), side = 'left', class: className, children }: SidebarRootProps = $props();
+	let {
+		ref = $bindable(null),
+		body = $bindable(null),
+		side = 'left',
+		class: className,
+	}: Pick<SidebarRootProps, 'ref' | 'side' | 'class'> & {
+		/** An empty shell: the desktop panel moves the content tree here while CSS hides the panel. */
+		body?: HTMLElement | null;
+	} = $props();
 
 	const sidebar = useSidebar();
 
-	// SidebarState is an external machine that owns `open`; the sheet cell
+	// SidebarState is an external machine that owns the sheet's bit; the sheet cell
 	// derives from it, and sheet-initiated dismissals route back through it.
 	// This surface acts as its own sheet root so the cell stays internal.
-	const sheetCell = new DialogState(() => sidebar.openForViewport);
+	const sheetCell = new DialogState(() => sidebar.sheetOpen);
 	$effect(() => {
 		const o = sheetCell.open;
 		untrack(() => {
-			if (o !== sidebar.openForViewport) sidebar.setOpen(o);
+			if (o !== sidebar.sheetOpen) sidebar.sheetOpen = o;
 		});
 	});
 
@@ -42,7 +50,5 @@
 			<Sheet.Title>Sidebar</Sheet.Title>
 			<Sheet.Description>Displays the mobile sidebar.</Sheet.Description>
 		</Sheet.Header>
-		<div class="flex h-full w-full flex-col">
-			{@render children?.()}
-		</div>
+		<div class="flex h-full w-full flex-col" bind:this={body}></div>
 	</Sheet.Content>

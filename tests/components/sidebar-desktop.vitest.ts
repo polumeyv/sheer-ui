@@ -1,29 +1,9 @@
 import { flushSync, mount, unmount } from "svelte";
 import { afterEach, describe, expect, test } from "vitest";
 
-function installDesktopViewport() {
-	Object.defineProperty(window, "innerWidth", {
-		configurable: true,
-		value: 1024,
-	});
-
-	Object.defineProperty(window, "matchMedia", {
-		configurable: true,
-		value: (query: string) => ({
-			matches: query.includes("max-width") ? false : true,
-			media: query,
-			onchange: null,
-			addEventListener: () => {},
-			removeEventListener: () => {},
-			addListener: () => {},
-			removeListener: () => {},
-			dispatchEvent: () => false,
-		}),
-	});
-}
-
+// The sidebar reads the viewport off the desktop panel's own computed display, not a media
+// query. jsdom applies no Tailwind, so the panel computes to `block`: the desktop viewport.
 async function renderFixture() {
-	installDesktopViewport();
 	const { default: SidebarDesktopFixture } = await import("./sidebar-desktop.fixture.svelte");
 
 	const target = document.createElement("div");
@@ -36,7 +16,8 @@ async function renderFixture() {
 }
 
 function getDesktopSidebar() {
-	const node = document.body.querySelector<HTMLElement>('[data-slot="sidebar"][data-state]');
+	// The sheet <dialog> carries data-slot="sidebar" too; the panel is the one without data-mobile.
+	const node = document.body.querySelector<HTMLElement>('[data-slot="sidebar"][data-state]:not([data-mobile])');
 	if (!node) throw new Error("Expected desktop sidebar to render");
 	return node;
 }
@@ -52,12 +33,12 @@ afterEach(() => {
 });
 
 describe("Sidebar desktop behavior", () => {
-	test("renders the desktop branch on wider screens", async () => {
+	test("renders both surfaces, the sheet closed, on wider screens", async () => {
 		const { component } = await renderFixture();
 
 		try {
 			expect(getDesktopSidebar().dataset.state).toBe("expanded");
-			expect(document.body.querySelector('[data-mobile="true"]')).toBeNull();
+			expect(document.body.querySelector<HTMLDialogElement>('[data-mobile="true"]')?.open).toBe(false);
 		} finally {
 			unmount(component);
 		}

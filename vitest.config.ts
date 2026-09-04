@@ -14,6 +14,7 @@ export default mergeConfig(
 		},
 		test: {
 			environment: "jsdom",
+			setupFiles: ["tests/setup.ts"],
 			// Component <style> blocks are dropped unless listed; the theme-toggle suite asserts
 			// computed opacity, which its scoped rules decide.
 			css: { include: [/theme-toggle\.svelte/] },
