@@ -19,7 +19,6 @@
 		onCheckedChange = () => {},
 		disabled = false,
 		onSelect = () => {},
-		closeOnSelect = true,
 		indeterminate = $bindable(false),
 		onIndeterminateChange = () => {},
 		value = '',
@@ -34,12 +33,11 @@
 		),
 		id: boxWith(() => id),
 		disabled: boxWith(() => disabled),
-		onSelect: boxWith(() => handleSelect),
+		onSelect: boxWith(() => onSelect),
 		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),
 		),
-		closeOnSelect: boxWith(() => closeOnSelect),
 		indeterminate: bindableWith(
 			() => indeterminate,
 			(v) => (indeterminate = v),
@@ -49,12 +47,6 @@
 	});
 
 	repairBindable(checkboxItemState.groupChecked, () => (checked = checkboxItemState.groupChecked() ?? checked));
-
-	function handleSelect(e: Event) {
-		onSelect(e);
-		if (e.defaultPrevented) return;
-		checkboxItemState.toggleChecked();
-	}
 
 	const mergedProps = $derived(
 		mergeProps(

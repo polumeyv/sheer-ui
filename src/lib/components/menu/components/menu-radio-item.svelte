@@ -16,7 +16,6 @@
 		onSelect = () => {},
 		id = createId(uid),
 		disabled = false,
-		closeOnSelect = true,
 		...restProps
 	}: MenuRadioItemProps = $props();
 
@@ -24,19 +23,12 @@
 		value: boxWith(() => value),
 		id: boxWith(() => id),
 		disabled: boxWith(() => disabled),
-		onSelect: boxWith(() => handleSelect),
+		onSelect: boxWith(() => onSelect),
 		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),
 		),
-		closeOnSelect: boxWith(() => closeOnSelect),
 	});
-
-	function handleSelect(e: Event) {
-		onSelect(e);
-		if (e.defaultPrevented) return;
-		radioItemState.selectValue();
-	}
 
 	const mergedProps = $derived(
 		mergeProps(

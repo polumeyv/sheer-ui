@@ -43,8 +43,10 @@
 			<DropdownMenu.Content align="start">
 				{@render item(() => column.toggleSorting(false), ArrowUpIcon, 'Asc')}
 				{@render item(() => column.toggleSorting(true), ArrowDownIcon, 'Desc')}
-				<DropdownMenu.Separator />
-				{@render item(() => column.toggleVisibility(false), EyeOffIcon, 'Hide')}
+				{#if column.canHide}
+					<DropdownMenu.Separator />
+					{@render item(() => (column.isVisible = false), EyeOffIcon, 'Hide')}
+				{/if}
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 	</div>

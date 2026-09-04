@@ -924,24 +924,31 @@ type MenuItemCombinedProps = MenuItemSharedStateOpts & MenuItemStateOpts;
 
 interface MenuItemStateOpts extends ReadableBoxedValues<{
 	onSelect: AnyFn;
-	closeOnSelect: boolean;
 }> {}
+
+/** What an item kind does when selected: its own action, and whether the menu closes afterwards. */
+interface MenuItemSelect {
+	closes: boolean;
+	act?: () => void;
+}
 
 export class MenuItemState {
 	static create(opts: MenuItemCombinedProps) {
 		const item = new MenuItemSharedState(opts, getMenuContent());
-		return new MenuItemState(opts, item);
+		return new MenuItemState(opts, item, { closes: true });
 	}
 
 	readonly opts: MenuItemStateOpts;
 	readonly item: MenuItemSharedState;
 	readonly root: MenuRootState;
+	readonly #select: MenuItemSelect;
 	#isPointerDown = false;
 
-	constructor(opts: MenuItemStateOpts, item: MenuItemSharedState) {
+	constructor(opts: MenuItemStateOpts, item: MenuItemSharedState, select: MenuItemSelect) {
 		this.opts = opts;
 		this.item = item;
 		this.root = item.content.parentMenu.root;
+		this.#select = select;
 
 		this.onkeydown = this.onkeydown.bind(this);
 		this.onclick = this.onclick.bind(this);
@@ -949,17 +956,18 @@ export class MenuItemState {
 		this.onpointerup = this.onpointerup.bind(this);
 	}
 
+	// The consumer's onSelect runs first; preventDefault only keeps the menu open, the item's own action always runs.
 	#handleSelect() {
 		if (this.item.opts.disabled.current) return;
 		const selectEvent = new CustomEvent('menuitemselect', { bubbles: true, cancelable: true });
 		this.opts.onSelect.current(selectEvent);
-		if (selectEvent.defaultPrevented) {
-			this.item.content.parentMenu.root.isKeyboard = false;
+		this.#select.act?.();
+		if (this.#select.closes && !selectEvent.defaultPrevented) {
+			this.root.opts.onClose();
 			return;
 		}
-		if (this.opts.closeOnSelect.current) {
-			this.item.content.parentMenu.root.opts.onClose();
-		}
+		// The menu stays open: drop keyboard mode so the pointer can move the highlight again.
+		this.root.isKeyboard = false;
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
@@ -1124,21 +1132,20 @@ interface MenuCheckboxItemStateOpts
 
 export class MenuCheckboxItemState {
 	static create(opts: MenuItemCombinedProps & MenuCheckboxItemStateOpts) {
-		const item = new MenuItemState(opts, new MenuItemSharedState(opts, getMenuContent()));
-		return new MenuCheckboxItemState(opts, item);
+		return new MenuCheckboxItemState(opts, new MenuItemSharedState(opts, getMenuContent()));
 	}
 
 	readonly opts: MenuCheckboxItemStateOpts;
 	readonly item: MenuItemState;
 	readonly groupChecked: () => boolean | undefined;
 
-	constructor(opts: MenuCheckboxItemStateOpts, item: MenuItemState) {
+	constructor(opts: MenuItemCombinedProps & MenuCheckboxItemStateOpts, shared: MenuItemSharedState) {
 		this.opts = opts;
-		this.item = item;
+		this.item = new MenuItemState(opts, shared, { closes: false, act: () => this.#toggle() });
 		this.groupChecked = joinGroup(hasMenuCheckboxGroup() ? getMenuCheckboxGroup() : null, opts);
 	}
 
-	toggleChecked() {
+	#toggle() {
 		if (this.opts.indeterminate.current) {
 			this.opts.indeterminate.current = false;
 			this.opts.checked.current = true;
@@ -1293,6 +1300,7 @@ export class MenuRadioGroupState {
 	}
 
 	setValue(v: string) {
+		if (this.opts.value.current === v) return;
 		this.opts.value.current = v;
 	}
 
@@ -1313,31 +1321,24 @@ interface MenuRadioItemStateOpts
 		WithRefOpts,
 		ReadableBoxedValues<{
 			value: string;
-			closeOnSelect: boolean;
 		}> {}
 
 export class MenuRadioItemState {
 	static create(opts: MenuRadioItemStateOpts & MenuItemCombinedProps) {
-		const radioGroup = getMenuRadioGroup();
-		const sharedItem = new MenuItemSharedState(opts, radioGroup.content);
-		const item = new MenuItemState(opts, sharedItem);
-		return new MenuRadioItemState(opts, item, radioGroup);
+		return new MenuRadioItemState(opts, getMenuRadioGroup());
 	}
 	readonly opts: MenuRadioItemStateOpts;
 	readonly item: MenuItemState;
 	readonly group: MenuRadioGroupState;
-	readonly attachment: RefAttachment;
 	readonly isChecked = $derived.by(() => this.group.opts.value.current === this.opts.value.current);
 
-	constructor(opts: MenuRadioItemStateOpts, item: MenuItemState, group: MenuRadioGroupState) {
+	constructor(opts: MenuRadioItemStateOpts & MenuItemCombinedProps, group: MenuRadioGroupState) {
 		this.opts = opts;
-		this.item = item;
 		this.group = group;
-		this.attachment = attachRef(this.opts.ref);
-	}
-
-	selectValue() {
-		this.group.setValue(this.opts.value.current);
+		this.item = new MenuItemState(opts, new MenuItemSharedState(opts, group.content), {
+			closes: true,
+			act: () => group.setValue(opts.value.current),
+		});
 	}
 
 	readonly props = $derived.by(
@@ -1348,7 +1349,6 @@ export class MenuRadioItemState {
 				role: 'menuitemradio',
 				'aria-checked': getAriaChecked(this.isChecked, false),
 				'data-state': getCheckedState(this.isChecked),
-				...this.attachment,
 			}) as const,
 	);
 }

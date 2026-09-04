@@ -231,9 +231,9 @@ export class Column<TData, TValue = unknown> {
 	get isVisible(): boolean {
 		return this.#table.columnVisibility[this.id] ?? true;
 	}
-	toggleVisibility(visible?: boolean) {
-		if (!this.canHide) return;
-		this.#table.columnVisibility = { ...this.#table.columnVisibility, [this.id]: visible ?? !this.isVisible };
+	set isVisible(visible: boolean) {
+		if (!this.canHide || visible === this.isVisible) return;
+		this.#table.columnVisibility = { ...this.#table.columnVisibility, [this.id]: visible };
 	}
 
 	get filterValue(): unknown {
