@@ -232,7 +232,7 @@ export class Column<TData, TValue = unknown> {
 		return this.#table.columnVisibility[this.id] ?? true;
 	}
 	set isVisible(visible: boolean) {
-		if (!this.canHide) return;
+		if (!this.canHide || visible === this.isVisible) return;
 		this.#table.columnVisibility = { ...this.#table.columnVisibility, [this.id]: visible };
 	}
 

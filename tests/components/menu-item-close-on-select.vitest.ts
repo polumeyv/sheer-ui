@@ -60,6 +60,22 @@ describe("menu item close on select", () => {
 		cleanup();
 	});
 
+	test("preventDefault in onSelect still toggles a checkbox item", () => {
+		const cleanup = render();
+		click("kept-checkbox");
+		expect(read("kept-checked")).toBe("true");
+		expect(read("open")).toBe("true");
+		cleanup();
+	});
+
+	test("a disabled checkbox item neither toggles nor closes", () => {
+		const cleanup = render();
+		click("disabled-checkbox");
+		expect(read("disabled-checked")).toBe("false");
+		expect(read("open")).toBe("true");
+		cleanup();
+	});
+
 	test("preventDefault in onSelect keeps a radio item's menu open and still selects it", () => {
 		const cleanup = render();
 		click("kept-radio-c");

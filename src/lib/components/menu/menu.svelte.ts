@@ -963,11 +963,11 @@ export class MenuItemState {
 		this.opts.onSelect.current(selectEvent);
 		this.#select.act?.();
 		if (this.#select.closes && !selectEvent.defaultPrevented) {
-			this.item.content.parentMenu.root.opts.onClose();
+			this.root.opts.onClose();
 			return;
 		}
 		// The menu stays open: drop keyboard mode so the pointer can move the highlight again.
-		this.item.content.parentMenu.root.isKeyboard = false;
+		this.root.isKeyboard = false;
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
@@ -1300,6 +1300,7 @@ export class MenuRadioGroupState {
 	}
 
 	setValue(v: string) {
+		if (this.opts.value.current === v) return;
 		this.opts.value.current = v;
 	}
 
@@ -1329,7 +1330,6 @@ export class MenuRadioItemState {
 	readonly opts: MenuRadioItemStateOpts;
 	readonly item: MenuItemState;
 	readonly group: MenuRadioGroupState;
-	readonly attachment: RefAttachment;
 	readonly isChecked = $derived.by(() => this.group.opts.value.current === this.opts.value.current);
 
 	constructor(opts: MenuRadioItemStateOpts & MenuItemCombinedProps, group: MenuRadioGroupState) {
@@ -1339,7 +1339,6 @@ export class MenuRadioItemState {
 			closes: true,
 			act: () => group.setValue(opts.value.current),
 		});
-		this.attachment = attachRef(this.opts.ref);
 	}
 
 	readonly props = $derived.by(
@@ -1350,7 +1349,6 @@ export class MenuRadioItemState {
 				role: 'menuitemradio',
 				'aria-checked': getAriaChecked(this.isChecked, false),
 				'data-state': getCheckedState(this.isChecked),
-				...this.attachment,
 			}) as const,
 	);
 }

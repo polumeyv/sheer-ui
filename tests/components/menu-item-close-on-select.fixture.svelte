@@ -2,10 +2,14 @@
 	import * as DropdownMenu from "../../src/lib/components/dropdown-menu/index.js";
 
 	let checked = $state(false);
+	let keptChecked = $state(false);
+	let disabledChecked = $state(false);
 	let radio = $state("a");
 </script>
 
 <output data-testid="checked">{String(checked)}</output>
+<output data-testid="kept-checked">{String(keptChecked)}</output>
+<output data-testid="disabled-checked">{String(disabledChecked)}</output>
 <output data-testid="radio">{radio}</output>
 
 <DropdownMenu.Root open>
@@ -15,6 +19,12 @@
 			<DropdownMenu.Item data-testid="item">Item</DropdownMenu.Item>
 			<DropdownMenu.Item data-testid="kept-item" onSelect={(e) => e.preventDefault()}>Kept item</DropdownMenu.Item>
 			<DropdownMenu.CheckboxItem bind:checked data-testid="checkbox">Checkbox</DropdownMenu.CheckboxItem>
+			<DropdownMenu.CheckboxItem bind:checked={keptChecked} data-testid="kept-checkbox" onSelect={(e) => e.preventDefault()}>
+				Kept checkbox
+			</DropdownMenu.CheckboxItem>
+			<DropdownMenu.CheckboxItem bind:checked={disabledChecked} data-testid="disabled-checkbox" disabled>
+				Disabled checkbox
+			</DropdownMenu.CheckboxItem>
 			<DropdownMenu.RadioGroup bind:value={radio}>
 				<DropdownMenu.RadioItem value="b" data-testid="radio-b">B</DropdownMenu.RadioItem>
 				<DropdownMenu.RadioItem value="c" data-testid="kept-radio-c" onSelect={(e) => e.preventDefault()}>C</DropdownMenu.RadioItem>

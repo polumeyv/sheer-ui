@@ -198,7 +198,14 @@ export type MenuSubContentStaticPropsWithoutHTML = Expand<
 export type MenuSubContentStaticProps = MenuSubContentStaticPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, MenuSubContentStaticPropsWithoutHTML>;
 
-export type MenuSubTriggerPropsWithoutHTML = MenuItemPropsWithoutHTML & {
+export type MenuSubTriggerPropsWithoutHTML = Omit<MenuItemPropsWithoutHTML, 'onSelect'> & {
+	/**
+	 * A callback fired when the sub-trigger is selected, right before its submenu opens.
+	 * `event.preventDefault()` has no effect here: the submenu opens either way and the
+	 * parent menu never closes on a sub-trigger.
+	 */
+	onSelect?: (event: Event) => void;
+
 	/**
 	 * The amount of time in ms from when the mouse enters the subtrigger until
 	 * the submenu opens. This is useful for preventing the submenu from opening
