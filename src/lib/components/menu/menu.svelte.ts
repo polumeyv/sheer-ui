@@ -1320,7 +1320,7 @@ export class MenuRadioItemState {
 	static create(opts: MenuRadioItemStateOpts & MenuItemCombinedProps) {
 		const radioGroup = getMenuRadioGroup();
 		const sharedItem = new MenuItemSharedState(opts, radioGroup.content);
-		const item = new MenuItemState(opts, sharedItem, false);
+		const item = new MenuItemState(opts, sharedItem, true);
 		return new MenuRadioItemState(opts, item, radioGroup);
 	}
 	readonly opts: MenuRadioItemStateOpts;
