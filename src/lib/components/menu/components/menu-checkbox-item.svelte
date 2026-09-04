@@ -33,7 +33,7 @@
 		),
 		id: boxWith(() => id),
 		disabled: boxWith(() => disabled),
-		onSelect: boxWith(() => handleSelect),
+		onSelect: boxWith(() => onSelect),
 		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),
@@ -47,12 +47,6 @@
 	});
 
 	repairBindable(checkboxItemState.groupChecked, () => (checked = checkboxItemState.groupChecked() ?? checked));
-
-	// preventDefault only keeps the menu open (see MenuItemState); the toggle always happens.
-	function handleSelect(e: Event) {
-		onSelect(e);
-		checkboxItemState.toggleChecked();
-	}
 
 	const mergedProps = $derived(
 		mergeProps(

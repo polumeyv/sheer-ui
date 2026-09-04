@@ -23,18 +23,12 @@
 		value: boxWith(() => value),
 		id: boxWith(() => id),
 		disabled: boxWith(() => disabled),
-		onSelect: boxWith(() => handleSelect),
+		onSelect: boxWith(() => onSelect),
 		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),
 		),
 	});
-
-	// preventDefault only keeps the menu open (see MenuItemState); the selection always happens.
-	function handleSelect(e: Event) {
-		onSelect(e);
-		radioItemState.selectValue();
-	}
 
 	const mergedProps = $derived(
 		mergeProps(
