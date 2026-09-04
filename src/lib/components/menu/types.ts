@@ -96,12 +96,6 @@ export type MenuItemPropsWithoutHTML<U extends Record<PropertyKey, unknown> = { 
 		 * Prevent default behavior of selection with `event.preventDefault()`.
 		 */
 		onSelect?: (event: Event) => void;
-
-		/**
-		 * Whether or not the menu item should close when selected.
-		 * @defaultValue true
-		 */
-		closeOnSelect?: boolean;
 	},
 	U
 >;
@@ -136,13 +130,6 @@ export type MenuCheckboxItemPropsWithoutHTML = MenuItemPropsWithoutHTML<MenuChec
 	 * A callback function called when the indeterminate state changes.
 	 */
 	onIndeterminateChange?: OnChangeFn<boolean>;
-
-	/**
-	 * Whether or not the menu item should close when selected.
-	 *
-	 * @defaultValue true
-	 */
-	closeOnSelect?: boolean;
 
 	/**
 	 * The value of the checkbox item when used in a checkbox group.
@@ -219,7 +206,7 @@ export type MenuSubContentStaticPropsWithoutHTML = Expand<
 export type MenuSubContentStaticProps = MenuSubContentStaticPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, MenuSubContentStaticPropsWithoutHTML>;
 
-export type MenuSubTriggerPropsWithoutHTML = Omit<MenuItemPropsWithoutHTML, 'closeOnSelect'> & {
+export type MenuSubTriggerPropsWithoutHTML = MenuItemPropsWithoutHTML & {
 	/**
 	 * The amount of time in ms from when the mouse enters the subtrigger until
 	 * the submenu opens. This is useful for preventing the submenu from opening
@@ -271,12 +258,6 @@ export type MenuRadioItemPropsWithoutHTML = MenuItemPropsWithoutHTML<MenuRadioIt
 	 * The value of the radio item.
 	 */
 	value: string;
-
-	/**
-	 * Whether or not the menu item should close when selected.
-	 * @defaultValue true
-	 */
-	closeOnSelect?: boolean;
 };
 
 export type MenuRadioItemProps = MenuRadioItemPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, MenuRadioItemPropsWithoutHTML>;

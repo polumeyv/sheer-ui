@@ -16,7 +16,6 @@
 		onSelect = () => {},
 		id = createId(uid),
 		disabled = false,
-		closeOnSelect = true,
 		...restProps
 	}: MenuRadioItemProps = $props();
 
@@ -29,7 +28,6 @@
 			() => ref,
 			(v) => (ref = v),
 		),
-		closeOnSelect: boxWith(() => closeOnSelect),
 	});
 
 	function handleSelect(e: Event) {

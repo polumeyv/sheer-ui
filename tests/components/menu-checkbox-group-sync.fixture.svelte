@@ -48,7 +48,6 @@
 			<DropdownMenu.CheckboxItem
 				bind:checked={dynamicChecked}
 				value={dynamicValue}
-				closeOnSelect={false}
 				data-testid="dynamic"
 				onCheckedChange={() => (checkedChangeCount += 1)}
 				onSelect={() => (selectCount += 1)}
@@ -58,7 +57,6 @@
 			<DropdownMenu.CheckboxItem
 				bind:checked={betaChecked}
 				value="beta"
-				closeOnSelect={false}
 				data-testid="beta"
 			>
 				Beta
@@ -66,7 +64,6 @@
 		</DropdownMenu.CheckboxGroup>
 		<DropdownMenu.CheckboxItem
 			bind:checked={standaloneChecked}
-			closeOnSelect={false}
 			data-testid="standalone"
 		>
 			Standalone

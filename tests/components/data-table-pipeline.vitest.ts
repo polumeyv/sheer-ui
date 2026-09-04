@@ -156,17 +156,17 @@ describe('pagination', () => {
 describe('visibility', () => {
 	test('hiding a column shrinks headers and visible cells together', () => {
 		const { table, dispose } = harness();
-		table.column('age')!.toggleVisibility(false);
+		table.column('age')!.isVisible = false;
 		expect(table.headerGroups[0]!.headers.map((header) => header.id)).toEqual(['name']);
 		expect(table.rows[0]!.visibleCells.map((cell) => cell.column.id)).toEqual(['name']);
 		dispose();
 	});
 
-	test('enableHiding: false wins over toggleVisibility', () => {
+	test('enableHiding: false wins over the isVisible setter', () => {
 		const { table, dispose } = harness({
 			columns: [{ accessorKey: 'name', header: 'Name', enableHiding: false }],
 		});
-		table.column('name')!.toggleVisibility(false);
+		table.column('name')!.isVisible = false;
 		expect(table.column('name')!.isVisible).toBe(true);
 		dispose();
 	});

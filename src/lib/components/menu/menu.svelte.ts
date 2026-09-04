@@ -924,24 +924,25 @@ type MenuItemCombinedProps = MenuItemSharedStateOpts & MenuItemStateOpts;
 
 interface MenuItemStateOpts extends ReadableBoxedValues<{
 	onSelect: AnyFn;
-	closeOnSelect: boolean;
 }> {}
 
 export class MenuItemState {
 	static create(opts: MenuItemCombinedProps) {
 		const item = new MenuItemSharedState(opts, getMenuContent());
-		return new MenuItemState(opts, item);
+		return new MenuItemState(opts, item, true);
 	}
 
 	readonly opts: MenuItemStateOpts;
 	readonly item: MenuItemSharedState;
 	readonly root: MenuRootState;
+	readonly #closeOnSelect: boolean;
 	#isPointerDown = false;
 
-	constructor(opts: MenuItemStateOpts, item: MenuItemSharedState) {
+	constructor(opts: MenuItemStateOpts, item: MenuItemSharedState, closeOnSelect: boolean) {
 		this.opts = opts;
 		this.item = item;
 		this.root = item.content.parentMenu.root;
+		this.#closeOnSelect = closeOnSelect;
 
 		this.onkeydown = this.onkeydown.bind(this);
 		this.onclick = this.onclick.bind(this);
@@ -957,7 +958,7 @@ export class MenuItemState {
 			this.item.content.parentMenu.root.isKeyboard = false;
 			return;
 		}
-		if (this.opts.closeOnSelect.current) {
+		if (this.#closeOnSelect) {
 			this.item.content.parentMenu.root.opts.onClose();
 		}
 	}
@@ -1124,7 +1125,7 @@ interface MenuCheckboxItemStateOpts
 
 export class MenuCheckboxItemState {
 	static create(opts: MenuItemCombinedProps & MenuCheckboxItemStateOpts) {
-		const item = new MenuItemState(opts, new MenuItemSharedState(opts, getMenuContent()));
+		const item = new MenuItemState(opts, new MenuItemSharedState(opts, getMenuContent()), false);
 		return new MenuCheckboxItemState(opts, item);
 	}
 
@@ -1313,14 +1314,13 @@ interface MenuRadioItemStateOpts
 		WithRefOpts,
 		ReadableBoxedValues<{
 			value: string;
-			closeOnSelect: boolean;
 		}> {}
 
 export class MenuRadioItemState {
 	static create(opts: MenuRadioItemStateOpts & MenuItemCombinedProps) {
 		const radioGroup = getMenuRadioGroup();
 		const sharedItem = new MenuItemSharedState(opts, radioGroup.content);
-		const item = new MenuItemState(opts, sharedItem);
+		const item = new MenuItemState(opts, sharedItem, false);
 		return new MenuRadioItemState(opts, item, radioGroup);
 	}
 	readonly opts: MenuRadioItemStateOpts;

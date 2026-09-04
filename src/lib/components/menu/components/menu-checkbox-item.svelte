@@ -19,7 +19,6 @@
 		onCheckedChange = () => {},
 		disabled = false,
 		onSelect = () => {},
-		closeOnSelect = true,
 		indeterminate = $bindable(false),
 		onIndeterminateChange = () => {},
 		value = '',
@@ -39,7 +38,6 @@
 			() => ref,
 			(v) => (ref = v),
 		),
-		closeOnSelect: boxWith(() => closeOnSelect),
 		indeterminate: bindableWith(
 			() => indeterminate,
 			(v) => (indeterminate = v),

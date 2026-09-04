@@ -14,7 +14,6 @@
 		id = createId(uid),
 		disabled = false,
 		onSelect = () => {},
-		closeOnSelect = true,
 		inset,
 		variant = 'default',
 		...restProps
@@ -31,7 +30,6 @@
 			() => ref,
 			(v) => (ref = v),
 		),
-		closeOnSelect: boxWith(() => closeOnSelect),
 	});
 
 	const mergedProps = $derived(
