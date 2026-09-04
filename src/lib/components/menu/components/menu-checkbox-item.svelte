@@ -48,9 +48,9 @@
 
 	repairBindable(checkboxItemState.groupChecked, () => (checked = checkboxItemState.groupChecked() ?? checked));
 
+	// preventDefault only keeps the menu open (see MenuItemState); the toggle always happens.
 	function handleSelect(e: Event) {
 		onSelect(e);
-		if (e.defaultPrevented) return;
 		checkboxItemState.toggleChecked();
 	}
 

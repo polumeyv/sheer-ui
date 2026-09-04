@@ -82,15 +82,6 @@ export type MenuItemPropsWithoutHTML<U extends Record<PropertyKey, unknown> = { 
 		disabled?: boolean;
 
 		/**
-		 * Optional text to use for typeahead filtering. By default, typeahead will use
-		 * the `.textContent` of the menu item. When the content is more complex, you
-		 * can provide a string here instead.
-		 *
-		 * @defaultValue undefined
-		 */
-		textValue?: string;
-
-		/**
 		 * A callback fired when the menu item is selected.
 		 *
 		 * Prevent default behavior of selection with `event.preventDefault()`.

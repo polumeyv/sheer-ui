@@ -954,13 +954,12 @@ export class MenuItemState {
 		if (this.item.opts.disabled.current) return;
 		const selectEvent = new CustomEvent('menuitemselect', { bubbles: true, cancelable: true });
 		this.opts.onSelect.current(selectEvent);
-		if (selectEvent.defaultPrevented) {
-			this.item.content.parentMenu.root.isKeyboard = false;
+		if (this.#closeOnSelect && !selectEvent.defaultPrevented) {
+			this.item.content.parentMenu.root.opts.onClose();
 			return;
 		}
-		if (this.#closeOnSelect) {
-			this.item.content.parentMenu.root.opts.onClose();
-		}
+		// The menu stays open: drop keyboard mode so the pointer can move the highlight again.
+		this.item.content.parentMenu.root.isKeyboard = false;
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
