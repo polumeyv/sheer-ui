@@ -1,5 +1,6 @@
 import { flushSync, mount, unmount } from "svelte";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { ResizeObserverStub } from "../resize-observer-stub";
 
 // The sidebar reads the viewport off the desktop panel's own computed display, not a media
 // query. jsdom cascades stylesheets but evaluates no media queries, so a plain rule under a
@@ -11,35 +12,12 @@ function installMobileViewport() {
 	document.documentElement.classList.add("phone");
 }
 
-class ResizeObserverStub {
-	static instances: ResizeObserverStub[] = [];
-	readonly targets: Element[] = [];
-	observe(node: Element) {
-		this.targets.push(node);
-	}
-	disconnect() {}
-	constructor(readonly callback: ResizeObserverCallback) {
-		ResizeObserverStub.instances.push(this);
-	}
-	trigger() {
-		const entries = this.targets.map((target) => ({ target })) as unknown as ResizeObserverEntry[];
-		this.callback(entries, this as unknown as ResizeObserver);
-	}
-}
-
-// A real observer reports once on observe(); the stub does not, so the tests report for it. The
-// panel's attachment coalesces reports into the next frame.
+// The panel's attachment coalesces observer reports into the next frame.
 const layoutSettled = async () => {
-	for (const observer of ResizeObserverStub.instances) observer.trigger();
+	ResizeObserverStub.report();
 	await new Promise(requestAnimationFrame);
 	flushSync();
 };
-
-function getInner() {
-	const node = document.body.querySelector<HTMLElement>('[data-slot="sidebar-inner"]');
-	if (!node) throw new Error("Expected the sidebar content to render");
-	return node;
-}
 
 function installDialogMethods() {
 	Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
@@ -58,45 +36,31 @@ function installDialogMethods() {
 	});
 }
 
-async function renderFixture() {
+async function renderFixture(props: { twoRoots?: boolean } = {}) {
 	installMobileViewport();
 	const { default: SidebarDesktopFixture } = await import("./sidebar-desktop.fixture.svelte");
 
 	const target = document.createElement("div");
 	document.body.append(target);
 
-	const component = mount(SidebarDesktopFixture, { target });
+	const component = mount(SidebarDesktopFixture, { target, props });
 	flushSync();
 
 	return { component };
 }
 
-function getMobileSidebar() {
-	const node = document.body.querySelector<HTMLDialogElement>('[data-mobile="true"]');
-	if (!node) throw new Error("Expected mobile sidebar to render");
+const one = <T extends Element = HTMLElement>(selector: string) => {
+	const node = document.body.querySelector<T>(selector);
+	if (!node) throw new Error(`Expected ${selector} to render`);
 	return node;
-}
-
-function getTrigger() {
-	const node = document.body.querySelector<HTMLButtonElement>('[data-testid="trigger"]');
-	if (!node) throw new Error("Expected sidebar trigger to render");
-	return node;
-}
-
-function getDesktopOpenReadout() {
-	const node = document.body.querySelector<HTMLOutputElement>('[data-testid="open"]');
-	if (!node) throw new Error("Expected desktop open readout to render");
-	return node;
-}
+};
+const getMobileSidebar = () => one<HTMLDialogElement>('[data-mobile="true"]');
+const getTrigger = () => one<HTMLButtonElement>('[data-testid="trigger"]');
+const getDesktopOpenReadout = () => one<HTMLOutputElement>('[data-testid="open"]');
+const getInner = () => one('[data-slot="sidebar-inner"]');
 
 beforeEach(() => {
 	installDialogMethods();
-	ResizeObserverStub.instances = [];
-	Object.defineProperty(window, "ResizeObserver", {
-		configurable: true,
-		writable: true,
-		value: ResizeObserverStub,
-	});
 });
 
 afterEach(() => {
@@ -181,6 +145,30 @@ describe("Sidebar mobile behavior", () => {
 			flushSync();
 			expect(getDesktopOpenReadout().textContent).toBe("false");
 			expect(getMobileSidebar().open).toBe(false);
+		} finally {
+			unmount(component);
+		}
+	});
+
+	test("two Roots in one Provider each move their own content into their own sheet, and back", async () => {
+		const { component } = await renderFixture({ twoRoots: true });
+
+		try {
+			await layoutSettled();
+			const [sheetLeft, sheetRight] = document.body.querySelectorAll<HTMLDialogElement>('dialog[data-mobile="true"]');
+			expect(sheetRight).toBeDefined();
+			expect(one('[data-testid="button-left"]').closest("dialog")).toBe(sheetLeft);
+			expect(one('[data-testid="button-right"]').closest("dialog")).toBe(sheetRight);
+
+			getTrigger().click();
+			flushSync();
+			expect(sheetLeft!.open && sheetRight!.open).toBe(true);
+
+			document.documentElement.classList.remove("phone");
+			await layoutSettled();
+			expect(one('[data-testid="button-left"]').closest('[data-testid="root-left"]')).not.toBeNull();
+			expect(one('[data-testid="button-right"]').closest('[data-testid="root-right"]')).not.toBeNull();
+			expect(sheetLeft!.open || sheetRight!.open).toBe(false);
 		} finally {
 			unmount(component);
 		}
