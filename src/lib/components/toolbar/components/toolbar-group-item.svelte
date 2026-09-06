@@ -2,7 +2,7 @@
 	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToolbarGroupItemProps } from '../types.js';
-	import { ToolbarGroupItemState } from '../toolbar.svelte.js';
+	import { createToolbarGroupItem } from '../toolbar.svelte.js';
 	import { createId } from '../../../internal/create-id.js';
 	import { toggleVariants, type ToggleSize, type ToggleVariant } from '../../toggle/variants.js';
 
@@ -24,7 +24,7 @@
 		size?: ToggleSize;
 	} = $props();
 
-	const groupItemState = ToolbarGroupItemState.create({
+	const groupItemState = createToolbarGroupItem({
 		id: boxWith(() => id),
 		value: boxWith(() => value),
 		disabled: boxWith(() => disabled ?? false),

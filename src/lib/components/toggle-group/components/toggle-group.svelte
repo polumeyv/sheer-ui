@@ -14,7 +14,8 @@
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { type WritableBox, boxWith } from '../../../internal/tools/index.js';
+	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
+	import { emptySelection } from '../../../internal/selection.svelte.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToggleGroupRootProps } from '../types.js';
 	import { ToggleGroupRootState } from '../toggle-group.svelte.js';
@@ -43,35 +44,27 @@
 	// Context for toggle group items (values are stable, no reactivity needed)
 	setToggleGroupCtx(untrack(() => ({ variant, size, spacing })));
 
-	// Mode is construction-static: ToggleGroupRootState chooses a single/multiple class once.
+	// Mode is construction-static: the selection stays single or multiple for the group's life.
 	const valueType = untrack(() => type);
 
-	function getDefaultValue(): string | string[] {
-		return valueType === 'single' ? '' : [];
-	}
-
-	function handleDefaultValue() {
-		if (value !== undefined) return;
-		value = getDefaultValue();
-	}
-
-	function getValue() {
-		return value ?? getDefaultValue();
-	}
-
-	// SSR
-	handleDefaultValue();
+	// The group owns a mode-specific controlled value.
+	repairBindable(
+		() => value,
+		() => {
+			if (value === undefined) value = emptySelection(valueType);
+		},
+	);
 
 	const rootState = ToggleGroupRootState.create({
 		id: boxWith(() => id),
 		value: boxWith(
-			() => getValue(),
+			() => value ?? emptySelection(valueType),
 			(v) => {
 				value = v;
 				// @ts-expect-error - we know
 				onValueChange(v);
 			},
-		) as WritableBox<string> | WritableBox<string[]>,
+		),
 		disabled: boxWith(() => disabled),
 		loop: boxWith(() => loop),
 		orientation: boxWith(() => orientation),
