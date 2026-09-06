@@ -1,5 +1,11 @@
 # sheer-ui
 
+## 0.3.0
+
+### Minor Changes
+
+- [#95](https://github.com/polumeyv/sheer-ui/pull/95) [`afa57b3`](https://github.com/polumeyv/sheer-ui/commit/afa57b31702c818a7253bef844d6ca86c7cc6a4b) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - Toggle-group and toolbar group share one selection engine instead of mirrored single and multiple state classes. A `value` bound to `undefined` after mount is repaired to the mode's empty selection, as Select's is.
+
 ## 0.2.0
 
 ### Minor Changes
