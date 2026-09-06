@@ -7,7 +7,6 @@
 	import { SIDEBAR_COOKIE_MAX_AGE, SIDEBAR_COOKIE_NAME, SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON } from './constants';
 	import { setSidebar, SidebarState } from './context.svelte';
 	import { OpenCell } from '../../internal/open-cell.svelte.js';
-	import { isMobile } from 'handful';
 	import type { Snippet } from 'svelte';
 
 	let {
@@ -43,7 +42,8 @@
 	);
 
 	// Closes the mobile sidebar on navigation, since clicking a nav link doesn't dismiss it.
-	beforeNavigate(() => isMobile.current && sidebar.openForViewport && sidebar.setOpen(false));
+	// The sheet is only ever open on a phone, so no viewport check.
+	beforeNavigate(sidebar.closeSheet);
 </script>
 
 <svelte:window onkeydown={sidebar.handleShortcutKeydown} />

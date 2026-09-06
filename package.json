@@ -332,7 +332,6 @@
 	"dependencies": {
 		"@lucide/svelte": "^1.18.0",
 		"esm-env": "^1.2.2",
-		"handful": "^0.3.0",
 		"d3-scale": "^4.0.2",
 		"layerchart": "^2.0.1",
 		"overrule": "^0.7.3"
@@ -341,6 +340,7 @@
 		"@changesets/changelog-github": "^1.0.0",
 		"@changesets/cli": "^3.0.1",
 		"@fontsource-variable/inter": "^5.2.8",
+		"handful": "^0.3.0",
 		"@sveltejs/adapter-auto": "8.0.0-next.1",
 		"@internationalized/date": "^3.12.2",
 		"@sveltejs/kit": "^3.0.0-next.25",
