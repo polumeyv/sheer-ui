@@ -61,8 +61,8 @@
 			() => value ?? emptySelection(valueType),
 			(v) => {
 				value = v;
-				// @ts-expect-error - we know
-				onValueChange(v);
+				// oxlint-disable-next-line no-explicit-any
+				onValueChange(v as any);
 			},
 		),
 		disabled: boxWith(() => disabled),

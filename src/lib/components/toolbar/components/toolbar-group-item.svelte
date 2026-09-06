@@ -48,9 +48,9 @@
 </script>
 
 {#if child}
-	{@render child({ props: mergedProps, pressed: groupItemState.isPressed })}
+	{@render child({ props: mergedProps, ...groupItemState.snippetProps })}
 {:else}
 	<button {...mergedProps}>
-		{@render children?.({ pressed: groupItemState.isPressed })}
+		{@render children?.(groupItemState.snippetProps)}
 	</button>
 {/if}

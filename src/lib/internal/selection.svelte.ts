@@ -52,7 +52,8 @@ export interface SelectionGroup {
 	readonly rovingFocus?: ReadableBox<boolean>;
 	/** A selection takes the roving tab stop in a toggle group; a toolbar's stays where it is. */
 	readonly selectionTakesTabStop: boolean;
-	readonly itemAttrs: Record<string, ''>;
+	/** Beyond the roving group's candidate attribute, which every item carries. */
+	readonly extraItemAttrs?: Record<string, ''>;
 }
 
 export interface SelectionItemOpts
@@ -117,7 +118,8 @@ export class SelectionItemState {
 				'aria-pressed': this.group.selection.isMulti ? boolToStr(this.isPressed) : undefined,
 				'aria-checked': this.group.selection.isMulti ? undefined : getAriaChecked(this.isPressed, false),
 				disabled: boolToTrueOrUndef(this.#isDisabled),
-				...this.group.itemAttrs,
+				...this.group.rovingFocusGroup.candidateAttrs,
+				...this.group.extraItemAttrs,
 				//
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,

@@ -82,7 +82,7 @@ export class ToolbarGroupState implements SelectionGroup {
 	readonly orientation: ReadableBox<Orientation>;
 	readonly rovingFocusGroup: RovingFocusGroup;
 	readonly selectionTakesTabStop = false;
-	readonly itemAttrs = { [toolbarAttrs.item]: '', [toolbarAttrs['group-item']]: '' } as const;
+	readonly extraItemAttrs = { [toolbarAttrs['group-item']]: '' } as const;
 	readonly attachment: RefAttachment;
 
 	constructor(opts: ToolbarGroupStateOpts, root: ToolbarRootState) {

@@ -5,7 +5,7 @@ import SelectionGroupFixture from "./selection-group.fixture.svelte";
 type Surface = "toggle-group" | "toolbar";
 type SelectionType = "single" | "multiple";
 
-function renderFixture(props: { surface: Surface; type: SelectionType; disabled?: boolean }) {
+function renderFixture(props: { surface: Surface; type: SelectionType; disabled?: boolean; rovingFocus?: boolean }) {
 	const target = document.createElement("div");
 	document.body.append(target);
 
@@ -174,6 +174,44 @@ describe("selection and the roving tab stop", () => {
 			click("gamma");
 			expect(getItem("alpha").getAttribute("tabindex")).toBe("0");
 			expect(getItem("gamma").getAttribute("tabindex")).toBe("-1");
+		} finally {
+			cleanup(component);
+		}
+	});
+
+	test("arrows rove between toggle-group items, and rovingFocus={false} leaves every item in the tab order", () => {
+		const roving = renderFixture({ surface: "toggle-group", type: "single" });
+		try {
+			getItem("alpha").focus();
+			press("alpha", "ArrowRight");
+			expect(document.activeElement).toBe(getItem("beta"));
+		} finally {
+			cleanup(roving);
+		}
+
+		const stationary = renderFixture({ surface: "toggle-group", type: "single", rovingFocus: false });
+		try {
+			for (const name of ["alpha", "beta", "gamma"]) expect(getItem(name).getAttribute("tabindex")).toBe("0");
+			getItem("alpha").focus();
+			press("alpha", "ArrowRight");
+			expect(document.activeElement).toBe(getItem("alpha"));
+		} finally {
+			cleanup(stationary);
+		}
+	});
+
+	test("a toolbar group's items rove with the toolbar's other items", () => {
+		const component = renderFixture({ surface: "toolbar", type: "single" });
+
+		try {
+			const button = document.body.querySelector<HTMLButtonElement>('[data-testid="button"]');
+			getItem("gamma").focus();
+			press("gamma", "ArrowRight");
+			expect(document.activeElement).toBe(button);
+
+			button!.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true, cancelable: true }));
+			flushSync();
+			expect(document.activeElement).toBe(getItem("gamma"));
 		} finally {
 			cleanup(component);
 		}

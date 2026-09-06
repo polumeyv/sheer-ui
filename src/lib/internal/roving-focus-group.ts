@@ -55,9 +55,12 @@ type RovingFocusGroupOptions = (
 export class RovingFocusGroup {
 	readonly #opts: RovingFocusGroupOptions;
 	readonly #currentTabStopId = simpleBox<string | null>(null);
+	/** What a candidate of an attribute-marked group stamps on itself; empty for the other kinds. */
+	readonly candidateAttrs: Record<string, ''>;
 
 	constructor(opts: RovingFocusGroupOptions) {
 		this.#opts = opts;
+		this.candidateAttrs = opts.candidateAttr ? { [opts.candidateAttr]: '' } : {};
 	}
 
 	getCandidateNodes() {

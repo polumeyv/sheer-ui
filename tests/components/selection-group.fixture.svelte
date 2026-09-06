@@ -7,11 +7,13 @@
 		type,
 		value = $bindable(),
 		disabled = false,
+		rovingFocus = true,
 	}: {
 		surface: "toggle-group" | "toolbar";
 		type: "single" | "multiple";
 		value?: string | string[];
 		disabled?: boolean;
+		rovingFocus?: boolean;
 	} = $props();
 
 	const items = ["alpha", "beta", "gamma"];
@@ -42,9 +44,9 @@
 
 {#if surface === "toggle-group"}
 	{#if type === "single"}
-		<ToggleGroup.Root type="single" bind:value {disabled}>{@render toggleGroupItems()}</ToggleGroup.Root>
+		<ToggleGroup.Root type="single" bind:value {disabled} {rovingFocus}>{@render toggleGroupItems()}</ToggleGroup.Root>
 	{:else}
-		<ToggleGroup.Root type="multiple" bind:value {disabled}>{@render toggleGroupItems()}</ToggleGroup.Root>
+		<ToggleGroup.Root type="multiple" bind:value {disabled} {rovingFocus}>{@render toggleGroupItems()}</ToggleGroup.Root>
 	{/if}
 {:else}
 	<Toolbar.Root>
@@ -53,5 +55,6 @@
 		{:else}
 			<Toolbar.Group type="multiple" bind:value {disabled}>{@render toolbarItems()}</Toolbar.Group>
 		{/if}
+		<Toolbar.Button data-testid="button">Button</Toolbar.Button>
 	</Toolbar.Root>
 {/if}

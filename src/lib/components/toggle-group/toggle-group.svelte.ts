@@ -43,7 +43,6 @@ export class ToggleGroupRootState implements SelectionGroup {
 	readonly rovingFocus: ReadableBox<boolean>;
 	readonly rovingFocusGroup: RovingFocusGroup;
 	readonly selectionTakesTabStop = true;
-	readonly itemAttrs = { [toggleGroupAttrs.item]: '' } as const;
 	readonly attachment: RefAttachment;
 
 	constructor(opts: ToggleGroupRootStateOpts) {
