@@ -87,17 +87,27 @@ describe("Sidebar mobile behavior", () => {
 		}
 	});
 
-	test("opening the sheet re-homes content a crossing the observer never saw", async () => {
+	test("opening the sheet re-homes content a crossing the observer never saw, before showModal picks the focus", async () => {
 		const { component } = await renderFixture();
 
 		try {
-			// No observer report at all: the crossing happened under a display:none ancestor.
+			// No observer report at all: a display:none panel gets no initial observation, and a
+			// crossing under a display:none ancestor reports nothing either.
 			expect(getInner().closest('[data-slot="sidebar-container"]')).not.toBeNull();
+
+			// showModal() takes the initial focus from what the dialog holds at that moment.
+			const heldAtShowModal: boolean[] = [];
+			const showModal = HTMLDialogElement.prototype.showModal;
+			vi.spyOn(HTMLDialogElement.prototype, "showModal").mockImplementation(function (this: HTMLDialogElement) {
+				heldAtShowModal.push(this.contains(getInner()));
+				showModal.call(this);
+			});
 
 			getTrigger().click();
 			flushSync();
 
 			expect(getMobileSidebar().open).toBe(true);
+			expect(heldAtShowModal).toEqual([true]);
 			expect(getInner().closest('[data-mobile="true"]')).toBe(getMobileSidebar());
 		} finally {
 			unmount(component);

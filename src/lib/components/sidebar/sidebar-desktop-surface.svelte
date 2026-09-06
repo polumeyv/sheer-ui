@@ -42,16 +42,27 @@
 	};
 
 	// The observer fires when `hidden md:block` flips this box between 0×0 and laid out, which is
-	// the breakpoint crossing.
-	const observe = resizeAttachment(([entry]) => entry && rehome(entry.target as HTMLElement));
+	// the breakpoint crossing. It also fires every frame of the 200ms width transition, so a
+	// report that leaves the display as it was is dropped before the style read.
+	let lastDisplayed: boolean | undefined;
+	const observe = resizeAttachment(([entry]) => {
+		if (!entry) return;
+		const panel = entry.target as HTMLElement;
+		const displayed = panelDisplayed(panel);
+		if (displayed === lastDisplayed) return;
+		lastDisplayed = displayed;
+		rehome(panel);
+	});
 	const register: Attachment<HTMLElement> = (node) => {
 		sidebar.desktopPanels.add(node);
 		return () => sidebar.desktopPanels.delete(node);
 	};
-	// A crossing made while an ancestor is display:none reports no size change (0×0 either way), so
-	// the content can be parked in the wrong surface while nothing shows it; the sheet opening is
-	// the moment that matters, and re-homes.
-	$effect(() => {
+	// A display:none panel gets no initial observation, and a crossing made while an ancestor is
+	// display:none reports no size change (0×0 either way), so the content can be parked in the
+	// wrong surface while nothing shows it; the sheet opening is the moment that matters, and
+	// re-homes. A pre effect so it runs before the sheet's showModal(), which picks the initial
+	// focus from whatever the dialog holds at that moment.
+	$effect.pre(() => {
 		if (sidebar.sheetOpen && ref) rehome(ref);
 	});
 </script>
