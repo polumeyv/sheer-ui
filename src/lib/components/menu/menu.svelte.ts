@@ -962,12 +962,7 @@ export class MenuItemState {
 		const selectEvent = new CustomEvent('menuitemselect', { bubbles: true, cancelable: true });
 		this.opts.onSelect.current(selectEvent);
 		this.#select.act?.();
-		if (this.#select.closes && !selectEvent.defaultPrevented) {
-			this.root.opts.onClose();
-			return;
-		}
-		// The menu stays open: drop keyboard mode so the pointer can move the highlight again.
-		this.root.isKeyboard = false;
+		if (this.#select.closes && !selectEvent.defaultPrevented) this.root.opts.onClose();
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
@@ -991,12 +986,14 @@ export class MenuItemState {
 		this.#handleSelect();
 	}
 
+	// A press that started elsewhere (on the trigger, dragged here) gets its click synthesised; a
+	// press that started here gets the native one. The content stays mounted across openings and
+	// a checkbox item outlives many selects, so the flag resets per press.
 	onpointerup(e: BitsPointerEvent) {
 		if (e.defaultPrevented) return;
-		if (!this.#isPointerDown) {
-			if (!isHTMLElement(e.currentTarget)) return;
-			e.currentTarget?.click();
-		}
+		const pressedHere = this.#isPointerDown;
+		this.#isPointerDown = false;
+		if (!pressedHere && isHTMLElement(e.currentTarget)) e.currentTarget.click();
 	}
 
 	onpointerdown(_: BitsPointerEvent) {

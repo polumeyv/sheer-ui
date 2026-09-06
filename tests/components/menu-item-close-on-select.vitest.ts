@@ -83,4 +83,27 @@ describe("menu item close on select", () => {
 		expect(read("open")).toBe("true");
 		cleanup();
 	});
+
+	test("a press released on a checkbox item selects it whether or not an earlier press started there", () => {
+		const cleanup = render();
+		const node = document.body.querySelector<HTMLElement>('[data-testid="checkbox"]');
+		if (!node) throw new Error("Expected checkbox to render");
+		const pointer = (type: string) => {
+			node.dispatchEvent(new MouseEvent(type, { bubbles: true }));
+			flushSync();
+		};
+
+		// A press that starts here: the native click selects, no synthetic one doubles it.
+		pointer("pointerdown");
+		pointer("pointerup");
+		expect(read("checked")).toBe("false");
+		click("checkbox");
+		expect(read("checked")).toBe("true");
+
+		// A press that started on the trigger and was released here: no native click follows.
+		pointer("pointerup");
+		expect(read("checked")).toBe("false");
+		expect(read("open")).toBe("true");
+		cleanup();
+	});
 });
