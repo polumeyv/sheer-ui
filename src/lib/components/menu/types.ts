@@ -84,8 +84,8 @@ export type MenuItemPropsWithoutHTML<U extends Record<PropertyKey, unknown> = { 
 		/**
 		 * A callback fired when the menu item is selected.
 		 *
-		 * Calling `event.preventDefault()` keeps the menu open; a checkbox or radio
-		 * item still toggles or selects.
+		 * Calling `event.preventDefault()` keeps a plain or radio item from closing the
+		 * menu; the radio item still selects. A checkbox item never closes it.
 		 */
 		onSelect?: (event: Event) => void;
 	},
