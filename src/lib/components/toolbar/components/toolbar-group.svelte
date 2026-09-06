@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { type WritableBox, boxWith } from '../../../internal/tools/index.js';
+	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
+	import { emptySelection } from '../../../internal/selection.svelte.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToolbarGroupProps } from '../types.js';
 	import { ToolbarGroupState } from '../toolbar.svelte.js';
@@ -20,37 +21,29 @@
 		...restProps
 	}: ToolbarGroupProps = $props();
 
-	// Mode is construction-static: ToolbarGroupState chooses a single/multiple class once.
+	// Mode is construction-static: the selection stays single or multiple for the group's life.
 	const valueType = untrack(() => type);
 
-	function getDefaultValue(): string | string[] {
-		return valueType === 'single' ? '' : [];
-	}
-
-	function handleDefaultValue() {
-		if (value !== undefined) return;
-		value = getDefaultValue();
-	}
-
-	function getValue() {
-		return value ?? getDefaultValue();
-	}
-
-	// SSR
-	handleDefaultValue();
+	// The group owns a mode-specific controlled value.
+	repairBindable(
+		() => value,
+		() => {
+			if (value === undefined) value = emptySelection(valueType);
+		},
+	);
 
 	const groupState = ToolbarGroupState.create({
 		id: boxWith(() => id),
 		disabled: boxWith(() => disabled),
 		type: valueType,
 		value: boxWith(
-			() => getValue(),
+			() => value ?? emptySelection(valueType),
 			(v) => {
 				value = v;
-				// @ts-expect-error - we know
-				onValueChange(v);
+				// oxlint-disable-next-line no-explicit-any
+				onValueChange(v as any);
 			},
-		) as WritableBox<string> | WritableBox<string[]>,
+		),
 		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),
