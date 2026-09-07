@@ -569,6 +569,28 @@ body:has([data-text-selection-guard]) {
 	}
 }
 
+/* Without anchor positioning (iOS Safari ≤18, Firefox ESR 140; ~11% 2026-08) every surface
+   centers on screen instead of hanging off its trigger. The UA popover default already
+   centers (inset 0, auto margins, fit-content box), but preflight's `* { margin: 0 }` sends it
+   to the top-left and a consumer's `w-auto!` stretches it edge to edge, since an auto width
+   between two insets is solved, not shrunk; the fit-content caps restore the box. The JS
+   floating surfaces carry inline `inset: auto` and collision margins, hence the importants.
+   Delete once ESR 140 is out of support and iOS 18 is under 1%. */
+@supports not (anchor-name: --a) {
+	[data-anchored] {
+		inset: 0;
+		margin: auto;
+		max-width: fit-content;
+		height: fit-content;
+	}
+	[data-floating-content] {
+		inset: 0 !important;
+		margin: auto !important;
+		max-width: fit-content;
+		height: fit-content;
+	}
+}
+
 /* An exiting anchored surface (still shown while its [data-state=closed] fade runs, hidden by
    the deferred hidePopover) must not catch the pointer. Shared here, not restated per surface. */
 [data-anchored][data-state='closed'] {
