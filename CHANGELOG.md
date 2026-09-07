@@ -1,5 +1,11 @@
 # sheer-ui
 
+## 0.3.1
+
+### Patch Changes
+
+- [#97](https://github.com/polumeyv/sheer-ui/pull/97) [`42965df`](https://github.com/polumeyv/sheer-ui/commit/42965df85b7746df1aa5ff52f141bc7142a2ac01) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - Without CSS anchor positioning (iOS Safari 18, Firefox ESR 140) popovers, tooltips, menus and selects center on screen with a fitted box instead of rendering at the top-left or edge to edge.
+
 ## 0.3.0
 
 ### Minor Changes
