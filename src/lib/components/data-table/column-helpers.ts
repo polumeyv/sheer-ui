@@ -1,4 +1,4 @@
-import type { ColumnDef, CellContext } from '../../internal/table/types.js';
+import type { ColumnDef, CellContext, HeaderContext } from '../../internal/table/types.js';
 import { renderComponent, renderSnippet } from './';
 import { createRawSnippet } from 'svelte';
 import { DataTableCheckbox } from './index';
@@ -44,6 +44,13 @@ export function textHeader(label: string) {
 		}));
 		return renderSnippet(snippet, undefined);
 	};
+}
+
+/**
+ * A sort-button header carrying the column's `label`
+ */
+export function sortHeader<T>({ column }: HeaderContext<T, unknown>) {
+	return renderComponent(DataTableSortButton, { label: column.label, onclick: column.sortHandler });
 }
 
 type TextCellOptions = {

@@ -16,8 +16,8 @@
 			<DropdownMenu.GroupHeading>Toggle columns</DropdownMenu.GroupHeading>
 			<DropdownMenu.Separator />
 			{#each table.allColumns.filter((col) => typeof col.accessorFn !== 'undefined' && col.canHide) as column (column)}
-				<DropdownMenu.CheckboxItem bind:checked={column.isVisible} class="capitalize">
-					{column.id}
+				<DropdownMenu.CheckboxItem bind:checked={column.isVisible}>
+					{column.label}
 				</DropdownMenu.CheckboxItem>
 			{/each}
 		</DropdownMenu.Group>

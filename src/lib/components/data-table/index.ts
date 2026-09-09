@@ -15,7 +15,7 @@ export type {
 
 export { default as DataTableCheckbox } from "./data-table-checkbox.svelte";
 export { default as DataTableSortButton } from "./data-table-sort-button.svelte";
-export { selectColumn, textHeader, textCell, mutedCell, SortButton } from "./column-helpers";
+export { selectColumn, textHeader, sortHeader, textCell, mutedCell, SortButton } from "./column-helpers";
 
 export { default as DataTableCell } from "./table-cell.svelte";
 export { default as DataTableToolbar } from "./table-toolbar.svelte";

@@ -8,6 +8,8 @@ export interface ColumnDef<TData, TValue = unknown> {
 	id?: string;
 	accessorKey?: string;
 	accessorFn?: (original: TData, index: number) => TValue;
+	/** The column's name for people: column menus list it, `sortHeader` renders it. Falls back to the id. */
+	label?: string;
 	header?: ColumnDefTemplate<HeaderContext<TData, TValue>>;
 	cell?: ColumnDefTemplate<CellContext<TData, TValue>>;
 	filterFn?: FilterFn<TData>;

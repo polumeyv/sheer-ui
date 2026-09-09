@@ -225,6 +225,10 @@ export class Column<TData, TValue = unknown> {
 		this.toggleSorting(undefined, this.#canMultiSort && event.shiftKey);
 	};
 
+	get label(): string {
+		return this.columnDef.label ?? this.id;
+	}
+
 	get canHide(): boolean {
 		return this.columnDef.enableHiding ?? true;
 	}
