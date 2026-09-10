@@ -74,7 +74,7 @@
 									selectedValues.add(option.value);
 								}
 								const filterValues = Array.from(selectedValues);
-								column?.setFilterValue(filterValues.length ? filterValues : undefined);
+								column.filterValue = filterValues.length ? filterValues : undefined;
 							}}>
 							<div
 								class={[
@@ -100,7 +100,7 @@
 				{#if selectedValues.size > 0}
 					<Command.Separator />
 					<Command.Group>
-						<Command.Item onSelect={() => column?.setFilterValue(undefined)} class="justify-center text-center">Clear filters</Command.Item>
+						<Command.Item onSelect={() => (column.filterValue = undefined)} class="justify-center text-center">Clear filters</Command.Item>
 					</Command.Group>
 				{/if}
 			</Command.List>

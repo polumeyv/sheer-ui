@@ -25,16 +25,16 @@
 	} = $props();
 
 	const isFiltered = $derived(table.columnFilters.length > 0);
+	const search = $derived(searchColumn === undefined ? undefined : table.column(searchColumn));
 </script>
 
 <div class="flex items-center justify-between">
-	{#if searchColumn}
+	{#if search}
 		<Input
 			{disabled}
 			placeholder={searchPlaceholder ?? 'Filter...'}
-			value={(table.column(searchColumn)?.filterValue as string) ?? ''}
-			oninput={(e) => table.column(searchColumn)?.setFilterValue(e.currentTarget.value)}
-			onchange={(e) => table.column(searchColumn)?.setFilterValue(e.currentTarget.value)}
+			value={(search.filterValue as string) ?? ''}
+			oninput={(e) => (search.filterValue = e.currentTarget.value)}
 			class="h-8 w-37.5 lg:w-62.5" />
 	{/if}
 	<div class="flex items-center space-x-2">
@@ -46,7 +46,7 @@
 		{/each}
 
 		{#if isFiltered}
-			<Button variant="ghost" {disabled} onclick={() => table.resetColumnFilters()} class="h-8! px-2! lg:px-3!">
+			<Button variant="ghost" {disabled} onclick={() => (table.columnFilters = [])} class="h-8! px-2! lg:px-3!">
 				Reset
 				<XIcon />
 			</Button>
