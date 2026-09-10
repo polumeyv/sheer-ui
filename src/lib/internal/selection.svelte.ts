@@ -1,4 +1,4 @@
-import type { ReadableBox, ReadableBoxedValues, WritableBox } from './tools/index.js';
+import type { ReadableBox, ReadableBoxedValues } from './tools/index.js';
 import { boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef, getAriaChecked } from './attrs.js';
 import { kbd } from './kbd.js';
 import type { Orientation } from './index.js';
@@ -8,37 +8,46 @@ import { RovingFocusItem } from './roving-focus-item.svelte.js';
 
 export type SelectionType = 'single' | 'multiple';
 
-export const emptySelection = (type: SelectionType): string | string[] => (type === 'single' ? '' : []);
+export type Selection = string | string[];
+
+export const emptySelection = (type: SelectionType): Selection => (type === 'single' ? '' : []);
 
 /**
- * Membership over a bindable that is a string in single mode and a string array in multiple
- * mode. The mode is fixed at construction, so a write always keeps the shape the consumer's
- * prop was declared with.
+ * Membership over a consumer's bindable that is a string in single mode and a string array
+ * in multiple mode. `value` reads and writes the root's prop through the closures it was
+ * built with; the mode is fixed at construction, so `with` always keeps the declared shape.
  */
 export class SelectionValue {
 	readonly isMulti: boolean;
-	readonly #value: WritableBox<string | string[]>;
+	readonly #read: () => Selection;
+	readonly #write: (value: Selection) => void;
 
-	constructor(type: SelectionType, value: WritableBox<string | string[]>) {
+	constructor(type: SelectionType, read: () => Selection, write: (value: Selection) => void) {
 		this.isMulti = type === 'multiple';
-		this.#value = value;
+		this.#read = read;
+		this.#write = write;
+	}
+
+	get value(): Selection {
+		return this.#read();
+	}
+
+	set value(next: Selection) {
+		this.#write(next);
 	}
 
 	includes(item: string): boolean {
-		const value = this.#value.current;
+		const value = this.#read();
 		return this.isMulti ? (value as string[]).includes(item) : value === item;
 	}
 
-	/** Flips membership and returns whether the item is selected afterwards. */
-	toggle(item: string): boolean {
-		const selected = !this.includes(item);
-		if (this.isMulti) {
-			const value = this.#value.current as string[];
-			this.#value.current = selected ? [...value, item] : value.filter((v) => v !== item);
-		} else {
-			this.#value.current = selected ? item : '';
-		}
-		return selected;
+	/** The value with `item` present or absent; the same reference when it already is. */
+	with(item: string, selected: boolean): Selection {
+		const value = this.#read();
+		const present = this.isMulti ? (value as string[]).includes(item) : value === item;
+		if (present === selected) return value;
+		if (!this.isMulti) return selected ? item : '';
+		return selected ? [...(value as string[]), item] : (value as string[]).filter((v) => v !== item);
 	}
 }
 
@@ -86,7 +95,9 @@ export class SelectionItemState {
 
 	#activate() {
 		if (this.#isDisabled) return;
-		const selected = this.group.selection.toggle(this.opts.value.current);
+		const item = this.opts.value.current;
+		const selected = !this.group.selection.includes(item);
+		this.group.selection.value = this.group.selection.with(item, selected);
 		if (selected && this.group.selectionTakesTabStop) this.group.rovingFocusGroup.setCurrentTabStopId(this.opts.id.current);
 	}
 

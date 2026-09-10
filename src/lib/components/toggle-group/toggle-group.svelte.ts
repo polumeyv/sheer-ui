@@ -1,16 +1,10 @@
 import { createContext } from 'svelte';
-import { type ReadableBox, type ReadableBoxedValues, type WritableBox, attachRef } from '../../internal/tools/index.js';
+import { type ReadableBox, type ReadableBoxedValues, attachRef } from '../../internal/tools/index.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import type { Orientation } from '../../internal/index.js';
 import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
-import {
-	type SelectionGroup,
-	type SelectionItemOpts,
-	type SelectionType,
-	SelectionItemState,
-	SelectionValue,
-} from '../../internal/selection.svelte.js';
+import { type SelectionGroup, type SelectionItemOpts, SelectionItemState, SelectionValue } from '../../internal/selection.svelte.js';
 
 export const toggleGroupAttrs = createBitsAttrs({
 	component: 'toggle-group',
@@ -28,8 +22,7 @@ interface ToggleGroupRootStateOpts
 			loop: boolean;
 			orientation: Orientation;
 		}> {
-	type: SelectionType;
-	value: WritableBox<string | string[]>;
+	selection: SelectionValue;
 }
 
 export class ToggleGroupRootState implements SelectionGroup {
@@ -47,7 +40,7 @@ export class ToggleGroupRootState implements SelectionGroup {
 
 	constructor(opts: ToggleGroupRootStateOpts) {
 		this.opts = opts;
-		this.selection = new SelectionValue(opts.type, opts.value);
+		this.selection = opts.selection;
 		this.disabled = opts.disabled;
 		this.orientation = opts.orientation;
 		this.rovingFocus = opts.rovingFocus;

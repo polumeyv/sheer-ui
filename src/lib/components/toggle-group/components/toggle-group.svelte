@@ -15,7 +15,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
-	import { emptySelection } from '../../../internal/selection.svelte.js';
+	import { SelectionValue, emptySelection } from '../../../internal/selection.svelte.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToggleGroupRootProps } from '../types.js';
 	import { ToggleGroupRootState } from '../toggle-group.svelte.js';
@@ -44,10 +44,10 @@
 	// Context for toggle group items (values are stable, no reactivity needed)
 	setToggleGroupCtx(untrack(() => ({ variant, size, spacing })));
 
-	// Mode is construction-static: the selection stays single or multiple for the group's life.
-	const valueType = untrack(() => type);
+	// Mode is fixed at mount: `value` keeps the shape it was declared with.
+	// svelte-ignore state_referenced_locally
+	const valueType = type;
 
-	// The group owns a mode-specific controlled value.
 	repairBindable(
 		() => value,
 		() => {
@@ -57,7 +57,8 @@
 
 	const rootState = ToggleGroupRootState.create({
 		id: boxWith(() => id),
-		value: boxWith(
+		selection: new SelectionValue(
+			valueType,
 			() => value ?? emptySelection(valueType),
 			(v) => {
 				value = v;
@@ -69,7 +70,6 @@
 		loop: boxWith(() => loop),
 		orientation: boxWith(() => orientation),
 		rovingFocus: boxWith(() => rovingFocus),
-		type: valueType,
 		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),

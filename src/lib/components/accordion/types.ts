@@ -1,10 +1,10 @@
 import type { HTMLAttributes, SvelteHTMLElements } from 'svelte/elements';
 import type { WithElementRef } from '../../internal/utils.js';
-import type { AccordionType } from './accordion.svelte.js';
+import type { SelectionType } from '../../internal/selection.svelte.js';
 
 export type AccordionRootProps = WithElementRef<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
-	/** 'single' groups the items' `<details>` by name so the browser enforces one-open. */
-	type?: AccordionType;
+	/** 'single' keeps one item open: opening an item closes the open one. Fixed at mount. */
+	type?: SelectionType;
 	/** The open item value(s) — string for single, string[] for multiple. Bindable. */
 	value?: string | string[];
 };

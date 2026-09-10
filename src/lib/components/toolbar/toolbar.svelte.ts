@@ -1,17 +1,11 @@
 import { createContext } from 'svelte';
-import { type ReadableBox, type ReadableBoxedValues, type WritableBox, attachRef } from '../../internal/tools/index.js';
+import { type ReadableBox, type ReadableBoxedValues, attachRef } from '../../internal/tools/index.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '../../internal/attrs.js';
 import type { Orientation } from '../../internal/index.js';
 import type { BitsKeyboardEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
 import { RovingFocusItem } from '../../internal/roving-focus-item.svelte.js';
-import {
-	type SelectionGroup,
-	type SelectionItemOpts,
-	type SelectionType,
-	SelectionItemState,
-	SelectionValue,
-} from '../../internal/selection.svelte.js';
+import { type SelectionGroup, type SelectionItemOpts, SelectionItemState, SelectionValue } from '../../internal/selection.svelte.js';
 
 export const toolbarAttrs = createBitsAttrs({
 	component: 'toolbar',
@@ -66,8 +60,7 @@ interface ToolbarGroupStateOpts
 		ReadableBoxedValues<{
 			disabled: boolean;
 		}> {
-	type: SelectionType;
-	value: WritableBox<string | string[]>;
+	selection: SelectionValue;
 }
 
 /** A selection group inside the toolbar: its items rove with the toolbar's other items. */
@@ -88,7 +81,7 @@ export class ToolbarGroupState implements SelectionGroup {
 	constructor(opts: ToolbarGroupStateOpts, root: ToolbarRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.selection = new SelectionValue(opts.type, opts.value);
+		this.selection = opts.selection;
 		this.disabled = opts.disabled;
 		this.orientation = root.opts.orientation;
 		this.rovingFocusGroup = root.rovingFocusGroup;
