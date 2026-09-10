@@ -1,5 +1,11 @@
 # sheer-ui
 
+## 0.4.0
+
+### Minor Changes
+
+- [#100](https://github.com/polumeyv/sheer-ui/pull/100) [`c7117f0`](https://github.com/polumeyv/sheer-ui/commit/c7117f0c8c383dbeaaa8b9fe5de192f3bc875061) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - The data table's `sorting` and `columnFilters` are written directly and a page index only holds for the sorting and filters it was set under, so `setSorting`, `setColumnFilters` and `resetColumnFilters` are gone; `selectedRowIds` is the live `SvelteSet`, replacing `setSelectedRowIds`; a column's `filterValue` is a get/set property, replacing `setFilterValue`. The toolbar's search input no longer re-applies the filter on `change`.
+
 ## 0.3.1
 
 ### Patch Changes
