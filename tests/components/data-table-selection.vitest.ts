@@ -23,13 +23,15 @@ describe('row selection', () => {
 		dispose();
 	});
 
-	test('setSelectedRowIds round-trips and clears', () => {
+	test('selectedRowIds is the live set', () => {
 		const { table, dispose } = harness();
-		table.setSelectedRowIds(['0', '2']);
+		table.selectedRowIds.add('0').add('2');
 		expect(table.selectedRows.map((row) => row.original.name)).toEqual(['ada', 'carol']);
-		table.setSelectedRowIds(['1']);
+		table.selectedRowIds.delete('0');
+		table.selectedRowIds.delete('2');
+		table.selectedRowIds.add('1');
 		expect([...table.selectedRowIds]).toEqual(['1']);
-		table.setSelectedRowIds([]);
+		table.selectedRowIds.clear();
 		expect(table.selectedRows).toHaveLength(0);
 		dispose();
 	});
@@ -75,7 +77,7 @@ describe('selection vs filtering', () => {
 	test('filteredSelectedRows and selectedRows diverge under an active filter', () => {
 		const { table, dispose } = harness();
 		table.rows[1]!.toggleSelected(true);
-		table.column('name')!.setFilterValue('car');
+		table.column('name')!.filterValue = 'car';
 		expect(table.selectedRows.map((row) => row.original.name)).toEqual(['brian']);
 		expect(table.filteredSelectedRows).toHaveLength(0);
 		dispose();

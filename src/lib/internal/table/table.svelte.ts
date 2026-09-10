@@ -20,13 +20,16 @@ export class DataTable<TData> {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	readonly #defs: () => ColumnDef<TData, any>[];
 	readonly #paginated: boolean;
-	readonly #selection = new SvelteSet<string>();
+	readonly selectedRowIds = new SvelteSet<string>();
 
-	sorting = $state<ColumnSort[]>([]);
-	columnFilters = $state<ColumnFilter[]>([]);
+	// Raw so a change is always a reassignment: the page record below keys on their identity.
+	sorting = $state.raw<ColumnSort[]>([]);
+	columnFilters = $state.raw<ColumnFilter[]>([]);
 	columnVisibility = $state<Record<string, boolean>>({});
-	#pageIndex = $state(0);
 	#pageSize = $state(10);
+	// A page index holds for the sorting and filters it was set under: a sort or filter change reads
+	// as page 0 without a write, while a data refetch underneath keeps the page.
+	#page = $state.raw({ index: 0, sorting: this.sorting, columnFilters: this.columnFilters });
 
 	constructor(options: DataTableOptions<TData>) {
 		this.#data = options.data;
@@ -40,7 +43,7 @@ export class DataTable<TData> {
 	readonly #columns: Column<TData, any>[] = $derived.by(() => this.#defs().map((def) => new Column(this, def)));
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	readonly #columnsById = $derived(new Map<string, Column<TData, any>>(this.#columns.map((column) => [column.id, column])));
-	readonly #coreRows: readonly Row<TData>[] = $derived.by(() => this.#data().map((original, index) => new Row(this, this.#selection, original, index)));
+	readonly #coreRows: readonly Row<TData>[] = $derived.by(() => this.#data().map((original, index) => new Row(this, this.selectedRowIds, original, index)));
 
 	readonly #activeFilters = $derived(
 		this.columnFilters.flatMap((filter) => {
@@ -65,7 +68,9 @@ export class DataTable<TData> {
 
 	readonly pageCount = $derived.by(() => (this.#paginated ? Math.max(1, Math.ceil(this.#sorted.length / this.#pageSize)) : 1));
 	// Clamped on read, never written back: data shrinking under a stale index lands on the last page.
-	readonly #safeIndex = $derived(Math.min(this.#pageIndex, this.pageCount - 1));
+	readonly #safeIndex = $derived(
+		this.#page.sorting === this.sorting && this.#page.columnFilters === this.columnFilters ? Math.min(this.#page.index, this.pageCount - 1) : 0,
+	);
 
 	readonly rows: readonly Row<TData>[] = $derived.by(() =>
 		this.#paginated ? this.#sorted.slice(this.#safeIndex * this.#pageSize, (this.#safeIndex + 1) * this.#pageSize) : this.#sorted,
@@ -79,7 +84,7 @@ export class DataTable<TData> {
 	}
 
 	setPageIndex(index: number) {
-		this.#pageIndex = Math.min(Math.max(index, 0), this.pageCount - 1);
+		this.#page = { index: Math.min(Math.max(index, 0), this.pageCount - 1), sorting: this.sorting, columnFilters: this.columnFilters };
 	}
 	nextPage() {
 		this.setPageIndex(this.#safeIndex + 1);
@@ -90,21 +95,8 @@ export class DataTable<TData> {
 	setPageSize(size: number) {
 		const next = Math.max(1, size);
 		// Keep the current top row visible, matching upstream's paging math.
-		this.#pageIndex = Math.floor((this.#safeIndex * this.#pageSize) / next);
+		this.#page = { index: Math.floor((this.#safeIndex * this.#pageSize) / next), sorting: this.sorting, columnFilters: this.columnFilters };
 		this.#pageSize = next;
-	}
-
-	// User-initiated sort and filter changes restart paging; a data refetch underneath does not.
-	setSorting(sorting: ColumnSort[]) {
-		this.sorting = sorting;
-		this.#pageIndex = 0;
-	}
-	setColumnFilters(filters: ColumnFilter[]) {
-		this.columnFilters = filters;
-		this.#pageIndex = 0;
-	}
-	resetColumnFilters() {
-		this.setColumnFilters([]);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -121,15 +113,6 @@ export class DataTable<TData> {
 	readonly headerGroups: readonly HeaderGroup<TData>[] = $derived([
 		{ id: '0', headers: this.visibleColumns.map((column) => new Header(this, column)) },
 	]);
-
-	get selectedRowIds(): ReadonlySet<string> {
-		return this.#selection;
-	}
-	setSelectedRowIds(ids: Iterable<string>) {
-		const next = new Set(ids);
-		for (const id of this.#selection) if (!next.has(id)) this.#selection.delete(id);
-		for (const id of next) this.#selection.add(id);
-	}
 
 	readonly selectedRows: readonly Row<TData>[] = $derived(this.#coreRows.filter((row) => row.isSelected));
 	readonly filteredSelectedRows: readonly Row<TData>[] = $derived(this.filteredRows.filter((row) => row.isSelected));
@@ -194,26 +177,23 @@ export class Column<TData, TValue = unknown> {
 		const existingIndex = old.findIndex((sort) => sort.id === this.id);
 
 		if (old.length > 0 && this.#canMultiSort && multi) {
-			this.#table.setSorting(
-				existing
-					? !hasManualValue && nextOrder === false
-						? old.filter((sort) => sort.id !== this.id)
-						: old.map((sort) => (sort.id === this.id ? { ...sort, desc: nextDesc } : sort))
-					: [...old, { id: this.id, desc: nextDesc }],
-			);
+			this.#table.sorting = existing
+				? !hasManualValue && nextOrder === false
+					? old.filter((sort) => sort.id !== this.id)
+					: old.map((sort) => (sort.id === this.id ? { ...sort, desc: nextDesc } : sort))
+				: [...old, { id: this.id, desc: nextDesc }];
 			return;
 		}
 
 		// Single mode: only the most recently applied sort toggles through the cycle; anything else replaces.
 		if (existing !== undefined && existingIndex === old.length - 1) {
-			this.#table.setSorting(
+			this.#table.sorting =
 				!hasManualValue && nextOrder === false
 					? old.filter((sort) => sort.id !== this.id)
-					: old.map((sort) => (sort.id === this.id ? { ...sort, desc: nextDesc } : sort)),
-			);
+					: old.map((sort) => (sort.id === this.id ? { ...sort, desc: nextDesc } : sort));
 			return;
 		}
-		this.#table.setSorting([{ id: this.id, desc: nextDesc }]);
+		this.#table.sorting = [{ id: this.id, desc: nextDesc }];
 	}
 
 	get #canMultiSort(): boolean {
@@ -239,9 +219,9 @@ export class Column<TData, TValue = unknown> {
 	get filterValue(): unknown {
 		return this.#table.columnFilters.find((filter) => filter.id === this.id)?.value;
 	}
-	setFilterValue(value: unknown) {
+	set filterValue(value: unknown) {
 		const others = this.#table.columnFilters.filter((filter) => filter.id !== this.id);
-		this.#table.setColumnFilters(shouldAutoRemoveFilter(value) ? others : [...others, { id: this.id, value }]);
+		this.#table.columnFilters = shouldAutoRemoveFilter(value) ? others : [...others, { id: this.id, value }];
 	}
 
 	get facetedUniqueValues(): ReadonlyMap<unknown, number> {

@@ -27,7 +27,7 @@ describe('filtering', () => {
 		table.setPageIndex(2);
 		expect(table.pagination.pageIndex).toBe(2);
 
-		table.column('name')!.setFilterValue('da');
+		table.column('name')!.filterValue = 'da';
 		expect(table.filteredRows.map((row) => row.original.name)).toEqual(['ada', 'dan']);
 		expect(table.pagination.pageIndex).toBe(0);
 		dispose();
@@ -35,9 +35,9 @@ describe('filtering', () => {
 
 	test('clearing the filter value removes its entry entirely', () => {
 		const { table, dispose } = harness();
-		table.column('name')!.setFilterValue('an');
+		table.column('name')!.filterValue = 'an';
 		expect(table.columnFilters).toHaveLength(1);
-		table.column('name')!.setFilterValue('');
+		table.column('name')!.filterValue = '';
 		expect(table.columnFilters).toHaveLength(0);
 		expect(table.column('name')!.filterValue).toBeUndefined();
 		dispose();
@@ -47,7 +47,7 @@ describe('filtering', () => {
 		const h = harness();
 		void h.table.rows;
 		const readsBefore = h.dataReads;
-		h.table.column('name')!.setFilterValue('a');
+		h.table.column('name')!.filterValue = 'a';
 		void h.table.rows;
 		expect(h.dataReads).toBe(readsBefore);
 		h.dispose();
@@ -55,8 +55,8 @@ describe('filtering', () => {
 
 	test('facet counts ignore the column own filter but respect the others', () => {
 		const { table, dispose } = harness();
-		table.column('name')!.setFilterValue('a');
-		table.column('age')!.setFilterValue(36);
+		table.column('name')!.filterValue = 'a';
+		table.column('age')!.filterValue = 36;
 		const facets = table.column('age')!.facetedUniqueValues;
 		// name filter ('a') drops only ed; the age filter itself is excluded from its own facet.
 		expect([...facets.keys()].sort()).toEqual([29, 36, 41, 52, 70]);
