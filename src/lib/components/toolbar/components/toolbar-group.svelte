@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
 	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
-	import { emptySelection } from '../../../internal/selection.svelte.js';
+	import { SelectionValue, emptySelection } from '../../../internal/selection.svelte.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToolbarGroupProps } from '../types.js';
 	import { ToolbarGroupState } from '../toolbar.svelte.js';
@@ -21,10 +20,10 @@
 		...restProps
 	}: ToolbarGroupProps = $props();
 
-	// Mode is construction-static: the selection stays single or multiple for the group's life.
-	const valueType = untrack(() => type);
+	// Mode is fixed at mount: `value` keeps the shape it was declared with.
+	// svelte-ignore state_referenced_locally
+	const valueType = type;
 
-	// The group owns a mode-specific controlled value.
 	repairBindable(
 		() => value,
 		() => {
@@ -35,8 +34,8 @@
 	const groupState = ToolbarGroupState.create({
 		id: boxWith(() => id),
 		disabled: boxWith(() => disabled),
-		type: valueType,
-		value: boxWith(
+		selection: new SelectionValue(
+			valueType,
 			() => value ?? emptySelection(valueType),
 			(v) => {
 				value = v;

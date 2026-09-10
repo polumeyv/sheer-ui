@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import { createSettleRunner } from '../../../internal/animations-settled.svelte.js';
-	import { useAccordion } from '../accordion.svelte.js';
+	import { useAccordion } from './accordion.svelte';
 	import type { AccordionItemProps } from '../types.js';
 
 	let { value, disabled = false, class: className, ref = $bindable(null), children, ...restProps }: AccordionItemProps = $props();
@@ -46,12 +46,12 @@
 		const summary = (e.target as HTMLElement).closest('summary');
 		if (!summary || summary.closest('details') !== e.currentTarget) return;
 		e.preventDefault();
-		accordion.report(value, !open);
+		accordion.value = accordion.with(value, !open);
 	}}
 	ontoggle={(e) => {
 		// Native toggles that bypass the click path (find-in-page, hash reveal).
 		if (e.currentTarget.open === rendered) return;
-		accordion.report(value, e.currentTarget.open);
+		accordion.value = accordion.with(value, e.currentTarget.open);
 	}}
 	bind:this={ref}>
 	{@render children?.()}
