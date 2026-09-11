@@ -1,5 +1,25 @@
 # sheer-ui
 
+## 0.4.1
+
+### Patch Changes
+
+- [#102](https://github.com/polumeyv/sheer-ui/pull/102) [`f3b20c7`](https://github.com/polumeyv/sheer-ui/commit/f3b20c7cf22a30141a0918d3bcf5f1a9fed1d8fe) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - Accordion runs on the shared selection engine: single/multiple mode is fixed at mount, and `bind:value` without an initial value no longer throws; it repairs to the mode's empty selection, like ToggleGroup. Public props are unchanged.
+
+- [#108](https://github.com/polumeyv/sheer-ui/pull/108) [`f14198b`](https://github.com/polumeyv/sheer-ui/commit/f14198b33953128654b4db4e6b1d7871a56ea109) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - The box module is down to `boxWith`, `repairBindable` and two structural types (`{ current }`); `bindableWith`, the unused `Box`/`MaybeGetter`/`get` and the symbol branding are gone. No public change.
+
+- [#106](https://github.com/polumeyv/sheer-ui/pull/106) [`b7a78af`](https://github.com/polumeyv/sheer-ui/commit/b7a78af4101368b531b1d663e539468a3e18ac33) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - Floating anchors are read through getters instead of boxes: the trigger attachment, `customAnchor`, and the context menu's pointer rect each hand the floating root a function, and the context menu's virtual anchor is one stable object whose rect tracks the pointer. `simpleBox` is gone. No public change.
+
+- [#105](https://github.com/polumeyv/sheer-ui/pull/105) [`e751058`](https://github.com/polumeyv/sheer-ui/commit/e75105880448376e04afc282e309561aea46f148) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - NavigationMenu `skipDelayDuration` now works: after a hover menu closes, entering another trigger within that window opens after the short in-menu delay instead of the full `delayDuration`.
+
+- [#104](https://github.com/polumeyv/sheer-ui/pull/104) [`ff81c27`](https://github.com/polumeyv/sheer-ui/commit/ff81c2709b1a66c239007606a829192be9e60254) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - Internal state moves from boxes to rune fields; dead navigation-menu skip-delay and tooltip transit paths are removed; no public change.
+
+- [#111](https://github.com/polumeyv/sheer-ui/pull/111) [`d30be7c`](https://github.com/polumeyv/sheer-ui/commit/d30be7c931feb8460c3b89bc3c6a87ad433bc9ef) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - The roving-focus group and item take getter options instead of boxes; the seven engines that feed them pass plain closures. No public change.
+
+- [#112](https://github.com/polumeyv/sheer-ui/pull/112) [`3754c63`](https://github.com/polumeyv/sheer-ui/commit/3754c63e78ddee8a4eb617db20699e74b1d33d54) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - Tabs and Pagination engines take accessor-object options over the component props instead of per-prop boxes. No public change.
+
+- [#110](https://github.com/polumeyv/sheer-ui/pull/110) [`ba8240c`](https://github.com/polumeyv/sheer-ui/commit/ba8240c3897c899258febc783130646419f312d3) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - ToggleGroup and Toolbar.Group engines take their options as one accessor object over the component's props instead of per-prop boxes; the shared selection item does the same. No public change.
+
 ## 0.4.0
 
 ### Minor Changes
