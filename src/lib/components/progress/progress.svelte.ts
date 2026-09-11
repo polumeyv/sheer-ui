@@ -1,6 +1,6 @@
-import { attachRef, type ReadableBoxedValues } from '../../internal/tools/index.js';
+import { attachRef } from '../../internal/tools/index.js';
 import { createBitsAttrs } from '../../internal/attrs.js';
-import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
+import type { RefAttachment, RefOpts } from '../../internal/types.js';
 
 const progressAttrs = createBitsAttrs({
 	component: 'progress',
@@ -14,14 +14,11 @@ export function getProgressPercent(value: number | null, min: number, max: numbe
 	return Math.min(100, Math.max(0, ((value - min) / range) * 100));
 }
 
-interface ProgressRootStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			value: number | null;
-			max: number;
-			min: number;
-		}> {}
+interface ProgressRootStateOpts extends RefOpts {
+	readonly value: number | null;
+	readonly max: number;
+	readonly min: number;
+}
 
 export class ProgressRootState {
 	static create(opts: ProgressRootStateOpts) {
@@ -33,23 +30,23 @@ export class ProgressRootState {
 
 	constructor(opts: ProgressRootStateOpts) {
 		this.opts = opts;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 	}
 
 	readonly props = $derived.by(() => {
-		const value = this.opts.value.current;
-		const percent = getProgressPercent(value, this.opts.min.current, this.opts.max.current);
+		const { value, min, max } = this.opts;
+		const percent = getProgressPercent(value, min, max);
 		const isIndeterminate = value === null;
 		return {
 			role: 'progressbar',
 			value,
-			'aria-valuemin': this.opts.min.current,
-			'aria-valuemax': this.opts.max.current,
+			'aria-valuemin': min,
+			'aria-valuemax': max,
 			'aria-valuenow': isIndeterminate ? undefined : value,
 			'data-value': isIndeterminate ? undefined : value,
 			'data-state': value === null ? 'indeterminate' : percent === 100 ? 'loaded' : 'loading',
-			'data-max': this.opts.max.current,
-			'data-min': this.opts.min.current,
+			'data-max': max,
+			'data-min': min,
 			'data-indeterminate': isIndeterminate ? '' : undefined,
 			[progressAttrs.root]: '',
 			...this.attachment,

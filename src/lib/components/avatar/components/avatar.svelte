@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { AvatarRootProps } from '../types.js';
 	import { AvatarRootState } from '../avatar.svelte.js';
@@ -19,21 +18,26 @@
 	}: AvatarRootProps = $props();
 
 	const rootState = AvatarRootState.create({
-		delayMs: boxWith(() => delayMs),
-		loadingStatus: boxWith(
-			() => loadingStatus,
-			(v) => {
-				if (loadingStatus !== v) {
-					loadingStatus = v;
-					onLoadingStatusChange?.(v);
-				}
-			},
-		),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get delayMs() {
+			return delayMs;
+		},
+		get loadingStatus() {
+			return loadingStatus;
+		},
+		set loadingStatus(v) {
+			if (loadingStatus === v) return;
+			loadingStatus = v;
+			onLoadingStatusChange?.(v);
+		},
+		get id() {
+			return id;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(

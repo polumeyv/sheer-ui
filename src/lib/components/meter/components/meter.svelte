@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { MeterRootProps } from '../types.js';
 	import { MeterRootState } from '../meter.svelte.js';
@@ -19,14 +18,24 @@
 	}: MeterRootProps = $props();
 
 	const rootState = MeterRootState.create({
-		value: boxWith(() => value),
-		max: boxWith(() => max),
-		min: boxWith(() => min),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get value() {
+			return value;
+		},
+		get max() {
+			return max;
+		},
+		get min() {
+			return min;
+		},
+		get id() {
+			return id;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, rootState.props));
