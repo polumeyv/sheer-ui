@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { PaginationNextButtonProps } from '../types.js';
 	import { PaginationButtonState } from '../pagination.svelte.js';
@@ -21,12 +20,18 @@
 
 	const nextButtonState = PaginationButtonState.create({
 		type: 'next',
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-		disabled: boxWith(() => Boolean(disabled)),
+		get id() {
+			return id;
+		},
+		get disabled() {
+			return Boolean(disabled);
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { PaginationRootProps } from '../types.js';
 	import { PaginationRootState } from '../pagination.svelte.js';
@@ -23,23 +22,37 @@
 	}: PaginationRootProps = $props();
 
 	const rootState = PaginationRootState.create({
-		id: boxWith(() => id),
-		count: boxWith(() => count),
-		perPage: boxWith(() => perPage),
-		page: boxWith(
-			() => page,
-			(v) => {
-				page = v;
-				onPageChange?.(v);
-			},
-		),
-		loop: boxWith(() => loop),
-		siblingCount: boxWith(() => siblingCount),
-		orientation: boxWith(() => orientation),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get id() {
+			return id;
+		},
+		get count() {
+			return count;
+		},
+		get perPage() {
+			return perPage;
+		},
+		get page() {
+			return page;
+		},
+		set page(v) {
+			page = v;
+			onPageChange?.(v);
+		},
+		get loop() {
+			return loop;
+		},
+		get siblingCount() {
+			return siblingCount;
+		},
+		get orientation() {
+			return orientation;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(

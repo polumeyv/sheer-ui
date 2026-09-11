@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { TabsRootProps } from '../types.js';
 	import { TabsRootState } from '../tabs.svelte.js';
@@ -22,22 +21,34 @@
 	}: TabsRootProps = $props();
 
 	const rootState = TabsRootState.create({
-		id: boxWith(() => id),
-		value: boxWith(
-			() => value,
-			(v) => {
-				value = v;
-				onValueChange(v);
-			},
-		),
-		orientation: boxWith(() => orientation),
-		loop: boxWith(() => loop),
-		activationMode: boxWith(() => activationMode),
-		disabled: boxWith(() => disabled),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get id() {
+			return id;
+		},
+		get value() {
+			return value;
+		},
+		set value(v) {
+			value = v;
+			onValueChange(v);
+		},
+		get orientation() {
+			return orientation;
+		},
+		get loop() {
+			return loop;
+		},
+		get activationMode() {
+			return activationMode;
+		},
+		get disabled() {
+			return disabled;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(mergeProps({ 'data-slot': 'tabs', class: 'flex flex-col gap-2' }, restProps, rootState.props));

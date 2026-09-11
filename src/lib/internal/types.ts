@@ -79,6 +79,12 @@ export type AnyFn = (...args: any[]) => any;
 
 export type WithRefOpts<T = {}> = T & ReadableBoxedValues<{ id: string }> & WritableBoxedValues<{ ref: HTMLElement | null }>;
 
+/** A part's `id` and bindable `ref` as accessors over its `$props()`; engines read them, the attachment writes `ref`. */
+export type RefOpts = {
+	readonly id: string;
+	ref: HTMLElement | null;
+};
+
 export type BitsEvent<T extends Event = Event, U extends HTMLElement = HTMLElement> = T & {
 	currentTarget: U;
 };
