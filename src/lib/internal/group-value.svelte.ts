@@ -1,13 +1,14 @@
 import { untrack } from 'svelte';
-import type { ReadableBox, WritableBox } from './tools/index.js';
 
+/** The group's bindable value, as an accessor on the group's options. */
 interface GroupValue {
-	opts: { value: WritableBox<string[]> };
+	value: string[];
 }
 
+/** The item's `value` and `checked` as accessors over its props. */
 interface GroupItem {
-	value: ReadableBox<string | undefined>;
-	checked: WritableBox<boolean>;
+	readonly value: string | undefined;
+	readonly checked: boolean;
 }
 
 /**
@@ -20,17 +21,17 @@ export function joinGroup(group: GroupValue | null, item: GroupItem): () => bool
 	if (!group) return () => undefined;
 
 	$effect(() => {
-		const checked = item.checked.current;
+		const checked = item.checked;
 		untrack(() => {
-			const value = item.value.current;
-			const values = group.opts.value.current;
+			const value = item.value;
+			const values = group.value;
 			if (!value || checked === values.includes(value)) return;
-			group.opts.value.current = checked ? [...values, value] : values.filter((v) => v !== value);
+			group.value = checked ? [...values, value] : values.filter((v) => v !== value);
 		});
 	});
 
 	return () => {
-		const value = item.value.current;
-		return value ? group.opts.value.current.includes(value) : undefined;
+		const value = item.value;
+		return value ? group.value.includes(value) : undefined;
 	};
 }

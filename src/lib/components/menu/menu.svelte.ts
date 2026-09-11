@@ -1139,7 +1139,26 @@ export class MenuCheckboxItemState {
 	constructor(opts: MenuItemCombinedProps & MenuCheckboxItemStateOpts, shared: MenuItemSharedState) {
 		this.opts = opts;
 		this.item = new MenuItemState(opts, shared, { closes: false, act: () => this.#toggle() });
-		this.groupChecked = joinGroup(hasMenuCheckboxGroup() ? getMenuCheckboxGroup() : null, opts);
+		// Accessor views over the boxed options until the menu engine converts.
+		const group = hasMenuCheckboxGroup() ? getMenuCheckboxGroup() : null;
+		this.groupChecked = joinGroup(
+			group && {
+				get value() {
+					return group.opts.value.current;
+				},
+				set value(v) {
+					group.opts.value.current = v;
+				},
+			},
+			{
+				get value() {
+					return opts.value.current;
+				},
+				get checked() {
+					return opts.checked.current;
+				},
+			},
+		);
 	}
 
 	#toggle() {
