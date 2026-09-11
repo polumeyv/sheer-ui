@@ -54,12 +54,11 @@ export class ToolbarRootState {
 	);
 }
 
-interface ToolbarGroupStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			disabled: boolean;
-		}> {
+/** The group component's props as accessors over its `$props()`; `ref` writes back to its bindable. */
+interface ToolbarGroupStateOpts {
+	readonly id: string;
+	readonly disabled: boolean;
+	ref: HTMLElement | null;
 	selection: SelectionValue;
 }
 
@@ -71,8 +70,6 @@ export class ToolbarGroupState implements SelectionGroup {
 	readonly opts: ToolbarGroupStateOpts;
 	readonly root: ToolbarRootState;
 	readonly selection: SelectionValue;
-	readonly disabled: ReadableBox<boolean>;
-	readonly orientation: ReadableBox<Orientation>;
 	readonly rovingFocusGroup: RovingFocusGroup;
 	readonly selectionTakesTabStop = false;
 	readonly extraItemAttrs = { [toolbarAttrs['group-item']]: '' } as const;
@@ -82,20 +79,26 @@ export class ToolbarGroupState implements SelectionGroup {
 		this.opts = opts;
 		this.root = root;
 		this.selection = opts.selection;
-		this.disabled = opts.disabled;
-		this.orientation = root.opts.orientation;
 		this.rovingFocusGroup = root.rovingFocusGroup;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
+	}
+
+	get disabled() {
+		return this.opts.disabled;
+	}
+
+	get orientation() {
+		return this.root.opts.orientation.current;
 	}
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				[toolbarAttrs.group]: '',
 				role: 'group',
 				'data-orientation': this.root.opts.orientation.current,
-				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled),
 				...this.attachment,
 			}) as const,
 	);

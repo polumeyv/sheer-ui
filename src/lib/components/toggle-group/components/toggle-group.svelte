@@ -14,7 +14,7 @@
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
+	import { repairBindable } from '../../../internal/tools/index.js';
 	import { SelectionValue, emptySelection } from '../../../internal/selection.svelte.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToggleGroupRootProps } from '../types.js';
@@ -56,7 +56,27 @@
 	);
 
 	const rootState = ToggleGroupRootState.create({
-		id: boxWith(() => id),
+		get id() {
+			return id;
+		},
+		get disabled() {
+			return disabled;
+		},
+		get loop() {
+			return loop;
+		},
+		get orientation() {
+			return orientation;
+		},
+		get rovingFocus() {
+			return rovingFocus;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 		selection: new SelectionValue(
 			valueType,
 			() => value ?? emptySelection(valueType),
@@ -65,14 +85,6 @@
 				// oxlint-disable-next-line no-explicit-any
 				onValueChange(v as any);
 			},
-		),
-		disabled: boxWith(() => disabled),
-		loop: boxWith(() => loop),
-		orientation: boxWith(() => orientation),
-		rovingFocus: boxWith(() => rovingFocus),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
 		),
 	});
 

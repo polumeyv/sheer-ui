@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
+	import { repairBindable } from '../../../internal/tools/index.js';
 	import { SelectionValue, emptySelection } from '../../../internal/selection.svelte.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToolbarGroupProps } from '../types.js';
@@ -32,8 +32,18 @@
 	);
 
 	const groupState = ToolbarGroupState.create({
-		id: boxWith(() => id),
-		disabled: boxWith(() => disabled),
+		get id() {
+			return id;
+		},
+		get disabled() {
+			return disabled;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 		selection: new SelectionValue(
 			valueType,
 			() => value ?? emptySelection(valueType),
@@ -42,10 +52,6 @@
 				// oxlint-disable-next-line no-explicit-any
 				onValueChange(v as any);
 			},
-		),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
 		),
 	});
 

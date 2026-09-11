@@ -1,8 +1,8 @@
-import type { ReadableBox, ReadableBoxedValues } from './tools/index.js';
+import { boxWith } from './tools/index.js';
 import { boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef, getAriaChecked } from './attrs.js';
 import { kbd } from './kbd.js';
 import type { Orientation } from './index.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, WithRefOpts } from './types.js';
+import type { BitsKeyboardEvent, BitsMouseEvent } from './types.js';
 import type { RovingFocusGroup } from './roving-focus-group.svelte.js';
 import { RovingFocusItem } from './roving-focus-item.svelte.js';
 
@@ -51,42 +51,48 @@ export class SelectionValue {
 	}
 }
 
-/** What a selection item needs from the group that owns it. */
+/**
+ * What a selection item needs from the group that owns it. Reactive members are accessors on the
+ * implementing class, read at use, never copied out.
+ */
 export interface SelectionGroup {
 	readonly selection: SelectionValue;
-	readonly disabled: ReadableBox<boolean>;
-	readonly orientation: ReadableBox<Orientation>;
+	readonly disabled: boolean;
+	readonly orientation: Orientation;
 	readonly rovingFocusGroup: RovingFocusGroup;
 	/** Whether arrow keys move between the items; absent means always. */
-	readonly rovingFocus?: ReadableBox<boolean>;
+	readonly rovingFocus?: boolean;
 	/** A selection takes the roving tab stop in a toggle group; a toolbar's stays where it is. */
 	readonly selectionTakesTabStop: boolean;
 	/** Beyond the roving group's candidate attribute, which every item carries. */
 	readonly extraItemAttrs?: Record<string, ''>;
 }
 
-export interface SelectionItemOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			value: string;
-			disabled: boolean;
-		}> {}
+/** The item component's props as accessors over its `$props()`; `ref` writes back to its bindable. */
+export interface SelectionItemOpts {
+	readonly id: string;
+	readonly value: string;
+	readonly disabled: boolean;
+	ref: HTMLElement | null;
+}
 
 export class SelectionItemState {
 	readonly opts: SelectionItemOpts;
 	readonly group: SelectionGroup;
 	readonly rovingItem: RovingFocusItem;
-	readonly #isDisabled = $derived.by(() => this.opts.disabled.current || this.group.disabled.current);
-	readonly isPressed = $derived.by(() => this.group.selection.includes(this.opts.value.current));
+	readonly #isDisabled = $derived.by(() => this.opts.disabled || this.group.disabled);
+	readonly isPressed = $derived.by(() => this.group.selection.includes(this.opts.value));
 
 	constructor(opts: SelectionItemOpts, group: SelectionGroup) {
 		this.opts = opts;
 		this.group = group;
 		this.rovingItem = new RovingFocusItem({
 			group: group.rovingFocusGroup,
-			ref: opts.ref,
-			enabled: group.rovingFocus,
+			ref: boxWith(
+				() => opts.ref,
+				(v) => (opts.ref = v),
+			),
+			enabled: boxWith(() => group.rovingFocus ?? true),
 		});
 
 		this.onclick = this.onclick.bind(this);
@@ -95,10 +101,10 @@ export class SelectionItemState {
 
 	#activate() {
 		if (this.#isDisabled) return;
-		const item = this.opts.value.current;
+		const item = this.opts.value;
 		const selected = !this.group.selection.includes(item);
 		this.group.selection.value = this.group.selection.with(item, selected);
-		if (selected && this.group.selectionTakesTabStop) this.group.rovingFocusGroup.setCurrentTabStopId(this.opts.id.current);
+		if (selected && this.group.selectionTakesTabStop) this.group.rovingFocusGroup.setCurrentTabStopId(this.opts.id);
 	}
 
 	onclick(_: BitsMouseEvent) {
@@ -120,12 +126,12 @@ export class SelectionItemState {
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				role: this.group.selection.isMulti ? undefined : 'radio',
-				'data-orientation': this.group.orientation.current,
+				'data-orientation': this.group.orientation,
 				'data-disabled': boolToEmptyStrOrUndef(this.#isDisabled),
 				'data-state': this.isPressed ? 'on' : 'off',
-				'data-value': this.opts.value.current,
+				'data-value': this.opts.value,
 				'aria-pressed': this.group.selection.isMulti ? boolToStr(this.isPressed) : undefined,
 				'aria-checked': this.group.selection.isMulti ? undefined : getAriaChecked(this.isPressed, false),
 				disabled: boolToTrueOrUndef(this.#isDisabled),
