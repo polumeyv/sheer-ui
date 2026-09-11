@@ -34,7 +34,8 @@
 	}: SliderRootProps = $props();
 
 	// Slider mode is construction-static: the root state chooses a single/multiple class once.
-	const valueType = untrack(() => type);
+	// svelte-ignore state_referenced_locally
+	const valueType = type;
 
 	const min = $derived.by(() => {
 		if (minProp !== undefined) return minProp;

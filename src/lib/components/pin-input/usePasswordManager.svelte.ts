@@ -16,7 +16,7 @@ type UsePasswordManagerBadgeProps = {
 	containerRef: WritableBox<HTMLElement | null>;
 	inputRef: WritableBox<HTMLInputElement | null>;
 	pushPasswordManagerStrategy: ReadableBox<PinInputRootPropsWithoutHTML['pushPasswordManagerStrategy']>;
-	isFocused: ReadableBox<boolean>;
+	isFocused: () => boolean;
 	domContext: DOMContext;
 };
 
@@ -91,7 +91,7 @@ export function usePasswordManagerBadge({
 	});
 
 	$effect(() => {
-		const focused = isFocused.current || domContext.getActiveElement() === inputRef.current;
+		const focused = isFocused() || domContext.getActiveElement() === inputRef.current;
 
 		if (pushPasswordManagerStrategy.current === 'none' || !focused) return;
 

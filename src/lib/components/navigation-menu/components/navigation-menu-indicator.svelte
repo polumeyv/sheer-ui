@@ -41,8 +41,8 @@
 	);
 </script>
 
-{#if indicatorState.context.indicatorTrackRef.current}
-	<Portal to={indicatorState.context.indicatorTrackRef.current}>
+{#if indicatorState.context.indicatorTrackRef}
+	<Portal to={indicatorState.context.indicatorTrackRef}>
 		<NavigationMenuIndicatorImpl {...mergedProps} {id} bind:ref {child}>
 			{#snippet children()}
 				{#if children}

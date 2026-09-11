@@ -1,5 +1,3 @@
-import { simpleBox, type WritableBox } from './tools/index.js';
-
 interface Machine<S> {
 	[k: string]: { [k: string]: S };
 }
@@ -11,22 +9,22 @@ type MachineEvent<T> = keyof UnionToIntersection<T[keyof T]>;
 type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never;
 
 export class StateMachine<M> {
-	readonly state: WritableBox<MachineState<M>>;
+	state: MachineState<M>;
 	readonly #machine: M & Machine<MachineState<M>>;
 
 	constructor(initialState: MachineState<M>, machine: M & Machine<MachineState<M>>) {
-		this.state = simpleBox(initialState);
+		this.state = $state.raw(initialState);
 		this.#machine = machine;
 		this.dispatch = this.dispatch.bind(this);
 	}
 
 	#reducer(event: MachineEvent<M>) {
-		// @ts-expect-error  state.current is keyof M
-		const nextState = this.#machine[this.state.current][event];
-		return nextState ?? this.state.current;
+		// @ts-expect-error  state is keyof M
+		const nextState = this.#machine[this.state][event];
+		return nextState ?? this.state;
 	}
 
 	dispatch(event: MachineEvent<M>) {
-		this.state.current = this.#reducer(event);
+		this.state = this.#reducer(event);
 	}
 }

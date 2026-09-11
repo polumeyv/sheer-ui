@@ -3,7 +3,7 @@ import { type ReadableBox, type ReadableBoxedValues, attachRef } from '../../int
 import { createBitsAttrs, boolToEmptyStrOrUndef, boolToTrueOrUndef } from '../../internal/attrs.js';
 import type { Orientation } from '../../internal/index.js';
 import type { BitsKeyboardEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
-import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.svelte.js';
 import { RovingFocusItem } from '../../internal/roving-focus-item.svelte.js';
 import { type SelectionGroup, type SelectionItemOpts, SelectionItemState, SelectionValue } from '../../internal/selection.svelte.js';
 

@@ -1,4 +1,4 @@
-import { type Box, type ReadableBox, simpleBox } from './tools/index.js';
+import type { Box, ReadableBox } from './tools/index.js';
 import { getDirectionalKeys, kbd } from './kbd.js';
 import type { Direction, Orientation } from './index.js';
 import { isHTMLElement } from './tools/utils/dom.js';
@@ -54,7 +54,7 @@ type RovingFocusGroupOptions = (
 
 export class RovingFocusGroup {
 	readonly #opts: RovingFocusGroupOptions;
-	readonly #currentTabStopId = simpleBox<string | null>(null);
+	#currentTabStopId = $state.raw<string | null>(null);
 	/** What a candidate of an attribute-marked group stamps on itself; empty for the other kinds. */
 	readonly candidateAttrs: Record<string, ''>;
 
@@ -117,19 +117,19 @@ export class RovingFocusGroup {
 		const itemToFocus = items[itemIndex];
 		if (!itemToFocus) return;
 		itemToFocus.focus();
-		this.#currentTabStopId.current = itemToFocus.id;
+		this.#currentTabStopId = itemToFocus.id;
 		this.#opts.onCandidateFocus?.(itemToFocus);
 		return itemToFocus;
 	}
 
 	getTabIndex(node: HTMLElement | null | undefined) {
 		const items = this.getCandidateNodes();
-		const anyActive = this.#currentTabStopId.current !== null;
+		const anyActive = this.#currentTabStopId !== null;
 
 		if (node && !anyActive && items[0] === node) {
-			this.#currentTabStopId.current = node.id;
+			this.#currentTabStopId = node.id;
 			return 0;
-		} else if (node?.id === this.#currentTabStopId.current) {
+		} else if (node?.id === this.#currentTabStopId) {
 			return 0;
 		}
 
@@ -137,11 +137,11 @@ export class RovingFocusGroup {
 	}
 
 	setCurrentTabStopId(id: string) {
-		this.#currentTabStopId.current = id;
+		this.#currentTabStopId = id;
 	}
 
 	focusCurrentTabStop() {
-		const currentTabStopId = this.#currentTabStopId.current;
+		const currentTabStopId = this.#currentTabStopId;
 		if (!currentTabStopId) return;
 		const currentTabStop = this.#opts.rootNode.current?.querySelector(`#${currentTabStopId}`);
 		if (!currentTabStop || !isHTMLElement(currentTabStop)) return;

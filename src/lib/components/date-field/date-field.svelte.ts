@@ -8,7 +8,6 @@ import {
 	DOMContext,
 	type ReadableBoxedValues,
 	type WritableBoxedValues,
-	simpleBox,
 } from '../../internal/tools/index.js';
 import { createContext, onMount, untrack } from 'svelte';
 import type { DateRangeFieldRootState } from '../date-range-field/date-range-field.svelte.js';
@@ -193,7 +192,7 @@ export class DateFieldRootState {
 	states = initSegmentStates();
 	dayPeriodNode = $state<HTMLElement | null>(null);
 	rangeRoot: DateRangeFieldRootState | undefined = undefined;
-	#nameSource: ReadableBox<string> = simpleBox('');
+	#nameSource: ReadableBox<string> = boxWith(() => '');
 	get name() {
 		return this.#nameSource.current;
 	}
@@ -209,7 +208,7 @@ export class DateFieldRootState {
 		 */
 		this.value = props.value;
 		this.placeholder = rangeRoot ? rangeRoot.opts.placeholder : props.placeholder;
-		this.validate = rangeRoot ? simpleBox(undefined) : props.validate;
+		this.validate = rangeRoot ? boxWith(() => undefined) : props.validate;
 		this.minValue = rangeRoot ? rangeRoot.opts.minValue : props.minValue;
 		this.maxValue = rangeRoot ? rangeRoot.opts.maxValue : props.maxValue;
 		this.disabled = rangeRoot ? rangeRoot.opts.disabled : props.disabled;

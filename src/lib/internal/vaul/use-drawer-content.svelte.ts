@@ -144,8 +144,8 @@ export function useDrawerContent(opts: UseDrawerContentProps) {
 			return;
 		}
 
-		if (ctx.keyboardIsOpen.current) {
-			ctx.keyboardIsOpen.current = false;
+		if (ctx.keyboardIsOpen) {
+			ctx.keyboardIsOpen = false;
 		}
 	}
 

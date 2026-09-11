@@ -1,5 +1,5 @@
 import { type ReadableBox, type RefAttachment, type WritableBox, attachRef } from './tools/index.js';
-import type { RovingFocusGroup } from './roving-focus-group.js';
+import type { RovingFocusGroup } from './roving-focus-group.svelte.js';
 
 type MaybeReadableBoolean = boolean | ReadableBox<boolean>;
 

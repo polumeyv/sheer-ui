@@ -5,7 +5,6 @@ import {
 	DOMContext,
 	type ReadableBoxedValues,
 	type WritableBoxedValues,
-	simpleBox,
 } from '../../internal/tools/index.js';
 import { usePasswordManagerBadge } from './usePasswordManager.svelte.js';
 import type { PinInputCell, PinInputRootProps as RootComponentProps } from './types.js';
@@ -80,7 +79,7 @@ export class PinInputRootState {
 	readonly attachment: RefAttachment;
 	readonly inputAttachment: RefAttachment<HTMLInputElement>;
 	#isHoveringInput = $state(false);
-	#isFocused = simpleBox(false);
+	isFocused = $state(false);
 	#mirrorSelectionStart = $state<number | null>(null);
 	#mirrorSelectionEnd = $state<number | null>(null);
 
@@ -129,7 +128,7 @@ export class PinInputRootState {
 		this.#pwmb = usePasswordManagerBadge({
 			containerRef: this.opts.ref,
 			inputRef: this.opts.inputRef,
-			isFocused: this.#isFocused,
+			isFocused: () => this.isFocused,
 			pushPasswordManagerStrategy: this.opts.pushPasswordManagerStrategy,
 			domContext: this.domContext,
 		});
@@ -152,7 +151,7 @@ export class PinInputRootState {
 
 			this.#onDocumentSelectionChange();
 			if (this.domContext.getActiveElement() === input) {
-				this.#isFocused.current = true;
+				this.isFocused = true;
 			}
 
 			if (!this.domContext.getElementById('pin-input-style')) {
@@ -386,7 +385,7 @@ export class PinInputRootState {
 			this.#mirrorSelectionStart = start;
 			this.#mirrorSelectionEnd = end;
 		}
-		this.#isFocused.current = true;
+		this.isFocused = true;
 	};
 
 	onpaste = (e: BitsEvent<ClipboardEvent>) => {
@@ -440,7 +439,7 @@ export class PinInputRootState {
 			this.#prevInputMetadata.willSyntheticBlur = false;
 			return;
 		}
-		this.#isFocused.current = false;
+		this.isFocused = false;
 	};
 
 	readonly inputProps = $derived.by(() => ({
@@ -469,7 +468,7 @@ export class PinInputRootState {
 	readonly #cells = $derived.by(() =>
 		Array.from({ length: this.opts.maxLength.current }).map((_, idx) => {
 			const isActive =
-				this.#isFocused.current &&
+				this.isFocused &&
 				this.#mirrorSelectionStart !== null &&
 				this.#mirrorSelectionEnd !== null &&
 				((this.#mirrorSelectionStart === this.#mirrorSelectionEnd && idx === this.#mirrorSelectionStart) ||
@@ -487,7 +486,7 @@ export class PinInputRootState {
 
 	readonly snippetProps = $derived.by(() => ({
 		cells: this.#cells,
-		isFocused: this.#isFocused.current,
+		isFocused: this.isFocused,
 		isHovering: this.#isHoveringInput,
 	}));
 }

@@ -35,7 +35,7 @@ import type { Direction } from '../../internal/index.js';
 import { getTabbableFrom, isTabbable } from '../../internal/tabbable.js';
 import type { KeyboardEventHandler, PointerEventHandler, MouseEventHandler } from 'svelte/elements';
 import { Typeahead, textContentOf } from '../../internal/typeahead.svelte.js';
-import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.svelte.js';
 import { useOpenChangeComplete } from '../../internal/animations-settled.svelte.js';
 import { joinGroup } from '../../internal/group-value.svelte.js';
 import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';

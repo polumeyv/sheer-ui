@@ -3,7 +3,7 @@ import { type ReadableBox, type ReadableBoxedValues, attachRef } from '../../int
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import type { Orientation } from '../../internal/index.js';
 import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
-import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.svelte.js';
 import { type SelectionGroup, type SelectionItemOpts, SelectionItemState, SelectionValue } from '../../internal/selection.svelte.js';
 
 export const toggleGroupAttrs = createBitsAttrs({

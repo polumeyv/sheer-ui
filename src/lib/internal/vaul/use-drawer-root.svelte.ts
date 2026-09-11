@@ -1,4 +1,4 @@
-import { simpleBox, type ReadableBoxedValues, type WritableBoxedValues } from '../tools/index.js';
+import type { ReadableBoxedValues, WritableBoxedValues } from '../tools/index.js';
 import type { DrawerDirection } from './types.js';
 import { useSnapPoints } from './use-snap-points.svelte.js';
 import { isInput, usePreventScroll } from './use-prevent-scroll.svelte.js';
@@ -64,7 +64,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 	let isAllowedToDrag = false;
 	let nestedTransitionCleanup: (() => void) | null = null;
 	let pointerStart = 0;
-	let keyboardIsOpen = simpleBox(false);
+	let keyboardIsOpen = $state.raw(false);
 	let shouldAnimate = $state(!opts.open.current);
 	let previousDiffFromInitial = 0;
 	let drawerHeight = 0;
@@ -307,7 +307,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		if (!drawerNode || !opts.repositionInputs.current) return;
 
 		const focusedElement = document.activeElement as HTMLElement;
-		if (isInput(focusedElement) || keyboardIsOpen.current) {
+		if (isInput(focusedElement) || keyboardIsOpen) {
 			const visualViewportHeight = window.visualViewport?.height || 0;
 			const totalHeight = window.innerHeight;
 			// This is the height of the keyboard
@@ -323,7 +323,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 
 			// visualViewport height may change due to some subtle changes to the keyboard. Checking if the height changed by 60 or more will make sure that they keyboard really changed its open state.
 			if (Math.abs(previousDiffFromInitial - diffFromInitial) > 60) {
-				keyboardIsOpen.current = !keyboardIsOpen.current;
+				keyboardIsOpen = !keyboardIsOpen;
 			}
 
 			if (
@@ -337,7 +337,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 			}
 			previousDiffFromInitial = diffFromInitial;
 			// We don't have to change the height if the input is in view, when we are here we are in the opened keyboard state so we can correctly check if the input is in view
-			if (drawerHeight > visualViewportHeight || keyboardIsOpen.current) {
+			if (drawerHeight > visualViewportHeight || keyboardIsOpen) {
 				const height = drawerNode.getBoundingClientRect().height;
 				let newDrawerHeight = height;
 
@@ -354,7 +354,7 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 				drawerNode.style.height = `${initialDrawerHeight}px`;
 			}
 
-			if (opts.snapPoints.current && opts.snapPoints.current.length > 0 && !keyboardIsOpen.current) {
+			if (opts.snapPoints.current && opts.snapPoints.current.length > 0 && !keyboardIsOpen) {
 				drawerNode.style.bottom = `0px`;
 			} else {
 				// Negative bottom value would never make sense
@@ -653,7 +653,12 @@ export function useDrawerRoot(opts: UseDrawerRootProps) {
 		handleOnly: opts.handleOnly,
 		container: opts.container,
 		autoFocus: opts.autoFocus,
-		keyboardIsOpen,
+		get keyboardIsOpen() {
+			return keyboardIsOpen;
+		},
+		set keyboardIsOpen(v: boolean) {
+			keyboardIsOpen = v;
+		},
 		setDrawerNode,
 		setOverlayNode,
 		onPress,

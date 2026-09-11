@@ -6,7 +6,7 @@ import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef } 
 import { kbd } from '../../internal/kbd.js';
 import type { BitsFocusEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import type { Orientation } from '../../internal/index.js';
-import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.svelte.js';
 
 const tabsAttrs = createBitsAttrs({
 	component: 'tabs',
