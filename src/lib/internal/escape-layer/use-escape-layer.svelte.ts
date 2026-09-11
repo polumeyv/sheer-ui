@@ -1,28 +1,21 @@
-import {
-	DOMContext,
-	boxWith,
-	type Box,
-	type Getter,
-	type ReadableBox,
-	type ReadableBoxedValues,
-	type RefAttachment,
-} from '../tools/index.js';
+import { DOMContext, type Getter, type RefAttachment } from '../tools/index.js';
 import { untrack } from 'svelte';
 import { on } from 'svelte/events';
 import { createAttachmentKey } from 'svelte/attachments';
-import type { EscapeBehaviorType, EscapeLayerImplProps } from './types.js';
+import type { EscapeBehaviorType } from './types.js';
 import { kbd } from '../kbd.js';
 import { createLayerStack } from '../layer-stack.js';
 import { globalSingleton } from '../global-singleton.js';
 
 const escapeLayers = globalSingleton('bitsEscapeLayers', () =>
-	createLayerStack<EscapeLayerState, ReadableBox<EscapeBehaviorType>>(
-		(box) => box.current === 'close' || box.current === 'ignore',
-	),
+	createLayerStack<EscapeLayerState, Getter<EscapeBehaviorType>>((behavior) => behavior() === 'close' || behavior() === 'ignore'),
 );
 
-interface EscapeLayerStateOpts extends ReadableBoxedValues<Required<Omit<EscapeLayerImplProps, 'children' | 'ref'>>> {
-	ref: Box<HTMLElement | null>;
+interface EscapeLayerStateOpts {
+	escapeKeydownBehavior: Getter<EscapeBehaviorType>;
+	onEscapeKeydown: Getter<(e: KeyboardEvent) => void>;
+	enabled: Getter<boolean>;
+	ref: Getter<HTMLElement | null>;
 }
 
 export class EscapeLayerState {
@@ -34,10 +27,10 @@ export class EscapeLayerState {
 
 	constructor(opts: EscapeLayerStateOpts) {
 		this.opts = opts;
-		this.domContext = new DOMContext(this.opts.ref);
+		this.domContext = new DOMContext(opts.ref);
 
 		$effect(() => {
-			if (!opts.enabled.current) return;
+			if (!opts.enabled()) return;
 
 			const unsubEvents = untrack(() => {
 				escapeLayers.register(this, opts.escapeKeydownBehavior);
@@ -55,9 +48,9 @@ export class EscapeLayerState {
 		if (e.key !== kbd.ESCAPE || !escapeLayers.isResponsible(this)) return;
 		const clonedEvent = new KeyboardEvent(e.type, e);
 		e.preventDefault();
-		const behaviorType = this.opts.escapeKeydownBehavior.current;
+		const behaviorType = this.opts.escapeKeydownBehavior();
 		if (behaviorType !== 'close' && behaviorType !== 'defer-otherwise-close') return;
-		this.opts.onEscapeKeydown.current(clonedEvent);
+		this.opts.onEscapeKeydown()(clonedEvent);
 	};
 }
 
@@ -76,16 +69,7 @@ export function escapeKeydownAttachment(opts: {
 }): RefAttachment<HTMLElement> {
 	return {
 		[createAttachmentKey()]: (node) => {
-			EscapeLayerState.create({
-				escapeKeydownBehavior: boxWith(opts.escapeKeydownBehavior),
-				onEscapeKeydown: boxWith(opts.onEscapeKeydown),
-				enabled: boxWith(opts.enabled),
-				// The state only reads the ref (to resolve the owner document), so a no-op setter is fine.
-				ref: boxWith(
-					() => node,
-					() => {},
-				),
-			});
+			EscapeLayerState.create({ ...opts, ref: () => node });
 		},
 	};
 }

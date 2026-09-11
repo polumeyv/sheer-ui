@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { CheckboxGroupLabelProps } from '../types.js';
 	import { CheckboxGroupLabelState } from '../checkbox.svelte.js';
@@ -10,11 +9,15 @@
 	let { ref = $bindable(null), id = createId(uid), child, children, ...restProps }: CheckboxGroupLabelProps = $props();
 
 	const labelState = CheckboxGroupLabelState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get id() {
+			return id;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, labelState.props));

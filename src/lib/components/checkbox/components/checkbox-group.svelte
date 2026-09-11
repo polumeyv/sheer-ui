@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { CheckboxGroupProps } from '../types.js';
 	import { CheckboxGroupState } from '../checkbox.svelte.js';
@@ -21,21 +20,31 @@
 	}: CheckboxGroupProps = $props();
 
 	const groupState = CheckboxGroupState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-		disabled: boxWith(() => Boolean(disabled)),
-		required: boxWith(() => Boolean(required)),
-		readonly: boxWith(() => Boolean(readonly)),
-		value: boxWith(
-			() => $state.snapshot(value),
-			(v) => {
-				value = $state.snapshot(v);
-				onValueChange(v);
-			},
-		),
+		get id() {
+			return id;
+		},
+		get disabled() {
+			return Boolean(disabled);
+		},
+		get required() {
+			return Boolean(required);
+		},
+		get readonly() {
+			return Boolean(readonly);
+		},
+		get value() {
+			return $state.snapshot(value);
+		},
+		set value(v) {
+			value = $state.snapshot(v);
+			onValueChange(v);
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, groupState.props));

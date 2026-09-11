@@ -1,8 +1,8 @@
 import { createContext } from 'svelte';
 import { joinGroup } from '../../internal/group-value.svelte.js';
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
+import { attachRef } from '../../internal/tools/index.js';
 import type { HTMLButtonAttributes } from 'svelte/elements';
-import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, RefOpts } from '../../internal/types.js';
 import { boolToStr, createBitsAttrs, getAriaChecked, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import { kbd } from '../../internal/kbd.js';
 
@@ -11,17 +11,12 @@ const checkboxAttrs = createBitsAttrs({
 	parts: ['root', 'group', 'group-label', 'input'],
 });
 
-interface CheckboxGroupStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			disabled: boolean;
-			required: boolean;
-			readonly: boolean;
-		}>,
-		WritableBoxedValues<{
-			value: string[];
-		}> {}
+interface CheckboxGroupStateOpts extends RefOpts {
+	readonly disabled: boolean;
+	readonly required: boolean;
+	readonly readonly: boolean;
+	value: string[];
+}
 
 const [getCheckboxGroup, setCheckboxGroup, hasCheckboxGroup] = createContext<CheckboxGroupState>();
 
@@ -33,27 +28,27 @@ export class CheckboxGroupState {
 	readonly opts: CheckboxGroupStateOpts;
 	readonly attachment: RefAttachment;
 	labelState = $state<CheckboxGroupLabelState | null>(null);
-	readonly labelId = $derived.by(() => this.labelState?.opts.id.current);
+	readonly labelId = $derived.by(() => this.labelState?.opts.id);
 
 	constructor(opts: CheckboxGroupStateOpts) {
 		this.opts = opts;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 	}
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				role: 'group',
 				'aria-labelledby': this.labelId,
-				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled),
 				[checkboxAttrs.group]: '',
 				...this.attachment,
 			}) as const,
 	);
 }
 
-interface CheckboxGroupLabelStateOpts extends WithRefOpts {}
+interface CheckboxGroupLabelStateOpts extends RefOpts {}
 
 export class CheckboxGroupLabelState {
 	static create(opts: CheckboxGroupLabelStateOpts) {
@@ -68,14 +63,14 @@ export class CheckboxGroupLabelState {
 		this.opts = opts;
 		this.group = group;
 		this.group.labelState = this;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 	}
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
-				'data-disabled': boolToEmptyStrOrUndef(this.group.opts.disabled.current),
+				id: this.opts.id,
+				'data-disabled': boolToEmptyStrOrUndef(this.group.opts.disabled),
 				[checkboxAttrs['group-label']]: '',
 				...this.attachment,
 			}) as const,
@@ -84,20 +79,15 @@ export class CheckboxGroupLabelState {
 
 const [, setCheckboxRoot] = createContext<CheckboxRootState>();
 
-interface CheckboxRootStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			disabled: boolean;
-			required: boolean;
-			readonly: boolean;
-			value: string | undefined;
-			type: HTMLButtonAttributes['type'];
-		}>,
-		WritableBoxedValues<{
-			checked: boolean;
-			indeterminate: boolean;
-		}> {}
+interface CheckboxRootStateOpts extends RefOpts {
+	readonly disabled: boolean;
+	readonly required: boolean;
+	readonly readonly: boolean;
+	readonly value: string | undefined;
+	readonly type: HTMLButtonAttributes['type'];
+	checked: boolean;
+	indeterminate: boolean;
+}
 
 export class CheckboxRootState {
 	static create(opts: CheckboxRootStateOpts) {
@@ -109,33 +99,33 @@ export class CheckboxRootState {
 	readonly group: CheckboxGroupState | null;
 	readonly groupChecked: () => boolean | undefined;
 	readonly trueRequired = $derived.by(() => {
-		if (this.group && this.group.opts.required.current) return true;
-		return this.opts.required.current;
+		if (this.group && this.group.opts.required) return true;
+		return this.opts.required;
 	});
 	readonly trueDisabled = $derived.by(() => {
-		if (this.group && this.group.opts.disabled.current) return true;
-		return this.opts.disabled.current;
+		if (this.group && this.group.opts.disabled) return true;
+		return this.opts.disabled;
 	});
 	readonly trueReadonly = $derived.by(() => {
-		if (this.group && this.group.opts.readonly.current) return true;
-		return this.opts.readonly.current;
+		if (this.group && this.group.opts.readonly) return true;
+		return this.opts.readonly;
 	});
 	readonly attachment: RefAttachment;
 
 	constructor(opts: CheckboxRootStateOpts, group: CheckboxGroupState | null) {
 		this.opts = opts;
 		this.group = group;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 		this.onkeydown = this.onkeydown.bind(this);
 		this.onclick = this.onclick.bind(this);
-		this.groupChecked = joinGroup(group, opts);
+		this.groupChecked = joinGroup(group?.opts ?? null, opts);
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
 		if (this.trueDisabled || this.trueReadonly) return;
 		if (e.key === kbd.ENTER) {
 			e.preventDefault();
-			if (this.opts.type.current === 'submit') {
+			if (this.opts.type === 'submit') {
 				const form = e.currentTarget.closest('form');
 				form?.requestSubmit();
 			}
@@ -148,17 +138,17 @@ export class CheckboxRootState {
 	}
 
 	#toggle() {
-		if (this.opts.indeterminate.current) {
-			this.opts.indeterminate.current = false;
-			this.opts.checked.current = true;
+		if (this.opts.indeterminate) {
+			this.opts.indeterminate = false;
+			this.opts.checked = true;
 		} else {
-			this.opts.checked.current = !this.opts.checked.current;
+			this.opts.checked = !this.opts.checked;
 		}
 	}
 
 	onclick(e: BitsMouseEvent) {
 		if (this.trueDisabled || this.trueReadonly) return;
-		if (this.opts.type.current === 'submit') {
+		if (this.opts.type === 'submit') {
 			this.#toggle();
 			return;
 		}
@@ -167,23 +157,23 @@ export class CheckboxRootState {
 	}
 
 	readonly snippetProps = $derived.by(() => ({
-		checked: this.opts.checked.current,
-		indeterminate: this.opts.indeterminate.current,
+		checked: this.opts.checked,
+		indeterminate: this.opts.indeterminate,
 	}));
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				role: 'checkbox',
-				type: this.opts.type.current,
+				type: this.opts.type,
 				disabled: this.trueDisabled,
-				'aria-checked': getAriaChecked(this.opts.checked.current, this.opts.indeterminate.current),
+				'aria-checked': getAriaChecked(this.opts.checked, this.opts.indeterminate),
 				'aria-required': boolToStr(this.trueRequired),
 				'aria-readonly': boolToStr(this.trueReadonly),
 				'data-disabled': boolToEmptyStrOrUndef(this.trueDisabled),
 				'data-readonly': boolToEmptyStrOrUndef(this.trueReadonly),
-				'data-state': getCheckboxDataState(this.opts.checked.current, this.opts.indeterminate.current),
+				'data-state': getCheckboxDataState(this.opts.checked, this.opts.indeterminate),
 				[checkboxAttrs.root]: '',
 				//
 				onclick: this.onclick,
