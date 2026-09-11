@@ -1,17 +1,9 @@
-export {
-	bindableWith,
-	boxWith,
-	repairBindable,
-	type WritableBox,
-	type ReadableBox,
-} from './box.svelte.js';
-export { get } from './types.js';
+export { boxWith, repairBindable, type WritableBox, type ReadableBox } from './box.svelte.js';
 export type {
 	AnyFn,
 	Box,
 	Expand,
 	Getter,
-	MaybeGetter,
 	ReadableBoxedValues,
 	WithChildren,
 	WithRefProps,
