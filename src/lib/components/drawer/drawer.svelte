@@ -118,9 +118,14 @@
 	});
 
 	DialogRootState.create({
-		variant: boxWith(() => 'dialog'),
-		cell: dialogCell,
-		onOpenChangeComplete: boxWith(() => handleOpenChangeComplete),
+		variant: 'dialog',
+		get open() {
+			return dialogCell.open;
+		},
+		set open(v) {
+			dialogCell.open = v;
+		},
+		onOpenChangeComplete: handleOpenChangeComplete,
 	});
 </script>
 

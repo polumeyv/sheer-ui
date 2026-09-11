@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import { DialogTriggerState } from '../dialog.svelte.js';
 	import type { DialogTriggerProps } from '../types.js';
@@ -10,12 +9,18 @@
 	let { id = createId(uid), ref = $bindable(null), children, child, disabled = false, ...restProps }: DialogTriggerProps = $props();
 
 	const triggerState = DialogTriggerState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-		disabled: boxWith(() => Boolean(disabled)),
+		get id() {
+			return id;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
+		get disabled() {
+			return Boolean(disabled);
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, triggerState.props));

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import { DialogContentState } from '../dialog.svelte.js';
 	import type { DialogContentProps } from '../types.js';
@@ -35,17 +34,21 @@
 	}: DialogContentProps = $props();
 
 	const contentState = DialogContentState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get id() {
+			return id;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	// Closed state, on this element only (DialogContentState.props is shared with the native
 	// modal surface). The scroll lock's body styles land a tick after opening, after vaul's
 	// open effect has snapshotted them, as they did when the mount gate flipped a flush later.
-	const mergedProps = $derived(mergeProps(restProps, contentState.props, { style: contentState.root.cell.open ? {} : { visibility: 'hidden' } }));
+	const mergedProps = $derived(mergeProps(restProps, contentState.props, { style: contentState.root.opts.open ? {} : { visibility: 'hidden' } }));
 
 	const escapeAttachment = escapeKeydownAttachment({
 		escapeKeydownBehavior: () => restProps.escapeKeydownBehavior ?? 'close',
@@ -54,7 +57,7 @@
 			if (e.defaultPrevented) return;
 			contentState.root.handleClose();
 		},
-		enabled: () => contentState.root.cell.open,
+		enabled: () => contentState.root.opts.open,
 	});
 
 	// Dialog content historically dropped the dismissible focus-capture props (its default-slot
@@ -68,12 +71,12 @@
 			contentState.root.handleClose();
 		},
 		onFocusOutside: () => restProps.onFocusOutside,
-		enabled: () => contentState.root.cell.open,
+		enabled: () => contentState.root.opts.open,
 	});
 
 	// Flags the open surface for the CSS text-selection guard in ui.css.
 	const textSelectionGuard = $derived(
-		contentState.root.cell.open && (restProps.preventOverflowTextSelection ?? true) ? { 'data-text-selection-guard': '' } : {},
+		contentState.root.opts.open && (restProps.preventOverflowTextSelection ?? true) ? { 'data-text-selection-guard': '' } : {},
 	);
 
 	// Spans `present` (open through the settled exit), the window element lifecycle used to
@@ -84,7 +87,7 @@
 	});
 
 	const focusScope = createFocusScopeProps({
-		enabled: () => contentState.root.cell.open,
+		enabled: () => contentState.root.opts.open,
 		trap: () => trapFocus,
 		loop: () => true,
 		onCloseAutoFocus: () => onCloseAutoFocus,

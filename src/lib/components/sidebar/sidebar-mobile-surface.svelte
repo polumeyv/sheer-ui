@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import * as Sheet from '../sheet/index.js';
-	import { boxWith } from '../../internal/tools/index.js';
 	import { DialogRootState, DialogState } from '../dialog/dialog.svelte.js';
 	import { join } from 'overrule';
 	import { SIDEBAR_WIDTH_MOBILE } from './constants.js';
@@ -32,9 +31,14 @@
 	});
 
 	DialogRootState.create({
-		variant: boxWith(() => 'dialog'),
-		cell: sheetCell,
-		onOpenChangeComplete: boxWith(() => () => {}),
+		variant: 'dialog',
+		get open() {
+			return sheetCell.open;
+		},
+		set open(v) {
+			sheetCell.open = v;
+		},
+		onOpenChangeComplete: () => {},
 	});
 </script>
 

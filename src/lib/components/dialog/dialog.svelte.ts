@@ -1,7 +1,7 @@
-import { attachRef, type ReadableBoxedValues } from '../../internal/tools/index.js';
+import { attachRef } from '../../internal/tools/index.js';
 import { createContext, onDestroy, untrack } from 'svelte';
 import { createBitsAttrs, boolToStr, getDataOpenClosed, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, OnChangeFn, RefAttachment, RefOpts } from '../../internal/types.js';
 import { kbd } from '../../internal/kbd.js';
 import { useOpenChangeComplete } from '../../internal/animations-settled.svelte.js';
 
@@ -19,12 +19,10 @@ const [getDialogRoot, setDialogRoot, hasDialogRoot] = createContext<DialogRootSt
 import { OpenCell as DialogState } from '../../internal/open-cell.svelte.js';
 export { DialogState };
 
-interface DialogRootStateOpts
-	extends ReadableBoxedValues<{
-		variant: DialogVariant;
-		onOpenChangeComplete: OnChangeFn<boolean>;
-	}> {
-	cell: DialogState;
+interface DialogRootStateOpts {
+	readonly variant: DialogVariant;
+	readonly onOpenChangeComplete: OnChangeFn<boolean>;
+	open: boolean;
 }
 
 export class DialogRootState {
@@ -34,7 +32,6 @@ export class DialogRootState {
 	}
 
 	readonly opts: DialogRootStateOpts;
-	readonly cell: DialogState;
 	triggerNode = $state<HTMLElement | null>(null);
 	contentNode = $state<HTMLElement | null>(null);
 	descriptionNode = $state<HTMLElement | null>(null);
@@ -42,33 +39,32 @@ export class DialogRootState {
 	triggerId = $state<string | undefined>(undefined);
 	titleState = $state<DialogTitleState | null>(null);
 	descriptionState = $state<DialogDescriptionState | null>(null);
-	readonly titleId = $derived.by(() => this.titleState?.opts.id.current);
-	readonly descriptionId = $derived.by(() => this.descriptionState?.opts.id.current);
+	readonly titleId = $derived.by(() => this.titleState?.opts.id);
+	readonly descriptionId = $derived.by(() => this.descriptionState?.opts.id);
 	cancelNode = $state<HTMLElement | null>(null);
 	nestedOpenCount = $state(0);
 	readonly depth: number;
 	readonly parent: DialogRootState | null;
 	readonly #completion: { readonly pending: boolean };
 	/** Rendered: open, or closing with the exit still settling — the window the headless content's scroll lock covers. */
-	readonly present = $derived.by(() => this.cell.open || this.#completion.pending);
+	readonly present = $derived.by(() => this.opts.open || this.#completion.pending);
 
 	constructor(opts: DialogRootStateOpts, parent: DialogRootState | null) {
 		this.opts = opts;
-		this.cell = opts.cell;
 		this.parent = parent;
 		this.depth = parent ? parent.depth + 1 : 0;
 		this.handleOpen = this.handleOpen.bind(this);
 		this.handleClose = this.handleClose.bind(this);
 
 		this.#completion = useOpenChangeComplete(
-			() => this.cell.open,
+			() => this.opts.open,
 			() => this.contentNode,
-			(isOpen) => this.opts.onOpenChangeComplete.current(isOpen),
+			(isOpen) => this.opts.onOpenChangeComplete(isOpen),
 		);
 
 		let started = false;
 		$effect(() => {
-			const isOpen = this.cell.open;
+			const isOpen = this.opts.open;
 			if (!started) {
 				started = true;
 				return;
@@ -84,22 +80,22 @@ export class DialogRootState {
 		});
 
 		onDestroy(() => {
-			if (this.cell.open) {
+			if (this.opts.open) {
 				this.parent?.decrementNested();
 			}
 		});
 	}
 
 	handleOpen() {
-		this.cell.open = true;
+		this.opts.open = true;
 	}
 
 	handleClose() {
-		this.cell.open = false;
+		this.opts.open = false;
 	}
 
 	getBitsAttr: typeof dialogAttrs.getAttr = (part) => {
-		return dialogAttrs.getAttr(part, this.opts.variant.current);
+		return dialogAttrs.getAttr(part, this.opts.variant);
 	};
 
 	incrementNested() {
@@ -116,12 +112,14 @@ export class DialogRootState {
 	readonly sharedProps = $derived.by(
 		() =>
 			({
-				'data-state': getDataOpenClosed(this.cell.open),
+				'data-state': getDataOpenClosed(this.opts.open),
 			}) as const,
 	);
 }
 
-interface DialogTriggerStateOpts extends WithRefOpts, ReadableBoxedValues<{ disabled: boolean }> {}
+interface DialogTriggerStateOpts extends RefOpts {
+	readonly disabled: boolean;
+}
 
 export class DialogTriggerState {
 	static create(opts: DialogTriggerStateOpts) {
@@ -135,22 +133,25 @@ export class DialogTriggerState {
 	constructor(opts: DialogTriggerStateOpts, root: DialogRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref, (v) => {
-			this.root.triggerNode = v;
-			this.root.triggerId = v?.id;
-		});
+		this.attachment = attachRef<HTMLElement>(
+			(v) => (opts.ref = v),
+			(v) => {
+				this.root.triggerNode = v;
+				this.root.triggerId = v?.id;
+			},
+		);
 		this.onclick = this.onclick.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);
 	}
 
 	onclick(e: BitsMouseEvent) {
-		if (this.opts.disabled.current) return;
+		if (this.opts.disabled) return;
 		if (e.button > 0) return;
 		this.root.handleOpen();
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
-		if (this.opts.disabled.current) return;
+		if (this.opts.disabled) return;
 		if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
 			e.preventDefault();
 			this.root.handleOpen();
@@ -160,21 +161,24 @@ export class DialogTriggerState {
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				'aria-haspopup': 'dialog',
-				'aria-expanded': boolToStr(this.root.cell.open),
+				'aria-expanded': boolToStr(this.root.opts.open),
 				'aria-controls': this.root.contentId,
 				[this.root.getBitsAttr('trigger')]: '',
 				onkeydown: this.onkeydown,
 				onclick: this.onclick,
-				disabled: this.opts.disabled.current ? true : undefined,
+				disabled: this.opts.disabled ? true : undefined,
 				...this.root.sharedProps,
 				...this.attachment,
 			}) as const,
 	);
 }
 
-interface DialogCloseStateOpts extends WithRefOpts, ReadableBoxedValues<{ variant: 'action' | 'cancel' | 'close'; disabled: boolean }> {}
+interface DialogCloseStateOpts extends RefOpts {
+	readonly variant: 'action' | 'cancel' | 'close';
+	readonly disabled: boolean;
+}
 
 export class DialogCloseState {
 	static create(opts: DialogCloseStateOpts) {
@@ -188,19 +192,19 @@ export class DialogCloseState {
 	constructor(opts: DialogCloseStateOpts, root: DialogRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 		this.onclick = this.onclick.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);
 	}
 
 	onclick(e: BitsMouseEvent) {
-		if (this.opts.disabled.current) return;
+		if (this.opts.disabled) return;
 		if (e.button > 0) return;
 		this.root.handleClose();
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
-		if (this.opts.disabled.current) return;
+		if (this.opts.disabled) return;
 		if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
 			e.preventDefault();
 			this.root.handleClose();
@@ -210,11 +214,11 @@ export class DialogCloseState {
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
-				[this.root.getBitsAttr(this.opts.variant.current)]: '',
+				id: this.opts.id,
+				[this.root.getBitsAttr(this.opts.variant)]: '',
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
-				disabled: this.opts.disabled.current ? true : undefined,
+				disabled: this.opts.disabled ? true : undefined,
 				tabindex: 0,
 				...this.root.sharedProps,
 				...this.attachment,
@@ -222,7 +226,9 @@ export class DialogCloseState {
 	);
 }
 
-interface DialogTitleStateOpts extends WithRefOpts, ReadableBoxedValues<{ level: 1 | 2 | 3 | 4 | 5 | 6 }> {}
+interface DialogTitleStateOpts extends RefOpts {
+	readonly level: 1 | 2 | 3 | 4 | 5 | 6;
+}
 
 export class DialogTitleState {
 	static create(opts: DialogTitleStateOpts) {
@@ -237,15 +243,15 @@ export class DialogTitleState {
 		this.opts = opts;
 		this.root = root;
 		this.root.titleState = this;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 	}
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				role: 'heading',
-				'aria-level': this.opts.level.current,
+				'aria-level': this.opts.level,
 				[this.root.getBitsAttr('title')]: '',
 				...this.root.sharedProps,
 				...this.attachment,
@@ -253,7 +259,7 @@ export class DialogTitleState {
 	);
 }
 
-interface DialogDescriptionStateOpts extends WithRefOpts {}
+interface DialogDescriptionStateOpts extends RefOpts {}
 
 export class DialogDescriptionState {
 	static create(opts: DialogDescriptionStateOpts) {
@@ -268,15 +274,18 @@ export class DialogDescriptionState {
 		this.opts = opts;
 		this.root = root;
 		this.root.descriptionState = this;
-		this.attachment = attachRef(this.opts.ref, (v) => {
-			this.root.descriptionNode = v;
-		});
+		this.attachment = attachRef<HTMLElement>(
+			(v) => (opts.ref = v),
+			(v) => {
+				this.root.descriptionNode = v;
+			},
+		);
 	}
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				[this.root.getBitsAttr('description')]: '',
 				...this.root.sharedProps,
 				...this.attachment,
@@ -284,7 +293,7 @@ export class DialogDescriptionState {
 	);
 }
 
-interface DialogContentStateOpts extends WithRefOpts {}
+interface DialogContentStateOpts extends RefOpts {}
 
 export class DialogContentState {
 	static create(opts: DialogContentStateOpts) {
@@ -298,26 +307,29 @@ export class DialogContentState {
 	constructor(opts: DialogContentStateOpts, root: DialogRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref, (v) => {
-			this.root.contentNode = v;
-			this.root.contentId = v?.id;
-		});
+		this.attachment = attachRef<HTMLElement>(
+			(v) => (opts.ref = v),
+			(v) => {
+				this.root.contentNode = v;
+				this.root.contentId = v?.id;
+			},
+		);
 	}
 
-	readonly snippetProps = $derived.by(() => ({ open: this.root.cell.open }));
+	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open }));
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
-				role: this.root.opts.variant.current === 'alert-dialog' ? 'alertdialog' : 'dialog',
+				id: this.opts.id,
+				role: this.root.opts.variant === 'alert-dialog' ? 'alertdialog' : 'dialog',
 				'aria-modal': 'true',
 				'aria-describedby': this.root.descriptionId,
 				'aria-labelledby': this.root.titleId,
 				[this.root.getBitsAttr('content')]: '',
 				style: {
 					pointerEvents: 'auto',
-					outline: this.root.opts.variant.current === 'alert-dialog' ? 'none' : undefined,
+					outline: this.root.opts.variant === 'alert-dialog' ? 'none' : undefined,
 					'--bits-dialog-depth': this.root.depth,
 					'--bits-dialog-nested-count': this.root.nestedOpenCount,
 					// CSS containment isolates style/layout calculations from the rest of the page,
@@ -325,7 +337,7 @@ export class DialogContentState {
 					// Paint is omitted so tooltips/selects can render outside dialog bounds.
 					contain: 'layout style',
 				},
-				tabindex: this.root.opts.variant.current === 'alert-dialog' ? -1 : undefined,
+				tabindex: this.root.opts.variant === 'alert-dialog' ? -1 : undefined,
 				'data-nested-open': boolToEmptyStrOrUndef(this.root.nestedOpenCount > 0),
 				'data-nested': boolToEmptyStrOrUndef(this.root.parent !== null),
 				...this.root.sharedProps,
@@ -334,7 +346,7 @@ export class DialogContentState {
 	);
 }
 
-interface DialogOverlayStateOpts extends WithRefOpts {}
+interface DialogOverlayStateOpts extends RefOpts {}
 
 export class DialogOverlayState {
 	static create(opts: DialogOverlayStateOpts) {
@@ -347,15 +359,15 @@ export class DialogOverlayState {
 	constructor(opts: DialogOverlayStateOpts, root: DialogRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 	}
 
-	readonly snippetProps = $derived.by(() => ({ open: this.root.cell.open }));
+	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open }));
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				[this.root.getBitsAttr('overlay')]: '',
 				style: {
 					pointerEvents: 'auto',
