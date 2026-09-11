@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { DialogRootState, DialogState } from '../dialog.svelte.js';
 	import type { DialogRootProps } from '../types.js';
 
@@ -12,9 +11,16 @@
 	// svelte-ignore state_referenced_locally
 	const dialog = state ?? new DialogState(() => open);
 	DialogRootState.create({
-		variant: boxWith(() => 'dialog'),
-		cell: dialog,
-		onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
+		variant: 'dialog',
+		get open() {
+			return dialog.open;
+		},
+		set open(v) {
+			dialog.open = v;
+		},
+		get onOpenChangeComplete() {
+			return onOpenChangeComplete;
+		},
 	});
 </script>
 

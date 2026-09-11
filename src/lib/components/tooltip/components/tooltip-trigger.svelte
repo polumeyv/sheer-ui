@@ -3,7 +3,6 @@
 </script>
 
 <script lang="ts" generics="T = never">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { TooltipTriggerProps } from '../types.js';
 	import { TooltipTriggerState } from '../tooltip.svelte.js';
@@ -25,15 +24,27 @@
 	}: TooltipTriggerProps<T> = $props();
 
 	const triggerState = TooltipTriggerState.create({
-		id: boxWith(() => id),
-		disabled: boxWith(() => disabled ?? false),
-		tabindex: boxWith(() => tabindex ?? 0),
-		payload: boxWith(() => payload),
-		tether: boxWith(() => tether),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get id() {
+			return id;
+		},
+		get disabled() {
+			return disabled ?? false;
+		},
+		get tabindex() {
+			return tabindex ?? 0;
+		},
+		get payload() {
+			return payload;
+		},
+		get tether() {
+			return tether;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(mergeProps({ 'data-slot': 'tooltip-trigger' }, restProps, triggerState.props, { type }));

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { HTMLDialogAttributes } from 'svelte/elements';
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import { DialogContentState } from '../dialog.svelte.js';
 	import type { DialogContentProps, DialogPortalProps } from '../types.js';
@@ -84,11 +83,15 @@
 	} = $props();
 
 	const contentState = DialogContentState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get id() {
+			return id;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	// Bridge the shared root `open` to the native top-layer API and mirror native dismissal back
@@ -99,7 +102,7 @@
 	// `contentNode` (set by DialogContentState) and fires it once the <dialog>'s animations
 	// settle (useOpenChangeComplete) — a listener here would double-fire it.
 	const controllerAttachment = nativeDialogControllerAttachment({
-		open: () => contentState.root.cell.open,
+		open: () => contentState.root.opts.open,
 		onClose: () => contentState.root.handleClose(),
 		// the controller takes this as a plain, non-reactive value — fixed per adapter at mount
 		// svelte-ignore state_referenced_locally
@@ -113,7 +116,7 @@
 
 	// The <dialog> persists across open/close, so the lock gates on the cell's open, not element lifecycle.
 	const scrollLock = scrollLockAttachment({
-		enabled: () => contentState.root.cell.open && preventScroll,
+		enabled: () => contentState.root.opts.open && preventScroll,
 		restoreScrollDelay: () => restoreScrollDelay,
 	});
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import { DialogTitleState } from '../dialog.svelte.js';
 	import type { DialogTitleProps } from '../types.js';
@@ -10,12 +9,18 @@
 	let { id = createId(uid), ref = $bindable(null), child, children, level = 2, ...restProps }: DialogTitleProps = $props();
 
 	const titleState = DialogTitleState.create({
-		id: boxWith(() => id),
-		level: boxWith(() => level),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get id() {
+			return id;
+		},
+		get level() {
+			return level;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, titleState.props));

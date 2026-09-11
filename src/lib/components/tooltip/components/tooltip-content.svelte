@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import type { ClassValue } from 'svelte/elements';
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { TooltipContentProps } from '../types.js';
 	import { TooltipContentState } from '../tooltip.svelte.js';
@@ -28,38 +27,24 @@
 	}: TooltipContentProps & { arrowClasses?: ClassValue; portalProps?: unknown } = $props();
 
 	const contentState = TooltipContentState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-		onInteractOutside: boxWith(() => onInteractOutside),
-		onEscapeKeydown: boxWith(() => onEscapeKeydown),
+		get id() {
+			return id;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
+		get onInteractOutside() {
+			return onInteractOutside;
+		},
+		get onEscapeKeydown() {
+			return onEscapeKeydown;
+		},
 	});
 
-	// Accessor view over the boxed tooltip state until the tooltip engine converts.
-	const lifecycleProps = useNativePopoverLifecycle({
-		root: {
-			opts: {
-				get open() {
-					return contentState.root.opts.open.current;
-				},
-				get onOpenChangeComplete() {
-					return contentState.root.opts.onOpenChangeComplete.current;
-				},
-			},
-			get triggerNode() {
-				return contentState.root.triggerNode;
-			},
-		},
-		opts: {
-			get ref() {
-				return contentState.opts.ref.current;
-			},
-		},
-		onEscapeKeydown: contentState.onEscapeKeydown,
-		onInteractOutside: contentState.onInteractOutside,
-	});
+	const lifecycleProps = useNativePopoverLifecycle(contentState);
 
 	const mergedProps = $derived(
 		mergeProps(

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import type { TooltipProviderProps } from '../types.js';
 	import { TooltipProviderState } from '../tooltip.svelte.js';
 
@@ -14,12 +13,24 @@
 	}: TooltipProviderProps = $props();
 
 	TooltipProviderState.create({
-		delayDuration: boxWith(() => delayDuration),
-		disableCloseOnTriggerClick: boxWith(() => disableCloseOnTriggerClick),
-		disableHoverableContent: boxWith(() => disableHoverableContent),
-		disabled: boxWith(() => disabled),
-		ignoreNonKeyboardFocus: boxWith(() => ignoreNonKeyboardFocus),
-		skipDelayDuration: boxWith(() => skipDelayDuration),
+		get delayDuration() {
+			return delayDuration;
+		},
+		get disableCloseOnTriggerClick() {
+			return disableCloseOnTriggerClick;
+		},
+		get disableHoverableContent() {
+			return disableHoverableContent;
+		},
+		get disabled() {
+			return disabled;
+		},
+		get ignoreNonKeyboardFocus() {
+			return ignoreNonKeyboardFocus;
+		},
+		get skipDelayDuration() {
+			return skipDelayDuration;
+		},
 	});
 </script>
 

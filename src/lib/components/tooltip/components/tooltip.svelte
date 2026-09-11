@@ -3,7 +3,6 @@
 </script>
 
 <script lang="ts" generics="T = never">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { OpenCell } from '../../../internal/open-cell.svelte.js';
 	import type { TooltipRootProps } from '../types.js';
 	import { TooltipRootState } from '../tooltip.svelte.js';
@@ -22,34 +21,48 @@
 		children,
 	}: TooltipRootProps<T> = $props();
 
-	// Cell over the source prop; the engine keeps its boxed-open interface (vendored,
-	// ADR 0006) — the box is a bridge over the cell, so the cell owns `open`.
 	// svelte-ignore state_referenced_locally
 	const cell = givenCell ?? new OpenCell(() => open);
 
 	const rootState = TooltipRootState.create({
-		open: boxWith(
-			() => cell.open,
-			(v) => (cell.open = v),
-		),
-		triggerId: boxWith(
-			() => triggerId,
-			(v) => {
-				triggerId = v;
-			},
-		),
-		delayDuration: boxWith(() => delayDuration),
-		disableCloseOnTriggerClick: boxWith(() => disableCloseOnTriggerClick),
-		disableHoverableContent: boxWith(() => disableHoverableContent),
-		ignoreNonKeyboardFocus: boxWith(() => ignoreNonKeyboardFocus),
-		disabled: boxWith(() => disabled),
-		onOpenChangeComplete: boxWith(() => onOpenChangeComplete),
-		tether: boxWith(() => tether),
+		get open() {
+			return cell.open;
+		},
+		set open(v) {
+			cell.open = v;
+		},
+		get triggerId() {
+			return triggerId;
+		},
+		set triggerId(v) {
+			triggerId = v;
+		},
+		get delayDuration() {
+			return delayDuration;
+		},
+		get disableCloseOnTriggerClick() {
+			return disableCloseOnTriggerClick;
+		},
+		get disableHoverableContent() {
+			return disableHoverableContent;
+		},
+		get ignoreNonKeyboardFocus() {
+			return ignoreNonKeyboardFocus;
+		},
+		get disabled() {
+			return disabled;
+		},
+		get onOpenChangeComplete() {
+			return onOpenChangeComplete;
+		},
+		get tether() {
+			return tether;
+		},
 	});
 </script>
 
 {@render children?.({
-	open: rootState.opts.open.current,
+	open: rootState.opts.open,
 	triggerId: rootState.activeTriggerId,
 	payload: rootState.activePayload as [T] extends [never] ? null : T | null,
 })}

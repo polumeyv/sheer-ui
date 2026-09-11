@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import { DialogCloseState } from '../dialog.svelte.js';
 	import type { DialogCloseProps } from '../types.js';
@@ -10,13 +9,19 @@
 	let { children, child, id = createId(uid), ref = $bindable(null), disabled = false, ...restProps }: DialogCloseProps = $props();
 
 	const closeState = DialogCloseState.create({
-		variant: boxWith(() => 'close'),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-		disabled: boxWith(() => Boolean(disabled)),
+		variant: 'close',
+		get id() {
+			return id;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
+		get disabled() {
+			return Boolean(disabled);
+		},
 	});
 
 	const mergedProps = $derived(mergeProps({ 'data-slot': 'dialog-close' }, restProps, closeState.props));
