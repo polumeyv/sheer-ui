@@ -1,5 +1,5 @@
 import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 import Fixture from './navigation-menu-child-open.fixture.svelte';
 
 // Content stays mounted and hidden inline while closed; `child` receives `open`, so a consumer
@@ -59,5 +59,61 @@ describe('NavigationMenu presence', () => {
 		expect(viewport()).toBeNull();
 		expect(content()).toBeNull();
 		unmount(component);
+	});
+});
+
+// jsdom has no PointerEvent constructor with pointerType; the handlers only read that field.
+function pointer(el: HTMLElement, type: 'pointermove' | 'pointerleave') {
+	const e = new MouseEvent(type, { bubbles: true, cancelable: true });
+	Object.defineProperty(e, 'pointerType', { value: 'mouse' });
+	el.dispatchEvent(e);
+	flushSync();
+}
+
+function tick(ms: number) {
+	vi.advanceTimersByTime(ms);
+	flushSync();
+}
+
+describe('NavigationMenu hover delay', () => {
+	// Defaults: delayDuration 200, skipDelayDuration 300, 150 while open.
+	test('a hover within skipDelayDuration of a close skips delayDuration', () => {
+		vi.useFakeTimers();
+		const target = document.createElement('div');
+		document.body.append(target);
+		const component = mount(Fixture, { target, props: { openOnHover: true } });
+		flushSync();
+		const one = target.querySelector<HTMLElement>('[data-testid="trigger"]')!;
+		const two = target.querySelector<HTMLElement>('[data-testid="trigger-two"]')!;
+		const contentTwo = target.querySelector<HTMLElement>('[data-testid="content-two"]')!;
+		const content = () => document.querySelector<HTMLElement>('[data-testid="content"]');
+
+		pointer(one, 'pointermove');
+		tick(199);
+		expect(content()).toBeNull();
+		tick(1);
+		expect(content()).not.toBeNull();
+
+		pointer(one, 'pointerleave');
+		tick(150);
+		expect(content()).toBeNull();
+
+		pointer(two, 'pointermove');
+		tick(150);
+		expect(contentTwo.dataset.state).toBe('open');
+
+		pointer(two, 'pointerleave');
+		tick(150);
+		expect(contentTwo.dataset.state).toBe('closed');
+		tick(300);
+
+		pointer(one, 'pointermove');
+		tick(150);
+		expect(content()).toBeNull();
+		tick(50);
+		expect(content()).not.toBeNull();
+
+		unmount(component);
+		vi.useRealTimers();
 	});
 });
