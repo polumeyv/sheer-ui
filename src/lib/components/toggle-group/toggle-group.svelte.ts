@@ -1,5 +1,5 @@
 import { createContext } from 'svelte';
-import { attachRef, boxWith } from '../../internal/tools/index.js';
+import { attachRef } from '../../internal/tools/index.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import type { Orientation } from '../../internal/index.js';
 import type { RefAttachment } from '../../internal/types.js';
@@ -40,9 +40,9 @@ export class ToggleGroupRootState implements SelectionGroup {
 		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 		this.rovingFocusGroup = new RovingFocusGroup({
 			candidateAttr: toggleGroupAttrs.item,
-			rootNode: boxWith(() => opts.ref),
-			loop: boxWith(() => opts.loop),
-			orientation: boxWith(() => opts.orientation),
+			rootNode: () => opts.ref,
+			loop: () => opts.loop,
+			orientation: () => opts.orientation,
 		});
 	}
 

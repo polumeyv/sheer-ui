@@ -35,9 +35,9 @@ export class ToolbarRootState {
 		this.attachment = attachRef(this.opts.ref);
 
 		this.rovingFocusGroup = new RovingFocusGroup({
-			orientation: this.opts.orientation,
-			loop: this.opts.loop,
-			rootNode: this.opts.ref,
+			orientation: () => this.opts.orientation.current,
+			loop: () => this.opts.loop.current,
+			rootNode: () => this.opts.ref.current,
 			candidateAttr: toolbarAttrs.item,
 		});
 	}
@@ -123,7 +123,8 @@ export class ToolbarLinkState {
 		this.root = root;
 		this.rovingItem = new RovingFocusItem({
 			group: this.root.rovingFocusGroup,
-			ref: this.opts.ref,
+			ref: () => this.opts.ref.current,
+			setRef: (v) => (this.opts.ref.current = v),
 		});
 
 		this.onkeydown = this.onkeydown.bind(this);
@@ -175,7 +176,8 @@ export class ToolbarButtonState {
 		this.root = root;
 		this.rovingItem = new RovingFocusItem({
 			group: this.root.rovingFocusGroup,
-			ref: this.opts.ref,
+			ref: () => this.opts.ref.current,
+			setRef: (v) => (this.opts.ref.current = v),
 		});
 
 		this.onkeydown = this.onkeydown.bind(this);

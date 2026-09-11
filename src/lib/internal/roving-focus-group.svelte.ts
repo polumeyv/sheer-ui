@@ -1,4 +1,4 @@
-import type { Box, ReadableBox } from './tools/index.js';
+import type { Getter } from './tools/index.js';
 import { getDirectionalKeys, kbd } from './kbd.js';
 import type { Direction, Orientation } from './index.js';
 import { isHTMLElement } from './tools/utils/dom.js';
@@ -30,21 +30,19 @@ type RovingFocusGroupOptions = (
 			candidateSelector?: undefined;
 	  }
 ) & {
-	/**
-	 * The id of the root node
-	 */
-	rootNode: Box<HTMLElement | null>;
+	/** The node the candidates live under. */
+	rootNode: Getter<HTMLElement | null>;
 
 	/**
 	 * Whether to loop through the candidates when reaching the end.
 	 */
-	loop: ReadableBox<boolean>;
+	loop: Getter<boolean>;
 
 	/**
 	 * The orientation of the roving focus group. Used
 	 * to determine how keyboard navigation should work.
 	 */
-	orientation: ReadableBox<Orientation>;
+	orientation: Getter<Orientation>;
 
 	/**
 	 * A callback function called when a candidate is focused.
@@ -64,7 +62,7 @@ export class RovingFocusGroup {
 	}
 
 	getCandidateNodes() {
-		const rootNode = this.#opts.rootNode.current;
+		const rootNode = this.#opts.rootNode();
 		if (!BROWSER || !rootNode) return [];
 		if (this.#opts.candidateNodes) return this.#opts.candidateNodes(rootNode);
 
@@ -79,7 +77,7 @@ export class RovingFocusGroup {
 	}
 
 	handleKeydown(node: HTMLElement | null | undefined, e: KeyboardEvent, both: boolean = false) {
-		const rootNode = this.#opts.rootNode.current;
+		const rootNode = this.#opts.rootNode();
 		if (!rootNode || !node) return;
 
 		const items = this.getCandidateNodes();
@@ -87,8 +85,8 @@ export class RovingFocusGroup {
 
 		const currentIndex = items.indexOf(node);
 		const dir = (rootNode.ownerDocument.defaultView ?? window).getComputedStyle(rootNode).direction as Direction;
-		const { nextKey, prevKey } = getDirectionalKeys(dir, this.#opts.orientation.current);
-		const loop = this.#opts.loop.current;
+		const { nextKey, prevKey } = getDirectionalKeys(dir, this.#opts.orientation());
+		const loop = this.#opts.loop();
 
 		const keyToIndex = {
 			[nextKey]: currentIndex + 1,
@@ -143,7 +141,7 @@ export class RovingFocusGroup {
 	focusCurrentTabStop() {
 		const currentTabStopId = this.#currentTabStopId;
 		if (!currentTabStopId) return;
-		const currentTabStop = this.#opts.rootNode.current?.querySelector(`#${currentTabStopId}`);
+		const currentTabStop = this.#opts.rootNode()?.querySelector(`#${currentTabStopId}`);
 		if (!currentTabStop || !isHTMLElement(currentTabStop)) return;
 		currentTabStop.focus();
 	}

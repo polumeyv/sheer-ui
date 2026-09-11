@@ -1,4 +1,3 @@
-import { boxWith } from './tools/index.js';
 import { boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef, getAriaChecked } from './attrs.js';
 import { kbd } from './kbd.js';
 import type { Orientation } from './index.js';
@@ -88,11 +87,9 @@ export class SelectionItemState {
 		this.group = group;
 		this.rovingItem = new RovingFocusItem({
 			group: group.rovingFocusGroup,
-			ref: boxWith(
-				() => opts.ref,
-				(v) => (opts.ref = v),
-			),
-			enabled: boxWith(() => group.rovingFocus ?? true),
+			ref: () => opts.ref,
+			setRef: (v) => (opts.ref = v),
+			enabled: () => group.rovingFocus ?? true,
 		});
 
 		this.onclick = this.onclick.bind(this);

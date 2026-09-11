@@ -308,10 +308,10 @@ export class NavigationMenuListState {
 		this.wrapperId = createId('wrapper', opts.id.current);
 		this.attachment = attachRef(this.opts.ref);
 		this.rovingFocusGroup = new RovingFocusGroup({
-			rootNode: opts.ref,
+			rootNode: () => opts.ref.current,
 			candidateSelector: `${navigationMenuAttrs.selector('trigger')}:not([data-disabled]), ${navigationMenuAttrs.selector('link')}:not([data-disabled])`,
-			loop: boxWith(() => false),
-			orientation: this.context.opts.orientation,
+			loop: () => false,
+			orientation: () => this.context.opts.orientation.current,
 		});
 	}
 
@@ -843,10 +843,10 @@ export class NavigationMenuContentImplState {
 		this.context = itemContext.listContext.context;
 		this.domContext = new DOMContext(opts.ref);
 		this.rovingFocusGroup = new RovingFocusGroup({
-			rootNode: this.opts.ref,
+			rootNode: () => this.opts.ref.current,
 			candidateNodes: getTabbableCandidates,
-			loop: boxWith(() => false),
-			orientation: this.context.opts.orientation,
+			loop: () => false,
+			orientation: () => this.context.opts.orientation.current,
 		});
 
 		$effect(() => {

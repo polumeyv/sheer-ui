@@ -601,10 +601,10 @@ export class MenuContentState {
 			getWindow: () => this.domContext.getWindow(),
 		});
 		this.rovingFocusGroup = new RovingFocusGroup({
-			rootNode: boxWith(() => this.parentMenu.contentNode),
+			rootNode: () => this.parentMenu.contentNode,
 			candidateSelector: this.#candidateSelector,
-			loop: this.opts.loop,
-			orientation: boxWith(() => 'vertical'),
+			loop: () => this.opts.loop.current,
+			orientation: () => 'vertical',
 		});
 
 		$effect(() => {
