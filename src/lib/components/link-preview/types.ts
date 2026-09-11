@@ -2,7 +2,7 @@ import type { Snippet } from 'svelte';
 import type { OpenCell } from '../../internal/open-cell.svelte.js';
 import type { DismissibleLayerProps } from '../../internal/dismissible-layer/types.js';
 import type { EscapeLayerProps } from '../../internal/escape-layer/types.js';
-import type { FloatingLayerContentProps } from '../../internal/floating-layer/types.js';
+import type { NativePopoverPositionProps } from '../../internal/native-popover.svelte.js';
 import type { PortalProps } from '../../internal/portal/index.js';
 import type { BitsPrimitiveAnchorAttributes, BitsPrimitiveDivAttributes } from '../../internal/attribute-types.js';
 import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../internal/types.js';
@@ -66,27 +66,7 @@ export type LinkPreviewRootPropsWithoutHTML = Omit<
 export type LinkPreviewRootProps = LinkPreviewRootPropsWithoutHTML;
 
 export type LinkPreviewContentPropsWithoutHTML = WithChildNoChildrenSnippetProps<
-	Pick<
-		FloatingLayerContentProps,
-		| 'side'
-		| 'sideOffset'
-		| 'align'
-		| 'alignOffset'
-		| 'avoidCollisions'
-		| 'collisionPadding'
-		| 'arrowPadding'
-		| 'dir'
-		| 'customAnchor'
-	> &
-		Omit<DismissibleLayerProps, 'onInteractOutsideStart'> &
-		EscapeLayerProps & {
-			/**
-			 * When `true`, the link preview content will be forced to mount in the DOM.
-			 *
-			 * Useful for more control over the transition behavior.
-			 */
-			forceMount?: boolean;
-		},
+	NativePopoverPositionProps & Pick<DismissibleLayerProps, 'onInteractOutside'> & Pick<EscapeLayerProps, 'onEscapeKeydown'>,
 	FloatingContentSnippetProps
 >;
 

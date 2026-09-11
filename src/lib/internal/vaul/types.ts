@@ -1,6 +1,6 @@
 import type { BitsPrimitiveDivAttributes } from "../attribute-types.js";
 import type {
-	DialogContentPropsWithoutHTML,
+	DialogContentHeadlessPropsWithoutHTML,
 	DialogOverlayPropsWithoutHTML,
 	DialogRootProps,
 } from "../../components/dialog/types.js";
@@ -129,7 +129,7 @@ export type DrawerRootProps = BaseDrawerRootPropsWithoutHTML &
 	Without<DialogRootProps, BaseDrawerRootPropsWithoutHTML>;
 
 type DrawerContentPropsWithoutHTML = WithChildren<
-	WithoutChildrenOrChild<Omit<DialogContentPropsWithoutHTML, "preventScroll">>
+	WithoutChildrenOrChild<Omit<DialogContentHeadlessPropsWithoutHTML, "preventScroll">>
 >;
 
 export type DrawerContentProps = DrawerContentPropsWithoutHTML &

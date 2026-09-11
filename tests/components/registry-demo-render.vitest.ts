@@ -13,11 +13,6 @@ const cases = [
 		selector: '[data-slot="radio-group"]',
 	},
 	{
-		name: "scroll area",
-		load: () => import("../../src/docs/registry/scroll-area-demo.svelte"),
-		selector: '[data-slot="scroll-area"]',
-	},
-	{
 		name: "sidebar",
 		load: () => import("../../src/docs/registry/sidebar-demo.svelte"),
 		selector: '[data-slot="sidebar-wrapper"]',
