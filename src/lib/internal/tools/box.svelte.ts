@@ -13,23 +13,6 @@ export type WritableBox<T> = ReadableBox<T> & {
 	current: T;
 };
 
-function createWritableBox<T>(): WritableBox<T | undefined>;
-function createWritableBox<T>(initialValue: T): WritableBox<T>;
-function createWritableBox(initialValue?: unknown) {
-	let current = $state(initialValue);
-
-	return {
-		[BoxSymbol]: true,
-		[isWritableSymbol]: true,
-		get current() {
-			return current as unknown;
-		},
-		set current(v: unknown) {
-			current = v;
-		},
-	};
-}
-
 /**
  * Creates a readonly box.
  *
@@ -100,7 +83,5 @@ export function repairBindable(track: () => unknown, repair: () => void) {
 		untrack(repair);
 	});
 }
-
-export const simpleBox = createWritableBox;
 
 export { boxWith };

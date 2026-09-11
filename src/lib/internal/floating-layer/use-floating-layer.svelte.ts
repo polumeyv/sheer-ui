@@ -5,10 +5,7 @@ import {
 	getWindow,
 	styleToString,
 	type ReadableBoxedValues,
-	type ReadableBox,
 	type RefAttachment,
-	simpleBox,
-	boxWith,
 } from '../tools/index.js';
 import type { WithRefOpts } from '../types.js';
 import type { Direction, StyleProperties } from '../index.js';
@@ -60,10 +57,16 @@ export class FloatingRootState {
 		return tooltip ? setFloatingTooltipRoot(root) : setFloatingRoot(root);
 	}
 	readonly anchorName: string;
-	#customAnchorSource = $state<ReadableBox<CustomAnchorNode>>(simpleBox(null));
-	triggerSource = $state<ReadableBox<AnchorNode>>(simpleBox(null));
-	anchorNode: ReadableBox<AnchorNode> = boxWith(() => {
-		const customAnchor = this.#customAnchorSource.current;
+	// Getters over whoever owns the anchor (trigger attachment, customAnchor, pointer rect): a derived reading through them tracks the owner.
+	#customAnchorSource: () => CustomAnchorNode = $state.raw(() => null);
+	triggerSource: () => AnchorNode = $state.raw(() => null);
+
+	constructor(anchorName: string) {
+		this.anchorName = anchorName;
+	}
+
+	get anchorNode(): AnchorNode {
+		const customAnchor = this.#customAnchorSource();
 
 		if (customAnchor) {
 			if (typeof customAnchor === 'string') {
@@ -73,18 +76,14 @@ export class FloatingRootState {
 			return customAnchor;
 		}
 
-		return this.triggerSource.current;
-	});
-
-	constructor(anchorName: string) {
-		this.anchorName = anchorName;
+		return this.triggerSource();
 	}
 
-	get triggerNode() {
-		return this.triggerSource;
+	get triggerNode(): AnchorNode {
+		return this.triggerSource();
 	}
 
-	setCustomAnchorSource(source: ReadableBox<CustomAnchorNode>) {
+	setCustomAnchorSource(source: () => CustomAnchorNode) {
 		this.#customAnchorSource = source;
 	}
 }
@@ -134,12 +133,9 @@ export class FloatingContentState {
 	#arrowWidth = $state(0);
 	#arrowHeight = $state(0);
 
-	// nodes
-	contentRef = simpleBox<HTMLElement | null>(null);
-	arrowRef = simpleBox<HTMLElement | null>(null);
-	readonly contentAttachment = attachRef(this.contentRef);
+	contentRef = $state.raw<HTMLElement | null>(null);
+	readonly contentAttachment = attachRef<HTMLElement>((v) => (this.contentRef = v));
 	readonly arrowAttachment = {
-		...attachRef(this.arrowRef),
 		[createAttachmentKey()]: ((node) => this.#measureArrow(node)) satisfies Attachment<HTMLElement>,
 	};
 
@@ -244,7 +240,7 @@ export class FloatingContentState {
 	/** A virtual anchor (a rect, no element) is rendered as a zero-size fixed box carrying the anchor name. */
 	virtualAnchorStyle = $derived.by(() => {
 		if (!this.opts.present.current) return null;
-		const anchor = this.root.anchorNode.current;
+		const anchor = this.root.anchorNode;
 		// SSR-safe: on the server there is no HTMLElement (and no virtual anchor either)
 		if (!anchor || typeof HTMLElement === 'undefined' || anchor instanceof HTMLElement) return null;
 		const rect = anchor.getBoundingClientRect();
@@ -300,12 +296,12 @@ export class FloatingContentState {
 	constructor(opts: FloatingContentStateOpts, root: FloatingRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.root.setCustomAnchorSource(opts.customAnchor);
+		this.root.setCustomAnchorSource(() => opts.customAnchor.current);
 
 		// An element anchor that is not the trigger (a `customAnchor`) needs the anchor name too.
 		$effect(() => {
-			const anchor = this.root.anchorNode.current;
-			if (!(anchor instanceof HTMLElement) || anchor === this.root.triggerNode.current) return;
+			const anchor = this.root.anchorNode;
+			if (!(anchor instanceof HTMLElement) || anchor === this.root.triggerNode) return;
 			const previous = anchor.style.anchorName;
 			anchor.style.anchorName = this.root.anchorName;
 			return () => {
@@ -326,7 +322,7 @@ export class FloatingContentState {
 				this.#measuredPlacement = null;
 				return;
 			}
-			const content = this.contentRef.current;
+			const content = this.contentRef;
 			if (!content) return;
 			const win = getWindow(content);
 			let raf = win.requestAnimationFrame(() => this.#measurePlacement());
@@ -345,8 +341,8 @@ export class FloatingContentState {
 	}
 
 	#measurePlacement() {
-		const content = this.contentRef.current;
-		const anchor = this.root.anchorNode.current;
+		const content = this.contentRef;
+		const anchor = this.root.anchorNode;
 		if (!content || !anchor) return;
 		const c = content.getBoundingClientRect();
 		const a = anchor.getBoundingClientRect();
@@ -444,7 +440,7 @@ export class FloatingArrowState {
  * tracking the pointer, which the content renders as a zero-size anchor element. Reads the
  * floating-root context, so call it during component init.
  */
-export function setFloatingAnchor(source: ReadableBox<AnchorNode>, tooltip = false) {
+export function setFloatingAnchor(source: () => AnchorNode, tooltip = false) {
 	const root = tooltip ? getFloatingTooltipRoot() : getFloatingRoot();
 	root.triggerSource = source;
 }
@@ -460,11 +456,11 @@ export function floatingAnchor(tooltip = false): RefAttachment {
 	return {
 		[createAttachmentKey()]: (node) => {
 			const el = node as HTMLElement;
-			root.triggerSource = simpleBox(el);
+			root.triggerSource = () => el;
 			el.style.anchorName = root.anchorName;
 			return () => {
 				el.style.removeProperty('anchor-name');
-				root.triggerSource = simpleBox(null);
+				root.triggerSource = () => null;
 			};
 		},
 	};
