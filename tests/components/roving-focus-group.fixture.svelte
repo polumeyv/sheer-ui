@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { RovingFocusGroup } from '#lib/internal/roving-focus-group.js';
+	import { RovingFocusGroup } from '#lib/internal/roving-focus-group.svelte.js';
 	import { boxWith } from '#lib/internal/tools/index.js';
 	import { getTabbableCandidates } from '#lib/internal/tabbable.js';
 

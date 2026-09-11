@@ -125,6 +125,7 @@ export class NavigationMenuRootState {
 	previousValue = $state.raw('');
 	readonly #derivedDelay = $derived.by(() => {
 		const isOpen = this.opts?.value?.current !== '';
+		// 150ms while open: room to switch trigger or move into the content.
 		return isOpen ? 150 : this.opts.delayDuration.current;
 	});
 

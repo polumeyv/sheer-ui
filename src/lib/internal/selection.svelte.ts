@@ -3,7 +3,7 @@ import { boolToStr, boolToEmptyStrOrUndef, boolToTrueOrUndef, getAriaChecked } f
 import { kbd } from './kbd.js';
 import type { Orientation } from './index.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, WithRefOpts } from './types.js';
-import type { RovingFocusGroup } from './roving-focus-group.js';
+import type { RovingFocusGroup } from './roving-focus-group.svelte.js';
 import { RovingFocusItem } from './roving-focus-item.svelte.js';
 
 export type SelectionType = 'single' | 'multiple';
