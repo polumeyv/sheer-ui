@@ -1,4 +1,4 @@
-import { type ReadableBox, boxWith, attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
+import { type ReadableBox, attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
 import type { InteractOutsideBehaviorType } from '../../internal/dismissible-layer/types.js';
 import type { Direction } from '../../internal/index.js';
 import { createBitsAttrs, boolToStr, boolToEmptyStrOrUndef, getDataOpenClosed } from '../../internal/attrs.js';
@@ -45,10 +45,10 @@ export class MenubarRootState {
 		this.opts = opts;
 		this.attachment = attachRef(this.opts.ref);
 		this.rovingFocusGroup = new RovingFocusGroup({
-			rootNode: this.opts.ref,
+			rootNode: () => this.opts.ref.current,
 			candidateAttr: menubarAttrs.trigger,
-			loop: this.opts.loop,
-			orientation: boxWith(() => 'horizontal'),
+			loop: () => this.opts.loop.current,
+			orientation: () => 'horizontal',
 		});
 	}
 
@@ -203,7 +203,8 @@ export class MenubarTriggerState {
 		this.root = menu.root;
 		this.rovingItem = new RovingFocusItem({
 			group: this.root.rovingFocusGroup,
-			ref: this.opts.ref,
+			ref: () => this.opts.ref.current,
+			setRef: (v) => (this.opts.ref.current = v),
 			onRefChange: (v) => (this.menu.triggerNode = v),
 		});
 

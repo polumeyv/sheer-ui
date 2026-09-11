@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { RovingFocusGroup } from '#lib/internal/roving-focus-group.svelte.js';
-	import { boxWith } from '#lib/internal/tools/index.js';
 	import { getTabbableCandidates } from '#lib/internal/tabbable.js';
 
 	type GroupName = 'attr' | 'selector' | 'nodes';
@@ -9,9 +8,9 @@
 	let loop = $state(false);
 
 	const shared = {
-		rootNode: boxWith(() => root),
-		loop: boxWith(() => loop),
-		orientation: boxWith(() => 'vertical' as const),
+		rootNode: () => root,
+		loop: () => loop,
+		orientation: () => 'vertical' as const,
 	};
 
 	const groups: Record<GroupName, RovingFocusGroup> = {

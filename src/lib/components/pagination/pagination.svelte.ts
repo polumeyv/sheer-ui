@@ -60,9 +60,9 @@ export class PaginationRootState {
 		this.attachment = attachRef(this.opts.ref);
 		this.rovingFocusGroup = new RovingFocusGroup({
 			candidateSelector: [paginationAttrs.selector('prev'), paginationAttrs.selector('page'), paginationAttrs.selector('next')].join(', '),
-			rootNode: this.opts.ref,
-			loop: this.opts.loop,
-			orientation: this.opts.orientation,
+			rootNode: () => this.opts.ref.current,
+			loop: () => this.opts.loop.current,
+			orientation: () => this.opts.orientation.current,
 		});
 	}
 
