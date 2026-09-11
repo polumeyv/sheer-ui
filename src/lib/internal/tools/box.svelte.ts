@@ -1,40 +1,19 @@
 import { untrack } from 'svelte';
 
-const BoxSymbol = Symbol('box');
-const isWritableSymbol = Symbol('is-writable');
-
+/** What a vendored engine reads a reactive option through. Any object with a `current` qualifies. */
 export type ReadableBox<T> = {
-	readonly [BoxSymbol]: true;
 	readonly current: T;
 };
 
-export type WritableBox<T> = ReadableBox<T> & {
-	readonly [isWritableSymbol]: true;
+export type WritableBox<T> = {
 	current: T;
 };
 
-/**
- * Creates a readonly box.
- *
- * @param getter Function to get the value of the box.
- * @returns A box with a `current` property whose value is the result of the getter.
- */
-function boxWith<T>(getter: () => T): ReadableBox<T>;
-
-/**
- * Creates a writable box.
- *
- * @param getter Function to get the value of the box.
- * @param setter Function to set the value of the box.
- * @returns A box with a `current` property which can be set to a new value.
- */
-function boxWith<T>(getter: () => T, setter: (v: T) => void): WritableBox<T>;
-
-function boxWith<T>(getter: () => T, setter?: (v: T) => void) {
+export function boxWith<T>(getter: () => T): ReadableBox<T>;
+export function boxWith<T>(getter: () => T, setter: (v: T) => void): WritableBox<T>;
+export function boxWith<T>(getter: () => T, setter?: (v: T) => void) {
 	if (setter) {
 		return {
-			[BoxSymbol]: true,
-			[isWritableSymbol]: true,
 			get current() {
 				return getter();
 			},
@@ -45,30 +24,10 @@ function boxWith<T>(getter: () => T, setter?: (v: T) => void) {
 	}
 
 	return {
-		[BoxSymbol]: true,
 		get current() {
 			return getter();
 		},
 	};
-}
-
-/**
- * The one bridge for a stateful `$bindable` prop: write the prop, then notify.
- *
- * `set` must write unconditionally — equality/idempotence guards belong to the
- * caller (the *State class), so a write through this box always means a real
- * change and `notify` fires exactly once per change. Pass `notify` as a closure
- * (`(v) => onValueChange?.(v)`) so the latest callback prop is read at call
- * time; a bare reference freezes the prop's value at bundle creation.
- *
- * Convention: writable bridges (value/open/checked/ref/...) use `bindableWith`;
- * `boxWith` is for read-only views. A two-argument `boxWith` is legacy.
- */
-export function bindableWith<T>(get: () => T, set: (v: T) => void, notify?: (v: T) => void): WritableBox<T> {
-	return boxWith(get, (v) => {
-		set(v);
-		notify?.(v);
-	});
 }
 
 /**
@@ -83,5 +42,3 @@ export function repairBindable(track: () => unknown, repair: () => void) {
 		untrack(repair);
 	});
 }
-
-export { boxWith };

@@ -4,9 +4,6 @@ import type { ReadableBox, WritableBox } from './box.svelte.js';
 import { BROWSER } from 'esm-env';
 
 export type Getter<T> = () => T;
-export type MaybeGetter<T> = T | Getter<T>;
-
-export const get = <T>(value: MaybeGetter<T>): T => (typeof value === 'function' ? (value as Getter<T>)() : value);
 
 export type Box<T> = ReadableBox<T> | WritableBox<T>;
 

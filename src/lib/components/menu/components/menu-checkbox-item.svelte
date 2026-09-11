@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { join } from 'overrule';
-	import { bindableWith, boxWith, repairBindable } from '../../../internal/tools/index.js';
+	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { MenuCheckboxItemProps } from '../types.js';
 	import { MenuCheckboxItemState } from '../menu.svelte.js';
@@ -26,10 +26,12 @@
 	}: MenuCheckboxItemProps = $props();
 
 	const checkboxItemState = MenuCheckboxItemState.create({
-		checked: bindableWith(
+		checked: boxWith(
 			() => checked,
-			(v) => (checked = v),
-			(v) => onCheckedChange(v),
+			(v) => {
+				checked = v;
+				onCheckedChange(v);
+			},
 		),
 		id: boxWith(() => id),
 		disabled: boxWith(() => disabled),
@@ -38,10 +40,12 @@
 			() => ref,
 			(v) => (ref = v),
 		),
-		indeterminate: bindableWith(
+		indeterminate: boxWith(
 			() => indeterminate,
-			(v) => (indeterminate = v),
-			(v) => onIndeterminateChange(v),
+			(v) => {
+				indeterminate = v;
+				onIndeterminateChange(v);
+			},
 		),
 		value: boxWith(() => value),
 	});

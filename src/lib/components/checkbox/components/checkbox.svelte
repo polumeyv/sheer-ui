@@ -2,7 +2,7 @@
 	// Checkbox (button): controlled / headless. A <button role=checkbox> for table
 	// select-all, JS-owned state, and Checkbox.Group. It does NOT submit in a form;
 	// use `CheckboxNative` (name/value) for form fields.
-	import { bindableWith, boxWith, repairBindable } from '../../../internal/tools/index.js';
+	import { boxWith, repairBindable } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { CheckboxRootProps } from '../types.js';
 	import { CheckboxRootState } from '../checkbox.svelte.js';
@@ -30,23 +30,27 @@
 	}: CheckboxRootProps = $props();
 
 	const rootState = CheckboxRootState.create({
-		checked: bindableWith(
+		checked: boxWith(
 			() => checked,
-			(v) => (checked = v),
-			(v) => onCheckedChange?.(v),
+			(v) => {
+				checked = v;
+				onCheckedChange?.(v);
+			},
 		),
 		disabled: boxWith(() => disabled ?? false),
 		required: boxWith(() => required),
 		value: boxWith(() => value),
 		id: boxWith(() => id),
-		ref: bindableWith(
+		ref: boxWith(
 			() => ref,
 			(v) => (ref = v),
 		),
-		indeterminate: bindableWith(
+		indeterminate: boxWith(
 			() => indeterminate,
-			(v) => (indeterminate = v),
-			(v) => onIndeterminateChange?.(v),
+			(v) => {
+				indeterminate = v;
+				onIndeterminateChange?.(v);
+			},
 		),
 		type: boxWith(() => type),
 		readonly: boxWith(() => Boolean(readonly)),
