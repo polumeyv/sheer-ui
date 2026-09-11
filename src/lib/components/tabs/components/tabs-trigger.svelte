@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { TabsTriggerProps } from '../types.js';
 	import { TabsTriggerState } from '../tabs.svelte.js';
@@ -19,13 +18,21 @@
 	}: TabsTriggerProps = $props();
 
 	const triggerState = TabsTriggerState.create({
-		id: boxWith(() => id),
-		disabled: boxWith(() => disabled ?? false),
-		value: boxWith(() => value),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get id() {
+			return id;
+		},
+		get disabled() {
+			return disabled ?? false;
+		},
+		get value() {
+			return value;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(

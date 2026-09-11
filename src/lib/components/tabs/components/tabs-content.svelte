@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { TabsContentProps } from '../types.js';
 	import { TabsContentState } from '../tabs.svelte.js';
@@ -10,12 +9,18 @@
 	let { children, child, id = createId(uid), ref = $bindable(null), value, ...restProps }: TabsContentProps = $props();
 
 	const contentState = TabsContentState.create({
-		value: boxWith(() => value),
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get value() {
+			return value;
+		},
+		get id() {
+			return id;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(mergeProps({ 'data-slot': 'tabs-content', class: 'flex-1 outline-none' }, restProps, contentState.props));

@@ -1,7 +1,7 @@
 import { createContext } from 'svelte';
-import { attachRef, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
+import { attachRef } from '../../internal/tools/index.js';
 import type { Page, PageItem } from './types.js';
-import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, RefOpts } from '../../internal/types.js';
 import { createBitsAttrs } from '../../internal/attrs.js';
 import { kbd } from '../../internal/kbd.js';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.svelte.js';
@@ -14,19 +14,14 @@ const paginationAttrs = createBitsAttrs({
 
 const [getPaginationRoot, setPaginationRoot] = createContext<PaginationRootState>();
 
-interface PaginationRootStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			count: number;
-			perPage: number;
-			siblingCount: number;
-			orientation: Orientation;
-			loop: boolean;
-		}>,
-		WritableBoxedValues<{
-			page: number;
-		}> {}
+interface PaginationRootStateOpts extends RefOpts {
+	readonly count: number;
+	readonly perPage: number;
+	readonly siblingCount: number;
+	readonly orientation: Orientation;
+	readonly loop: boolean;
+	page: number;
+}
 
 export class PaginationRootState {
 	static create(opts: PaginationRootStateOpts) {
@@ -35,73 +30,66 @@ export class PaginationRootState {
 	readonly opts: PaginationRootStateOpts;
 	readonly attachment: RefAttachment;
 	readonly totalPages = $derived.by(() => {
-		if (this.opts.count.current === 0) return 1;
-		return Math.ceil(this.opts.count.current / this.opts.perPage.current);
+		if (this.opts.count === 0) return 1;
+		return Math.ceil(this.opts.count / this.opts.perPage);
 	});
 	readonly range = $derived.by(() => {
-		const start = (this.opts.page.current - 1) * this.opts.perPage.current;
-		const end = Math.min(start + this.opts.perPage.current, this.opts.count.current);
+		const start = (this.opts.page - 1) * this.opts.perPage;
+		const end = Math.min(start + this.opts.perPage, this.opts.count);
 		return { start: start + 1, end };
 	});
 	readonly pages = $derived.by(() =>
 		getPageItems({
-			page: this.opts.page.current,
+			page: this.opts.page,
 			totalPages: this.totalPages,
-			siblingCount: this.opts.siblingCount.current,
+			siblingCount: this.opts.siblingCount,
 		}),
 	);
-	readonly hasPrevPage = $derived.by(() => this.opts.page.current > 1);
-	readonly hasNextPage = $derived.by(() => this.opts.page.current < this.totalPages);
+	readonly hasPrevPage = $derived.by(() => this.opts.page > 1);
+	readonly hasNextPage = $derived.by(() => this.opts.page < this.totalPages);
 
 	readonly rovingFocusGroup: RovingFocusGroup;
 
 	constructor(opts: PaginationRootStateOpts) {
 		this.opts = opts;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 		this.rovingFocusGroup = new RovingFocusGroup({
 			candidateSelector: [paginationAttrs.selector('prev'), paginationAttrs.selector('page'), paginationAttrs.selector('next')].join(', '),
-			rootNode: () => this.opts.ref.current,
-			loop: () => this.opts.loop.current,
-			orientation: () => this.opts.orientation.current,
+			rootNode: () => opts.ref,
+			loop: () => opts.loop,
+			orientation: () => opts.orientation,
 		});
 	}
 
-	setPage(page: number) {
-		this.opts.page.current = page;
-	}
-
 	prevPage() {
-		this.opts.page.current = Math.max(this.opts.page.current - 1, 1);
+		this.opts.page = Math.max(this.opts.page - 1, 1);
 	}
 
 	nextPage() {
-		this.opts.page.current = Math.min(this.opts.page.current + 1, this.totalPages);
+		this.opts.page = Math.min(this.opts.page + 1, this.totalPages);
 	}
 
 	readonly snippetProps = $derived.by(() => ({
 		pages: this.pages,
 		range: this.range,
-		currentPage: this.opts.page.current,
+		currentPage: this.opts.page,
 	}));
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
-				'data-orientation': this.opts.orientation.current,
+				id: this.opts.id,
+				'data-orientation': this.opts.orientation,
 				[paginationAttrs.root]: '',
 				...this.attachment,
 			}) as const,
 	);
 }
 
-interface PaginationPageStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			page: Page;
-			disabled: boolean;
-		}> {}
+interface PaginationPageStateOpts extends RefOpts {
+	readonly page: Page;
+	readonly disabled: boolean;
+}
 
 export class PaginationPageState {
 	static create(opts: PaginationPageStateOpts) {
@@ -110,38 +98,38 @@ export class PaginationPageState {
 	readonly opts: PaginationPageStateOpts;
 	readonly root: PaginationRootState;
 	readonly attachment: RefAttachment;
-	readonly #isSelected = $derived.by(() => this.opts.page.current.value === this.root.opts.page.current);
+	readonly #isSelected = $derived.by(() => this.opts.page.value === this.root.opts.page);
 
 	constructor(opts: PaginationPageStateOpts, root: PaginationRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 
 		this.onclick = this.onclick.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);
 	}
 
 	onclick(e: BitsMouseEvent) {
-		if (this.opts.disabled.current) return;
+		if (this.opts.disabled) return;
 		if (e.button !== 0) return;
-		this.root.setPage(this.opts.page.current.value);
+		this.root.opts.page = this.opts.page.value;
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
 		if (e.key === kbd.SPACE || e.key === kbd.ENTER) {
 			e.preventDefault();
-			this.root.setPage(this.opts.page.current.value);
+			this.root.opts.page = this.opts.page.value;
 		} else {
-			this.root.rovingFocusGroup.handleKeydown(this.opts.ref.current, e);
+			this.root.rovingFocusGroup.handleKeydown(this.opts.ref, e);
 		}
 	}
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
-				'aria-label': `Page ${this.opts.page.current.value}`,
-				'data-value': `${this.opts.page.current.value}`,
+				id: this.opts.id,
+				'aria-label': `Page ${this.opts.page.value}`,
+				'data-value': `${this.opts.page.value}`,
 				'data-selected': this.#isSelected ? '' : undefined,
 				[paginationAttrs.page]: '',
 				//
@@ -156,12 +144,8 @@ export class PaginationPageState {
 // NEXT/PREV BUTTON
 //
 
-interface PaginationButtonStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			disabled: boolean;
-		}> {
+interface PaginationButtonStateOpts extends RefOpts {
+	readonly disabled: boolean;
 	type: 'prev' | 'next';
 }
 
@@ -176,7 +160,7 @@ export class PaginationButtonState {
 	constructor(opts: PaginationButtonStateOpts, root: PaginationRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 
 		this.onclick = this.onclick.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);
@@ -187,14 +171,14 @@ export class PaginationButtonState {
 	}
 
 	readonly #isDisabled = $derived.by(() => {
-		if (this.opts.disabled.current) return true;
+		if (this.opts.disabled) return true;
 		if (this.opts.type === 'prev') return !this.root.hasPrevPage;
 		if (this.opts.type === 'next') return !this.root.hasNextPage;
 		return false;
 	});
 
 	onclick(e: BitsMouseEvent) {
-		if (this.opts.disabled.current) return;
+		if (this.opts.disabled) return;
 		if (e.button !== 0) return;
 		this.#action();
 	}
@@ -204,14 +188,14 @@ export class PaginationButtonState {
 			e.preventDefault();
 			this.#action();
 		} else {
-			this.root.rovingFocusGroup.handleKeydown(this.opts.ref.current, e);
+			this.root.rovingFocusGroup.handleKeydown(this.opts.ref, e);
 		}
 	}
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				[paginationAttrs[this.opts.type]]: '',
 				disabled: this.#isDisabled,
 				//
