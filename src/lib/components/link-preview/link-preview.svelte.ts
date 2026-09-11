@@ -1,9 +1,9 @@
-import { attachRef, DOMContext, type ReadableBoxedValues, type WritableBoxedValues } from '../../internal/tools/index.js';
+import { attachRef, DOMContext } from '../../internal/tools/index.js';
 import { on } from 'svelte/events';
 import { createContext, onDestroy, untrack } from 'svelte';
 import { createBitsAttrs, boolToStr, getDataOpenClosed } from '../../internal/attrs.js';
 import { isElement } from '../../internal/tools/utils/dom.js';
-import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/types.js';
+import type { BitsFocusEvent, BitsPointerEvent, OnChangeFn, RefAttachment, RefOpts } from '../../internal/types.js';
 import { getTabbableCandidates } from '../../internal/tabbable.js';
 import { SafePolygon } from '../../internal/safe-polygon.svelte.js';
 import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';
@@ -15,17 +15,13 @@ const linkPreviewAttrs = createBitsAttrs({
 
 const [getLinkPreviewRoot, setLinkPreviewRoot] = createContext<LinkPreviewRootState>();
 
-interface LinkPreviewRootStateOpts
-	extends
-		WritableBoxedValues<{
-			open: boolean;
-		}>,
-		ReadableBoxedValues<{
-			disabled: boolean;
-			openDelay: number;
-			closeDelay: number;
-			onOpenChangeComplete: OnChangeFn<boolean>;
-		}> {}
+interface LinkPreviewRootStateOpts {
+	open: boolean;
+	readonly disabled: boolean;
+	readonly openDelay: number;
+	readonly closeDelay: number;
+	readonly onOpenChangeComplete: OnChangeFn<boolean>;
+}
 
 export class LinkPreviewRootState {
 	static create(opts: LinkPreviewRootStateOpts) {
@@ -41,17 +37,17 @@ export class LinkPreviewRootState {
 	triggerNode = $state<HTMLElement | null>(null);
 	domContext: DOMContext = new DOMContext(() => null);
 	#openTimer = createEffectTimeout(() => {
-		this.opts.open.current = true;
-	}, () => this.opts.openDelay.current);
+		this.opts.open = true;
+	}, () => this.opts.openDelay);
 	#closeTimer = createEffectTimeout(() => {
-		this.opts.open.current = false;
-	}, () => this.opts.closeDelay.current);
+		this.opts.open = false;
+	}, () => this.opts.closeDelay);
 
 	constructor(opts: LinkPreviewRootStateOpts) {
 		this.opts = opts;
 
 		$effect(() => {
-			const isOpen = this.opts.open.current;
+			const isOpen = this.opts.open;
 			return untrack(() => {
 				if (!isOpen) {
 					this.hasSelection = false;
@@ -99,13 +95,13 @@ export class LinkPreviewRootState {
 
 	handleOpen() {
 		this.clearTimeout();
-		if (this.opts.open.current || this.opts.disabled.current) return;
+		if (this.opts.open || this.opts.disabled) return;
 		this.#openTimer.start();
 	}
 
 	immediateClose() {
 		this.clearTimeout();
-		this.opts.open.current = false;
+		this.opts.open = false;
 	}
 
 	handleClose() {
@@ -117,7 +113,7 @@ export class LinkPreviewRootState {
 	}
 }
 
-interface LinkPreviewTriggerStateOpts extends WithRefOpts {}
+interface LinkPreviewTriggerStateOpts extends RefOpts {}
 
 export class LinkPreviewTriggerState {
 	static create(opts: LinkPreviewTriggerStateOpts) {
@@ -131,8 +127,11 @@ export class LinkPreviewTriggerState {
 	constructor(opts: LinkPreviewTriggerStateOpts, root: LinkPreviewRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref, (v) => (this.root.triggerNode = v));
-		this.root.domContext = new DOMContext(opts.ref);
+		this.attachment = attachRef<HTMLElement>(
+			(v) => (opts.ref = v),
+			(v) => (this.root.triggerNode = v),
+		);
+		this.root.domContext = new DOMContext(() => opts.ref);
 		this.onpointerenter = this.onpointerenter.bind(this);
 		this.onpointerleave = this.onpointerleave.bind(this);
 		this.onfocus = this.onfocus.bind(this);
@@ -147,7 +146,7 @@ export class LinkPreviewTriggerState {
 	onpointerleave(e: BitsPointerEvent) {
 		if (e.pointerType === 'touch') return;
 		// The content is always mounted (native popover, display toggled), so open is the only gate.
-		if (!this.root.opts.open.current) {
+		if (!this.root.opts.open) {
 			this.root.immediateClose();
 		}
 	}
@@ -164,10 +163,10 @@ export class LinkPreviewTriggerState {
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				'aria-haspopup': 'dialog',
-				'aria-expanded': boolToStr(this.root.opts.open.current),
-				'data-state': getDataOpenClosed(this.root.opts.open.current),
+				'aria-expanded': boolToStr(this.root.opts.open),
+				'data-state': getDataOpenClosed(this.root.opts.open),
 				'aria-controls': this.root.contentNode?.id,
 				role: 'button',
 				[linkPreviewAttrs.trigger]: '',
@@ -180,13 +179,10 @@ export class LinkPreviewTriggerState {
 	);
 }
 
-interface LinkPreviewContentStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			onInteractOutside: (e: PointerEvent) => void;
-			onEscapeKeydown: (e: KeyboardEvent) => void;
-		}> {}
+interface LinkPreviewContentStateOpts extends RefOpts {
+	readonly onInteractOutside: (e: PointerEvent) => void;
+	readonly onEscapeKeydown: (e: KeyboardEvent) => void;
+}
 
 export class LinkPreviewContentState {
 	static create(opts: LinkPreviewContentStateOpts) {
@@ -200,16 +196,19 @@ export class LinkPreviewContentState {
 	constructor(opts: LinkPreviewContentStateOpts, root: LinkPreviewRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref, (v) => (this.root.contentNode = v));
-		this.root.domContext = new DOMContext(opts.ref);
+		this.attachment = attachRef<HTMLElement>(
+			(v) => (opts.ref = v),
+			(v) => (this.root.contentNode = v),
+		);
+		this.root.domContext = new DOMContext(() => opts.ref);
 		this.onpointerdown = this.onpointerdown.bind(this);
 		this.onpointerenter = this.onpointerenter.bind(this);
 		this.onfocusout = this.onfocusout.bind(this);
 
 		new SafePolygon({
 			triggerNode: () => this.root.triggerNode,
-			contentNode: () => this.opts.ref.current,
-			enabled: () => this.root.opts.open.current,
+			contentNode: () => this.opts.ref,
+			enabled: () => this.root.opts.open,
 			onPointerExit: () => {
 				this.root.handleClose();
 			},
@@ -241,25 +240,25 @@ export class LinkPreviewContentState {
 	}
 
 	onInteractOutside = (e: PointerEvent) => {
-		this.opts.onInteractOutside.current(e);
+		this.opts.onInteractOutside(e);
 		if (e.defaultPrevented) return;
 		this.root.handleClose();
 	};
 
 	onEscapeKeydown = (e: KeyboardEvent) => {
-		this.opts.onEscapeKeydown.current?.(e);
+		this.opts.onEscapeKeydown?.(e);
 		if (e.defaultPrevented) return;
 		this.root.handleClose();
 	};
 
-	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open.current }));
+	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open }));
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				tabindex: -1,
-				'data-state': getDataOpenClosed(this.root.opts.open.current),
+				'data-state': getDataOpenClosed(this.root.opts.open),
 				[linkPreviewAttrs.content]: '',
 				onpointerdown: this.onpointerdown,
 				onpointerenter: this.onpointerenter,

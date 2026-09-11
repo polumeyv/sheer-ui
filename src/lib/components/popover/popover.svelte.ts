@@ -1,11 +1,5 @@
 import { createContext, untrack } from 'svelte';
-import {
-	type ReadableBox,
-	type ReadableBoxedValues,
-	type WritableBoxedValues,
-	attachRef,
-	boxWith,
-} from '../../internal/tools/index.js';
+import { attachRef } from '../../internal/tools/index.js';
 import { kbd } from '../../internal/kbd.js';
 import { createBitsAttrs, boolToStr, getDataOpenClosed } from '../../internal/attrs.js';
 import type {
@@ -15,7 +9,7 @@ import type {
 	BitsPointerEvent,
 	OnChangeFn,
 	RefAttachment,
-	WithRefOpts,
+	RefOpts,
 } from '../../internal/types.js';
 import { isElement } from '../../internal/tools/utils/dom.js';
 import type { Measurable } from '../../internal/floating-layer/index.js';
@@ -30,14 +24,10 @@ const popoverAttrs = createBitsAttrs({
 
 const [getPopoverRoot, setPopoverRoot] = createContext<PopoverRootState>();
 
-interface PopoverRootStateOpts
-	extends
-		WritableBoxedValues<{
-			open: boolean;
-		}>,
-		ReadableBoxedValues<{
-			onOpenChangeComplete: OnChangeFn<boolean>;
-		}> {}
+interface PopoverRootStateOpts {
+	open: boolean;
+	readonly onOpenChangeComplete: OnChangeFn<boolean>;
+}
 
 export class PopoverRootState {
 	static create(opts: PopoverRootStateOpts) {
@@ -52,11 +42,11 @@ export class PopoverRootState {
 	openedViaHover = $state(false);
 	hasInteractedWithContent = $state(false);
 	hoverCooldown = $state(false);
-	#closeDelaySource = $state<ReadableBox<number>>(boxWith(() => 0));
-	closeDelay = $derived.by(() => this.#closeDelaySource.current);
+	// The trigger installs its closeDelay here; a getter so the read tracks the trigger's prop.
+	#closeDelaySource: () => number = $state.raw(() => 0);
 	#closeTimer = createEffectTimeout(() => {
 		if (this.openedViaHover && !this.hasInteractedWithContent) {
-			this.opts.open.current = false;
+			this.opts.open = false;
 		}
 	}, () => this.closeDelay);
 
@@ -64,7 +54,7 @@ export class PopoverRootState {
 		this.opts = opts;
 
 		$effect(() => {
-			const isOpen = this.opts.open.current;
+			const isOpen = this.opts.open;
 			untrack(() => {
 				if (!isOpen) {
 					this.openedViaHover = false;
@@ -75,43 +65,47 @@ export class PopoverRootState {
 		});
 	}
 
-	setCloseDelaySource(source: ReadableBox<number>) {
+	get closeDelay() {
+		return this.#closeDelaySource();
+	}
+
+	setCloseDelaySource(source: () => number) {
 		this.#closeDelaySource = source;
 	}
 
 	toggleOpen() {
 		this.#closeTimer.stop();
-		this.opts.open.current = !this.opts.open.current;
+		this.opts.open = !this.opts.open;
 	}
 
 	handleClose() {
 		this.#closeTimer.stop();
-		if (!this.opts.open.current) return;
-		this.opts.open.current = false;
+		if (!this.opts.open) return;
+		this.opts.open = false;
 	}
 
 	handleHoverOpen() {
 		this.#closeTimer.stop();
-		if (this.opts.open.current) return;
+		if (this.opts.open) return;
 		this.openedViaHover = true;
-		this.opts.open.current = true;
+		this.opts.open = true;
 	}
 
 	handleHoverClose() {
-		if (!this.opts.open.current) return;
+		if (!this.opts.open) return;
 		// only close if opened via hover and user hasn't interacted with content
 		if (this.openedViaHover && !this.hasInteractedWithContent) {
-			this.opts.open.current = false;
+			this.opts.open = false;
 		}
 	}
 
 	handleDelayedHoverClose() {
-		if (!this.opts.open.current) return;
+		if (!this.opts.open) return;
 		if (!this.openedViaHover || this.hasInteractedWithContent) return;
 
 		if (this.closeDelay <= 0) {
 			this.#closeTimer.stop();
-			this.opts.open.current = false;
+			this.opts.open = false;
 			return;
 		}
 
@@ -128,15 +122,12 @@ export class PopoverRootState {
 	}
 }
 
-interface PopoverTriggerStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			disabled: boolean;
-			openOnHover: boolean;
-			openDelay: number;
-			closeDelay: number;
-		}> {}
+interface PopoverTriggerStateOpts extends RefOpts {
+	readonly disabled: boolean;
+	readonly openOnHover: boolean;
+	readonly openDelay: number;
+	readonly closeDelay: number;
+}
 
 export class PopoverTriggerState {
 	static create(opts: PopoverTriggerStateOpts) {
@@ -147,14 +138,17 @@ export class PopoverTriggerState {
 	readonly root: PopoverRootState;
 	readonly attachment: RefAttachment;
 
-	#openTimer = createEffectTimeout(() => this.root.handleHoverOpen(), () => this.opts.openDelay.current);
+	#openTimer = createEffectTimeout(() => this.root.handleHoverOpen(), () => this.opts.openDelay);
 	#isHovering = $state(false);
 	#wasOpenOnPointerDown = false;
 
 	constructor(opts: PopoverTriggerStateOpts, root: PopoverRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref, (v) => (this.root.triggerNode = v));
+		this.attachment = attachRef<HTMLElement>(
+			(v) => (opts.ref = v),
+			(v) => (this.root.triggerNode = v),
+		);
 
 		this.onclick = this.onclick.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);
@@ -162,20 +156,20 @@ export class PopoverTriggerState {
 		this.onpointerenter = this.onpointerenter.bind(this);
 		this.onpointerleave = this.onpointerleave.bind(this);
 
-		this.root.setCloseDelaySource(this.opts.closeDelay);
+		this.root.setCloseDelaySource(() => opts.closeDelay);
 	}
 
 	onpointerenter(e: BitsPointerEvent) {
-		if (this.opts.disabled.current) return;
-		if (!this.opts.openOnHover.current) return;
+		if (this.opts.disabled) return;
+		if (!this.opts.openOnHover) return;
 		if (e.pointerType === 'touch') return;
 
 		this.#isHovering = true;
 		this.root.cancelDelayedClose();
 
-		if (this.root.opts.open.current || this.root.hoverCooldown) return;
+		if (this.root.opts.open || this.root.hoverCooldown) return;
 
-		if (this.opts.openDelay.current <= 0) {
+		if (this.opts.openDelay <= 0) {
 			this.root.handleHoverOpen();
 			return;
 		}
@@ -184,8 +178,8 @@ export class PopoverTriggerState {
 	}
 
 	onpointerleave(e: BitsPointerEvent) {
-		if (this.opts.disabled.current) return;
-		if (!this.opts.openOnHover.current) return;
+		if (this.opts.disabled) return;
+		if (!this.opts.openOnHover) return;
 		if (e.pointerType === 'touch') return;
 
 		this.#isHovering = false;
@@ -197,24 +191,24 @@ export class PopoverTriggerState {
 	}
 
 	onpointerdown(_: BitsPointerEvent) {
-		this.#wasOpenOnPointerDown = this.root.opts.open.current;
+		this.#wasOpenOnPointerDown = this.root.opts.open;
 	}
 
 	onclick(e: BitsMouseEvent) {
-		if (this.opts.disabled.current) return;
+		if (this.opts.disabled) return;
 		if (e.button !== 0) return;
 
 		this.#openTimer.stop();
 
 		// On engines without showPopover({source})'s invoker exemption, the UA light-dismisses the auto
 		// popover at pointerdown — before this click — and the toggle below would instantly reopen it.
-		if (this.#wasOpenOnPointerDown && !this.root.opts.open.current) {
+		if (this.#wasOpenOnPointerDown && !this.root.opts.open) {
 			this.#wasOpenOnPointerDown = false;
 			return;
 		}
 
 		// if clicked while hovering and popover is open, convert to click-based open
-		if (this.#isHovering && this.root.opts.open.current && this.root.openedViaHover) {
+		if (this.#isHovering && this.root.opts.open && this.root.openedViaHover) {
 			this.root.openedViaHover = false;
 			this.root.hasInteractedWithContent = true;
 			return;
@@ -222,12 +216,12 @@ export class PopoverTriggerState {
 
 		// if closing while hovering with openOnHover enabled, set cooldown to prevent
 		// immediate re-open via hover
-		if (this.#isHovering && this.opts.openOnHover.current && this.root.opts.open.current) {
+		if (this.#isHovering && this.opts.openOnHover && this.root.opts.open) {
 			this.root.hoverCooldown = true;
 		}
 
 		// if clicking to open while in cooldown, reset cooldown (explicit open)
-		if (this.root.hoverCooldown && !this.root.opts.open.current) {
+		if (this.root.hoverCooldown && !this.root.opts.open) {
 			this.root.hoverCooldown = false;
 		}
 
@@ -235,7 +229,7 @@ export class PopoverTriggerState {
 	}
 
 	onkeydown(e: BitsKeyboardEvent) {
-		if (this.opts.disabled.current) return;
+		if (this.opts.disabled) return;
 		if (!(e.key === kbd.ENTER || e.key === kbd.SPACE)) return;
 		e.preventDefault();
 		this.#openTimer.stop();
@@ -243,7 +237,7 @@ export class PopoverTriggerState {
 	}
 
 	#getAriaControls(): string | undefined {
-		if (this.root.opts.open.current && this.root.contentNode?.id) {
+		if (this.root.opts.open && this.root.contentNode?.id) {
 			return this.root.contentNode?.id;
 		}
 	}
@@ -251,13 +245,13 @@ export class PopoverTriggerState {
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				'aria-haspopup': 'dialog',
-				'aria-expanded': boolToStr(this.root.opts.open.current),
-				'data-state': getDataOpenClosed(this.root.opts.open.current),
+				'aria-expanded': boolToStr(this.root.opts.open),
+				'data-state': getDataOpenClosed(this.root.opts.open),
 				'aria-controls': this.#getAriaControls(),
 				[popoverAttrs.trigger]: '',
-				disabled: this.opts.disabled.current,
+				disabled: this.opts.disabled,
 				//
 				onkeydown: this.onkeydown,
 				onclick: this.onclick,
@@ -269,12 +263,9 @@ export class PopoverTriggerState {
 	);
 }
 
-interface PopoverContentStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			customAnchor: string | HTMLElement | null | Measurable;
-		}> {}
+interface PopoverContentStateOpts extends RefOpts {
+	readonly customAnchor: string | HTMLElement | null | Measurable;
+}
 
 export class PopoverContentState {
 	static create(opts: PopoverContentStateOpts) {
@@ -288,7 +279,10 @@ export class PopoverContentState {
 	constructor(opts: PopoverContentStateOpts, root: PopoverRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref, (v) => (this.root.contentNode = v));
+		this.attachment = attachRef<HTMLElement>(
+			(v) => (opts.ref = v),
+			(v) => (this.root.contentNode = v),
+		);
 
 		this.onpointerdown = this.onpointerdown.bind(this);
 		this.onfocusin = this.onfocusin.bind(this);
@@ -298,7 +292,7 @@ export class PopoverContentState {
 		new SafePolygon({
 			triggerNode: () => this.root.triggerNode,
 			contentNode: () => this.root.contentNode,
-			enabled: () => this.root.opts.open.current && this.root.openedViaHover && !this.root.hasInteractedWithContent,
+			enabled: () => this.root.opts.open && this.root.openedViaHover && !this.root.hasInteractedWithContent,
 			onPointerExit: () => {
 				this.root.handleDelayedHoverClose();
 			},
@@ -331,14 +325,14 @@ export class PopoverContentState {
 		this.root.handleClose();
 	};
 
-	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open.current }));
+	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open }));
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				tabindex: -1,
-				'data-state': getDataOpenClosed(this.root.opts.open.current),
+				'data-state': getDataOpenClosed(this.root.opts.open),
 				[popoverAttrs.content]: '',
 				onpointerdown: this.onpointerdown,
 				onfocusin: this.onfocusin,
@@ -349,7 +343,7 @@ export class PopoverContentState {
 	);
 }
 
-interface PopoverCloseStateOpts extends WithRefOpts {}
+interface PopoverCloseStateOpts extends RefOpts {}
 
 export class PopoverCloseState {
 	static create(opts: PopoverCloseStateOpts) {
@@ -363,7 +357,7 @@ export class PopoverCloseState {
 	constructor(opts: PopoverCloseStateOpts, root: PopoverRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.attachment = attachRef(this.opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 		this.onclick = this.onclick.bind(this);
 		this.onkeydown = this.onkeydown.bind(this);
 	}
@@ -381,7 +375,7 @@ export class PopoverCloseState {
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				onclick: this.onclick,
 				onkeydown: this.onkeydown,
 				type: 'button',

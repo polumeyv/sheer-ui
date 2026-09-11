@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { LinkPreviewContentProps } from '../types.js';
 	import { LinkPreviewContentState } from '../link-preview.svelte.js';
@@ -25,13 +24,21 @@
 	}: LinkPreviewContentProps = $props();
 
 	const contentState = LinkPreviewContentState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-		onInteractOutside: boxWith(() => onInteractOutside),
-		onEscapeKeydown: boxWith(() => onEscapeKeydown),
+		get id() {
+			return id;
+		},
+		get onInteractOutside() {
+			return onInteractOutside;
+		},
+		get onEscapeKeydown() {
+			return onEscapeKeydown;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const lifecycleProps = useNativePopoverLifecycle(contentState);

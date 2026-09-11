@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { PopoverTriggerProps } from '../types.js';
 	import { PopoverTriggerState } from '../popover.svelte.js';
@@ -21,15 +20,27 @@
 	}: PopoverTriggerProps = $props();
 
 	const triggerState = PopoverTriggerState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-		disabled: boxWith(() => Boolean(disabled)),
-		openOnHover: boxWith(() => openOnHover),
-		openDelay: boxWith(() => openDelay),
-		closeDelay: boxWith(() => closeDelay),
+		get id() {
+			return id;
+		},
+		get disabled() {
+			return Boolean(disabled);
+		},
+		get openOnHover() {
+			return openOnHover;
+		},
+		get openDelay() {
+			return openDelay;
+		},
+		get closeDelay() {
+			return closeDelay;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(mergeProps({ 'data-slot': 'popover-trigger' }, restProps, triggerState.props, { type }));
