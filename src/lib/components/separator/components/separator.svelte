@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import { SeparatorRootState } from '../separator.svelte.js';
 	import type { SeparatorRootProps } from '../types.js';
@@ -18,13 +17,21 @@
 	}: SeparatorRootProps = $props();
 
 	const rootState = SeparatorRootState.create({
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-		id: boxWith(() => id),
-		decorative: boxWith(() => decorative),
-		orientation: boxWith(() => orientation),
+		get id() {
+			return id;
+		},
+		get decorative() {
+			return decorative;
+		},
+		get orientation() {
+			return orientation;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(

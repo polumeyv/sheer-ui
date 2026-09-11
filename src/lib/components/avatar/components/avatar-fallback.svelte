@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { AvatarFallbackProps } from '../types.js';
 	import { AvatarFallbackState } from '../avatar.svelte.js';
@@ -10,11 +9,15 @@
 	let { children, child, id = createId(uid), ref = $bindable(null), ...restProps }: AvatarFallbackProps = $props();
 
 	const fallbackState = AvatarFallbackState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get id() {
+			return id;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(
