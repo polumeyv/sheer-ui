@@ -1,13 +1,13 @@
 <script lang="ts">
 	import * as NavigationMenu from '#lib/components/navigation-menu/index.js';
 
-	let { viewport = false }: { viewport?: boolean } = $props();
+	let { viewport = false, openOnHover = false }: { viewport?: boolean; openOnHover?: boolean } = $props();
 </script>
 
 <NavigationMenu.Root {viewport}>
 	<NavigationMenu.List>
 		<NavigationMenu.Item value="one">
-			<NavigationMenu.Trigger openOnHover={false} data-testid="trigger">One</NavigationMenu.Trigger>
+			<NavigationMenu.Trigger {openOnHover} data-testid="trigger">One</NavigationMenu.Trigger>
 			<NavigationMenu.Content>
 				{#snippet child({ props, open })}
 					{#if open}
@@ -17,7 +17,7 @@
 			</NavigationMenu.Content>
 		</NavigationMenu.Item>
 		<NavigationMenu.Item value="two">
-			<NavigationMenu.Trigger openOnHover={false}>Two</NavigationMenu.Trigger>
+			<NavigationMenu.Trigger {openOnHover} data-testid="trigger-two">Two</NavigationMenu.Trigger>
 			<NavigationMenu.Content data-testid="content-two">content two</NavigationMenu.Content>
 		</NavigationMenu.Item>
 	</NavigationMenu.List>

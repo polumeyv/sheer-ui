@@ -123,15 +123,22 @@ export class NavigationMenuRootState {
 	readonly attachment: RefAttachment;
 	provider: NavigationMenuProviderState;
 	previousValue = $state.raw('');
+	// False from an open until skipDelayDuration after the close: a hover in that window skips delayDuration.
+	#isOpenDelayed = $state(true);
+	readonly #skipDelayTimer: ReturnType<typeof createEffectTimeout<() => void>>;
 	readonly #derivedDelay = $derived.by(() => {
 		const isOpen = this.opts?.value?.current !== '';
-		// 150ms while open: room to switch trigger or move into the content.
-		return isOpen ? 150 : this.opts.delayDuration.current;
+		// 150ms while open or in the skip window: room to switch trigger or move into the content.
+		return isOpen || !this.#isOpenDelayed ? 150 : this.opts.delayDuration.current;
 	});
 
 	constructor(opts: NavigationMenuRootStateOpts) {
 		this.opts = opts;
 		this.attachment = attachRef(this.opts.ref);
+		this.#skipDelayTimer = createEffectTimeout(
+			() => (this.#isOpenDelayed = true),
+			() => this.opts.skipDelayDuration.current,
+		);
 
 		this.provider = NavigationMenuProviderState.create({
 			value: this.opts.value,
@@ -197,6 +204,11 @@ export class NavigationMenuRootState {
 		// weird transitions from old positions when opening fresh
 		if (newValue === '') {
 			this.previousValue = '';
+			if (this.opts.skipDelayDuration.current === 0) this.#isOpenDelayed = true;
+			else this.#skipDelayTimer.start();
+		} else {
+			this.#skipDelayTimer.stop();
+			this.#isOpenDelayed = false;
 		}
 	};
 
