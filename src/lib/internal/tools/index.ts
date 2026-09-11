@@ -2,7 +2,6 @@ export {
 	bindableWith,
 	boxWith,
 	repairBindable,
-	simpleBox,
 	type WritableBox,
 	type ReadableBox,
 } from './box.svelte.js';

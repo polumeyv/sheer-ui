@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { flushSync } from 'svelte';
-	import { simpleBox, boxWith, attachRef } from '#lib/internal/tools/index.js';
+	import { boxWith, attachRef } from '#lib/internal/tools/index.js';
 	import { DismissibleLayerState } from '#lib/internal/dismissible-layer/use-dismissable-layer.svelte.js';
 	import { type Timers, type TimerHandle } from '#lib/internal/dismissible-layer/scheduler.js';
 	import type { InteractOutsideBehaviorType } from '#lib/internal/dismissible-layer/types.js';
@@ -89,7 +89,7 @@
 		bEnabled = v;
 	}
 
-	const aRef = simpleBox<HTMLElement | null>(null);
+	let aNode = $state.raw<HTMLElement | null>(null);
 	const aHandler = (e: PointerEvent) => {
 		aCount += 1;
 		aLast = e;
@@ -99,11 +99,14 @@
 		interactOutsideBehavior: boxWith(() => aBehavior),
 		onInteractOutside: boxWith(() => aHandler),
 		enabled: boxWith(() => aEnabled),
-		ref: aRef,
+		ref: boxWith(
+			() => aNode,
+			(v) => (aNode = v),
+		),
 		timers: clock.timers,
 	});
 
-	const bRef = simpleBox<HTMLElement | null>(null);
+	let bNode = $state.raw<HTMLElement | null>(null);
 	const bHandler = () => {
 		bCount += 1;
 	};
@@ -112,17 +115,20 @@
 		interactOutsideBehavior: boxWith(() => bBehavior),
 		onInteractOutside: boxWith(() => bHandler),
 		enabled: boxWith(() => bEnabled),
-		ref: bRef,
+		ref: boxWith(
+			() => bNode,
+			(v) => (bNode = v),
+		),
 		timers: clock.timers,
 	});
 </script>
 
 <div data-testid="outside"></div>
-<div data-testid="layer-a" {...attachRef(aRef)}>
+<div data-testid="layer-a" {...attachRef((v: HTMLElement | null) => (aNode = v))}>
 	<div data-testid="inside-a"></div>
 </div>
 {#if withB}
-	<div data-testid="layer-b" {...attachRef(bRef)}>
+	<div data-testid="layer-b" {...attachRef((v: HTMLElement | null) => (bNode = v))}>
 		<div data-testid="inside-b"></div>
 	</div>
 {/if}

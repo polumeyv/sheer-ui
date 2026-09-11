@@ -4,11 +4,11 @@ import {
 	getWindow,
 	type ReadableBoxedValues,
 	type WritableBoxedValues,
-	simpleBox,
 	boxWith,
 	type ReadableBox,
 } from '../../internal/tools/index.js';
 import { mergeProps } from '../../internal/merge-props.js';
+import type { Measurable } from '../../internal/floating-layer/index.js';
 import { createContext, onDestroy, tick, untrack } from 'svelte';
 import { SUB_OPEN_KEYS, getCheckedState, isMouseEvent } from './utils.js';
 import { focusFirst } from '../../internal/focus.js';
@@ -1461,11 +1461,11 @@ export class ContextMenuTriggerState {
 	readonly opts: ContextMenuTriggerStateOpts;
 	readonly parentMenu: MenuMenuState;
 	readonly attachment: RefAttachment;
-	#point = $state({ x: 0, y: 0 });
-
-	virtualElement = simpleBox({
+	#point = $state.raw({ x: 0, y: 0 });
+	// One stable Measurable: readers that measure inside a derived track `#point` through it.
+	readonly virtualElement: Measurable = {
 		getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...this.#point }),
-	});
+	};
 	#longPressTimer = createEffectTimeout((e: BitsPointerEvent) => this.#handleOpen(e), () => 700);
 
 	constructor(opts: ContextMenuTriggerStateOpts, parentMenu: MenuMenuState) {
@@ -1477,15 +1477,6 @@ export class ContextMenuTriggerState {
 		this.onpointermove = this.onpointermove.bind(this);
 		this.onpointercancel = this.onpointercancel.bind(this);
 		this.onpointerup = this.onpointerup.bind(this);
-
-		$effect(() => {
-			const point = this.#point;
-			untrack(() => {
-				this.virtualElement.current = {
-					getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...point }),
-				};
-			});
-		});
 
 		$effect(() => {
 			const isDisabled = this.opts.disabled.current;

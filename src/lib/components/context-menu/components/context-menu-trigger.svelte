@@ -34,7 +34,7 @@
 		),
 	);
 
-	setFloatingAnchor(triggerState.virtualElement);
+	setFloatingAnchor(() => triggerState.virtualElement);
 </script>
 
 {#if child}
