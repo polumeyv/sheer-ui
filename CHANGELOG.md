@@ -1,5 +1,17 @@
 # sheer-ui
 
+## 0.4.3
+
+### Patch Changes
+
+- [#116](https://github.com/polumeyv/sheer-ui/pull/116) [`8ce9e01`](https://github.com/polumeyv/sheer-ui/commit/8ce9e01d0624f6e367844042e48323c2cd124a71) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - Checkbox and Checkbox.Group engines take accessor-object options; `joinGroup` reads accessors; the escape layer takes getter options. No public change.
+
+- [#117](https://github.com/polumeyv/sheer-ui/pull/117) [`9c5f1f6`](https://github.com/polumeyv/sheer-ui/commit/9c5f1f6812e7f368301c72765cd65de5518ddbad) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - Popover and LinkPreview engines take accessor-object options; the native popover lifecycle reads the same plain shape. No public change.
+
+- [#114](https://github.com/polumeyv/sheer-ui/pull/114) [`7b772c0`](https://github.com/polumeyv/sheer-ui/commit/7b772c05440eb6eccb87d9eb9833df24404343a5) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - Separator, Progress, Meter, Toggle and Avatar engines take accessor-object options over the component props instead of per-prop boxes. No public change.
+
+- [#118](https://github.com/polumeyv/sheer-ui/pull/118) [`5ba953e`](https://github.com/polumeyv/sheer-ui/commit/5ba953e5f92259e0a8a81029e73ced93101dfbcb) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - Tooltip and Dialog engines take accessor-object options; no public change.
+
 ## 0.4.2
 
 ### Patch Changes
