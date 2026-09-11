@@ -6,7 +6,7 @@ import {
 	DOMContext,
 	type ReadableBoxedValues,
 	type WritableBoxedValues,
-	simpleBox,
+	boxWith,
 } from '../../internal/tools/index.js';
 import { createContext, onMount, untrack } from 'svelte';
 import type { BitsFocusEvent, BitsInputEvent, BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
@@ -196,7 +196,7 @@ export class TimeFieldRootState<T extends TimeValue = Time> {
 		 */
 		this.value = props.value;
 		this.placeholder = rangeRoot ? rangeRoot.opts.placeholder : props.placeholder;
-		this.validate = rangeRoot ? simpleBox(undefined) : props.validate;
+		this.validate = rangeRoot ? boxWith(() => undefined) : props.validate;
 		this.minValue = rangeRoot ? rangeRoot.opts.minValue : props.minValue;
 		this.maxValue = rangeRoot ? rangeRoot.opts.maxValue : props.maxValue;
 		this.disabled = rangeRoot ? rangeRoot.opts.disabled : props.disabled;

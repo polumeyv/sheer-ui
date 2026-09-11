@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
 	import FloatingLayer from '../../../../internal/floating-layer/components/floating-layer.svelte';
 	import { type WritableBox, boxWith, repairBindable } from '../../../../internal/tools/index.js';
 	import { OpenCell } from '../../../../internal/open-cell.svelte.js';
@@ -46,7 +45,8 @@
 	const select = givenCell ?? new OpenCell(() => open);
 
 	const rootState = SelectRootState.create({
-		type: untrack(() => type),
+		// svelte-ignore state_referenced_locally
+		type,
 		value: boxWith(
 			() => value!,
 			(v) => {

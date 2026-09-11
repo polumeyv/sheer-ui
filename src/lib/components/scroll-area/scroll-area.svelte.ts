@@ -7,14 +7,14 @@
 
 import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';
 import { createContext, getAbortSignal, untrack } from 'svelte';
-import { simpleBox, attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '../../internal/tools/index.js';
+import { attachRef, DOMContext, getWindow, type ReadableBoxedValues } from '../../internal/tools/index.js';
 import type { ScrollAreaType } from './types.js';
 import type { BitsPointerEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { type Direction, type Orientation, mergeProps } from '../../internal/index.js';
 import { createId } from '../../internal/create-id.js';
 import { on } from 'svelte/events';
 import { createBitsAttrs } from '../../internal/attrs.js';
-import { StateMachine } from '../../internal/state-machine.js';
+import { StateMachine } from '../../internal/state-machine.svelte.js';
 import { observeResizeMany } from '../../internal/svelte-resize-observer.svelte.js';
 
 const scrollAreaAttrs = createBitsAttrs({
@@ -97,14 +97,13 @@ export class ScrollAreaViewportState {
 	readonly opts: ScrollAreaViewportStateOpts;
 	readonly root: ScrollAreaRootState;
 	readonly attachment: RefAttachment;
-	#contentId = simpleBox('');
-	#contentRef = simpleBox<HTMLElement | null>(null);
-	readonly contentAttachment: RefAttachment = attachRef(this.#contentRef, (v) => (this.root.contentNode = v));
+	readonly #contentId: string;
+	readonly contentAttachment: RefAttachment = attachRef((v) => (this.root.contentNode = v));
 
 	constructor(opts: ScrollAreaViewportStateOpts, root: ScrollAreaRootState) {
 		this.opts = opts;
 		this.root = root;
-		this.#contentId.current = createId('content', opts.id.current);
+		this.#contentId = createId('content', opts.id.current);
 		this.attachment = attachRef(opts.ref, (v) => (this.root.viewportNode = v));
 	}
 
@@ -124,7 +123,7 @@ export class ScrollAreaViewportState {
 	readonly contentProps = $derived.by(
 		() =>
 			({
-				id: this.#contentId.current,
+				id: this.#contentId,
 				'data-scroll-area-content': '',
 				/**
 				 * When horizontal scrollbar is visible: this element should be at least
@@ -252,7 +251,7 @@ export class ScrollAreaScrollbarScrollState {
 			POINTER_ENTER: 'interacting',
 		},
 	});
-	readonly isHidden = $derived.by(() => this.machine.state.current === 'hidden');
+	readonly isHidden = $derived.by(() => this.machine.state === 'hidden');
 
 	constructor(scrollbar: ScrollAreaScrollbarState) {
 		this.scrollbar = scrollbar;
@@ -261,7 +260,7 @@ export class ScrollAreaScrollbarScrollState {
 		const debounceScrollend = createEffectTimeout(() => this.machine.dispatch('SCROLL_END'), () => 100);
 
 		$effect(() => {
-			const _state = this.machine.state.current;
+			const _state = this.machine.state;
 			const scrollHideDelay = this.root.opts.scrollHideDelay.current;
 			if (_state === 'idle') {
 				const hideTimer = this.root.domContext.setTimeout(() => this.machine.dispatch('HIDE'), scrollHideDelay);
@@ -304,7 +303,7 @@ export class ScrollAreaScrollbarScrollState {
 	readonly props = $derived.by(
 		() =>
 			({
-				'data-state': this.machine.state.current === 'hidden' ? 'hidden' : 'visible',
+				'data-state': this.machine.state === 'hidden' ? 'hidden' : 'visible',
 				onpointerenter: this.onpointerenter,
 				onpointerleave: this.onpointerleave,
 			}) as const,

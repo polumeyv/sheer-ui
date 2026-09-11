@@ -74,7 +74,7 @@
 	<!-- focus proxy: visually hidden (the sr-only utility) but focusable, for nav-menu focus management -->
 	<span {...mergeProps(triggerState.focusProxyProps, mounted, { class: 'sr-only' })}></span>
 
-	{#if triggerState.context.viewportRef.current}
+	{#if triggerState.context.viewportRef}
 		<span aria-owns={triggerState.itemContext.contentId ?? undefined}></span>
 	{/if}
 {/if}

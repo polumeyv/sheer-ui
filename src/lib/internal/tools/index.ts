@@ -1,7 +1,6 @@
 export {
 	bindableWith,
 	boxWith,
-	boxAutoReset,
 	repairBindable,
 	simpleBox,
 	type WritableBox,

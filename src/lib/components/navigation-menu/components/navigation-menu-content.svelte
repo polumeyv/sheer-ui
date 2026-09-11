@@ -53,6 +53,6 @@
 	);
 </script>
 
-<Portal to={contentState.context.viewportRef.current || undefined} disabled={!contentState.context.viewportRef.current}>
+<Portal to={contentState.context.viewportRef || undefined} disabled={!contentState.context.viewportRef}>
 	<NavigationMenuContentImpl {...mergedProps} {children} {child} />
 </Portal>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
 	import { type WritableBox, boxWith, repairBindable } from '../../../internal/tools/index.js';
 	import { OpenCell } from '../../../internal/open-cell.svelte.js';
 	import type { ComboboxRootProps } from '../types.js';
@@ -41,7 +40,8 @@
 	const cell = givenCell ?? new OpenCell(() => open);
 
 	const rootState = SelectRootState.create({
-		type: untrack(() => type),
+		// svelte-ignore state_referenced_locally
+		type,
 		value: boxWith(
 			() => value!,
 			(v) => {

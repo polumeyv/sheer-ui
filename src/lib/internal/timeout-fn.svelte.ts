@@ -4,20 +4,22 @@ import type { AnyFn } from './types.js';
  * A self-cancelling timeout. `start()` (re)schedules `cb` after `getInterval()` ms,
  * `stop()` clears it; auto-stops when the owning component/effect is destroyed.
  */
-export function createEffectTimeout<T extends AnyFn>(cb: T, getDelay: () => number) {
+export function createEffectTimeout<T extends AnyFn>(cb: T, getDelay: () => number, getWindow: () => typeof globalThis = () => globalThis) {
 	let timer: ReturnType<typeof setTimeout> | undefined;
+	let timerWindow: typeof globalThis;
 
 	const stop = () => {
 		if (timer === undefined) return;
 
-		clearTimeout(timer);
+		timerWindow.clearTimeout(timer);
 		timer = undefined;
 	};
 
 	const start = (...args: Parameters<T>) => {
 		stop();
 
-		timer = setTimeout(() => {
+		timerWindow = getWindow();
+		timer = timerWindow.setTimeout(() => {
 			timer = undefined;
 			cb(...args);
 		}, getDelay());

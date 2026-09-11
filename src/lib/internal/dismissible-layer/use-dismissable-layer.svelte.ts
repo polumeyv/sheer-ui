@@ -1,5 +1,4 @@
 import {
-	simpleBox,
 	boxWith,
 	attachRef,
 	type Getter,
@@ -219,7 +218,7 @@ export function interactOutsideAttachment(opts: {
 	enabled: Getter<boolean>;
 	isValidEvent?: Getter<((e: PointerEvent, node: HTMLElement) => boolean) | undefined>;
 }): { props: { onfocuscapture: () => void; onblurcapture: () => void }; attachment: RefAttachment<HTMLElement> } {
-	const ref = simpleBox<HTMLElement | null>(null);
+	let node = $state.raw<HTMLElement | null>(null);
 	const state = DismissibleLayerState.create({
 		id: boxWith(opts.id),
 		interactOutsideBehavior: boxWith(opts.interactOutsideBehavior),
@@ -227,9 +226,9 @@ export function interactOutsideAttachment(opts: {
 		enabled: boxWith(opts.enabled),
 		onFocusOutside: boxWith(() => opts.onFocusOutside?.()),
 		isValidEvent: boxWith(() => opts.isValidEvent?.()),
-		ref,
+		ref: boxWith(() => node, (v) => (node = v)),
 	});
-	return { props: state.props, attachment: attachRef(ref) };
+	return { props: state.props, attachment: attachRef((v) => (node = v)) };
 }
 
 function isValidEvent(e: PointerEvent, node: HTMLElement): boolean {

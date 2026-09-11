@@ -7,7 +7,7 @@ import type { OnChangeFn, RefAttachment, WithRefOpts } from '../../internal/type
 import { createContext, onMount, tick, untrack } from 'svelte';
 import type { FocusEventHandler, KeyboardEventHandler, PointerEventHandler } from 'svelte/elements';
 import { getFloatingContentCSSVars } from '../../internal/floating-layer/index.js';
-import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.svelte.js';
 import { RovingFocusItem } from '../../internal/roving-focus-item.svelte.js';
 
 const menubarAttrs = createBitsAttrs({

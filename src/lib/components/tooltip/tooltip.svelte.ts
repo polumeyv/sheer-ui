@@ -1,4 +1,4 @@
-import { attachRef, DOMContext, type WritableBoxedValues, type ReadableBoxedValues, simpleBox } from '../../internal/tools/index.js';
+import { attachRef, DOMContext, type WritableBoxedValues, type ReadableBoxedValues } from '../../internal/tools/index.js';
 import { on } from 'svelte/events';
 import { createContext, onMount, untrack } from 'svelte';
 import { isElement } from '../../internal/tools/utils/dom.js';
@@ -145,7 +145,6 @@ export class TooltipProviderState {
 	}
 	readonly opts: TooltipProviderStateOpts;
 	isOpenDelayed = $state<boolean>(true);
-	isPointerInTransit = simpleBox(false);
 	readonly #timerFn: ReturnType<typeof createEffectTimeout<() => void>>;
 	#openTooltip = $state<TooltipRootState | null>(null);
 
@@ -436,18 +435,9 @@ export class TooltipTriggerState {
 	readonly root: TooltipRootState | null;
 	readonly tether: TooltipTetherState | null;
 	readonly attachment: RefAttachment;
-	#isPointerDown = simpleBox(false);
+	#isPointerDown = false;
 	#hasPointerMoveOpened = $state(false);
 	domContext: DOMContext;
-	// Fired on pointerenter while the pointer is in transit: if still in transit after the delay, the
-	// user is likely staying on this trigger.
-	#transitCheck = createEffectTimeout(() => {
-		const root = this.#getRoot();
-		if (!root || !root.provider.isPointerInTransit.current) return;
-		root.provider.isPointerInTransit.current = false;
-		root.onTriggerEnter(this.opts.id.current);
-		this.#hasPointerMoveOpened = true;
-	}, () => 250);
 	#mounted = false;
 	#lastRegisteredId: string | null = null;
 
@@ -551,17 +541,17 @@ export class TooltipTriggerState {
 	};
 
 	handlePointerUp = () => {
-		this.#isPointerDown.current = false;
+		this.#isPointerDown = false;
 	};
 
 	#onpointerup: PointerEventHandler<HTMLElement> = () => {
 		if (this.#isDisabled()) return;
-		this.#isPointerDown.current = false;
+		this.#isPointerDown = false;
 	};
 
 	#onpointerdown: PointerEventHandler<HTMLElement> = () => {
 		if (this.#isDisabled()) return;
-		this.#isPointerDown.current = true;
+		this.#isPointerDown = true;
 
 		on(
 			this.domContext.getDocument(),
@@ -584,12 +574,6 @@ export class TooltipTriggerState {
 		}
 		if (e.pointerType === 'touch') return;
 
-		// if in transit, wait briefly to see if user is actually heading to old content or staying here
-		if (root.provider.isPointerInTransit.current) {
-			this.#transitCheck.start();
-			return;
-		}
-
 		root.onTriggerEnter(this.opts.id.current);
 		this.#hasPointerMoveOpened = true;
 	};
@@ -606,10 +590,6 @@ export class TooltipTriggerState {
 		if (e.pointerType === 'touch') return;
 		if (this.#hasPointerMoveOpened) return;
 
-		// moving within trigger means we're definitely not in transit anymore
-		this.#transitCheck.stop();
-		root.provider.isPointerInTransit.current = false;
-
 		root.onTriggerEnter(this.opts.id.current);
 		this.#hasPointerMoveOpened = true;
 	};
@@ -618,7 +598,6 @@ export class TooltipTriggerState {
 		const root = this.#getRoot();
 		if (!root) return;
 		if (this.#isDisabled()) return;
-		this.#transitCheck.stop();
 		if (!root.isActiveTrigger(this.opts.id.current)) {
 			this.#hasPointerMoveOpened = false;
 			return;
@@ -649,7 +628,7 @@ export class TooltipTriggerState {
 	#onfocus: FocusEventHandler<HTMLElement> = (e) => {
 		const root = this.#getRoot();
 		if (!root) return;
-		if (this.#isPointerDown.current) return;
+		if (this.#isPointerDown) return;
 		if (this.#isDisabled()) {
 			if (root.opts.open.current) {
 				root.handleClose();

@@ -4,7 +4,7 @@ import type { Page, PageItem } from './types.js';
 import type { BitsKeyboardEvent, BitsMouseEvent, RefAttachment, WithRefOpts } from '../../internal/types.js';
 import { createBitsAttrs } from '../../internal/attrs.js';
 import { kbd } from '../../internal/kbd.js';
-import { RovingFocusGroup } from '../../internal/roving-focus-group.js';
+import { RovingFocusGroup } from '../../internal/roving-focus-group.svelte.js';
 import { type Orientation } from '../../internal/index.js';
 
 const paginationAttrs = createBitsAttrs({
