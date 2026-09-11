@@ -1,30 +1,10 @@
-import type { EscapeLayerProps } from '../../internal/escape-layer/types.js';
-import type { DismissibleLayerProps } from '../../internal/dismissible-layer/types.js';
-import type { FloatingLayerContentProps } from '../../internal/floating-layer/types.js';
-import type { TextSelectionGuardProps } from '../../internal/types.js';
-import type { PresenceProps } from '../../internal/types.js';
-import type { FocusScopeProps } from '../../internal/focus-scope/types.js';
-import type { ScrollLockProps } from '../../internal/body-scroll-lock.svelte.js';
-import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, WithChildren, Without } from '../../internal/types.js';
+import type { NativePopoverPositionProps } from '../../internal/native-popover.svelte.js';
+import type { OnChangeFn, WithChild, WithChildNoChildrenSnippetProps, Without } from '../../internal/types.js';
 import type { Snippet } from 'svelte';
 import type { OpenCell } from '../../internal/open-cell.svelte.js';
 import type { BitsPrimitiveButtonAttributes, BitsPrimitiveDivAttributes } from '../../internal/attribute-types.js';
 import type { FloatingContentSnippetProps } from '../../internal/types.js';
 import type { PortalProps } from '../../internal/portal/index.js';
-
-/**
- * Content prop surface, composed from the same layer building blocks the (now-removed) Floating-UI
- * `PopperLayer` aggregated. The component no longer renders any Floating-UI layer — positioning is
- * native CSS `anchor()` — but the prop names are preserved so existing consumers keep type-checking;
- * the Floating-UI-only positioning props are simply ignored at runtime.
- */
-type PopoverFloatingProps = EscapeLayerProps &
-	Omit<DismissibleLayerProps, 'onInteractOutsideStart'> &
-	FloatingLayerContentProps &
-	PresenceProps &
-	TextSelectionGuardProps &
-	FocusScopeProps &
-	Omit<ScrollLockProps, 'restoreScrollDelay'>;
 
 export type PopoverRootPropsWithoutHTML = {
 	/**
@@ -54,7 +34,7 @@ export type PopoverRootPropsWithoutHTML = {
 export type PopoverRootProps = PopoverRootPropsWithoutHTML;
 
 export type PopoverContentPropsWithoutHTML = WithChildNoChildrenSnippetProps<
-	Omit<PopoverFloatingProps, 'content' | 'loop'>,
+	NativePopoverPositionProps & { customAnchor?: HTMLElement | string | null },
 	FloatingContentSnippetProps
 >;
 

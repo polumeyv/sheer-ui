@@ -1,6 +1,5 @@
 import type { EscapeLayerProps } from "../../internal/escape-layer/types.js";
 import type { DismissibleLayerProps } from "../../internal/dismissible-layer/types.js";
-import type { PresenceProps } from "../../internal/types.js";
 import type { FocusScopeProps } from "../../internal/focus-scope/types.js";
 import type { TextSelectionGuardProps } from "../../internal/types.js";
 import type { ScrollLockProps } from "../../internal/body-scroll-lock.svelte.js";
@@ -52,27 +51,33 @@ export type DialogContentSnippetProps = {
 };
 
 export type DialogContentPropsWithoutHTML = WithChildNoChildrenSnippetProps<
-	Omit<
-		EscapeLayerProps &
-			Omit<DismissibleLayerProps, "onInteractOutsideStart"> &
-			PresenceProps &
-			FocusScopeProps &
-			TextSelectionGuardProps &
-			ScrollLockProps,
-		"loop"
-	>,
+	Pick<EscapeLayerProps, "onEscapeKeydown"> &
+		Pick<DismissibleLayerProps, "onInteractOutside"> &
+		Pick<FocusScopeProps, "trapFocus"> &
+		ScrollLockProps & {
+			escapeKeydownBehavior?: "close" | "ignore";
+			interactOutsideBehavior?: "close" | "ignore";
+		},
 	DialogContentSnippetProps
 >;
 
 export type DialogContentProps = DialogContentPropsWithoutHTML &
 	Without<BitsPrimitiveDivAttributes, DialogContentPropsWithoutHTML>;
 
+export type DialogContentHeadlessPropsWithoutHTML = WithChildNoChildrenSnippetProps<
+	Omit<EscapeLayerProps & DismissibleLayerProps & FocusScopeProps & TextSelectionGuardProps & ScrollLockProps, "onInteractOutsideStart" | "loop">,
+	DialogContentSnippetProps
+>;
+
+export type DialogContentHeadlessProps = DialogContentHeadlessPropsWithoutHTML &
+	Without<BitsPrimitiveDivAttributes, DialogContentHeadlessPropsWithoutHTML>;
+
 export type DialogOverlaySnippetProps = {
 	open: boolean;
 };
 
 export type DialogOverlayPropsWithoutHTML = WithChild<
-	PresenceProps,
+	{},
 	DialogOverlaySnippetProps
 >;
 

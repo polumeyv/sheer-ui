@@ -1,5 +1,5 @@
 import type { OpenCell } from '../../internal/open-cell.svelte.js';
-import type { FloatingLayerContentProps } from '../../internal/floating-layer/types.js';
+import type { NativePopoverPositionProps } from '../../internal/native-popover.svelte.js';
 import type { DismissibleLayerProps } from '../../internal/dismissible-layer/types.js';
 import type { EscapeLayerProps } from '../../internal/escape-layer/types.js';
 import type { Snippet } from 'svelte';
@@ -136,16 +136,7 @@ export type TooltipRootPropsWithoutHTML<Payload = never> = Omit<
 export type TooltipRootProps<Payload = never> = TooltipRootPropsWithoutHTML<Payload>;
 
 export type TooltipContentPropsWithoutHTML = WithChildNoChildrenSnippetProps<
-	Omit<FloatingLayerContentProps, 'content' | 'preventScroll'> &
-		Omit<DismissibleLayerProps, 'onInteractOutsideStart'> &
-		EscapeLayerProps & {
-			/**
-			 * When `true`, the tooltip will be forced to mount in the DOM.
-			 *
-			 * Useful for more control over the transition behavior.
-			 */
-			forceMount?: boolean;
-		},
+	NativePopoverPositionProps & Pick<DismissibleLayerProps, 'onInteractOutside'> & Pick<EscapeLayerProps, 'onEscapeKeydown'>,
 	FloatingContentSnippetProps
 >;
 

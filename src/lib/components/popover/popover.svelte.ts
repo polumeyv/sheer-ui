@@ -12,7 +12,6 @@ import type {
 	RefOpts,
 } from '../../internal/types.js';
 import { isElement } from '../../internal/tools/utils/dom.js';
-import type { Measurable } from '../../internal/floating-layer/index.js';
 import { SafePolygon } from '../../internal/safe-polygon.svelte.js';
 import { isTabbable } from '../../internal/tabbable.js';
 import { createEffectTimeout } from '../../internal/timeout-fn.svelte.js';
@@ -263,9 +262,7 @@ export class PopoverTriggerState {
 	);
 }
 
-interface PopoverContentStateOpts extends RefOpts {
-	readonly customAnchor: string | HTMLElement | null | Measurable;
-}
+interface PopoverContentStateOpts extends RefOpts {}
 
 export class PopoverContentState {
 	static create(opts: PopoverContentStateOpts) {

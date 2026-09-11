@@ -66,7 +66,6 @@ export const components: ComponentMeta[] = [
 	{ slug: 'radio-group', name: 'Radio Group', description: 'A set of native radio inputs where only one can be selected at a time.' },
 	{ slug: 'range-calendar', name: 'Range Calendar', description: 'A calendar component that allows users to select a range of dates.' },
 	{ slug: 'resizable', name: 'Resizable', description: 'Accessible resizable panel groups and layouts.' },
-	{ slug: 'scroll-area', name: 'Scroll Area', description: 'Augments native scroll with custom, cross-browser styling.' },
 	{ slug: 'select', name: 'Select', description: 'A native select element (appearance: base-select) for choosing from a list of options.' },
 	{ slug: 'separator', name: 'Separator', description: 'Visually or semantically separates content.' },
 	{ slug: 'sheet', name: 'Sheet', description: 'A dialog that slides in to complement the main content of the screen.' },
