@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { ToolbarGroupItemProps } from '../types.js';
 	import { createToolbarGroupItem } from '../toolbar.svelte.js';
@@ -25,13 +24,21 @@
 	} = $props();
 
 	const groupItemState = createToolbarGroupItem({
-		id: boxWith(() => id),
-		value: boxWith(() => value),
-		disabled: boxWith(() => disabled ?? false),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
+		get id() {
+			return id;
+		},
+		get value() {
+			return value;
+		},
+		get disabled() {
+			return disabled ?? false;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(

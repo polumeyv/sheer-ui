@@ -1,8 +1,8 @@
 import { createContext } from 'svelte';
-import { type ReadableBox, type ReadableBoxedValues, attachRef } from '../../internal/tools/index.js';
+import { attachRef, boxWith } from '../../internal/tools/index.js';
 import { createBitsAttrs, boolToEmptyStrOrUndef } from '../../internal/attrs.js';
 import type { Orientation } from '../../internal/index.js';
-import type { RefAttachment, WithRefOpts } from '../../internal/types.js';
+import type { RefAttachment } from '../../internal/types.js';
 import { RovingFocusGroup } from '../../internal/roving-focus-group.svelte.js';
 import { type SelectionGroup, type SelectionItemOpts, SelectionItemState, SelectionValue } from '../../internal/selection.svelte.js';
 
@@ -13,15 +13,14 @@ export const toggleGroupAttrs = createBitsAttrs({
 
 const [getToggleGroupRoot, setToggleGroupRoot] = createContext<ToggleGroupRootState>();
 
-interface ToggleGroupRootStateOpts
-	extends
-		WithRefOpts,
-		ReadableBoxedValues<{
-			disabled: boolean;
-			rovingFocus: boolean;
-			loop: boolean;
-			orientation: Orientation;
-		}> {
+/** The root component's props as accessors over its `$props()`; `ref` writes back to its bindable. */
+interface ToggleGroupRootStateOpts {
+	readonly id: string;
+	readonly disabled: boolean;
+	readonly rovingFocus: boolean;
+	readonly loop: boolean;
+	readonly orientation: Orientation;
+	ref: HTMLElement | null;
 	selection: SelectionValue;
 }
 
@@ -31,9 +30,6 @@ export class ToggleGroupRootState implements SelectionGroup {
 	}
 	readonly opts: ToggleGroupRootStateOpts;
 	readonly selection: SelectionValue;
-	readonly disabled: ReadableBox<boolean>;
-	readonly orientation: ReadableBox<Orientation>;
-	readonly rovingFocus: ReadableBox<boolean>;
 	readonly rovingFocusGroup: RovingFocusGroup;
 	readonly selectionTakesTabStop = true;
 	readonly attachment: RefAttachment;
@@ -41,26 +37,35 @@ export class ToggleGroupRootState implements SelectionGroup {
 	constructor(opts: ToggleGroupRootStateOpts) {
 		this.opts = opts;
 		this.selection = opts.selection;
-		this.disabled = opts.disabled;
-		this.orientation = opts.orientation;
-		this.rovingFocus = opts.rovingFocus;
-		this.attachment = attachRef(opts.ref);
+		this.attachment = attachRef<HTMLElement>((v) => (opts.ref = v));
 		this.rovingFocusGroup = new RovingFocusGroup({
 			candidateAttr: toggleGroupAttrs.item,
-			rootNode: opts.ref,
-			loop: opts.loop,
-			orientation: opts.orientation,
+			rootNode: boxWith(() => opts.ref),
+			loop: boxWith(() => opts.loop),
+			orientation: boxWith(() => opts.orientation),
 		});
+	}
+
+	get disabled() {
+		return this.opts.disabled;
+	}
+
+	get orientation() {
+		return this.opts.orientation;
+	}
+
+	get rovingFocus() {
+		return this.opts.rovingFocus;
 	}
 
 	readonly props = $derived.by(
 		() =>
 			({
-				id: this.opts.id.current,
+				id: this.opts.id,
 				[toggleGroupAttrs.root]: '',
 				role: 'group',
-				'data-orientation': this.opts.orientation.current,
-				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled.current),
+				'data-orientation': this.opts.orientation,
+				'data-disabled': boolToEmptyStrOrUndef(this.opts.disabled),
 				...this.attachment,
 			}) as const,
 	);
