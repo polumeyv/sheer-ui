@@ -1,29 +1,10 @@
 <script lang="ts">
 	import { join } from 'overrule';
 	import ModalSurface from './modal-surface.svelte';
-	import type { DialogContentProps, DialogPortalProps } from '../types.js';
-	import type { WithoutChildrenOrChild } from '../../../internal/utils.js';
+	import type { DialogContentProps } from '../types.js';
 
-	/**
-	 * Modal dialog adapter over the shared native modal surface (modal-surface.svelte),
-	 * which owns the skeleton: parity props, content state, controller, scroll lock, and
-	 * the `<dialog>` render. This file owns only Dialog's visual policy.
-	 *
-	 * The visual surface (centered box, bg, border, radius, shadow, padding, sm:max-w-lg) is baked
-	 * here — the shadcn convention — so a bare `<Dialog.Content>` is a styled modal; consumer
-	 * `class` still merges to override (e.g. `max-w-md!`). Two Tailwind gotchas: no `display`
-	 * utility on the <dialog> (grid lives on the inner wrapper); explicit centering via
-	 * `fixed inset-0 m-auto h-fit` (preflight resets the UA `margin:auto` that would otherwise
-	 * center it).
-	 */
-	let {
-		children,
-		ref = $bindable(null),
-		class: className,
-		...restProps
-	}: DialogContentProps & {
-		portalProps?: WithoutChildrenOrChild<DialogPortalProps>;
-	} = $props();
+	// Keep layout utilities on the inner wrapper: display:grid on <dialog> overrides its closed state.
+	let { children, ref = $bindable(null), class: className, ...restProps }: DialogContentProps = $props();
 </script>
 
 <ModalSurface
@@ -40,14 +21,8 @@
 </ModalSurface>
 
 <style>
-	/* Pop is a keyframe animation, not an @starting-style / display / overlay transition: WebKit
-	   doesn't start those on top-layer changes (bug 275184; `overlay` is Chromium-only), so
-	   transitions snapped both directions on iOS. Exit plays REVERSED on [data-state=closed] while
-	   the dialog is still open — the controller defers close() until animations settle. The
-	   closed-state display reset and the ::backdrop fade live in ui.css under [data-modal-surface]. */
-	/* Distinct in/out names on purpose: with a single name, the state flip only UPDATES the
-	   already-finished entry animation (animation-name unchanged → no restart per spec), so the
-	   exit would never play and the deferred close would fire instantly. */
+	/* Separate entry/exit keyframes restart reliably in WebKit. The controller keeps the dialog
+	   open until exit settles; shared modal CSS owns the closed display reset and backdrop fade. */
 	@keyframes dialog-pop-in {
 		from {
 			scale: 0.95;

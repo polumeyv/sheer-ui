@@ -18,9 +18,6 @@
 		onInteractOutside = () => {},
 		onEscapeKeydown = () => {},
 		style,
-		// Floating-UI-only props kept for API compatibility; native positioning ignores them
-		// (sideOffset, alignOffset, avoidCollisions, collisionPadding, arrowPadding, dir, customAnchor,
-		//  forceMount).
 		...restProps
 	}: LinkPreviewContentProps = $props();
 

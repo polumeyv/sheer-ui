@@ -24,7 +24,7 @@
 		<Popover.Trigger {openOnHover} {openDelay} {closeDelay} data-testid="trigger">
 			Trigger
 		</Popover.Trigger>
-		<Popover.Content forceMount preventScroll={false} trapFocus={false} data-testid="content">
+		<Popover.Content data-testid="content">
 			Content
 		</Popover.Content>
 	{/snippet}

@@ -5,7 +5,12 @@ import { createSettleRunner, useOpenChangeComplete } from './animations-settled.
 /** Per-surface CSS anchor names; client-only (the lifecycle effect never runs in SSR). */
 let anchorSequence = 0;
 
-type NativePopoverAnchor = HTMLElement | string | null | undefined | object;
+type NativePopoverAnchor = HTMLElement | string | null | undefined;
+
+export type NativePopoverPositionProps = {
+	side?: 'top' | 'right' | 'bottom' | 'left';
+	align?: 'start' | 'center' | 'end';
+};
 
 /**
  * The slice of a content state the lifecycle drives — popover, tooltip, and

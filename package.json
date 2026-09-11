@@ -238,11 +238,6 @@
 			"svelte": "./src/lib/components/resizable/index.ts",
 			"default": "./src/lib/components/resizable/index.ts"
 		},
-		"./components/scroll-area": {
-			"types": "./src/lib/components/scroll-area/index.ts",
-			"svelte": "./src/lib/components/scroll-area/index.ts",
-			"default": "./src/lib/components/scroll-area/index.ts"
-		},
 		"./components/select": {
 			"types": "./src/lib/components/select/index.ts",
 			"svelte": "./src/lib/components/select/index.ts",

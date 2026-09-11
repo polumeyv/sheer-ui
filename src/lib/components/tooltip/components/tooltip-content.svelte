@@ -21,11 +21,8 @@
 		onInteractOutside = () => {},
 		onEscapeKeydown = () => {},
 		style,
-		// Floating-UI-only props kept for API compatibility; native positioning ignores them
-		// (sideOffset, avoidCollisions, arrowPadding, collisionPadding, hideWhenDetached,
-		//  customAnchor, portalProps, forceMount).
 		...restProps
-	}: TooltipContentProps & { arrowClasses?: ClassValue; portalProps?: unknown } = $props();
+	}: TooltipContentProps & { arrowClasses?: ClassValue } = $props();
 
 	const contentState = TooltipContentState.create({
 		id: boxWith(() => id),
