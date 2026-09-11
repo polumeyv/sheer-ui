@@ -44,7 +44,7 @@
 				data-state={row.isSelected && 'selected'}
 				class={onRowClick ? 'cursor-pointer hover:bg-muted/50' : ''}
 				onclick={(event: MouseEvent) => {
-					if ((event.target as HTMLElement).closest('[role="checkbox"], button, a, input, select, textarea')) return;
+					if ((event.target as HTMLElement).closest('[role="checkbox"], button, a, input, select, textarea, label')) return;
 					onRowClick?.(row.original);
 				}}>
 				{#each row.visibleCells as cell (cell.id)}
