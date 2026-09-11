@@ -37,7 +37,29 @@
 		onEscapeKeydown: boxWith(() => onEscapeKeydown),
 	});
 
-	const lifecycleProps = useNativePopoverLifecycle(contentState);
+	// Accessor view over the boxed tooltip state until the tooltip engine converts.
+	const lifecycleProps = useNativePopoverLifecycle({
+		root: {
+			opts: {
+				get open() {
+					return contentState.root.opts.open.current;
+				},
+				get onOpenChangeComplete() {
+					return contentState.root.opts.onOpenChangeComplete.current;
+				},
+			},
+			get triggerNode() {
+				return contentState.root.triggerNode;
+			},
+		},
+		opts: {
+			get ref() {
+				return contentState.opts.ref.current;
+			},
+		},
+		onEscapeKeydown: contentState.onEscapeKeydown,
+		onInteractOutside: contentState.onInteractOutside,
+	});
 
 	const mergedProps = $derived(
 		mergeProps(

@@ -18,13 +18,13 @@ type NativePopoverAnchor = HTMLElement | string | null | undefined | object;
 interface NativePopoverContentState {
 	readonly root: {
 		readonly opts: {
-			readonly open: { readonly current: boolean };
-			readonly onOpenChangeComplete: { readonly current: (open: boolean) => void };
+			readonly open: boolean;
+			readonly onOpenChangeComplete: (open: boolean) => void;
 		};
 		readonly triggerNode: HTMLElement | null;
 	};
 	readonly opts: {
-		readonly ref: { readonly current: HTMLElement | null };
+		readonly ref: HTMLElement | null;
 	};
 	onEscapeKeydown?: (event: KeyboardEvent) => void;
 	onInteractOutside?: (event: PointerEvent) => void;
@@ -60,8 +60,8 @@ export function useNativePopoverLifecycle(
 	options: { anchor?: Getter<NativePopoverAnchor>; mode?: 'auto' | 'manual' } = {},
 ) {
 	const mode = options.mode ?? 'manual';
-	const ref = () => state.opts.ref.current;
-	const open = () => state.root.opts.open.current;
+	const ref = () => state.opts.ref;
+	const open = () => state.root.opts.open;
 
 	// The surface's own animations gate the deferred hide; a long-running descendant
 	// animation (a chart entry inside a popover) must not hold the top layer.
@@ -131,7 +131,7 @@ export function useNativePopoverLifecycle(
 		});
 	});
 
-	useOpenChangeComplete(open, ref, (isOpen) => state.root.opts.onOpenChangeComplete.current(isOpen));
+	useOpenChangeComplete(open, ref, (isOpen) => state.root.opts.onOpenChangeComplete(isOpen));
 
 	if (mode === 'auto') {
 		// The UA closes the popover itself (light dismiss, Escape, another auto popover opening);

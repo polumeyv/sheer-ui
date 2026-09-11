@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { PopoverCloseProps } from '../types.js';
 	import { PopoverCloseState } from '../popover.svelte.js';
@@ -11,11 +10,15 @@
 	let { child, children, id = createId(uid), ref = $bindable(null), ...restProps }: PopoverCloseProps = $props();
 
 	const closeState = PopoverCloseState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(value) => (ref = value),
-		),
+		get id() {
+			return id;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const mergedProps = $derived(

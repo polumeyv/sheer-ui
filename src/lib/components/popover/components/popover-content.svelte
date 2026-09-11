@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import type { PopoverContentProps } from '../types.js';
 	import { PopoverContentState } from '../popover.svelte.js';
@@ -36,12 +35,18 @@
 	}: PopoverContentProps = $props();
 
 	const contentState = PopoverContentState.create({
-		id: boxWith(() => id),
-		ref: boxWith(
-			() => ref,
-			(v) => (ref = v),
-		),
-		customAnchor: boxWith(() => customAnchor),
+		get id() {
+			return id;
+		},
+		get customAnchor() {
+			return customAnchor;
+		},
+		get ref() {
+			return ref;
+		},
+		set ref(v) {
+			ref = v;
+		},
 	});
 
 	const lifecycleProps = useNativePopoverLifecycle(contentState, { anchor: () => customAnchor, mode: 'auto' });
