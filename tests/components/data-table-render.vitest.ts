@@ -39,7 +39,7 @@ describe('FlexRender branches', () => {
 		renderFixture();
 		expect(document.body.querySelectorAll('th')[1]!.textContent).toBe('Name');
 		expect(getCheckbox(getRow('a'))).toBeTruthy();
-		// textCell goes through createRawSnippet and must escape user text.
+		// Compiled text snippets escape user text.
 		expect(getRow('b').querySelectorAll('td')[1]!.innerHTML).toContain('Beta &amp; Co');
 	});
 });
