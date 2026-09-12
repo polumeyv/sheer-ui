@@ -1,4 +1,5 @@
 export { default as FlexRender } from "./flex-render.svelte";
+export { default as DataTableContent } from "./table-content.svelte";
 export { renderComponent, renderSnippet } from "./render-helpers";
 export { Cell, Column, createDataTable, DataTable, Header, Row } from "../../internal/table/index.js";
 export type {

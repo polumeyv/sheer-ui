@@ -1,14 +1,9 @@
 import type { ColumnDef, CellContext } from '../../internal/table/types.js';
-import { renderComponent, renderSnippet } from './';
-import { createRawSnippet } from 'svelte';
-import { DataTableCheckbox } from './index';
+import { renderComponent, renderSnippet } from './render-helpers.js';
+import { text } from './text.svelte';
+import DataTableCheckbox from './data-table-checkbox.svelte';
 import DataTableSortButton from './data-table-sort-button.svelte';
 import type { CheckedState } from '../menu/utils.js';
-
-// `createRawSnippet`'s `render` returns a raw HTML string (like `{@html}`), so any cell text — which is usually
-// user-controlled (names, emails, …) — must be escaped before interpolation to avoid XSS.
-const ESCAPE: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ESCAPE[c]!);
 
 /**
  * Creates a selection column with checkbox for selecting rows
@@ -38,12 +33,7 @@ export function selectColumn<T>(): ColumnDef<T> {
  * Creates a simple text header
  */
 export function textHeader(label: string) {
-	return () => {
-		const snippet = createRawSnippet(() => ({
-			render: () => `<span>${label}</span>`,
-		}));
-		return renderSnippet(snippet, undefined);
-	};
+	return () => renderSnippet(text, { value: label });
 }
 
 type TextCellOptions = {
@@ -57,13 +47,11 @@ type TextCellOptions = {
  */
 export function textCell<T>(key: keyof T | ((row: T) => string | number | null | undefined), options?: TextCellOptions) {
 	return ({ row }: CellContext<T, unknown>) => {
-		const text = typeof key === 'function' ? key(row.original) : (row.original[key] ?? '');
-		const display = `${options?.prefix ?? ''}${text}${options?.suffix ?? ''}`;
-		const className = options?.bold ? 'font-medium' : '';
-		const snippet = createRawSnippet<[string]>((getText) => ({
-			render: () => `<span class="${className}">${escapeHtml(getText())}</span>`,
-		}));
-		return renderSnippet(snippet, display);
+		const value = typeof key === 'function' ? key(row.original) : (row.original[key] ?? '');
+		return renderSnippet(text, {
+			value: `${options?.prefix ?? ''}${value}${options?.suffix ?? ''}`,
+			class: options?.bold ? 'font-medium' : '',
+		});
 	};
 }
 
@@ -76,20 +64,10 @@ export function mutedCell<T>(
 ) {
 	return ({ row }: CellContext<T, unknown>) => {
 		const value = typeof key === 'function' ? key(row.original) : row.original[key];
-		if (value == null) {
-			return renderSnippet(
-				createRawSnippet(() => ({
-					render: () => `<span class="text-muted-foreground">-</span>`,
-				})),
-				undefined,
-			);
-		}
-		return renderSnippet(
-			createRawSnippet<[string]>((getText) => ({
-				render: () => `<span class="text-muted-foreground">${escapeHtml(getText())}</span>`,
-			})),
-			`${options?.prefix ?? ''}${value}${options?.suffix ?? ''}`,
-		);
+		return renderSnippet(text, {
+			value: value == null ? '-' : `${options?.prefix ?? ''}${value}${options?.suffix ?? ''}`,
+			class: 'text-muted-foreground',
+		});
 	};
 }
 
