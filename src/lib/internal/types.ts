@@ -100,14 +100,6 @@ export type FloatingContentSnippetProps = {
 
 export type StaticContentSnippetProps = FloatingContentSnippetProps;
 
-/**
- * Accepted for API compatibility on Dialog and Popover content and ignored: every surface is
- * mounted while closed now (native top layer, or hidden inline with a CSS exit).
- */
-export type PresenceProps = {
-	forceMount?: boolean;
-};
-
 export type TextSelectionGuardProps = {
 	/**
 	 * Whether to prevent a drag that starts inside the surface from selecting page text behind

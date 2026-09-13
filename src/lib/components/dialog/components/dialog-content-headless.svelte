@@ -2,7 +2,7 @@
 	import { boxWith } from '../../../internal/tools/index.js';
 	import { mergeProps } from '../../../internal/merge-props.js';
 	import { DialogContentState } from '../dialog.svelte.js';
-	import type { DialogContentProps } from '../types.js';
+	import type { DialogContentHeadlessProps } from '../types.js';
 	import { interactOutsideAttachment } from '../../../internal/dismissible-layer/use-dismissable-layer.svelte.js';
 	import { escapeKeydownAttachment } from '../../../internal/escape-layer/use-escape-layer.svelte.js';
 	import { createFocusScopeProps } from '../../../internal/focus-scope/focus-scope.svelte.js';
@@ -32,7 +32,7 @@
 		preventScroll = true,
 		restoreScrollDelay = null,
 		...restProps
-	}: DialogContentProps = $props();
+	}: DialogContentHeadlessProps = $props();
 
 	const contentState = DialogContentState.create({
 		id: boxWith(() => id),

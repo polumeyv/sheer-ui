@@ -32,7 +32,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test": "bun test && bun run test:components",
-		"test:components": "svelte-kit sync && bunx vitest run --config vitest.config.ts",
+		"test:components": "svelte-kit sync && bunx --bun vitest run --config vitest.config.ts",
 		"changeset": "changeset",
 		"changeset:version": "changeset version",
 		"changeset:release": "changeset publish"
@@ -237,11 +237,6 @@
 			"types": "./src/lib/components/resizable/index.ts",
 			"svelte": "./src/lib/components/resizable/index.ts",
 			"default": "./src/lib/components/resizable/index.ts"
-		},
-		"./components/scroll-area": {
-			"types": "./src/lib/components/scroll-area/index.ts",
-			"svelte": "./src/lib/components/scroll-area/index.ts",
-			"default": "./src/lib/components/scroll-area/index.ts"
 		},
 		"./components/select": {
 			"types": "./src/lib/components/select/index.ts",

@@ -17,21 +17,6 @@
 		align = 'center',
 		customAnchor = null,
 		style,
-		// No native equivalent — accepted for API compatibility but intentionally ignored.
-		// Native popovers don't trap focus or lock scroll (ARIA-correct for a non-modal
-		// popover), and the content is always mounted (the popover toggles `display` itself),
-		// so trapFocus / preventScroll / forceMount / the FU auto-focus hooks are no-ops.
-		// Dismissal is the UA's (`popover="auto"` light dismiss + top-layer Escape), so the
-		// onInteractOutside / onEscapeKeydown interception hooks are no-ops too.
-		// The remaining FU-only positioning props (sideOffset, avoidCollisions, …) ride in
-		// restProps; native CSS `anchor()` positioning ignores them.
-		trapFocus = true,
-		preventScroll = false,
-		forceMount = false,
-		onOpenAutoFocus = () => {},
-		onCloseAutoFocus = () => {},
-		onInteractOutside = () => {},
-		onEscapeKeydown = () => {},
 		...restProps
 	}: PopoverContentProps = $props();
 
@@ -41,7 +26,6 @@
 			() => ref,
 			(v) => (ref = v),
 		),
-		customAnchor: boxWith(() => customAnchor),
 	});
 
 	const lifecycleProps = useNativePopoverLifecycle(contentState, { anchor: () => customAnchor, mode: 'auto' });
