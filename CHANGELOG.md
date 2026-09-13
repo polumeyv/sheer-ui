@@ -1,5 +1,11 @@
 # sheer-ui
 
+## 0.5.0
+
+### Minor Changes
+
+- [#119](https://github.com/polumeyv/sheer-ui/pull/119) [`585dea5`](https://github.com/polumeyv/sheer-ui/commit/585dea50e5549eca56665690ffde2a053dc228ed) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - feat: ship compiled `dist/` built by svelte-package; exports point at it instead of the TypeScript sources
+
 ## 0.4.3
 
 ### Patch Changes
