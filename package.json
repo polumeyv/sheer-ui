@@ -8,8 +8,8 @@
 		"url": "git+https://github.com/polumeyv/sheer-ui.git"
 	},
 	"files": [
-		"src/lib",
-		"!src/lib/**/*.test.*"
+		"dist",
+		"!dist/**/*.test.*"
 	],
 	"publishConfig": {
 		"access": "public"
@@ -35,293 +35,296 @@
 		"test:components": "svelte-kit sync && bunx vitest run --config vitest.config.ts",
 		"changeset": "changeset",
 		"changeset:version": "changeset version",
-		"changeset:release": "changeset publish"
+		"changeset:release": "changeset publish",
+		"package": "svelte-kit sync && svelte-package && publint",
+		"prepublishOnly": "bun run package"
 	},
 	"exports": {
 		"./blocks": {
-			"types": "./src/lib/blocks/index.ts",
-			"svelte": "./src/lib/blocks/index.ts",
-			"default": "./src/lib/blocks/index.ts"
+			"types": "./dist/blocks/index.d.ts",
+			"svelte": "./dist/blocks/index.js",
+			"default": "./dist/blocks/index.js"
 		},
 		"./blocks/*": {
-			"svelte": "./src/lib/blocks/*/index.ts",
-			"default": "./src/lib/blocks/*/index.ts"
+			"types": "./dist/blocks/*/index.d.ts",
+			"svelte": "./dist/blocks/*/index.js",
+			"default": "./dist/blocks/*/index.js"
 		},
 		"./utils": {
-			"types": "./src/lib/internal/utils.ts",
-			"svelte": "./src/lib/internal/utils.ts",
-			"default": "./src/lib/internal/utils.ts"
+			"types": "./dist/internal/utils.d.ts",
+			"svelte": "./dist/internal/utils.js",
+			"default": "./dist/internal/utils.js"
 		},
 		"./time": {
-			"types": "./src/lib/time.ts",
-			"svelte": "./src/lib/time.ts",
-			"default": "./src/lib/time.ts"
+			"types": "./dist/time.d.ts",
+			"svelte": "./dist/time.js",
+			"default": "./dist/time.js"
 		},
 		"./icons/*": {
-			"types": "./src/lib/icons/icon.d.ts",
-			"svelte": "./src/lib/icons/*",
-			"default": "./src/lib/icons/*"
+			"types": "./dist/icons/icon.d.ts",
+			"svelte": "./dist/icons/*",
+			"default": "./dist/icons/*"
 		},
-		"./styles": "./src/lib/assets/ui.css",
+		"./styles": "./dist/assets/ui.css",
 		"./components/accordion": {
-			"types": "./src/lib/components/accordion/index.ts",
-			"svelte": "./src/lib/components/accordion/index.ts",
-			"default": "./src/lib/components/accordion/index.ts"
+			"types": "./dist/components/accordion/index.d.ts",
+			"svelte": "./dist/components/accordion/index.js",
+			"default": "./dist/components/accordion/index.js"
 		},
 		"./components/alert": {
-			"types": "./src/lib/components/alert/index.ts",
-			"svelte": "./src/lib/components/alert/index.ts",
-			"default": "./src/lib/components/alert/index.ts"
+			"types": "./dist/components/alert/index.d.ts",
+			"svelte": "./dist/components/alert/index.js",
+			"default": "./dist/components/alert/index.js"
 		},
 		"./components/avatar": {
-			"types": "./src/lib/components/avatar/index.ts",
-			"svelte": "./src/lib/components/avatar/index.ts",
-			"default": "./src/lib/components/avatar/index.ts"
+			"types": "./dist/components/avatar/index.d.ts",
+			"svelte": "./dist/components/avatar/index.js",
+			"default": "./dist/components/avatar/index.js"
 		},
 		"./components/badge": {
-			"types": "./src/lib/components/badge/index.ts",
-			"svelte": "./src/lib/components/badge/index.ts",
-			"default": "./src/lib/components/badge/index.ts"
+			"types": "./dist/components/badge/index.d.ts",
+			"svelte": "./dist/components/badge/index.js",
+			"default": "./dist/components/badge/index.js"
 		},
 		"./components/breadcrumb": {
-			"types": "./src/lib/components/breadcrumb/index.ts",
-			"svelte": "./src/lib/components/breadcrumb/index.ts",
-			"default": "./src/lib/components/breadcrumb/index.ts"
+			"types": "./dist/components/breadcrumb/index.d.ts",
+			"svelte": "./dist/components/breadcrumb/index.js",
+			"default": "./dist/components/breadcrumb/index.js"
 		},
 		"./components/button": {
-			"types": "./src/lib/components/button/index.ts",
-			"svelte": "./src/lib/components/button/index.ts",
-			"default": "./src/lib/components/button/index.ts"
+			"types": "./dist/components/button/index.d.ts",
+			"svelte": "./dist/components/button/index.js",
+			"default": "./dist/components/button/index.js"
 		},
 		"./components/calendar": {
-			"types": "./src/lib/components/calendar/index.ts",
-			"svelte": "./src/lib/components/calendar/index.ts",
-			"default": "./src/lib/components/calendar/index.ts"
+			"types": "./dist/components/calendar/index.d.ts",
+			"svelte": "./dist/components/calendar/index.js",
+			"default": "./dist/components/calendar/index.js"
 		},
 		"./components/range-calendar": {
-			"types": "./src/lib/components/range-calendar/index.ts",
-			"svelte": "./src/lib/components/range-calendar/index.ts",
-			"default": "./src/lib/components/range-calendar/index.ts"
+			"types": "./dist/components/range-calendar/index.d.ts",
+			"svelte": "./dist/components/range-calendar/index.js",
+			"default": "./dist/components/range-calendar/index.js"
 		},
 		"./components/card": {
-			"types": "./src/lib/components/card/index.ts",
-			"svelte": "./src/lib/components/card/index.ts",
-			"default": "./src/lib/components/card/index.ts"
+			"types": "./dist/components/card/index.d.ts",
+			"svelte": "./dist/components/card/index.js",
+			"default": "./dist/components/card/index.js"
 		},
 		"./components/carousel": {
-			"types": "./src/lib/components/carousel/index.ts",
-			"svelte": "./src/lib/components/carousel/index.ts",
-			"default": "./src/lib/components/carousel/index.ts"
+			"types": "./dist/components/carousel/index.d.ts",
+			"svelte": "./dist/components/carousel/index.js",
+			"default": "./dist/components/carousel/index.js"
 		},
 		"./components/chart": {
-			"types": "./src/lib/components/chart/index.ts",
-			"svelte": "./src/lib/components/chart/index.ts",
-			"default": "./src/lib/components/chart/index.ts"
+			"types": "./dist/components/chart/index.d.ts",
+			"svelte": "./dist/components/chart/index.js",
+			"default": "./dist/components/chart/index.js"
 		},
 		"./components/checkbox": {
-			"types": "./src/lib/components/checkbox/index.ts",
-			"svelte": "./src/lib/components/checkbox/index.ts",
-			"default": "./src/lib/components/checkbox/index.ts"
+			"types": "./dist/components/checkbox/index.d.ts",
+			"svelte": "./dist/components/checkbox/index.js",
+			"default": "./dist/components/checkbox/index.js"
 		},
 		"./components/checkbox-native": {
-			"types": "./src/lib/components/checkbox-native/index.ts",
-			"svelte": "./src/lib/components/checkbox-native/index.ts",
-			"default": "./src/lib/components/checkbox-native/index.ts"
+			"types": "./dist/components/checkbox-native/index.d.ts",
+			"svelte": "./dist/components/checkbox-native/index.js",
+			"default": "./dist/components/checkbox-native/index.js"
 		},
 		"./components/collapsible": {
-			"types": "./src/lib/components/collapsible/index.ts",
-			"svelte": "./src/lib/components/collapsible/index.ts",
-			"default": "./src/lib/components/collapsible/index.ts"
+			"types": "./dist/components/collapsible/index.d.ts",
+			"svelte": "./dist/components/collapsible/index.js",
+			"default": "./dist/components/collapsible/index.js"
 		},
 		"./components/combobox": {
-			"types": "./src/lib/components/combobox/index.ts",
-			"svelte": "./src/lib/components/combobox/index.ts",
-			"default": "./src/lib/components/combobox/index.ts"
+			"types": "./dist/components/combobox/index.d.ts",
+			"svelte": "./dist/components/combobox/index.js",
+			"default": "./dist/components/combobox/index.js"
 		},
 		"./components/command": {
-			"types": "./src/lib/components/command/index.ts",
-			"svelte": "./src/lib/components/command/index.ts",
-			"default": "./src/lib/components/command/index.ts"
+			"types": "./dist/components/command/index.d.ts",
+			"svelte": "./dist/components/command/index.js",
+			"default": "./dist/components/command/index.js"
 		},
 		"./components/context-menu": {
-			"types": "./src/lib/components/context-menu/index.ts",
-			"svelte": "./src/lib/components/context-menu/index.ts",
-			"default": "./src/lib/components/context-menu/index.ts"
+			"types": "./dist/components/context-menu/index.d.ts",
+			"svelte": "./dist/components/context-menu/index.js",
+			"default": "./dist/components/context-menu/index.js"
 		},
 		"./components/data-table": {
-			"types": "./src/lib/components/data-table/index.ts",
-			"svelte": "./src/lib/components/data-table/index.ts",
-			"default": "./src/lib/components/data-table/index.ts"
+			"types": "./dist/components/data-table/index.d.ts",
+			"svelte": "./dist/components/data-table/index.js",
+			"default": "./dist/components/data-table/index.js"
 		},
 		"./components/dialog": {
-			"types": "./src/lib/components/dialog/index.ts",
-			"svelte": "./src/lib/components/dialog/index.ts",
-			"default": "./src/lib/components/dialog/index.ts"
+			"types": "./dist/components/dialog/index.d.ts",
+			"svelte": "./dist/components/dialog/index.js",
+			"default": "./dist/components/dialog/index.js"
 		},
 		"./components/drawer": {
-			"types": "./src/lib/components/drawer/index.ts",
-			"svelte": "./src/lib/components/drawer/index.ts",
-			"default": "./src/lib/components/drawer/index.ts"
+			"types": "./dist/components/drawer/index.d.ts",
+			"svelte": "./dist/components/drawer/index.js",
+			"default": "./dist/components/drawer/index.js"
 		},
 		"./components/dropdown-menu": {
-			"types": "./src/lib/components/dropdown-menu/index.ts",
-			"svelte": "./src/lib/components/dropdown-menu/index.ts",
-			"default": "./src/lib/components/dropdown-menu/index.ts"
+			"types": "./dist/components/dropdown-menu/index.d.ts",
+			"svelte": "./dist/components/dropdown-menu/index.js",
+			"default": "./dist/components/dropdown-menu/index.js"
 		},
 		"./components/empty": {
-			"types": "./src/lib/components/empty/index.ts",
-			"svelte": "./src/lib/components/empty/index.ts",
-			"default": "./src/lib/components/empty/index.ts"
+			"types": "./dist/components/empty/index.d.ts",
+			"svelte": "./dist/components/empty/index.js",
+			"default": "./dist/components/empty/index.js"
 		},
 		"./components/field": {
-			"types": "./src/lib/components/field/index.ts",
-			"svelte": "./src/lib/components/field/index.ts",
-			"default": "./src/lib/components/field/index.ts"
+			"types": "./dist/components/field/index.d.ts",
+			"svelte": "./dist/components/field/index.js",
+			"default": "./dist/components/field/index.js"
 		},
 		"./components/input": {
-			"types": "./src/lib/components/input/index.ts",
-			"svelte": "./src/lib/components/input/index.ts",
-			"default": "./src/lib/components/input/index.ts"
+			"types": "./dist/components/input/index.d.ts",
+			"svelte": "./dist/components/input/index.js",
+			"default": "./dist/components/input/index.js"
 		},
 		"./components/pin-input": {
-			"types": "./src/lib/components/pin-input/index.ts",
-			"svelte": "./src/lib/components/pin-input/index.ts",
-			"default": "./src/lib/components/pin-input/index.ts"
+			"types": "./dist/components/pin-input/index.d.ts",
+			"svelte": "./dist/components/pin-input/index.js",
+			"default": "./dist/components/pin-input/index.js"
 		},
 		"./components/item": {
-			"types": "./src/lib/components/item/index.ts",
-			"svelte": "./src/lib/components/item/index.ts",
-			"default": "./src/lib/components/item/index.ts"
+			"types": "./dist/components/item/index.d.ts",
+			"svelte": "./dist/components/item/index.js",
+			"default": "./dist/components/item/index.js"
 		},
 		"./components/kbd": {
-			"types": "./src/lib/components/kbd/index.ts",
-			"svelte": "./src/lib/components/kbd/index.ts",
-			"default": "./src/lib/components/kbd/index.ts"
+			"types": "./dist/components/kbd/index.d.ts",
+			"svelte": "./dist/components/kbd/index.js",
+			"default": "./dist/components/kbd/index.js"
 		},
 		"./components/label": {
-			"types": "./src/lib/components/label/index.ts",
-			"svelte": "./src/lib/components/label/index.ts",
-			"default": "./src/lib/components/label/index.ts"
+			"types": "./dist/components/label/index.d.ts",
+			"svelte": "./dist/components/label/index.js",
+			"default": "./dist/components/label/index.js"
 		},
 		"./components/menubar": {
-			"types": "./src/lib/components/menubar/index.ts",
-			"svelte": "./src/lib/components/menubar/index.ts",
-			"default": "./src/lib/components/menubar/index.ts"
+			"types": "./dist/components/menubar/index.d.ts",
+			"svelte": "./dist/components/menubar/index.js",
+			"default": "./dist/components/menubar/index.js"
 		},
 		"./components/navigation-menu": {
-			"types": "./src/lib/components/navigation-menu/index.ts",
-			"svelte": "./src/lib/components/navigation-menu/index.ts",
-			"default": "./src/lib/components/navigation-menu/index.ts"
+			"types": "./dist/components/navigation-menu/index.d.ts",
+			"svelte": "./dist/components/navigation-menu/index.js",
+			"default": "./dist/components/navigation-menu/index.js"
 		},
 		"./components/pagination": {
-			"types": "./src/lib/components/pagination/index.ts",
-			"svelte": "./src/lib/components/pagination/index.ts",
-			"default": "./src/lib/components/pagination/index.ts"
+			"types": "./dist/components/pagination/index.d.ts",
+			"svelte": "./dist/components/pagination/index.js",
+			"default": "./dist/components/pagination/index.js"
 		},
 		"./components/popover": {
-			"types": "./src/lib/components/popover/index.ts",
-			"svelte": "./src/lib/components/popover/index.ts",
-			"default": "./src/lib/components/popover/index.ts"
+			"types": "./dist/components/popover/index.d.ts",
+			"svelte": "./dist/components/popover/index.js",
+			"default": "./dist/components/popover/index.js"
 		},
 		"./components/progress": {
-			"types": "./src/lib/components/progress/index.ts",
-			"svelte": "./src/lib/components/progress/index.ts",
-			"default": "./src/lib/components/progress/index.ts"
+			"types": "./dist/components/progress/index.d.ts",
+			"svelte": "./dist/components/progress/index.js",
+			"default": "./dist/components/progress/index.js"
 		},
 		"./components/radio-group": {
-			"types": "./src/lib/components/radio-group/index.ts",
-			"svelte": "./src/lib/components/radio-group/index.ts",
-			"default": "./src/lib/components/radio-group/index.ts"
+			"types": "./dist/components/radio-group/index.d.ts",
+			"svelte": "./dist/components/radio-group/index.js",
+			"default": "./dist/components/radio-group/index.js"
 		},
 		"./components/resizable": {
-			"types": "./src/lib/components/resizable/index.ts",
-			"svelte": "./src/lib/components/resizable/index.ts",
-			"default": "./src/lib/components/resizable/index.ts"
+			"types": "./dist/components/resizable/index.d.ts",
+			"svelte": "./dist/components/resizable/index.js",
+			"default": "./dist/components/resizable/index.js"
 		},
 		"./components/scroll-area": {
-			"types": "./src/lib/components/scroll-area/index.ts",
-			"svelte": "./src/lib/components/scroll-area/index.ts",
-			"default": "./src/lib/components/scroll-area/index.ts"
+			"types": "./dist/components/scroll-area/index.d.ts",
+			"svelte": "./dist/components/scroll-area/index.js",
+			"default": "./dist/components/scroll-area/index.js"
 		},
 		"./components/select": {
-			"types": "./src/lib/components/select/index.ts",
-			"svelte": "./src/lib/components/select/index.ts",
-			"default": "./src/lib/components/select/index.ts"
+			"types": "./dist/components/select/index.d.ts",
+			"svelte": "./dist/components/select/index.js",
+			"default": "./dist/components/select/index.js"
 		},
 		"./components/separator": {
-			"types": "./src/lib/components/separator/index.ts",
-			"svelte": "./src/lib/components/separator/index.ts",
-			"default": "./src/lib/components/separator/index.ts"
+			"types": "./dist/components/separator/index.d.ts",
+			"svelte": "./dist/components/separator/index.js",
+			"default": "./dist/components/separator/index.js"
 		},
 		"./components/sheet": {
-			"types": "./src/lib/components/sheet/index.ts",
-			"svelte": "./src/lib/components/sheet/index.ts",
-			"default": "./src/lib/components/sheet/index.ts"
+			"types": "./dist/components/sheet/index.d.ts",
+			"svelte": "./dist/components/sheet/index.js",
+			"default": "./dist/components/sheet/index.js"
 		},
 		"./components/sidebar": {
-			"types": "./src/lib/components/sidebar/index.ts",
-			"svelte": "./src/lib/components/sidebar/index.ts",
-			"default": "./src/lib/components/sidebar/index.ts"
+			"types": "./dist/components/sidebar/index.d.ts",
+			"svelte": "./dist/components/sidebar/index.js",
+			"default": "./dist/components/sidebar/index.js"
 		},
 		"./components/skeleton": {
-			"types": "./src/lib/components/skeleton/index.ts",
-			"svelte": "./src/lib/components/skeleton/index.ts",
-			"default": "./src/lib/components/skeleton/index.ts"
+			"types": "./dist/components/skeleton/index.d.ts",
+			"svelte": "./dist/components/skeleton/index.js",
+			"default": "./dist/components/skeleton/index.js"
 		},
 		"./components/slider": {
-			"types": "./src/lib/components/slider/index.ts",
-			"svelte": "./src/lib/components/slider/index.ts",
-			"default": "./src/lib/components/slider/index.ts"
+			"types": "./dist/components/slider/index.d.ts",
+			"svelte": "./dist/components/slider/index.js",
+			"default": "./dist/components/slider/index.js"
 		},
 		"./components/sonner": {
-			"types": "./src/lib/components/sonner/index.ts",
-			"svelte": "./src/lib/components/sonner/index.ts",
-			"default": "./src/lib/components/sonner/index.ts"
+			"types": "./dist/components/sonner/index.d.ts",
+			"svelte": "./dist/components/sonner/index.js",
+			"default": "./dist/components/sonner/index.js"
 		},
 		"./components/switch": {
-			"types": "./src/lib/components/switch/index.ts",
-			"svelte": "./src/lib/components/switch/index.ts",
-			"default": "./src/lib/components/switch/index.ts"
+			"types": "./dist/components/switch/index.d.ts",
+			"svelte": "./dist/components/switch/index.js",
+			"default": "./dist/components/switch/index.js"
 		},
 		"./components/table": {
-			"types": "./src/lib/components/table/index.ts",
-			"svelte": "./src/lib/components/table/index.ts",
-			"default": "./src/lib/components/table/index.ts"
+			"types": "./dist/components/table/index.d.ts",
+			"svelte": "./dist/components/table/index.js",
+			"default": "./dist/components/table/index.js"
 		},
 		"./components/tabs": {
-			"types": "./src/lib/components/tabs/index.ts",
-			"svelte": "./src/lib/components/tabs/index.ts",
-			"default": "./src/lib/components/tabs/index.ts"
+			"types": "./dist/components/tabs/index.d.ts",
+			"svelte": "./dist/components/tabs/index.js",
+			"default": "./dist/components/tabs/index.js"
 		},
 		"./components/textarea": {
-			"types": "./src/lib/components/textarea/index.ts",
-			"svelte": "./src/lib/components/textarea/index.ts",
-			"default": "./src/lib/components/textarea/index.ts"
+			"types": "./dist/components/textarea/index.d.ts",
+			"svelte": "./dist/components/textarea/index.js",
+			"default": "./dist/components/textarea/index.js"
 		},
 		"./components/theme-toggle": {
-			"types": "./src/lib/components/theme-toggle/index.ts",
-			"svelte": "./src/lib/components/theme-toggle/index.ts",
-			"default": "./src/lib/components/theme-toggle/index.ts"
+			"types": "./dist/components/theme-toggle/index.d.ts",
+			"svelte": "./dist/components/theme-toggle/index.js",
+			"default": "./dist/components/theme-toggle/index.js"
 		},
 		"./components/toggle": {
-			"types": "./src/lib/components/toggle/index.ts",
-			"svelte": "./src/lib/components/toggle/index.ts",
-			"default": "./src/lib/components/toggle/index.ts"
+			"types": "./dist/components/toggle/index.d.ts",
+			"svelte": "./dist/components/toggle/index.js",
+			"default": "./dist/components/toggle/index.js"
 		},
 		"./components/toggle-group": {
-			"types": "./src/lib/components/toggle-group/index.ts",
-			"svelte": "./src/lib/components/toggle-group/index.ts",
-			"default": "./src/lib/components/toggle-group/index.ts"
+			"types": "./dist/components/toggle-group/index.d.ts",
+			"svelte": "./dist/components/toggle-group/index.js",
+			"default": "./dist/components/toggle-group/index.js"
 		},
 		"./components/toolbar": {
-			"types": "./src/lib/components/toolbar/index.ts",
-			"svelte": "./src/lib/components/toolbar/index.ts",
-			"default": "./src/lib/components/toolbar/index.ts"
+			"types": "./dist/components/toolbar/index.d.ts",
+			"svelte": "./dist/components/toolbar/index.js",
+			"default": "./dist/components/toolbar/index.js"
 		},
 		"./components/tooltip": {
-			"types": "./src/lib/components/tooltip/index.ts",
-			"svelte": "./src/lib/components/tooltip/index.ts",
-			"default": "./src/lib/components/tooltip/index.ts"
+			"types": "./dist/components/tooltip/index.d.ts",
+			"svelte": "./dist/components/tooltip/index.js",
+			"default": "./dist/components/tooltip/index.js"
 		}
 	},
 	"peerDependencies": {
@@ -340,13 +343,13 @@
 		"@changesets/changelog-github": "^1.0.0",
 		"@changesets/cli": "^3.0.1",
 		"@fontsource-variable/inter": "^5.2.8",
-		"handful": "^0.3.0",
-		"@sveltejs/adapter-auto": "8.0.0-next.1",
 		"@internationalized/date": "^3.12.2",
+		"@sveltejs/adapter-auto": "8.0.0-next.1",
 		"@sveltejs/kit": "^3.0.0-next.25",
+		"@sveltejs/package": "^3.0.0-next.8",
 		"@sveltejs/vite-plugin-svelte": "^7.3.0",
 		"@tailwindcss/vite": "^4.3.2",
-		"tailwindcss": "^4.3.2",
+		"@types/bun": "^1.4.2",
 		"@types/d3-chord": "^3.0.6",
 		"@types/d3-delaunay": "^6.0.4",
 		"@types/d3-force": "^3.0.10",
@@ -355,10 +358,12 @@
 		"@types/d3-sankey": "^0.12.5",
 		"@types/d3-shape": "^3.1.8",
 		"@types/d3-time": "^3.0.4",
-		"@types/bun": "^1.4.2",
+		"handful": "^0.3.0",
 		"jsdom": "^30.0.1",
+		"publint": "^0.3.24",
 		"svelte": "^5.57.0",
 		"svelte-check": "^4.7.1",
+		"tailwindcss": "^4.3.2",
 		"typescript": "^6.0.3",
 		"vite": "^8.2.1",
 		"vitest": "^4.1.9"
