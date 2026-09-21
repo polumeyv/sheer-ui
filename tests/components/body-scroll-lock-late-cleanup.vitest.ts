@@ -3,7 +3,6 @@ import { afterEach, describe, expect, test, vi } from 'vitest';
 import ScrollLockFixture from './body-scroll-lock-late-cleanup.fixture.svelte';
 
 afterEach(() => {
-	vi.unstubAllGlobals();
 	vi.useRealTimers();
 	document.body.innerHTML = '';
 	document.body.removeAttribute('style');

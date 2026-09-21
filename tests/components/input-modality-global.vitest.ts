@@ -22,7 +22,6 @@ function usesCapture(options: unknown): boolean {
 
 afterEach(() => {
 	document.body.innerHTML = '';
-	vi.restoreAllMocks();
 });
 
 describe('menu input modality listeners', () => {

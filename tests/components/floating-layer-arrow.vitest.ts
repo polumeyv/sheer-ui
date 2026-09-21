@@ -50,7 +50,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-	vi.restoreAllMocks();
 	document.body.innerHTML = "";
 });
 

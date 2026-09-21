@@ -44,7 +44,6 @@ afterEach(async () => {
 	vi.advanceTimersByTime(50);
 	document.body.innerHTML = '';
 	vi.useRealTimers();
-	vi.restoreAllMocks();
 });
 
 describe('usePreventScroll (iOS)', () => {

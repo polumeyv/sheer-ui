@@ -26,7 +26,6 @@ beforeEach(() => {
 
 afterEach(() => {
 	document.body.innerHTML = '';
-	vi.restoreAllMocks();
 });
 
 type FixtureProps = Partial<{

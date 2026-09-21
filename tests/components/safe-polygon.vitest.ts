@@ -48,7 +48,6 @@ function render(ownerDocument = document) {
 
 afterEach(() => {
 	document.body.innerHTML = '';
-	vi.restoreAllMocks();
 });
 
 describe('SafePolygon', () => {

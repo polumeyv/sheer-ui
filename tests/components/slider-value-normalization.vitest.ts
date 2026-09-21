@@ -30,7 +30,6 @@ beforeEach(() => {
 
 afterEach(() => {
 	document.body.innerHTML = "";
-	vi.restoreAllMocks();
 });
 
 function renderFixture(props: FixtureProps) {

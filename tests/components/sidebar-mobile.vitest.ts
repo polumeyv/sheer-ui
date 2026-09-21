@@ -67,7 +67,6 @@ afterEach(() => {
 	document.body.innerHTML = "";
 	document.head.innerHTML = "";
 	document.documentElement.classList.remove("phone");
-	vi.restoreAllMocks();
 });
 
 describe("Sidebar mobile behavior", () => {

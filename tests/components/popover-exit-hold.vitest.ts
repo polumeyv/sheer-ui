@@ -44,8 +44,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-	vi.restoreAllMocks();
-	vi.unstubAllGlobals();
 	delete (HTMLElement.prototype as Partial<HTMLElement>).showPopover;
 	delete (HTMLElement.prototype as Partial<HTMLElement>).hidePopover;
 	delete (HTMLElement.prototype as Partial<HTMLElement>).getAnimations;
