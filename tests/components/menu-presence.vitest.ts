@@ -1,5 +1,6 @@
-import { flushSync, mount, tick, unmount } from 'svelte';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { flushSync, tick } from 'svelte';
+import { describe, expect, test, vi } from 'vitest';
+import { mountInBody } from '../mount';
 import MenuPresenceFixture from './menu-presence.fixture.svelte';
 import MenuPresenceMenubarFixture from './menu-presence-menubar.fixture.svelte';
 
@@ -7,11 +8,7 @@ import MenuPresenceMenubarFixture from './menu-presence-menubar.fixture.svelte';
 // floating content, display for static), the exit motion is CSS, and completion is settle-based.
 
 function render(props: { isStatic?: boolean; onOpenChangeComplete?: (open: boolean) => void } = {}) {
-	const target = document.createElement('div');
-	document.body.append(target);
-	const component = mount(MenuPresenceFixture, { props, target });
-	flushSync();
-	return component;
+	return mountInBody(MenuPresenceFixture, props).component;
 }
 
 function byTestId(id: string) {
@@ -35,106 +32,79 @@ const frames = async (count = 3) => {
 
 const arrowDown = (node: HTMLElement) => node.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }));
 
-afterEach(() => {
-	document.body.innerHTML = '';
-});
-
 describe('menu presence', () => {
 	test('closed floating content is mounted and visibility:hidden; opening clears it', () => {
 		const c = render();
-		try {
-			const content = byTestId('content');
-			expect(content.dataset.state).toBe('closed');
-			expect(content.style.visibility).toBe('hidden');
-			expect(content.style.display).toBe('');
+		const content = byTestId('content');
+		expect(content.dataset.state).toBe('closed');
+		expect(content.style.visibility).toBe('hidden');
+		expect(content.style.display).toBe('');
 
-			c.setOpen(true);
-			flushSync();
-			expect(content.dataset.state).toBe('open');
-			expect(content.style.visibility).toBe('');
-		} finally {
-			unmount(c);
-		}
+		c.setOpen(true);
+		flushSync();
+		expect(content.dataset.state).toBe('open');
+		expect(content.style.visibility).toBe('');
 	});
 
 	test('closed static content is display:none (it must leave the flow)', () => {
 		const c = render({ isStatic: true });
-		try {
-			expect(byTestId('content').style.display).toBe('none');
-			c.setOpen(true);
-			flushSync();
-			expect(byTestId('content').style.display).toBe('');
-		} finally {
-			unmount(c);
-		}
+		expect(byTestId('content').style.display).toBe('none');
+		c.setOpen(true);
+		flushSync();
+		expect(byTestId('content').style.display).toBe('');
 	});
 
 	test('items of a closed sub-content are not arrow-key candidates of the parent', () => {
 		const c = render();
-		try {
-			c.setOpen(true);
-			flushSync();
-			expect(byTestId('sub-content').dataset.state).toBe('closed'); // mounted, hidden
-			byTestId('sub-trigger').focus();
-			arrowDown(byTestId('sub-trigger'));
-			expect(document.activeElement).toBe(byTestId('item-2'));
-		} finally {
-			unmount(c);
-		}
+		c.setOpen(true);
+		flushSync();
+		expect(byTestId('sub-content').dataset.state).toBe('closed'); // mounted, hidden
+		byTestId('sub-trigger').focus();
+		arrowDown(byTestId('sub-trigger'));
+		expect(document.activeElement).toBe(byTestId('item-2'));
 	});
 
 	test('close: completes after the exit settles, and the page stays locked until then', async () => {
 		const onOpenChangeComplete = vi.fn();
 		const c = render({ onOpenChangeComplete });
-		try {
-			c.setOpen(true);
-			flushSync();
-			await tick(); // the scroll lock applies its body styles a tick after opening
-			expect(document.body.style.pointerEvents).toBe('none');
+		c.setOpen(true);
+		flushSync();
+		await tick(); // the scroll lock applies its body styles a tick after opening
+		expect(document.body.style.pointerEvents).toBe('none');
 
-			const exit = fakeExit(byTestId('content'));
-			c.setOpen(false);
-			flushSync();
-			expect(byTestId('content').dataset.state).toBe('closed');
-			await frames();
-			expect(onOpenChangeComplete).not.toHaveBeenCalled();
-			expect(document.body.style.pointerEvents).toBe('none'); // still exiting: present
+		const exit = fakeExit(byTestId('content'));
+		c.setOpen(false);
+		flushSync();
+		expect(byTestId('content').dataset.state).toBe('closed');
+		await frames();
+		expect(onOpenChangeComplete).not.toHaveBeenCalled();
+		expect(document.body.style.pointerEvents).toBe('none'); // still exiting: present
 
-			exit.settle();
-			exit.stop();
-			await frames();
-			expect(onOpenChangeComplete).toHaveBeenCalledExactlyOnceWith(false);
-		} finally {
-			unmount(c);
-		}
+		exit.settle();
+		exit.stop();
+		await frames();
+		expect(onOpenChangeComplete).toHaveBeenCalledExactlyOnceWith(false);
 	});
 });
 
 describe('menubar swap', () => {
 	test('the outgoing menu skips its exit: zero duration inline, completion synchronous', async () => {
 		const onOpenChangeComplete = vi.fn();
-		const target = document.createElement('div');
-		document.body.append(target);
-		const c = mount(MenuPresenceMenubarFixture, { props: { onOpenChangeComplete }, target });
+		mountInBody(MenuPresenceMenubarFixture, { onOpenChangeComplete });
+		expect(byTestId('file-content').dataset.state).toBe('open');
+
+		byTestId('edit-trigger').dispatchEvent(new Event('pointerenter')); // hover swap while open
 		flushSync();
-		try {
-			expect(byTestId('file-content').dataset.state).toBe('open');
+		const file = byTestId('file-content');
+		expect(file.dataset.state).toBe('closed');
+		expect(file.style.visibility).toBe('hidden');
+		expect(file.style.transitionDuration).toBe('0s');
+		expect(onOpenChangeComplete).toHaveBeenCalledExactlyOnceWith('file', false);
+		expect(byTestId('edit-content').dataset.state).toBe('open');
 
-			byTestId('edit-trigger').dispatchEvent(new Event('pointerenter')); // hover swap while open
-			flushSync();
-			const file = byTestId('file-content');
-			expect(file.dataset.state).toBe('closed');
-			expect(file.style.visibility).toBe('hidden');
-			expect(file.style.transitionDuration).toBe('0s');
-			expect(onOpenChangeComplete).toHaveBeenCalledExactlyOnceWith('file', false);
-			expect(byTestId('edit-content').dataset.state).toBe('open');
-
-			await tick(); // the swap flag resets a tick later; the surface stays hidden without the override
-			await tick();
-			expect(file.style.transitionDuration).toBe('');
-			expect(file.style.visibility).toBe('hidden');
-		} finally {
-			unmount(c);
-		}
+		await tick(); // the swap flag resets a tick later; the surface stays hidden without the override
+		await tick();
+		expect(file.style.transitionDuration).toBe('');
+		expect(file.style.visibility).toBe('hidden');
 	});
 });

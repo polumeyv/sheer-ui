@@ -7,7 +7,6 @@ afterEach(() => {
 		configurable: true,
 		value: undefined,
 	});
-	vi.restoreAllMocks();
 });
 
 describe("date-time announcer", () => {

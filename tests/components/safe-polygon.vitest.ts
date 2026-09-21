@@ -1,5 +1,6 @@
-import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { flushSync } from 'svelte';
+import { describe, expect, test, vi } from 'vitest';
+import { mountInBody } from '../mount';
 import SafePolygonFixture from './safe-polygon.fixture.svelte';
 
 function rect(left: number, top: number, right: number, bottom: number) {
@@ -21,10 +22,9 @@ function rect(left: number, top: number, right: number, bottom: number) {
 function render(ownerDocument = document) {
 	const target = ownerDocument.createElement('div');
 	ownerDocument.body.append(target);
-	const component = mount(SafePolygonFixture, { target }) as unknown as {
+	const component = mountInBody(SafePolygonFixture, undefined, target).component as unknown as {
 		setEnabled: (value: boolean) => void;
 	};
-	flushSync();
 
 	const trigger = target.querySelector<HTMLElement>('[data-testid="trigger"]');
 	const content = target.querySelector<HTMLElement>('[data-testid="content"]');
@@ -46,73 +46,52 @@ function render(ownerDocument = document) {
 	return { component, target, trigger, content, exitCount, pointerMove };
 }
 
-afterEach(() => {
-	document.body.innerHTML = '';
-	vi.restoreAllMocks();
-});
-
 describe('SafePolygon', () => {
 	test('leaving the trigger directly toward the content does not start tracking (no exit call)', () => {
-		const { component, trigger, content, exitCount, pointerMove } = render();
-		try {
-			trigger.dispatchEvent(new PointerEvent('pointerleave', { clientX: 45, clientY: 10, relatedTarget: content, bubbles: true }));
-			flushSync();
-			// no exit should ever fire without any tracked movement
-			pointerMove(150, 50);
-			expect(exitCount()).toBe(0);
-		} finally {
-			unmount(component);
-		}
+		const { trigger, content, exitCount, pointerMove } = render();
+		trigger.dispatchEvent(new PointerEvent('pointerleave', { clientX: 45, clientY: 10, relatedTarget: content, bubbles: true }));
+		flushSync();
+		// no exit should ever fire without any tracked movement
+		pointerMove(150, 50);
+		expect(exitCount()).toBe(0);
 	});
 
 	test('moving from the trigger through the safe zone into the content does not close', () => {
-		const { component, trigger, content, exitCount, pointerMove } = render();
-		try {
-			// leave trigger heading roughly toward content, but not landing on it directly (relatedTarget = document body)
-			trigger.dispatchEvent(new PointerEvent('pointerleave', { clientX: 50, clientY: 10, relatedTarget: document.body, bubbles: true }));
-			flushSync();
+		const { trigger, content, exitCount, pointerMove } = render();
+		// leave trigger heading roughly toward content, but not landing on it directly (relatedTarget = document body)
+		trigger.dispatchEvent(new PointerEvent('pointerleave', { clientX: 50, clientY: 10, relatedTarget: document.body, bubbles: true }));
+		flushSync();
 
-			// move along a straight line from the exit point toward content — squarely inside both
-			// the corridor (the trigger-content gap) and the safe-zone cone
-			pointerMove(90, 10);
-			expect(exitCount()).toBe(0);
+		// move along a straight line from the exit point toward content — squarely inside both
+		// the corridor (the trigger-content gap) and the safe-zone cone
+		pointerMove(90, 10);
+		expect(exitCount()).toBe(0);
 
-			content.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
-			flushSync();
-			expect(exitCount()).toBe(0);
-		} finally {
-			unmount(component);
-		}
+		content.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
+		flushSync();
+		expect(exitCount()).toBe(0);
 	});
 
 	test('moving away from both trigger and content closes', () => {
-		const { component, trigger, exitCount, pointerMove } = render();
-		try {
-			trigger.dispatchEvent(new PointerEvent('pointerleave', { clientX: 50, clientY: 10, relatedTarget: document.body, bubbles: true }));
-			flushSync();
+		const { trigger, exitCount, pointerMove } = render();
+		trigger.dispatchEvent(new PointerEvent('pointerleave', { clientX: 50, clientY: 10, relatedTarget: document.body, bubbles: true }));
+		flushSync();
 
-			// move far in the opposite direction of content -- well outside any safe zone or corridor
-			pointerMove(-500, -500);
-			expect(exitCount()).toBe(1);
-		} finally {
-			unmount(component);
-		}
+		// move far in the opposite direction of content -- well outside any safe zone or corridor
+		pointerMove(-500, -500);
+		expect(exitCount()).toBe(1);
 	});
 
 	test('disabling mid-track clears tracking so a subsequent stray move does not fire a stale exit', () => {
 		const { component, trigger, exitCount, pointerMove } = render();
-		try {
-			trigger.dispatchEvent(new PointerEvent('pointerleave', { clientX: 50, clientY: 10, relatedTarget: document.body, bubbles: true }));
-			flushSync();
+		trigger.dispatchEvent(new PointerEvent('pointerleave', { clientX: 50, clientY: 10, relatedTarget: document.body, bubbles: true }));
+		flushSync();
 
-			component.setEnabled(false);
-			flushSync();
+		component.setEnabled(false);
+		flushSync();
 
-			pointerMove(-500, -500);
-			expect(exitCount()).toBe(0);
-		} finally {
-			unmount(component);
-		}
+		pointerMove(-500, -500);
+		expect(exitCount()).toBe(0);
 	});
 
 		test('tracks pointer movement on the trigger owning document', () => {
@@ -121,7 +100,7 @@ describe('SafePolygon', () => {
 		const foreignDocument = iframe.contentDocument;
 		if (!foreignDocument) throw new Error('Expected iframe document');
 
-		const { component, trigger, exitCount, pointerMove } = render(foreignDocument);
+		const { trigger, exitCount, pointerMove } = render(foreignDocument);
 		try {
 			trigger.dispatchEvent(new PointerEvent('pointerleave', { clientX: 50, clientY: 10, relatedTarget: foreignDocument.body, bubbles: true }));
 			flushSync();
@@ -133,7 +112,6 @@ describe('SafePolygon', () => {
 			pointerMove(-500, -500);
 			expect(exitCount()).toBe(1);
 		} finally {
-			unmount(component);
 			iframe.remove();
 		}
 	});

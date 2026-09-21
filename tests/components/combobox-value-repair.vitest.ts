@@ -1,5 +1,6 @@
-import { flushSync, mount, unmount } from "svelte";
+import { flushSync } from "svelte";
 import { describe, expect, test } from "vitest";
+import { mountInBody } from "../mount";
 import ComboboxValueRepairFixture from "./combobox-value-repair.fixture.svelte";
 
 type FixtureProps = Partial<{
@@ -9,13 +10,7 @@ type FixtureProps = Partial<{
 }>;
 
 function renderFixture(props: FixtureProps) {
-	const target = document.createElement("div");
-	document.body.append(target);
-
-	const component = mount(ComboboxValueRepairFixture, { props, target });
-	flushSync();
-
-	return { component, target };
+	return mountInBody(ComboboxValueRepairFixture, props);
 }
 
 function readValue() {
@@ -41,93 +36,72 @@ function selectItem(testId: string) {
 	flushSync();
 }
 
-function cleanup(component: ReturnType<typeof mount>) {
-	unmount(component);
-	document.body.innerHTML = "";
-}
-
 describe("Combobox controlled value repair", () => {
 	test("single mode repairs undefined, preserves explicit values, and repairs reset values", () => {
 		const { component } = renderFixture({ type: "single", name: "fruit" });
 
-		try {
-			expect(readValue()).toBe("");
-			expect(getHiddenInputs("fruit").map((input) => input.value)).toEqual([""]);
-			expect(new FormData(getForm()).get("fruit")).toBe("");
+		expect(readValue()).toBe("");
+		expect(getHiddenInputs("fruit").map((input) => input.value)).toEqual([""]);
+		expect(new FormData(getForm()).get("fruit")).toBe("");
 
-			component.setValue("alpha");
-			flushSync();
-			expect(readValue()).toBe("alpha");
-			expect(getHiddenInputs("fruit").map((input) => input.value)).toEqual(["alpha"]);
+		component.setValue("alpha");
+		flushSync();
+		expect(readValue()).toBe("alpha");
+		expect(getHiddenInputs("fruit").map((input) => input.value)).toEqual(["alpha"]);
 
-			component.setValue(undefined);
-			flushSync();
-			expect(readValue()).toBe("");
-			expect(getHiddenInputs("fruit").map((input) => input.value)).toEqual([""]);
-		} finally {
-			cleanup(component);
-		}
+		component.setValue(undefined);
+		flushSync();
+		expect(readValue()).toBe("");
+		expect(getHiddenInputs("fruit").map((input) => input.value)).toEqual([""]);
 	});
 
 	test("single mode preserves an explicit initial value and user selection updates value and form data", () => {
-		const { component } = renderFixture({
+		renderFixture({
 			type: "single",
 			name: "fruit",
 			value: "alpha",
 		});
 
-		try {
-			expect(readValue()).toBe("alpha");
-			expect(new FormData(getForm()).get("fruit")).toBe("alpha");
+		expect(readValue()).toBe("alpha");
+		expect(new FormData(getForm()).get("fruit")).toBe("alpha");
 
-			selectItem("item-beta");
-			expect(readValue()).toBe("beta");
-			expect(getHiddenInputs("fruit").map((input) => input.value)).toEqual(["beta"]);
-			expect(new FormData(getForm()).get("fruit")).toBe("beta");
-		} finally {
-			cleanup(component);
-		}
+		selectItem("item-beta");
+		expect(readValue()).toBe("beta");
+		expect(getHiddenInputs("fruit").map((input) => input.value)).toEqual(["beta"]);
+		expect(new FormData(getForm()).get("fruit")).toBe("beta");
 	});
 
 	test("multiple mode repairs undefined, preserves explicit values, and repairs reset values", () => {
 		const { component } = renderFixture({ type: "multiple", name: "fruit" });
 
-		try {
-			expect(readValue()).toBe("[]");
-			expect(getHiddenInputs("fruit")).toEqual([]);
-			expect(new FormData(getForm()).getAll("fruit")).toEqual([]);
+		expect(readValue()).toBe("[]");
+		expect(getHiddenInputs("fruit")).toEqual([]);
+		expect(new FormData(getForm()).getAll("fruit")).toEqual([]);
 
-			component.setValue(["alpha"]);
-			flushSync();
-			expect(readValue()).toBe("[alpha]");
-			expect(getHiddenInputs("fruit").map((input) => input.value)).toEqual(["alpha"]);
+		component.setValue(["alpha"]);
+		flushSync();
+		expect(readValue()).toBe("[alpha]");
+		expect(getHiddenInputs("fruit").map((input) => input.value)).toEqual(["alpha"]);
 
-			component.setValue(undefined);
-			flushSync();
-			expect(readValue()).toBe("[]");
-			expect(getHiddenInputs("fruit")).toEqual([]);
-		} finally {
-			cleanup(component);
-		}
+		component.setValue(undefined);
+		flushSync();
+		expect(readValue()).toBe("[]");
+		expect(getHiddenInputs("fruit")).toEqual([]);
 	});
 
 	test("multiple mode preserves explicit initial values and user selection updates value and form data", () => {
-		const { component } = renderFixture({
+		renderFixture({
 			type: "multiple",
 			name: "fruit",
 			value: ["alpha"],
 		});
 
-		try {
-			expect(readValue()).toBe("[alpha]");
-			expect(new FormData(getForm()).getAll("fruit")).toEqual(["alpha"]);
+		expect(readValue()).toBe("[alpha]");
+		expect(new FormData(getForm()).getAll("fruit")).toEqual(["alpha"]);
 
-			selectItem("item-beta");
-			expect(readValue()).toBe("[alpha,beta]");
-			expect(getHiddenInputs("fruit").map((input) => input.value)).toEqual(["alpha", "beta"]);
-			expect(new FormData(getForm()).getAll("fruit")).toEqual(["alpha", "beta"]);
-		} finally {
-			cleanup(component);
-		}
+		selectItem("item-beta");
+		expect(readValue()).toBe("[alpha,beta]");
+		expect(getHiddenInputs("fruit").map((input) => input.value)).toEqual(["alpha", "beta"]);
+		expect(new FormData(getForm()).getAll("fruit")).toEqual(["alpha", "beta"]);
 	});
 });

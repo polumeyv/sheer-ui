@@ -1,5 +1,6 @@
-import { flushSync, mount, unmount } from "svelte";
+import { flushSync } from "svelte";
 import { afterEach, describe, expect, test, vi } from "vitest";
+import { mountInBody } from "../mount";
 import PopoverCloseDelayFixture from "./popover-close-delay.fixture.svelte";
 
 type FixtureProps = Partial<{
@@ -10,18 +11,7 @@ type FixtureProps = Partial<{
 }>;
 
 function renderFixture(props: FixtureProps = {}) {
-	const target = document.createElement("div");
-	document.body.append(target);
-
-	const component = mount(PopoverCloseDelayFixture, { props, target });
-	flushSync();
-
-	return { component, target };
-}
-
-function cleanup(component: ReturnType<typeof mount>) {
-	unmount(component);
-	document.body.innerHTML = "";
+	return mountInBody(PopoverCloseDelayFixture, props);
 }
 
 function readOpen() {
@@ -97,109 +87,88 @@ function advance(ms: number) {
 
 afterEach(() => {
 	vi.useRealTimers();
-	document.body.innerHTML = "";
 });
 
 describe("Popover closeDelay", () => {
 	test("initial closeDelay controls hover close timing", () => {
 		vi.useFakeTimers();
-		const { component } = renderFixture({ closeDelay: 200 });
+		renderFixture({ closeDelay: 200 });
 
-		try {
-			pointerEnter(getTrigger());
-			expect(readOpen()).toBe("open");
+		pointerEnter(getTrigger());
+		expect(readOpen()).toBe("open");
 
-			beginHoverClose();
-			advance(199);
-			expect(readOpen()).toBe("open");
+		beginHoverClose();
+		advance(199);
+		expect(readOpen()).toBe("open");
 
-			advance(1);
-			expect(readOpen()).toBe("closed");
-		} finally {
-			cleanup(component);
-		}
+		advance(1);
+		expect(readOpen()).toBe("closed");
 	});
 
 	test("dynamic closeDelay changes affect future hover close timers", () => {
 		vi.useFakeTimers();
 		const { component } = renderFixture({ closeDelay: 100 });
 
-		try {
-			component.setCloseDelay(300);
-			flushSync();
+		component.setCloseDelay(300);
+		flushSync();
 
-			pointerEnter(getTrigger());
-			expect(readOpen()).toBe("open");
+		pointerEnter(getTrigger());
+		expect(readOpen()).toBe("open");
 
-			beginHoverClose();
-			advance(299);
-			expect(readOpen()).toBe("open");
+		beginHoverClose();
+		advance(299);
+		expect(readOpen()).toBe("open");
 
-			advance(1);
-			expect(readOpen()).toBe("closed");
-		} finally {
-			cleanup(component);
-		}
+		advance(1);
+		expect(readOpen()).toBe("closed");
 	});
 
 	test("changing closeDelay while a close timer is pending does not reschedule that timer", () => {
 		vi.useFakeTimers();
 		const { component } = renderFixture({ closeDelay: 200 });
 
-		try {
-			pointerEnter(getTrigger());
-			expect(readOpen()).toBe("open");
+		pointerEnter(getTrigger());
+		expect(readOpen()).toBe("open");
 
-			beginHoverClose();
-			component.setCloseDelay(50);
-			flushSync();
+		beginHoverClose();
+		component.setCloseDelay(50);
+		flushSync();
 
-			advance(199);
-			expect(readOpen()).toBe("open");
+		advance(199);
+		expect(readOpen()).toBe("open");
 
-			advance(1);
-			expect(readOpen()).toBe("closed");
-		} finally {
-			cleanup(component);
-		}
+		advance(1);
+		expect(readOpen()).toBe("closed");
 	});
 
 	test("undefined closeDelay falls back to the trigger default for future hover close timers", () => {
 		vi.useFakeTimers();
 		const { component } = renderFixture({ closeDelay: 100 });
 
-		try {
-			component.setCloseDelay(undefined);
-			flushSync();
+		component.setCloseDelay(undefined);
+		flushSync();
 
-			pointerEnter(getTrigger());
-			expect(readOpen()).toBe("open");
+		pointerEnter(getTrigger());
+		expect(readOpen()).toBe("open");
 
-			beginHoverClose();
-			advance(299);
-			expect(readOpen()).toBe("open");
+		beginHoverClose();
+		advance(299);
+		expect(readOpen()).toBe("open");
 
-			advance(1);
-			expect(readOpen()).toBe("closed");
-		} finally {
-			cleanup(component);
-		}
+		advance(1);
+		expect(readOpen()).toBe("closed");
 	});
 
 	test("click popovers ignore hover close delay", () => {
 		vi.useFakeTimers();
-		const { component } = renderFixture({ closeDelay: 500, openOnHover: false });
+		renderFixture({ closeDelay: 500, openOnHover: false });
 
-		try {
-			getTrigger().click();
-			flushSync();
-			expect(readOpen()).toBe("open");
+		getTrigger().click();
+		flushSync();
+		expect(readOpen()).toBe("open");
 
-			getTrigger().click();
-			flushSync();
-			expect(readOpen()).toBe("closed");
-		} finally {
-			cleanup(component);
-		}
+		getTrigger().click();
+		flushSync();
+		expect(readOpen()).toBe("closed");
 	});
 });

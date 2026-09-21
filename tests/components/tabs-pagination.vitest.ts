@@ -1,15 +1,12 @@
-import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, describe, expect, test } from 'vitest';
+import { flushSync } from 'svelte';
+import { describe, expect, test } from 'vitest';
+import { mountInBody } from '../mount';
 import Fixture from './tabs-pagination.fixture.svelte';
 
 // Both engines take accessor-object options; these pin that reads stay live and writes reach the bindable.
 
 function render(surface: 'tabs' | 'pagination') {
-	const target = document.createElement('div');
-	document.body.append(target);
-	const component = mount(Fixture, { props: { surface }, target });
-	flushSync();
-	return component;
+	return mountInBody(Fixture, { surface }).component;
 }
 
 function el(testid: string) {
@@ -28,10 +25,6 @@ function press(testid: string, key: string) {
 	flushSync();
 }
 
-afterEach(() => {
-	document.body.innerHTML = '';
-});
-
 describe('tabs', () => {
 	test('click activates a tab, its panel shows, and the bound value follows', () => {
 		const c = render('tabs');
@@ -47,15 +40,13 @@ describe('tabs', () => {
 
 		click('tab-three');
 		expect(c.current().tab).toBe('two');
-		unmount(c);
 	});
 
 	test('arrow keys rove between enabled triggers', () => {
-		const c = render('tabs');
+		render('tabs');
 		el('tab-one').focus();
 		press('tab-one', 'ArrowRight');
 		expect(document.activeElement).toBe(el('tab-two'));
-		unmount(c);
 	});
 });
 
@@ -75,6 +66,5 @@ describe('pagination', () => {
 
 		click('prev');
 		expect(c.current().page).toBe(4);
-		unmount(c);
 	});
 });

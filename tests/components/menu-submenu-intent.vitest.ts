@@ -1,5 +1,6 @@
-import { flushSync, mount, unmount } from 'svelte';
+import { flushSync } from 'svelte';
 import { afterEach, describe, expect, test, vi } from 'vitest';
+import { mountInBody } from '../mount';
 import MenuSubmenuIntentFixture from './menu-submenu-intent.fixture.svelte';
 
 function rect(left: number, top: number, right: number, bottom: number) {
@@ -25,10 +26,9 @@ function pointerEvent(type: string, clientX: number, clientY: number, extra: Poi
 function render(ownerDocument = document) {
 	const target = ownerDocument.createElement('div');
 	ownerDocument.body.append(target);
-	const component = mount(MenuSubmenuIntentFixture, { target }) as unknown as {
+	const component = mountInBody(MenuSubmenuIntentFixture, undefined, target).component as unknown as {
 		setEnabled: (value: boolean) => void;
 	};
-	flushSync();
 
 	const trigger = target.querySelector<HTMLElement>('[data-testid="trigger"]');
 	const content = target.querySelector<HTMLElement>('[data-testid="content"]');
@@ -62,76 +62,54 @@ function render(ownerDocument = document) {
 }
 
 afterEach(() => {
-	document.body.innerHTML = '';
-	vi.restoreAllMocks();
 	vi.useRealTimers();
 });
 
 describe('MenuSubmenuIntent', () => {
 	test('leaving the trigger toward the content safe zone engages tracking (pointer marked in-transit)', () => {
-		const { component, inTransit } = render();
-		try {
-			// nothing engaged yet
-			expect(inTransit()).toBe(false);
-		} finally {
-			unmount(component);
-		}
+		const { inTransit } = render();
+		// nothing engaged yet
+		expect(inTransit()).toBe(false);
 	});
 
 	test('engaging via trigger-leave, then a doc pointermove still inside the safe zone does not exit', () => {
-		const { component, engageTowardContent, docPointerMove, exitCount, inTransit } = render();
-		try {
-			engageTowardContent();
-			expect(inTransit()).toBe(true);
+		const { engageTowardContent, docPointerMove, exitCount, inTransit } = render();
+		engageTowardContent();
+		expect(inTransit()).toBe(true);
 
-			// still on the way toward content, inside the corridor
-			docPointerMove(80, 10);
-			expect(exitCount()).toBe(0);
-			expect(inTransit()).toBe(true);
-		} finally {
-			unmount(component);
-		}
+		// still on the way toward content, inside the corridor
+		docPointerMove(80, 10);
+		expect(exitCount()).toBe(0);
+		expect(inTransit()).toBe(true);
 	});
 
 	test('a doc pointermove that reaches the content rect disengages without calling onIntentExit', () => {
-		const { component, engageTowardContent, docPointerMove, exitCount, inTransit } = render();
-		try {
-			engageTowardContent();
-			docPointerMove(150, 50); // squarely inside content
-			expect(exitCount()).toBe(0);
-			expect(inTransit()).toBe(false);
-		} finally {
-			unmount(component);
-		}
+		const { engageTowardContent, docPointerMove, exitCount, inTransit } = render();
+		engageTowardContent();
+		docPointerMove(150, 50); // squarely inside content
+		expect(exitCount()).toBe(0);
+		expect(inTransit()).toBe(false);
 	});
 
 	test('a doc pointermove far outside the safe zone calls onIntentExit and clears in-transit immediately', () => {
-		const { component, engageTowardContent, docPointerMove, exitCount, inTransit } = render();
-		try {
-			engageTowardContent();
-			docPointerMove(-500, -500);
-			expect(exitCount()).toBe(1);
-			expect(inTransit()).toBe(false);
-		} finally {
-			unmount(component);
-		}
+		const { engageTowardContent, docPointerMove, exitCount, inTransit } = render();
+		engageTowardContent();
+		docPointerMove(-500, -500);
+		expect(exitCount()).toBe(1);
+		expect(inTransit()).toBe(false);
 	});
 
 	test('disabling mid-track resets state so a subsequent stray doc pointermove does not fire a stale exit', () => {
 		const { component, engageTowardContent, docPointerMove, exitCount, inTransit } = render();
-		try {
-			engageTowardContent();
-			expect(inTransit()).toBe(true);
+		engageTowardContent();
+		expect(inTransit()).toBe(true);
 
-			component.setEnabled(false);
-			flushSync();
-			expect(inTransit()).toBe(false);
+		component.setEnabled(false);
+		flushSync();
+		expect(inTransit()).toBe(false);
 
-			docPointerMove(-500, -500);
-			expect(exitCount()).toBe(0);
-		} finally {
-			unmount(component);
-		}
+		docPointerMove(-500, -500);
+		expect(exitCount()).toBe(0);
 	});
 
 		test('tracks submenu intent on the trigger owning document', () => {
@@ -140,18 +118,13 @@ describe('MenuSubmenuIntent', () => {
 		const foreignDocument = iframe.contentDocument;
 		if (!foreignDocument) throw new Error('Expected iframe document');
 
-		const { component, engageTowardContent, docPointerMove, exitCount } = render(foreignDocument);
-		try {
-			engageTowardContent();
-			document.dispatchEvent(pointerEvent('pointermove', -500, -500));
-			flushSync();
-			expect(exitCount()).toBe(0);
+		const { engageTowardContent, docPointerMove, exitCount } = render(foreignDocument);
+		engageTowardContent();
+		document.dispatchEvent(pointerEvent('pointermove', -500, -500));
+		flushSync();
+		expect(exitCount()).toBe(0);
 
-			docPointerMove(-500, -500);
-			expect(exitCount()).toBe(1);
-		} finally {
-			unmount(component);
-			iframe.remove();
-		}
+		docPointerMove(-500, -500);
+		expect(exitCount()).toBe(1);
 	});
 });

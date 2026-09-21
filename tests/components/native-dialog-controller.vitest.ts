@@ -1,14 +1,12 @@
-import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { flushSync } from 'svelte';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { mountInBody, unmount } from '../mount';
 import NativeDialogControllerFixture from './native-dialog-controller.fixture.svelte';
 
 type Fixture = ReturnType<typeof render>['component'];
 
 function render(outsideEvent: 'pointerdown' | 'click' = 'pointerdown') {
-	const target = document.createElement('div');
-	document.body.append(target);
-	const component = mount(NativeDialogControllerFixture, { props: { outsideEvent }, target });
-	flushSync();
+	const { component, target } = mountInBody(NativeDialogControllerFixture, { outsideEvent });
 	const dialog = target.querySelector<HTMLDialogElement>('[data-testid="dialog"]')!;
 	return { component, dialog, target };
 }
@@ -36,11 +34,6 @@ beforeEach(() => {
 	});
 });
 
-afterEach(() => {
-	document.body.innerHTML = '';
-	vi.restoreAllMocks();
-});
-
 describe('native dialog controller', () => {
 	test('synchronizes declarative open state with showModal and a settle-deferred close', async () => {
 		const { component, dialog } = render();
@@ -55,7 +48,6 @@ describe('native dialog controller', () => {
 		expect(dialog.open).toBe(true);
 		await vi.waitFor(() => expect(dialog.open).toBe(false));
 		expect(dialog.close).toHaveBeenCalledOnce();
-		unmount(component);
 	});
 
 	test('reopening before the exit settles supersedes the pending native close', async () => {
@@ -71,7 +63,6 @@ describe('native dialog controller', () => {
 		await new Promise(requestAnimationFrame);
 		expect(dialog.open).toBe(true);
 		expect(dialog.close).not.toHaveBeenCalled();
-		unmount(component);
 	});
 
 	test.each(['pointerdown', 'click'] as const)('supports the %s backdrop policy', async (outsideEvent) => {
@@ -82,7 +73,6 @@ describe('native dialog controller', () => {
 		// dismissal routes through state immediately; the native close follows after settle
 		expect(component.getCloseCount()).toBe(1);
 		await vi.waitFor(() => expect(dialog.open).toBe(false));
-		unmount(component);
 	});
 
 	test('a permitted cancel suppresses the native instant close and closes through state', async () => {
@@ -95,7 +85,6 @@ describe('native dialog controller', () => {
 		flushSync();
 		expect(component.getCloseCount()).toBe(1);
 		await vi.waitFor(() => expect(dialog.open).toBe(false));
-		unmount(component);
 	});
 
 	test('preserves callback vetoes and ignore policies', () => {
@@ -120,7 +109,6 @@ describe('native dialog controller', () => {
 		const ignored = new Event('cancel', { cancelable: true });
 		dialog.dispatchEvent(ignored);
 		expect(ignored.defaultPrevented).toBe(true);
-		unmount(component);
 	});
 
 	test('wraps sequential focus only while trapping is enabled', () => {
@@ -141,7 +129,6 @@ describe('native dialog controller', () => {
 		dialog.dispatchEvent(untrapped);
 		expect(untrapped.defaultPrevented).toBe(false);
 		expect(document.activeElement).toBe(last);
-		unmount(component);
 	});
 
 	test('removes event listeners when the attachment is destroyed', () => {

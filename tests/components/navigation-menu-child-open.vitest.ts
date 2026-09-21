@@ -1,35 +1,28 @@
-import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { flushSync } from 'svelte';
+import { describe, expect, test, vi } from 'vitest';
+import { mountInBody } from '../mount';
 import Fixture from './navigation-menu-child-open.fixture.svelte';
 
 // Content stays mounted and hidden inline while closed; `child` receives `open`, so a consumer
 // can own the `{#if}` (and a Svelte `transition:`) while the library keeps supplying props.
 
 function render(viewport: boolean) {
-	const target = document.createElement('div');
-	document.body.append(target);
-	const component = mount(Fixture, { target, props: { viewport } });
-	flushSync();
+	const { component, target } = mountInBody(Fixture, { viewport });
 	const trigger = target.querySelector<HTMLElement>('[data-testid="trigger"]')!;
 	const content = () => document.querySelector<HTMLElement>('[data-testid="content"]');
 	return { component, trigger, content };
 }
 
-afterEach(() => {
-	document.body.innerHTML = '';
-});
-
 describe('NavigationMenu presence', () => {
 	test('default content is mounted while closed and hidden inline', () => {
-		const { component } = render(false);
+		render(false);
 		const two = document.querySelector<HTMLElement>('[data-testid="content-two"]')!;
 		expect(two.dataset.state).toBe('closed');
 		expect(two.style.visibility).toBe('hidden');
-		unmount(component);
 	});
 
 	test('child content exists only while open and carries the library props', () => {
-		const { component, trigger, content } = render(false);
+		const { trigger, content } = render(false);
 		expect(content()).toBeNull();
 
 		trigger.click();
@@ -41,11 +34,10 @@ describe('NavigationMenu presence', () => {
 		trigger.click();
 		flushSync();
 		expect(content()).toBeNull();
-		unmount(component);
 	});
 
 	test('viewport child follows open and hosts the portaled content', () => {
-		const { component, trigger, content } = render(true);
+		const { trigger, content } = render(true);
 		const viewport = () => document.querySelector<HTMLElement>('[data-testid="viewport"]');
 		expect(viewport()).toBeNull();
 
@@ -58,7 +50,6 @@ describe('NavigationMenu presence', () => {
 		flushSync();
 		expect(viewport()).toBeNull();
 		expect(content()).toBeNull();
-		unmount(component);
 	});
 });
 
@@ -79,10 +70,7 @@ describe('NavigationMenu hover delay', () => {
 	// Defaults: delayDuration 200, skipDelayDuration 300, 150 while open.
 	test('a hover within skipDelayDuration of a close skips delayDuration', () => {
 		vi.useFakeTimers();
-		const target = document.createElement('div');
-		document.body.append(target);
-		const component = mount(Fixture, { target, props: { openOnHover: true } });
-		flushSync();
+		const { target } = mountInBody(Fixture, { openOnHover: true });
 		const one = target.querySelector<HTMLElement>('[data-testid="trigger"]')!;
 		const two = target.querySelector<HTMLElement>('[data-testid="trigger-two"]')!;
 		const contentTwo = target.querySelector<HTMLElement>('[data-testid="content-two"]')!;
@@ -113,7 +101,6 @@ describe('NavigationMenu hover delay', () => {
 		tick(50);
 		expect(content()).not.toBeNull();
 
-		unmount(component);
 		vi.useRealTimers();
 	});
 });

@@ -1,15 +1,11 @@
-import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, expect, test, vi } from 'vitest';
+import { flushSync } from 'svelte';
+import { expect, test, vi } from 'vitest';
+import { mountInBody } from '../mount';
 import DataTableContentFixture from './data-table-content.fixture.svelte';
 import type { ComponentProps } from 'svelte';
 
-let component: ReturnType<typeof mount> | undefined;
-
 function render(props: ComponentProps<typeof DataTableContentFixture> = {}) {
-	const target = document.createElement('div');
-	document.body.append(target);
-	component = mount(DataTableContentFixture, { target, props });
-	flushSync();
+	mountInBody(DataTableContentFixture, props);
 }
 
 function button(label: string) {
@@ -38,12 +34,6 @@ function filter(value: string) {
 	flushSync();
 	return input;
 }
-
-afterEach(async () => {
-	if (component) await unmount(component);
-	component = undefined;
-	document.body.innerHTML = '';
-});
 
 test('compiled headers, text cells and action snippets escape text and keep styles', () => {
 	const html = '<img src=x onerror="alert(1)"> & "quoted"';

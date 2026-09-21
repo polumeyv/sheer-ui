@@ -1,5 +1,6 @@
-import { flushSync, mount, unmount } from 'svelte';
+import { flushSync } from 'svelte';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { mountInBody, unmount } from '../mount';
 
 // isIOS is a module-level const computed from navigator.userAgent at import time (not a function),
 // so the only reliable way to force the iOS branch in a test is to replace the whole module —
@@ -13,11 +14,7 @@ vi.mock('../../src/lib/internal/tools/utils/dom.js', async (importOriginal) => {
 const { default: UsePreventScrollIosFixture } = await import('./use-prevent-scroll-ios.fixture.svelte');
 
 function render(props: { disabled?: boolean } = {}) {
-	const target = document.createElement('div');
-	document.body.append(target);
-	const component = mount(UsePreventScrollIosFixture, { props, target });
-	flushSync();
-	return { component, target };
+	return mountInBody(UsePreventScrollIosFixture, props);
 }
 
 // touchmove gets TWO listeners once BodyScrollLock is in the mix: one from
@@ -42,9 +39,7 @@ afterEach(async () => {
 	// patch and injected style never leak into the next test
 	await Promise.resolve();
 	vi.advanceTimersByTime(50);
-	document.body.innerHTML = '';
 	vi.useRealTimers();
-	vi.restoreAllMocks();
 });
 
 describe('usePreventScroll (iOS)', () => {

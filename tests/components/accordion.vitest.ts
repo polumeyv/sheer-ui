@@ -1,15 +1,12 @@
-import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { flushSync } from 'svelte';
+import { describe, expect, test, vi } from 'vitest';
+import { mountInBody, unmount } from '../mount';
 import AccordionFixture from './accordion.fixture.svelte';
 
 type SelectionType = 'single' | 'multiple';
 
 function renderFixture(props: { type: SelectionType; value?: string | string[] }) {
-	const target = document.createElement('div');
-	document.body.append(target);
-	const component = mount(AccordionFixture, { props, target });
-	flushSync();
-	return component;
+	return mountInBody(AccordionFixture, props).component;
 }
 
 function getItem(name: string) {
@@ -41,89 +38,66 @@ function readValue() {
 
 const state = (name: string) => getItem(name).getAttribute('data-state');
 
-afterEach(() => {
-	document.body.innerHTML = '';
-});
-
 describe('accordion', () => {
 	test('single mode opens one item, swaps on another, and closes on a second click', async () => {
-		const component = renderFixture({ type: 'single' });
-		try {
-			expect(readValue()).toBe('');
-			expect(state('alpha')).toBe('closed');
+		renderFixture({ type: 'single' });
+		expect(readValue()).toBe('');
+		expect(state('alpha')).toBe('closed');
 
-			click('alpha');
-			expect(readValue()).toBe('alpha');
-			expect(state('alpha')).toBe('open');
-			expect(getItem('alpha').open).toBe(true);
+		click('alpha');
+		expect(readValue()).toBe('alpha');
+		expect(state('alpha')).toBe('open');
+		expect(getItem('alpha').open).toBe(true);
 
-			click('beta');
-			expect(readValue()).toBe('beta');
-			expect(state('alpha')).toBe('closed');
-			expect(state('beta')).toBe('open');
-			// The force-closed sibling keeps `open` until its close settles, then drops it.
-			await vi.waitFor(() => expect(getItem('alpha').open).toBe(false));
+		click('beta');
+		expect(readValue()).toBe('beta');
+		expect(state('alpha')).toBe('closed');
+		expect(state('beta')).toBe('open');
+		// The force-closed sibling keeps `open` until its close settles, then drops it.
+		await vi.waitFor(() => expect(getItem('alpha').open).toBe(false));
 
-			click('beta');
-			expect(readValue()).toBe('');
-			expect(state('beta')).toBe('closed');
-		} finally {
-			unmount(component);
-		}
+		click('beta');
+		expect(readValue()).toBe('');
+		expect(state('beta')).toBe('closed');
 	});
 
 	test('multiple mode accumulates items and removes them one at a time', () => {
-		const component = renderFixture({ type: 'multiple' });
-		try {
-			expect(readValue()).toBe('[]');
+		renderFixture({ type: 'multiple' });
+		expect(readValue()).toBe('[]');
 
-			click('alpha');
-			click('beta');
-			expect(readValue()).toBe('[alpha,beta]');
-			expect(state('alpha')).toBe('open');
-			expect(state('beta')).toBe('open');
+		click('alpha');
+		click('beta');
+		expect(readValue()).toBe('[alpha,beta]');
+		expect(state('alpha')).toBe('open');
+		expect(state('beta')).toBe('open');
 
-			click('alpha');
-			expect(readValue()).toBe('[beta]');
-			expect(state('alpha')).toBe('closed');
-		} finally {
-			unmount(component);
-		}
+		click('alpha');
+		expect(readValue()).toBe('[beta]');
+		expect(state('alpha')).toBe('closed');
 	});
 
 	test('a native toggle reports the browser state; one that matches the rendered state writes nothing', () => {
 		const component = renderFixture({ type: 'multiple', value: ['alpha'] });
-		try {
-			nativeToggle('beta', true);
-			expect(readValue()).toBe('[alpha,beta]');
+		nativeToggle('beta', true);
+		expect(readValue()).toBe('[alpha,beta]');
 
-			const before = component.getValue();
-			nativeToggle('beta', true);
-			expect(component.getValue()).toBe(before);
-		} finally {
-			unmount(component);
-		}
+		const before = component.getValue();
+		nativeToggle('beta', true);
+		expect(component.getValue()).toBe(before);
 	});
 
 	test('an initial value opens its item, and a reset to undefined repairs to the empty selection', () => {
 		const single = renderFixture({ type: 'single', value: 'beta' });
-		try {
-			expect(state('beta')).toBe('open');
-			single.setValue(undefined);
-			flushSync();
-			expect(readValue()).toBe('');
-			expect(state('beta')).toBe('closed');
-		} finally {
-			unmount(single);
-		}
+		expect(state('beta')).toBe('open');
+		single.setValue(undefined);
+		flushSync();
+		expect(readValue()).toBe('');
+		expect(state('beta')).toBe('closed');
+		unmount(single);
 
 		const multiple = renderFixture({ type: 'multiple' });
-		try {
-			multiple.setValue(undefined);
-			flushSync();
-			expect(readValue()).toBe('[]');
-		} finally {
-			unmount(multiple);
-		}
+		multiple.setValue(undefined);
+		flushSync();
+		expect(readValue()).toBe('[]');
 	});
 });
