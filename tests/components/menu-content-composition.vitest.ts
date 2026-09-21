@@ -1,5 +1,6 @@
-import { flushSync, mount, unmount } from 'svelte';
+import { flushSync } from 'svelte';
 import { afterEach, describe, expect, test, vi } from 'vitest';
+import { mountInBody, unmount } from '../mount';
 import MenuContentCompositionFixture from './menu-content-composition.fixture.svelte';
 
 type Family = 'context-menu' | 'dropdown-menu' | 'menubar';
@@ -21,16 +22,7 @@ const families: { family: Family; dataSlot: string; minWidth: string; cssVar: st
 ];
 
 function render(props: { family: Family; isStatic?: boolean; onInteractOutside?: (e: PointerEvent) => void }) {
-	const target = document.createElement('div');
-	document.body.append(target);
-	const component = mount(MenuContentCompositionFixture, { props, target });
-	flushSync();
-	return component;
-}
-
-function cleanup(component: ReturnType<typeof mount>) {
-	unmount(component);
-	document.body.innerHTML = '';
+	return mountInBody(MenuContentCompositionFixture, props).component;
 }
 
 function getContent(dataSlot: string) {
@@ -47,49 +39,35 @@ function readOpen() {
 
 describe('menu family Content composition', () => {
 	test.each(families)('$family Content keeps its own slot, class and css vars', ({ family, dataSlot, minWidth, cssVar }) => {
-		const component = render({ family });
+		render({ family });
 
-		try {
-			const content = getContent(dataSlot);
-			expect(content.className).toContain(minWidth);
-			expect(content.getAttribute('style')).toContain(cssVar);
-		} finally {
-			cleanup(component);
-		}
+		const content = getContent(dataSlot);
+		expect(content.className).toContain(minWidth);
+		expect(content.getAttribute('style')).toContain(cssVar);
 	});
 
 	test.each(families)('$family Content is floating and ContentStatic is not', ({ family, dataSlot }) => {
 		const floating = render({ family });
 
-		try {
-			expect(getContent(dataSlot).hasAttribute('data-floating-content')).toBe(true);
-		} finally {
-			cleanup(floating);
-		}
+		expect(getContent(dataSlot).hasAttribute('data-floating-content')).toBe(true);
+		unmount(floating);
 
-		const staticContent = render({ family, isStatic: true });
+		render({ family, isStatic: true });
 
-		try {
-			expect(getContent(dataSlot).hasAttribute('data-floating-content')).toBe(false);
-		} finally {
-			cleanup(staticContent);
-		}
+		expect(getContent(dataSlot).hasAttribute('data-floating-content')).toBe(false);
 	});
 
 	test.each(families)('$family closes on Escape in both Content variants', ({ family }) => {
 		for (const isStatic of [false, true]) {
 			const component = render({ family, isStatic });
 
-			try {
-				expect(readOpen()).toBe('true');
+			expect(readOpen()).toBe('true');
 
-				document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
-				flushSync();
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+			flushSync();
 
-				expect(readOpen()).toBe('false');
-			} finally {
-				cleanup(component);
-			}
+			expect(readOpen()).toBe('false');
+			unmount(component);
 		}
 	});
 
@@ -114,26 +92,18 @@ describe('menu family Content composition', () => {
 		test.each(['dropdown-menu', 'menubar'] as const)('%s defers it: onInteractOutside is not reached', (family) => {
 			vi.useFakeTimers();
 			const onInteractOutside = vi.fn();
-			const component = render({ family, onInteractOutside });
-			try {
-				pointerDownOnTrigger();
-				expect(onInteractOutside).not.toHaveBeenCalled();
-			} finally {
-				cleanup(component);
-			}
+			render({ family, onInteractOutside });
+			pointerDownOnTrigger();
+			expect(onInteractOutside).not.toHaveBeenCalled();
 		});
 
 		test('context-menu lets it through: onInteractOutside is reached and the menu closes', () => {
 			vi.useFakeTimers();
 			const onInteractOutside = vi.fn();
-			const component = render({ family: 'context-menu', onInteractOutside });
-			try {
-				pointerDownOnTrigger();
-				expect(onInteractOutside).toHaveBeenCalledOnce();
-				expect(readOpen()).toBe('false');
-			} finally {
-				cleanup(component);
-			}
+			render({ family: 'context-menu', onInteractOutside });
+			pointerDownOnTrigger();
+			expect(onInteractOutside).toHaveBeenCalledOnce();
+			expect(readOpen()).toBe('false');
 		});
 	});
 });

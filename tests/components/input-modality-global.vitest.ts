@@ -1,13 +1,10 @@
-import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { flushSync } from 'svelte';
+import { describe, expect, test, vi } from 'vitest';
+import { mountInBody, unmount } from '../mount';
 import InputModalityGlobalFixture from './input-modality-global.fixture.svelte';
 
 function render(props: { menuRoots?: number; contextMenuRoots?: number } = {}) {
-	const target = document.createElement('div');
-	document.body.append(target);
-	const component = mount(InputModalityGlobalFixture, { props, target });
-	flushSync();
-	return component;
+	return mountInBody(InputModalityGlobalFixture, props).component;
 }
 
 function listenerCalls(spy: ReturnType<typeof vi.spyOn>, type: 'pointerdown' | 'keydown') {
@@ -20,35 +17,23 @@ function usesCapture(options: unknown): boolean {
 	);
 }
 
-afterEach(() => {
-	document.body.innerHTML = '';
-});
-
 describe('menu input modality listeners', () => {
 	test('a menu root owns one capture-phase document listener pair', () => {
 		const addSpy = vi.spyOn(document, 'addEventListener');
-		const component = render();
+		render();
 
-		try {
-			expect(listenerCalls(addSpy, 'pointerdown')).toHaveLength(1);
-			expect(listenerCalls(addSpy, 'keydown')).toHaveLength(1);
-			expect(usesCapture(listenerCalls(addSpy, 'pointerdown')[0]?.[2])).toBe(true);
-			expect(usesCapture(listenerCalls(addSpy, 'keydown')[0]?.[2])).toBe(true);
-		} finally {
-			unmount(component);
-		}
+		expect(listenerCalls(addSpy, 'pointerdown')).toHaveLength(1);
+		expect(listenerCalls(addSpy, 'keydown')).toHaveLength(1);
+		expect(usesCapture(listenerCalls(addSpy, 'pointerdown')[0]?.[2])).toBe(true);
+		expect(usesCapture(listenerCalls(addSpy, 'keydown')[0]?.[2])).toBe(true);
 	});
 
 	test('each menu and context-menu root owns independent listeners', () => {
 		const addSpy = vi.spyOn(document, 'addEventListener');
-		const component = render({ menuRoots: 2, contextMenuRoots: 1 });
+		render({ menuRoots: 2, contextMenuRoots: 1 });
 
-		try {
-			expect(listenerCalls(addSpy, 'pointerdown')).toHaveLength(3);
-			expect(listenerCalls(addSpy, 'keydown')).toHaveLength(3);
-		} finally {
-			unmount(component);
-		}
+		expect(listenerCalls(addSpy, 'pointerdown')).toHaveLength(3);
+		expect(listenerCalls(addSpy, 'keydown')).toHaveLength(3);
 	});
 
 	test('Svelte removes every root listener when the roots unmount', () => {

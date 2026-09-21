@@ -1,5 +1,5 @@
-import { flushSync, mount, unmount } from "svelte";
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
+import { mountInBody } from "../mount";
 
 const cases = [
 	{
@@ -70,25 +70,13 @@ beforeEach(() => {
 	});
 });
 
-afterEach(() => {
-	document.body.innerHTML = "";
-});
-
 describe("registry demos", () => {
 	for (const demo of cases) {
 		test(`${demo.name} renders its primary component`, async () => {
 			const { default: Demo } = await demo.load();
-			const target = document.createElement("div");
-			document.body.append(target);
+			mountInBody(Demo);
 
-			const component = mount(Demo, { target });
-			flushSync();
-
-			try {
-				expect(document.body.querySelector(demo.selector)).not.toBeNull();
-			} finally {
-				unmount(component);
-			}
+			expect(document.body.querySelector(demo.selector)).not.toBeNull();
 		});
 	}
 });

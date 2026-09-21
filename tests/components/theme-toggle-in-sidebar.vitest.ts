@@ -4,8 +4,8 @@
 // Tailwind output for every class in the tree is compiled and applied here, so the
 // assertion is on computed opacity, not on class strings.
 import { compile } from "tailwindcss";
-import { flushSync, mount, unmount } from "svelte";
 import { afterEach, describe, expect, test } from "vitest";
+import { mountInBody } from "../mount";
 
 function installDesktopViewport() {
   Object.defineProperty(window, "innerWidth", {
@@ -47,14 +47,10 @@ async function renderFixture(dark: boolean) {
   installDesktopViewport();
   const { default: Fixture } =
     await import("./theme-toggle-in-sidebar.fixture.svelte");
-  const target = document.createElement("div");
-  document.body.append(target);
-  const component = mount(Fixture, { target, props: { dark } });
-  flushSync();
+  mountInBody(Fixture, { dark });
   const style = await applyTailwind();
   return {
     [Symbol.dispose]() {
-      unmount(component);
       style.remove();
     },
   };
@@ -69,7 +65,6 @@ function visibleIcons(placement: "inside" | "outside") {
 }
 
 afterEach(() => {
-  document.body.innerHTML = "";
   localStorage.clear();
 });
 

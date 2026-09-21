@@ -1,13 +1,9 @@
-import { flushSync, mount, unmount } from 'svelte';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
+import { mountInBody, unmount } from '../mount';
 import AnimationsSettledFixture from './animations-settled.fixture.svelte';
 
 function render() {
-	const target = document.createElement('div');
-	document.body.append(target);
-	const component = mount(AnimationsSettledFixture, { target });
-	flushSync();
-	return component;
+	return mountInBody(AnimationsSettledFixture).component;
 }
 
 // jsdom has neither getAnimations nor Animation, so the runner's animation input is stubbed.
@@ -30,10 +26,6 @@ const frames = async (count = 3) => {
 	for (let i = 0; i < count; i++) await new Promise(requestAnimationFrame);
 };
 
-afterEach(() => {
-	document.body.innerHTML = '';
-});
-
 describe('createSettleRunner', () => {
 	test('a second run supersedes the first', async () => {
 		const c = render();
@@ -46,7 +38,6 @@ describe('createSettleRunner', () => {
 		await vi.waitFor(() => expect(calls).toEqual(['second']));
 		await frames();
 		expect(calls).toEqual(['second']);
-		unmount(c);
 	});
 
 	test('a null node cancels the pending run and drops the new one', async () => {
@@ -62,7 +53,6 @@ describe('createSettleRunner', () => {
 
 		await frames();
 		expect(calls).toEqual([]);
-		unmount(c);
 	});
 
 	test('an infinite animation is excluded instead of stranding the callback', async () => {
@@ -74,7 +64,6 @@ describe('createSettleRunner', () => {
 		c.run(() => calls.push('fired'));
 
 		await vi.waitFor(() => expect(calls).toEqual(['fired']));
-		unmount(c);
 	});
 
 	test('a cancelled animation re-queries and waits for its replacement', async () => {
@@ -94,7 +83,6 @@ describe('createSettleRunner', () => {
 
 		exit.settle();
 		await vi.waitFor(() => expect(calls).toEqual(['fired']));
-		unmount(c);
 	});
 
 	test('unmount cancels a pending run', async () => {
@@ -121,7 +109,6 @@ describe('createSettleRunner', () => {
 		c.run(() => calls.push('fired'));
 
 		await vi.waitFor(() => expect(calls).toEqual(['fired']));
-		unmount(c);
 	});
 
 	test('a continuously retargeted animation does not hold the settle open forever', async () => {
@@ -142,6 +129,5 @@ describe('createSettleRunner', () => {
 		await vi.waitFor(() => expect(calls).toEqual(['fired']));
 		expect(spawned.length).toBeGreaterThan(1);
 		expect(spawned.length).toBeLessThanOrEqual(5);
-		unmount(c);
 	});
 });

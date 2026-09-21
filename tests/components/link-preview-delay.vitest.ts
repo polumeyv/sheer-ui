@@ -1,13 +1,10 @@
-import { flushSync, mount, unmount } from 'svelte';
+import { flushSync } from 'svelte';
 import { afterEach, describe, expect, test, vi } from 'vitest';
+import { mountInBody } from '../mount';
 import LinkPreviewDelayFixture from './link-preview-delay.fixture.svelte';
 
 function render(props: { openDelay?: number; closeDelay?: number } = {}) {
-	const target = document.createElement('div');
-	document.body.append(target);
-	const component = mount(LinkPreviewDelayFixture, { props, target });
-	flushSync();
-	return component;
+	return mountInBody(LinkPreviewDelayFixture, props).component;
 }
 
 function readOpen() {
@@ -42,59 +39,46 @@ function advance(ms: number) {
 
 afterEach(() => {
 	vi.useRealTimers();
-	document.body.innerHTML = '';
 });
 
 describe('LinkPreview delays', () => {
 	test('hover opens only after openDelay', () => {
 		vi.useFakeTimers();
-		const c = render({ openDelay: 200 });
-		try {
-			pointerEnter();
-			advance(199);
-			expect(readOpen()).toBe('closed');
+		render({ openDelay: 200 });
+		pointerEnter();
+		advance(199);
+		expect(readOpen()).toBe('closed');
 
-			advance(1);
-			expect(readOpen()).toBe('open');
-		} finally {
-			unmount(c);
-		}
+		advance(1);
+		expect(readOpen()).toBe('open');
 	});
 
 	test('blur closes only after closeDelay', () => {
 		vi.useFakeTimers();
-		const c = render({ openDelay: 0, closeDelay: 200 });
-		try {
-			pointerEnter();
-			advance(0);
-			expect(readOpen()).toBe('open');
+		render({ openDelay: 0, closeDelay: 200 });
+		pointerEnter();
+		advance(0);
+		expect(readOpen()).toBe('open');
 
-			blurTrigger();
-			advance(199);
-			expect(readOpen()).toBe('open');
+		blurTrigger();
+		advance(199);
+		expect(readOpen()).toBe('open');
 
-			advance(1);
-			expect(readOpen()).toBe('closed');
-		} finally {
-			unmount(c);
-		}
+		advance(1);
+		expect(readOpen()).toBe('closed');
 	});
 
 	test('re-hovering before openDelay elapses restarts the open timer', () => {
 		vi.useFakeTimers();
-		const c = render({ openDelay: 200 });
-		try {
-			pointerEnter();
-			advance(150);
-			pointerEnter();
+		render({ openDelay: 200 });
+		pointerEnter();
+		advance(150);
+		pointerEnter();
 
-			advance(50); // the first timer's deadline
-			expect(readOpen()).toBe('closed');
+		advance(50); // the first timer's deadline
+		expect(readOpen()).toBe('closed');
 
-			advance(150);
-			expect(readOpen()).toBe('open');
-		} finally {
-			unmount(c);
-		}
+		advance(150);
+		expect(readOpen()).toBe('open');
 	});
 });

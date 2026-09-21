@@ -1,5 +1,6 @@
-import { flushSync, mount, unmount } from "svelte";
-import { afterEach, describe, expect, test } from "vitest";
+import { flushSync } from "svelte";
+import { describe, expect, test } from "vitest";
+import { mountInBody } from "../mount";
 
 function installDesktopViewport() {
 	Object.defineProperty(window, "matchMedia", {
@@ -20,14 +21,7 @@ function installDesktopViewport() {
 async function renderFixture() {
 	installDesktopViewport();
 	const { default: SidebarMenuActiveFixture } = await import("./sidebar-menu-active.fixture.svelte");
-
-	const target = document.createElement("div");
-	document.body.append(target);
-
-	const component = mount(SidebarMenuActiveFixture, { target });
-	flushSync();
-
-	return { component };
+	return mountInBody(SidebarMenuActiveFixture);
 }
 
 function getItem(testId: string) {
@@ -36,25 +30,17 @@ function getItem(testId: string) {
 	return node;
 }
 
-afterEach(() => {
-	document.body.innerHTML = "";
-});
-
 describe("Sidebar menu active state", () => {
 	test("updates data-active when isActive changes", async () => {
 		const { component } = await renderFixture();
 
-		try {
-			expect(getItem("accordion").dataset.active).toBe("true");
-			expect(getItem("card").dataset.active).toBe("false");
+		expect(getItem("accordion").dataset.active).toBe("true");
+		expect(getItem("card").dataset.active).toBe("false");
 
-			component.setActive("card");
-			flushSync();
+		component.setActive("card");
+		flushSync();
 
-			expect(getItem("accordion").dataset.active).toBe("false");
-			expect(getItem("card").dataset.active).toBe("true");
-		} finally {
-			unmount(component);
-		}
+		expect(getItem("accordion").dataset.active).toBe("false");
+		expect(getItem("card").dataset.active).toBe("true");
 	});
 });

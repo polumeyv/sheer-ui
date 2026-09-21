@@ -1,5 +1,6 @@
-import { flushSync, mount, unmount } from 'svelte';
+import { flushSync } from 'svelte';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { mountInBody } from '../mount';
 import PopoverFixture from './popover-exit-hold.fixture.svelte';
 
 // jsdom has no popover API; stub just enough of it that useNativePopoverLifecycle runs:
@@ -47,7 +48,6 @@ afterEach(() => {
 	delete (HTMLElement.prototype as Partial<HTMLElement>).showPopover;
 	delete (HTMLElement.prototype as Partial<HTMLElement>).hidePopover;
 	delete (HTMLElement.prototype as Partial<HTMLElement>).getAnimations;
-	document.body.innerHTML = '';
 });
 
 const content = () => {
@@ -56,77 +56,61 @@ const content = () => {
 	return el;
 };
 
-const render = () => {
-	const target = document.createElement('div');
-	document.body.append(target);
-	return mount(PopoverFixture, { target });
-};
+const render = () => mountInBody(PopoverFixture).component;
 
 describe('native popover exit hold', () => {
 	test('open shows the popover; close defers hidePopover until the exit settles', async () => {
 		const component = render();
-		try {
-			component.setOpen(true);
-			flushSync();
-			await flushRaf();
-			const el = content();
-			expect(el.showPopover).toHaveBeenCalledTimes(1);
-			expect(el.dataset.state).toBe('open');
+		component.setOpen(true);
+		flushSync();
+		await flushRaf();
+		const el = content();
+		expect(el.showPopover).toHaveBeenCalledTimes(1);
+		expect(el.dataset.state).toBe('open');
 
-			component.setOpen(false);
-			flushSync();
-			// still shown: the [data-state=closed] exit owns this window
-			expect(el.dataset.state).toBe('closed');
-			expect(el.hidePopover).not.toHaveBeenCalled();
-			expect(el.matches(':popover-open')).toBe(true);
+		component.setOpen(false);
+		flushSync();
+		// still shown: the [data-state=closed] exit owns this window
+		expect(el.dataset.state).toBe('closed');
+		expect(el.hidePopover).not.toHaveBeenCalled();
+		expect(el.matches(':popover-open')).toBe(true);
 
-			await flushRaf();
-			expect(el.hidePopover).toHaveBeenCalledTimes(1);
-			expect(el.matches(':popover-open')).toBe(false);
-		} finally {
-			unmount(component);
-		}
+		await flushRaf();
+		expect(el.hidePopover).toHaveBeenCalledTimes(1);
+		expect(el.matches(':popover-open')).toBe(false);
 	});
 
 	test('a reopen mid-exit supersedes the pending hide', async () => {
 		const component = render();
-		try {
-			component.setOpen(true);
-			flushSync();
-			await flushRaf();
-			const el = content();
+		component.setOpen(true);
+		flushSync();
+		await flushRaf();
+		const el = content();
 
-			component.setOpen(false);
-			flushSync();
-			component.setOpen(true);
-			flushSync();
-			await flushRaf();
+		component.setOpen(false);
+		flushSync();
+		component.setOpen(true);
+		flushSync();
+		await flushRaf();
 
-			expect(el.hidePopover).not.toHaveBeenCalled();
-			expect(el.matches(':popover-open')).toBe(true);
-			expect(el.dataset.state).toBe('open');
-		} finally {
-			unmount(component);
-		}
+		expect(el.hidePopover).not.toHaveBeenCalled();
+		expect(el.matches(':popover-open')).toBe(true);
+		expect(el.dataset.state).toBe('open');
 	});
 
 	test('a UA-hidden popover (light dismiss) is not re-hidden', async () => {
 		const component = render();
-		try {
-			component.setOpen(true);
-			flushSync();
-			await flushRaf();
-			const el = content();
+		component.setOpen(true);
+		flushSync();
+		await flushRaf();
+		const el = content();
 
-			// the UA hides it out from under the state (light dismiss), then state catches up
-			(el as unknown as { __open: boolean }).__open = false;
-			component.setOpen(false);
-			flushSync();
-			await flushRaf();
+		// the UA hides it out from under the state (light dismiss), then state catches up
+		(el as unknown as { __open: boolean }).__open = false;
+		component.setOpen(false);
+		flushSync();
+		await flushRaf();
 
-			expect(el.hidePopover).not.toHaveBeenCalled();
-		} finally {
-			unmount(component);
-		}
+		expect(el.hidePopover).not.toHaveBeenCalled();
 	});
 });
