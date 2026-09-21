@@ -28,6 +28,11 @@
 			description: 'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
 		},
 		{
+			title: 'Scroll-area',
+			href: '/components/scroll-area',
+			description: 'A native scroller with a configurable scrollbar.',
+		},
+		{
 			title: 'Tabs',
 			href: '/components/tabs',
 			description: 'A set of layered sections of content—known as tab panels—that are displayed one at a time.',

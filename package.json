@@ -241,6 +241,11 @@
 			"svelte": "./dist/components/resizable/index.js",
 			"default": "./dist/components/resizable/index.js"
 		},
+		"./components/scroll-area": {
+			"types": "./dist/components/scroll-area/index.d.ts",
+			"svelte": "./dist/components/scroll-area/index.js",
+			"default": "./dist/components/scroll-area/index.js"
+		},
 		"./components/select": {
 			"types": "./dist/components/select/index.d.ts",
 			"svelte": "./dist/components/select/index.js",
