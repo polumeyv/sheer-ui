@@ -1,22 +1,11 @@
-import { flushSync, mount, unmount, type ComponentProps } from 'svelte';
-import { afterEach, expect, test, vi } from 'vitest';
+import { flushSync, type ComponentProps } from 'svelte';
+import { expect, test, vi } from 'vitest';
+import { mountInBody } from '../mount';
 import { Root } from '#lib/components/scroll-area/index.js';
 
-let component: ReturnType<typeof mount> | undefined;
-
 function render(props: ComponentProps<typeof Root> = {}) {
-	const target = document.createElement('div');
-	document.body.append(target);
-	component = mount(Root, { target, props });
-	flushSync();
-	return target.querySelector<HTMLDivElement>('[data-slot="scroll-area"]')!;
+	return mountInBody(Root, props).target.querySelector<HTMLDivElement>('[data-slot="scroll-area"]')!;
 }
-
-afterEach(async () => {
-	if (component) await unmount(component);
-	component = undefined;
-	document.body.innerHTML = '';
-});
 
 test('defaults carry the hover type, vertical orientation and a 600ms hide delay', () => {
 	const el = render();

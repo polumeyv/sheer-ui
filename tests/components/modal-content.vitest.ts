@@ -1,20 +1,16 @@
-import { flushSync, mount, unmount, type ComponentProps } from 'svelte';
-import { afterEach, beforeEach, expect, test, vi } from 'vitest';
+import { flushSync, type ComponentProps } from 'svelte';
+import { beforeEach, expect, test, vi } from 'vitest';
+import { mountInBody } from '../mount';
 import type ModalContentFixture from './modal-content.fixture.svelte';
 
-let component: ReturnType<typeof mount> | undefined;
-
+// Deferred: vaul's snap-points module reads window.matchMedia at load, after the stub below exists.
 async function render(props: ComponentProps<typeof ModalContentFixture>) {
 	const { default: Fixture } = await import('./modal-content.fixture.svelte');
-	const target = document.createElement('div');
-	document.body.append(target);
-	const mounted = mount(Fixture, { target, props });
-	component = mounted;
-	flushSync();
+	const { component } = mountInBody(Fixture, props);
 	document.querySelector<HTMLButtonElement>('[data-testid="before"]')!.focus();
-	mounted.setOpen(true);
+	component.setOpen(true);
 	flushSync();
-	return mounted;
+	return component;
 }
 
 beforeEach(() => {
@@ -35,13 +31,6 @@ beforeEach(() => {
 			this.dispatchEvent(new Event('close'));
 		}),
 	});
-});
-
-afterEach(async () => {
-	if (component) await unmount(component);
-	component = undefined;
-	document.body.innerHTML = '';
-	vi.restoreAllMocks();
 });
 
 test.each(['dialog', 'sheet'] as const)('%s preserves native dismissal vetoes, focus wrapping and scroll locking', async (variant) => {
