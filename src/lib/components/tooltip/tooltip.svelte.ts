@@ -739,14 +739,6 @@ export class TooltipContentState {
 		this.root.handleClose();
 	};
 
-	onOpenAutoFocus = (e: Event) => {
-		e.preventDefault();
-	};
-
-	onCloseAutoFocus = (e: Event) => {
-		e.preventDefault();
-	};
-
 	readonly snippetProps = $derived.by(() => ({ open: this.root.opts.open }));
 
 	readonly props = $derived.by(
@@ -762,11 +754,4 @@ export class TooltipContentState {
 				...this.attachment,
 			}) as const,
 	);
-
-	readonly popperProps = {
-		onInteractOutside: this.onInteractOutside,
-		onEscapeKeydown: this.onEscapeKeydown,
-		onOpenAutoFocus: this.onOpenAutoFocus,
-		onCloseAutoFocus: this.onCloseAutoFocus,
-	};
 }

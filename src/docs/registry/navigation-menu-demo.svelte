@@ -30,7 +30,7 @@
 		{
 			title: 'Scroll-area',
 			href: '/components/scroll-area',
-			description: 'Visually or semantically separates content.',
+			description: 'A native scroller with a configurable scrollbar.',
 		},
 		{
 			title: 'Tabs',
