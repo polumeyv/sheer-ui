@@ -1,5 +1,11 @@
 # sheer-ui
 
+## 0.6.0
+
+### Minor Changes
+
+- [#109](https://github.com/polumeyv/sheer-ui/pull/109) [`1619af2`](https://github.com/polumeyv/sheer-ui/commit/1619af28440cd7dbbb316d71348dbbbce4a86abb) Thanks [@Nic-Polumeyv](https://github.com/Nic-Polumeyv)! - breaking: `ScrollArea` is a native scroller (`scrollbar-color`, `scrollbar-width`, `scrollend`); `type`, `scrollHideDelay` and `orientation` stay, while `Viewport`, `Scrollbar`, `Thumb`, `Corner`, `viewportRef` and the scrollbar class props are gone. Children are laid out by the scroller itself, with no content wrapper between. The content props that native Popover, Tooltip, LinkPreview, Dialog and Sheet ignored are removed.
+
 ## 0.5.0
 
 ### Minor Changes
