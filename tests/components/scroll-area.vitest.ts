@@ -41,6 +41,16 @@ test("a consumer's onscroll still runs beside the tracking handler", () => {
 	expect(el.hasAttribute('data-scrolling')).toBe(true);
 });
 
+test('null event props do not displace the tracking handlers', () => {
+	const el = render({ type: 'scroll', onscroll: null, onscrollend: null });
+	el.dispatchEvent(new Event('scroll'));
+	flushSync();
+	expect(el.hasAttribute('data-scrolling')).toBe(true);
+	el.dispatchEvent(new Event('scrollend'));
+	flushSync();
+	expect(el.hasAttribute('data-scrolling')).toBe(false);
+});
+
 test('consumer classes merge with the focus ring', () => {
 	const el = render({ class: 'h-72 w-48' });
 	expect(el.className).toContain('h-72');

@@ -605,35 +605,38 @@ html {
 }
 
 /* ScrollArea is the native scroller. scrollbar-color interpolates (Chrome 150, Firefox 155 measured), so the
-   hide is a delayed colour fade to transparent; engines without the property (Safari <26.2) keep the OS bar. */
-[data-slot='scroll-area'] {
-	overflow: hidden auto;
-	scrollbar-width: thin;
-	scrollbar-color: var(--color-border) transparent;
-}
-[data-slot='scroll-area'][data-orientation='horizontal'] {
-	overflow: auto hidden;
-}
-[data-slot='scroll-area'][data-orientation='both'] {
-	overflow: auto;
-}
-[data-slot='scroll-area'][data-type='always'][data-orientation='vertical'] {
-	overflow-y: scroll;
-}
-[data-slot='scroll-area'][data-type='always'][data-orientation='horizontal'] {
-	overflow-x: scroll;
-}
-[data-slot='scroll-area'][data-type='always'][data-orientation='both'] {
-	overflow: scroll;
-}
-[data-slot='scroll-area']:is([data-type='hover'], [data-type='scroll']) {
-	scrollbar-color: transparent transparent;
-	transition: scrollbar-color 150ms var(--scroll-hide-delay);
-}
-[data-slot='scroll-area'][data-type='hover']:is(:hover, :focus-within),
-[data-slot='scroll-area'][data-type='scroll'][data-scrolling] {
-	scrollbar-color: var(--color-border) transparent;
-	transition-delay: 0s;
+   hide is a delayed colour fade to transparent; engines without the property (Safari <26.2) keep the OS bar.
+   Layered so a consumer's overflow utility still wins. */
+@layer components {
+	[data-slot='scroll-area'] {
+		overflow: hidden auto;
+		scrollbar-width: thin;
+		scrollbar-color: var(--color-border) transparent;
+	}
+	[data-slot='scroll-area'][data-orientation='horizontal'] {
+		overflow: auto hidden;
+	}
+	[data-slot='scroll-area'][data-orientation='both'] {
+		overflow: auto;
+	}
+	[data-slot='scroll-area'][data-type='always'][data-orientation='vertical'] {
+		overflow-y: scroll;
+	}
+	[data-slot='scroll-area'][data-type='always'][data-orientation='horizontal'] {
+		overflow-x: scroll;
+	}
+	[data-slot='scroll-area'][data-type='always'][data-orientation='both'] {
+		overflow: scroll;
+	}
+	[data-slot='scroll-area']:is([data-type='hover'], [data-type='scroll']) {
+		scrollbar-color: transparent transparent;
+		transition: scrollbar-color 150ms var(--scroll-hide-delay);
+	}
+	[data-slot='scroll-area'][data-type='hover']:is(:hover, :focus-within),
+	[data-slot='scroll-area'][data-type='scroll'][data-scrolling] {
+		scrollbar-color: var(--color-border) transparent;
+		transition-delay: 0s;
+	}
 }
 
 /* Native modal surface — single source for the modal <dialog> adapters (Dialog.Content,

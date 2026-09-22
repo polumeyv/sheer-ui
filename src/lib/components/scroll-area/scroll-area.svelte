@@ -13,16 +13,14 @@
 
 	let scrolling = $state(false);
 
+	// The tracking handlers come last: a consumer's `onscroll={null}` would otherwise replace them.
 	const mergedProps = $derived(
-		mergeProps(
-			{
-				class:
-					'ring-ring/10 dark:ring-ring/20 dark:outline-ring/40 outline-ring/50 rounded-[inherit] focus-visible:ring-4 focus-visible:outline-1',
-				onscroll: () => (scrolling = true),
-				onscrollend: () => (scrolling = false),
-			},
-			restProps,
-		),
+		mergeProps(restProps, {
+			class:
+				'relative ring-ring/10 dark:ring-ring/20 dark:outline-ring/40 outline-ring/50 rounded-[inherit] focus-visible:ring-4 focus-visible:outline-1',
+			onscroll: () => (scrolling = true),
+			onscrollend: () => (scrolling = false),
+		}),
 	);
 </script>
 
