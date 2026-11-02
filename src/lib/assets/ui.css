@@ -505,11 +505,24 @@ body:has([data-text-selection-guard]) {
 	}
 }
 
-/* The last-resort position options for [data-floating-content]: when no side fits the whole
-   content, each side is re-tried with its block size capped to the side's space (minus the
-   engine's own margins), so the surface scrolls inside instead of overflowing the viewport. */
+/* The position options for [data-floating-content] beyond the plain flips (five entries in all:
+   the spec lets an engine stop there and Chromium does). When no whole side fits, `--bits-clamped`
+   re-tries with the block size capped to the side's space (minus the engine's own margins), so the
+   surface scrolls inside instead of overflowing the viewport. */
 @position-try --bits-clamped {
 	max-block-size: calc(100% - var(--bits-floating-block-margins, 0px));
+}
+
+/* A left/right request's last two options, the other axis: below the anchor, then `flip-block`
+   above. The engine writes the area and margins into the `--bits-cross-*` custom properties;
+   `normal` self-alignment is the position-area default (centered over the anchor across a
+   span-all, flush with it otherwise) and undoes the inline `anchor-center` a centered request
+   carries. */
+@position-try --bits-cross {
+	position-area: var(--bits-cross-area);
+	margin: var(--bits-cross-margin);
+	align-self: normal;
+	justify-self: normal;
 }
 
 /* Native overlay anchor positioning — single source for the popover, tooltip, and

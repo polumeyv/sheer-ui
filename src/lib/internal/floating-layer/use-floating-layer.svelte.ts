@@ -1,12 +1,6 @@
 import { createContext } from 'svelte';
 import { createAttachmentKey, type Attachment } from 'svelte/attachments';
-import {
-	attachRef,
-	getWindow,
-	styleToString,
-	type ReadableBoxedValues,
-	type RefAttachment,
-} from '../tools/index.js';
+import { attachRef, getWindow, styleToString, type ReadableBoxedValues, type RefAttachment } from '../tools/index.js';
 import type { WithRefOpts } from '../types.js';
 import type { Direction, StyleProperties } from '../index.js';
 
@@ -115,11 +109,13 @@ const alignToOrigin = {
 
 /**
  * Positions the content with CSS anchor positioning: the content element is `position: fixed`
- * in a `position-area` beside its anchor, `position-try-fallbacks` flips it away from a viewport
- * edge, and the sizing custom properties (`--bits-floating-available-*`, `--bits-floating-anchor-*`)
- * resolve against that area, so they only mean something on the content element itself, never on
- * a descendant. Nothing runs per scroll or resize; the browser repositions. `data-side` and
- * `data-align` are the requested placement (the resolved fallback is not readable outside Chrome).
+ * in a `position-area` beside its anchor, and `position-try-fallbacks` flips it away from a
+ * viewport edge, then moves a left/right request below or above the anchor once neither side
+ * fits (the `--bits-cross` option in ui.css). The sizing custom properties
+ * (`--bits-floating-available-*`, `--bits-floating-anchor-*`) resolve against that area, so they
+ * only mean something on the content element itself, never on a descendant. Nothing runs per
+ * scroll or resize; the browser repositions. `data-side` and `data-align` are the requested
+ * placement (the resolved fallback is not readable outside Chrome).
  */
 export class FloatingContentState {
 	static create(opts: FloatingContentStateOpts, tooltip = false) {
@@ -160,14 +156,31 @@ export class FloatingContentState {
 	placedSide = $derived(this.#measuredPlacement?.side ?? this.#requestedSide);
 	placedAlign = $derived(this.#measuredPlacement?.align ?? this.#requestedAlign);
 	#vertical = $derived(this.#requestedSide === 'top' || this.#requestedSide === 'bottom');
-	/** The physical edge of the anchor the content aligns to; `start`/`end` follow the text direction across. */
-	#alignEdge = $derived.by((): Side | null => {
+	/** The physical edge of the anchor the content aligns to on a side of that axis; `start`/`end` follow the text direction across. */
+	#alignEdge(vertical: boolean): Side | null {
 		const align = this.#requestedAlign;
 		if (align === 'center') return null;
-		if (!this.#vertical) return align === 'start' ? 'top' : 'bottom';
+		if (!vertical) return align === 'start' ? 'top' : 'bottom';
 		const rtl = this.opts.dir.current === 'rtl';
 		return (align === 'start') !== rtl ? 'left' : 'right';
-	});
+	}
+
+	/** The area and margins that put the content on `side`: offsets toward the anchor, collision padding toward the viewport. */
+	#placement(side: Side) {
+		const padding = this.#padding;
+		const vertical = side === 'top' || side === 'bottom';
+		const edge = this.#alignEdge(vertical);
+		const margin: Record<Side, number> = {
+			[OPPOSITE_SIDE[side]]: this.opts.sideOffset.current + this.#arrowHeight,
+			[side]: padding[side],
+		} as Record<Side, number>;
+		const cross: [Side, Side] = vertical ? ['left', 'right'] : ['top', 'bottom'];
+		for (const s of cross) margin[s] = padding[s];
+		if (edge) margin[edge] = this.opts.alignOffset.current;
+		// the content spans from the aligned anchor edge toward the opposite one; centered spans both ways
+		const span = edge ? `span-${OPPOSITE_SIDE[edge]}` : 'span-all';
+		return { area: `${side} ${span}`, margin };
+	}
 
 	#transformOrigin = $derived.by(() => {
 		const along = alignToOrigin[this.placedAlign];
@@ -191,44 +204,38 @@ export class FloatingContentState {
 			return { position: 'fixed', inset: 'auto' } satisfies StyleProperties;
 		}
 		const side = this.#requestedSide;
-		const padding = this.#padding;
-		const edge = this.#alignEdge;
 		const vertical = this.#vertical;
-
-		// margins: the offsets toward the anchor, the collision padding toward the viewport
-		const margin: Record<Side, number> = {
-			[OPPOSITE_SIDE[side]]: this.opts.sideOffset.current + this.#arrowHeight,
-			[side]: padding[side],
-		} as Record<Side, number>;
-		const cross: [Side, Side] = vertical ? ['left', 'right'] : ['top', 'bottom'];
-		for (const s of cross) margin[s] = padding[s];
-		if (edge) margin[edge] = this.opts.alignOffset.current;
-
-		// the content spans from the aligned anchor edge toward the opposite one; centered spans both ways
-		const span = edge ? `span-${OPPOSITE_SIDE[edge]}` : 'span-all';
-		// Unclamped flips first — a side is left for a bigger one while the content fits there whole.
-		// When no side fits the whole content, the `--bits-clamped` options (ui.css) re-try each with
-		// max-block-size capped to the side's space, so the requested side wins and scrolls inside.
-		const flips = vertical
-			? ['flip-block', 'flip-inline', 'flip-block flip-inline']
-			: ['flip-inline', 'flip-block', 'flip-inline flip-block'];
+		const { area, margin } = this.#placement(side);
+		// Five entries: the spec lets an engine stop there and Chromium does. Whole flips first — a
+		// side is left for a bigger one while the content fits there whole — then `--bits-clamped`
+		// (ui.css) re-tries with max-block-size capped to the side's space, so the surface scrolls
+		// inside. A left/right request spends its last two on the other axis, below the anchor and
+		// then flipped above (`--bits-cross`): a phone's sheet has room there when neither side has.
 		const fallbacks = this.opts.avoidCollisions.current
-			? [...flips, '--bits-clamped', ...flips.map((f) => `--bits-clamped ${f}`)].join(', ')
+			? (vertical
+					? ['flip-block', 'flip-inline', 'flip-block flip-inline', '--bits-clamped', '--bits-clamped flip-block']
+					: ['flip-inline', 'flip-block', '--bits-clamped', '--bits-cross', '--bits-cross flip-block']
+				).join(', ')
 			: 'none';
+		const below = vertical ? null : this.#placement('bottom');
 
 		return {
 			position: 'fixed',
 			inset: 'auto',
 			positionAnchor: this.root.anchorName,
-			positionArea: `${side} ${span}`,
+			positionArea: area,
 			positionTryFallbacks: fallbacks,
-			...(edge === null && { [vertical ? 'justifySelf' : 'alignSelf']: 'anchor-center' }),
+			...(this.#requestedAlign === 'center' && { [vertical ? 'justifySelf' : 'alignSelf']: 'anchor-center' }),
 			...(this.opts.hideWhenDetached.current && { positionVisibility: 'anchors-visible' }),
 			marginTop: `${margin.top}px`,
 			marginRight: `${margin.right}px`,
 			marginBottom: `${margin.bottom}px`,
 			marginLeft: `${margin.left}px`,
 			'--bits-floating-block-margins': `${margin.top + margin.bottom}px`,
+			...(below && {
+				'--bits-cross-area': below.area,
+				'--bits-cross-margin': `${below.margin.top}px ${below.margin.right}px ${below.margin.bottom}px ${below.margin.left}px`,
+			}),
 			'--bits-floating-transform-origin': this.#transformOrigin,
 			'--bits-floating-available-width': `calc(100% - ${margin.left + margin.right}px)`,
 			'--bits-floating-available-height': `calc(100% - ${margin.top + margin.bottom}px)`,
@@ -325,10 +332,16 @@ export class FloatingContentState {
 			const content = this.contentRef;
 			if (!content) return;
 			const win = getWindow(content);
-			let raf = win.requestAnimationFrame(() => this.#measurePlacement());
+			const measure = () => {
+				this.#measurePlacement();
+				// the enter animation scales from the requested origin, so these rects are transformed:
+				// measure again once it settles
+				for (const animation of content.getAnimations()) animation.finished.then(schedule, () => {});
+			};
+			let raf = win.requestAnimationFrame(measure);
 			const schedule = () => {
 				win.cancelAnimationFrame(raf);
-				raf = win.requestAnimationFrame(() => this.#measurePlacement());
+				raf = win.requestAnimationFrame(measure);
 			};
 			win.addEventListener('scroll', schedule, { capture: true, passive: true });
 			win.addEventListener('resize', schedule, { passive: true });
@@ -349,18 +362,31 @@ export class FloatingContentState {
 		if (c.width === 0 && c.height === 0) return;
 
 		const requested = this.#requestedSide;
-		const vertical = this.#vertical;
-		const side: Side = vertical
-			? c.bottom <= a.top + 1
+		// the requested axis first, then the one the cross options may have moved it to
+		const above = c.bottom <= a.top + 1;
+		const below = c.top >= a.bottom - 1;
+		const before = c.right <= a.left + 1;
+		const after = c.left >= a.right - 1;
+		const side: Side = this.#vertical
+			? above
 				? 'top'
-				: c.top >= a.bottom - 1
+				: below
 					? 'bottom'
-					: requested
-			: c.right <= a.left + 1
+					: before
+						? 'left'
+						: after
+							? 'right'
+							: requested
+			: before
 				? 'left'
-				: c.left >= a.right - 1
+				: after
 					? 'right'
-					: requested;
+					: above
+						? 'top'
+						: below
+							? 'bottom'
+							: requested;
+		const vertical = side === 'top' || side === 'bottom';
 
 		// nearest alignment on the cross axis; start/end follow the text direction horizontally
 		const rtl = this.opts.dir.current === 'rtl';
@@ -375,7 +401,8 @@ export class FloatingContentState {
 					center: Math.abs(c.top + c.height / 2 - (a.top + a.height / 2)),
 					end: Math.abs(c.bottom - a.bottom),
 				};
-		const align = ALIGN_OPTIONS.reduce((best, k) => (distance[k] < distance[best] ? k : best), 'center' as Align);
+		// a tie (content as wide as the anchor) keeps the requested alignment
+		const align = ALIGN_OPTIONS.reduce((best, k) => (distance[k] < distance[best] ? k : best), this.#requestedAlign);
 
 		const previous = this.#measuredPlacement;
 		if (previous?.side !== side || previous?.align !== align) this.#measuredPlacement = { side, align };
