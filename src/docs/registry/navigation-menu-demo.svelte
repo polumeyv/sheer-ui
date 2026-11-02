@@ -3,13 +3,12 @@
 	import { join } from 'overrule';
 	import { navigationMenuTriggerStyle } from '../../lib/components/navigation-menu/components/navigation-menu-trigger.svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
+	import { MediaQuery } from 'svelte/reactivity';
 	import CircleHelpIcon from '@lucide/svelte/icons/circle-help';
 	import CircleIcon from '@lucide/svelte/icons/circle';
 	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
 
-	import { IsMobile } from 'handful';
-
-	const isMobile = new IsMobile();
+	const isMobile = new MediaQuery('width < 48rem');
 
 	const components: { title: string; href: string; description: string }[] = [
 		{
